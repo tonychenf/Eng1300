@@ -1,0 +1,658 @@
+{
+  "examId": "00015-2021-04",
+  "title": "2021年4月高等教育自学考试全国统一命题考试英语（二）",
+  "year": 2021,
+  "month": 4,
+  "courseCode": "00015",
+  "courseName": "英语(二)",
+  "sourceFile": "074f01a3-2021_04____________.pdf",
+  "totalScore": 100,
+  "timeLimitMinutes": 150,
+  "status": "待校对",
+  "sections": [
+    {
+      "sectionId": "00015-2021-04-s1",
+      "type": "阅读判断",
+      "order": 1,
+      "passageTitle": "Animals in the City",
+      "passageText": "Recently, there have been many reports in newspapers and on TV about big animals coming into towns and cities. What happens when big animals come into our cities? Is it a good thing or is it dangerous for us and the animals?\n\nWild animals usually come into cities to look for food. In Cape Town, South Africa, baboons(狒狒) sometimes come into the suburbs. They eat fruit from gardens and go into people's kitchens! Baboons are strong animals and sometimes they scare children and fight with pet dogs. Many people do not like them, but the city can be dangerous for baboons too. Sometimes, baboons are hurt in car accidents. The city council in Cape Town has a team of Baboon Monitors. Their job is to find baboons in the city and take them back to the countryside. The problem is that a lot of baboons will come back to the city to find food again.\n\nIn Berlin, Germany, groups of wild pigs sometimes come into the city to look for food. They eat flowers and plants and dig in gardens and parks in the city. They also walk in the street and cause traffic accidents. Some city residents like the pigs and give them food. But the city council is worried about the traffic accidents. They have told people to stop giving the pigs food and have put up fences to stop the pigs from coming into the city.\n\nIn Moscow, Russia, there are 35,000 wild dogs. They live in parks, empty houses, markets and train stations. Some of the dogs were pets that people did not want, so they left them on the streets. Others were born on the streets and have always lived there. A lot of people like them and are used to seeing them on the streets. They give the dogs food and water. They even build small huts for the dogs to live in during the very cold winter.",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2021-04-q1",
+          "order": 1,
+          "questionType": "single_choice",
+          "stem": "Many news reports concern big animals in the city.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "原文说 Recently, there have been many reports in newspapers and on TV about big animals coming into towns and cities，报道担忧的是大型动物进入城市这一行为，而题干说报道担忧的是城市中的大型动物，含义不符，故选False。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q2",
+          "order": 2,
+          "questionType": "single_choice",
+          "stem": "Wild animals often come into cities for the winter.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "文章第二段首句 Wild animals usually come into cities to look for food，野生动物进入城市是为了寻找食物，并非为了过冬，与题干不符。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q3",
+          "order": 3,
+          "questionType": "single_choice",
+          "stem": "The food in kitchens can be bad for baboons.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "原文只提到 They eat fruit from gardens and go into people's kitchens，只说狒狒会跑进厨房，并未说明厨房中的食物对狒狒是否有害，文中未提及。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q4",
+          "order": 4,
+          "questionType": "single_choice",
+          "stem": "Cape Town is a safe place for baboons.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "原文表明 the city can be dangerous for baboons too，因此 Cape Town 对狒狒来说并不安全。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q5",
+          "order": 5,
+          "questionType": "single_choice",
+          "stem": "Many baboons will return after being sent away from the city.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "原文表明 The problem is that a lot of baboons will come back to the city to find food again，在将狒狒送回郊外后，很多狒狒会再次回到城市找食物，与题干一致。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q6",
+          "order": 6,
+          "questionType": "single_choice",
+          "stem": "There are more wild pigs in Berlin now than in the past.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "文章中并未提到过去野猪进入柏林的情况，因此无法进行数量上的对比，文中未提及。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q7",
+          "order": 7,
+          "questionType": "single_choice",
+          "stem": "Wild pigs sometimes cause traffic problems in Berlin.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "倒数第二段中提到 They also walk in the street and cause traffic accidents，与题干一致，确实在柏林导致了交通事故。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q8",
+          "order": 8,
+          "questionType": "single_choice",
+          "stem": "Wild pigs started to come into Berlin years ago.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "文章中并未提到野猪是从多年前开始进入柏林的，文中未提及具体起始时间。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q9",
+          "order": 9,
+          "questionType": "single_choice",
+          "stem": "No one knows the number of wild dogs in Moscow.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "原文给出了野狗的具体数量 In Moscow, Russia, there are 35,000 wild dogs，说明数量是已知的，与题干不符。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q10",
+          "order": 10,
+          "questionType": "single_choice",
+          "stem": "Some people help the wild dogs survive the cold winter.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "原文提到 They give the dogs food and water. They even build small huts for the dogs to live in during the very cold winter，他们会给狗喂食喂水，甚至建造小窝帮助狗过冬，与题干一致。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2021-04-s2",
+      "type": "阅读理解选择",
+      "order": 2,
+      "passageTitle": "What Happens When You Stop Exercising",
+      "passageText": "Have you ever wondered what would happen if you stopped exercising? A new study on twins was published in the journal Medicine & Science. The results of the study are dramatic.\n\nIn the study, researchers looked at 10 pairs of twin men. Each set of twins was in their mid-30s. Each had been brought up in the same family. Since they were identical, they shared the same DNA. They had maintained the same level of physical activity for most of their lives. But there was one difference. One twin of each set had cut on exercising in the past few years due to work or family pressure. On average, the less active twin exercised less than twice a week, while the active twin exercised at least twice a week.\n\nThe research team put each twin through a set of medical tests to study their overall health. The results showed big differences. While the more active twins had lower body fat percentage, better endurance level, and normal sensitivity, the inactive twins had about seven more pounds of body fat, worse endurance, and signs of disease. Not only were their bodies different; their brains were different as well. The active twins had more gray matter (the information processing part of the brain), particularly in areas that control balance.\n\nThe conclusion of the study is clear. Quitting your fitness routine can bring negative effects to your body and your brain as well. Considering the less active twins in the study had become couch potatoes(沉溺于看电视的人) only recently, these changes can sneak up on you a lot sooner than you'd think. So keep exercising. It is beneficial to your overall health!",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2021-04-q11",
+          "order": 11,
+          "questionType": "single_choice",
+          "stem": "This text is mainly about _____.",
+          "options": ["A. the importance of DNA", "B. the role of exercise", "C. the birth of a new journal", "D. the difference between twins"],
+          "answer": "B",
+          "answerExplanation": "文章标题为 What Happens When You Stop Exercising，全文围绕运动对身体和大脑的影响展开，主要内容与锻炼有关，故选B。",
+          "knowledgePoints": ["段落主旨理解"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q12",
+          "order": 12,
+          "questionType": "single_choice",
+          "stem": "Researchers chose twins for their study mostly because they _____.",
+          "options": ["A. shared the same DNA", "B. looked alike", "C. had the same lifestyle", "D. grew up together"],
+          "answer": "A",
+          "answerExplanation": "第二段给出原因 Since they were identical, they shared the same DNA. They had maintained the same level of physical activity for most of their lives，选择双胞胎是因为他们基因相同，选A。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q13",
+          "order": 13,
+          "questionType": "single_choice",
+          "stem": "The twins in the study differed in _____.",
+          "options": ["A. sleeping habits", "B. exercise frequency", "C. working hours", "D. food preference"],
+          "answer": "B",
+          "answerExplanation": "原文 But there was one difference. One twin of each set had cut on exercising in the past few years due to work or family pressure，表明每组双胞胎中有一人减少了锻炼频率，选B。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q14",
+          "order": 14,
+          "questionType": "single_choice",
+          "stem": "The study found that the more active twins became _____.",
+          "options": ["A. less creative", "B. less sensitive", "C. more emotional", "D. more endurable"],
+          "answer": "D",
+          "answerExplanation": "原文 While the more active twins had lower body fat percentage, better endurance level, and normal sensitivity，更活跃的双胞胎耐力更好，故选D more endurable。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q15",
+          "order": 15,
+          "questionType": "single_choice",
+          "stem": "The phrase \"sneak up on\" (Para. 4) most probably means _____.",
+          "options": ["A. protect", "B. attack", "C. affect", "D. benefit"],
+          "answer": "C",
+          "answerExplanation": "根据上下文 Quitting your fitness routine can bring negative effects to your body and your brain as well...these changes can sneak up on you a lot sooner than you'd think，可知这些变化会（不知不觉地）造成负面影响，sneak up on 意为“偷偷地接近/影响”，与C选项 affect 含义最贴近。",
+          "knowledgePoints": ["词义猜测"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2021-04-s3",
+      "type": "段落大意与句子补全",
+      "order": 3,
+      "passageTitle": "Surviving Illness Away From Home",
+      "passageText": "Being ill is a horrible thing at the best of times, but what is even worse is when you are ill away from home. If you're living away from home or abroad, it's important to get better at your own pace in order to ensure you can enjoy the rest of your time away.\n\n①Pampering(娇惯) yourself is always a good start. If you feel so ill and tired that you can't even get out of bed, then don't! Make a trip to the kitchen and stock up on fluids and try to make yourself some hot food. The key to getting better is to drink lots of fluids. Water and hot drinks such as green tea and soup are usually the best things.\n\n②Try to distract yourself from feeling horrible. If you have a TV, watch one of your favorite films or TV series. If you don't have a TV, maybe put the radio on. If you have a headache and all the noise is too much to handle, try reading the book you've always wanted to read but never had the time to. Being ill doesn't have to be the worst day in the world!\n\n③Tell your friends and family that you are ill. Sometimes there is nothing better than hearing words of comfort from loved ones who feel sorry for you and want to cheer you up and make you happy. There is nothing wrong with a little attention from others when you're ill. Who knows, they might even be willing to travel and visit you with lots of \"Get Well\" presents like your favorite food, magazine or flowers.\n\n④When you do arrive at a new place where you will be staying for a few months, make sure you know exactly where the nearest drugstore is. If you are in a foreign country, it might be best to translate a few useful phrases before you start asking for a cure.",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2021-04-q16",
+          "order": 16,
+          "questionType": "single_choice",
+          "stem": "Paragraph ①",
+          "options": ["A. Taking good care of yourself", "B. Staying in bed for the entire day", "C. Taking your attention away from illness", "D. Knowing where and how to get medicine", "E. Informing friends and family of your illness"],
+          "answer": "A",
+          "answerExplanation": "第一段首句 Pampering(娇惯) yourself is always a good start，娇惯自己、好好照顾自己，与A选项 Taking good care of yourself 对应。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q17",
+          "order": 17,
+          "questionType": "single_choice",
+          "stem": "Paragraph ②",
+          "options": ["A. Taking good care of yourself", "B. Staying in bed for the entire day", "C. Taking your attention away from illness", "D. Knowing where and how to get medicine", "E. Informing friends and family of your illness"],
+          "answer": "C",
+          "answerExplanation": "第二段首句 Try to distract yourself from feeling horrible，表明试着让自己从糟糕的感觉中转移注意力，对应C选项。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q18",
+          "order": 18,
+          "questionType": "single_choice",
+          "stem": "Paragraph ③",
+          "options": ["A. Taking good care of yourself", "B. Staying in bed for the entire day", "C. Taking your attention away from illness", "D. Knowing where and how to get medicine", "E. Informing friends and family of your illness"],
+          "answer": "E",
+          "answerExplanation": "第三段首句 Tell your friends and family that you are ill，对应E选项 Informing friends and family of your illness。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q19",
+          "order": 19,
+          "questionType": "single_choice",
+          "stem": "Paragraph ④",
+          "options": ["A. Taking good care of yourself", "B. Staying in bed for the entire day", "C. Taking your attention away from illness", "D. Knowing where and how to get medicine", "E. Informing friends and family of your illness"],
+          "answer": "D",
+          "answerExplanation": "第四段首句 When you do arrive at a new place...make sure you know exactly where the nearest drugstore is，即确保知道最近的药店在哪里，对应D选项。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q20",
+          "order": 20,
+          "questionType": "single_choice",
+          "stem": "Being sick away from home is _____.",
+          "options": ["A. ask for medicine", "B. at your own pace", "C. water and hot drinks", "D. a terrible experience", "E. at a nearby drugstore", "F. read your favorite book", "G. suffer from a cold"],
+          "answer": "D",
+          "answerExplanation": "第一段首句 Being ill is a horrible thing at the best of times, but what is even worse is when you are ill away from home，即使在最好的情况下生病也是件可怕的事，更何况又不在家，因此在异乡生病是一件可怕的事，选D。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q21",
+          "order": 21,
+          "questionType": "single_choice",
+          "stem": "You are advised to recover _____.",
+          "options": ["A. ask for medicine", "B. at your own pace", "C. water and hot drinks", "D. a terrible experience", "E. at a nearby drugstore", "F. read your favorite book", "G. suffer from a cold"],
+          "answer": "B",
+          "answerExplanation": "原文 it's important to get better at your own pace in order to ensure you can enjoy the rest of your time away，recover 恢复 = get better，选B。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q22",
+          "order": 22,
+          "questionType": "single_choice",
+          "stem": "The best cure for illness is _____.",
+          "options": ["A. ask for medicine", "B. at your own pace", "C. water and hot drinks", "D. a terrible experience", "E. at a nearby drugstore", "F. read your favorite book", "G. suffer from a cold"],
+          "answer": "C",
+          "answerExplanation": "原文 Water and hot drinks such as green tea and soup are usually the best things，选C。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q23",
+          "order": 23,
+          "questionType": "single_choice",
+          "stem": "If you cannot bear the noise from TV, _____.",
+          "options": ["A. ask for medicine", "B. at your own pace", "C. water and hot drinks", "D. a terrible experience", "E. at a nearby drugstore", "F. read your favorite book", "G. suffer from a cold"],
+          "answer": "F",
+          "answerExplanation": "原文 If you have a headache and all the noise is too much to handle, try reading the book you've always wanted to read but never had the time to，如果觉得电视的声音太吵闹，那就读一本自己一直想读的书，选F。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q24",
+          "order": 24,
+          "questionType": "single_choice",
+          "stem": "A few useful translated phrases help you _____.",
+          "options": ["A. ask for medicine", "B. at your own pace", "C. water and hot drinks", "D. a terrible experience", "E. at a nearby drugstore", "F. read your favorite book", "G. suffer from a cold"],
+          "answer": "A",
+          "answerExplanation": "原文 it might be best to translate a few useful phrases before you start asking for a cure，asking for a cure ≈ ask for medicine，选A。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q25",
+          "order": 25,
+          "questionType": "single_choice",
+          "stem": "You can buy medicine _____.",
+          "options": ["A. ask for medicine", "B. at your own pace", "C. water and hot drinks", "D. a terrible experience", "E. at a nearby drugstore", "F. read your favorite book", "G. suffer from a cold"],
+          "answer": "E",
+          "answerExplanation": "原文 make sure you know exactly where the nearest drugstore is，drugstore 药店，可以在附近药店买药，选E。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2021-04-s4",
+      "type": "填句补文",
+      "order": 4,
+      "passageTitle": "Swiss Banks",
+      "passageText": "Switzerland is well-known for chocolate and its watch-making industry. It is even more famous for its unique banking and financial system. ___(26)___\n\nBanking in Switzerland goes back to the 18th century. In the past, not only rich people but also dictators(独裁者) kept their money in Swiss banks. During World War II German Nazis(纳粹) put much of their money in Switzerland. ___(27)___\n\nSwiss banks are popular for many reasons. ___(28)___ It enjoys one of the highest per capita(人均) incomes in the world. It has been neutral for many centuries, especially during the two world wars. In addition, the Swiss franc is one of the most stable currencies in the world.\n\nMost importantly, Swiss banks follow very strict privacy rules. In 1934, a law was passed that forbade Swiss banks to reveal the names of account holders. ___(29)___ If a Swiss banker reveals a person's bank account without permission, he or she commits a crime. Such regulations have made Switzerland a popular destination for many people.\n\nLately, however, the Swiss government has been under heavy pressure from other countries. ___(30)___ They want the banks to reveal the names of possible criminals.",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2021-04-q26",
+          "order": 26,
+          "questionType": "single_choice",
+          "stem": "___(26)___",
+          "options": ["A. They urge it to change its bank laws.", "B. Banks strictly protect the privacy of their clients.", "C. Private banking has a long tradition in the country.", "D. Banks play an important role in Switzerland's economy.", "E. Foreigners in troubled areas also kept money in Swiss banks.", "F. For one, the country has a very stable and prosperous economy."],
+          "answer": "D",
+          "answerExplanation": "该段为文章首段总起句，不会出现过于细节的内容，前句提到瑞士的银行与金融系统，因此该句也应与银行金融系统及其对瑞士的重要性有关，选D。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q27",
+          "order": 27,
+          "questionType": "single_choice",
+          "stem": "___(27)___",
+          "options": ["A. They urge it to change its bank laws.", "B. Banks strictly protect the privacy of their clients.", "C. Private banking has a long tradition in the country.", "D. Banks play an important role in Switzerland's economy.", "E. Foreigners in troubled areas also kept money in Swiss banks.", "F. For one, the country has a very stable and prosperous economy."],
+          "answer": "E",
+          "answerExplanation": "第二段提到有钱人、独裁者、德国纳粹都曾把钱存入瑞士银行，选项中只有E选项符合题意，指身处困境地区的外国人也把钱存在瑞士银行。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q28",
+          "order": 28,
+          "questionType": "single_choice",
+          "stem": "___(28)___",
+          "options": ["A. They urge it to change its bank laws.", "B. Banks strictly protect the privacy of their clients.", "C. Private banking has a long tradition in the country.", "D. Banks play an important role in Switzerland's economy.", "E. Foreigners in troubled areas also kept money in Swiss banks.", "F. For one, the country has a very stable and prosperous economy."],
+          "answer": "F",
+          "answerExplanation": "前一句说明瑞士银行流行的原因有很多，空格后内容都在描述流行的具体原因（高人均收入、中立国、货币稳定），因此空格句也应是原因之一，选F“该国拥有非常稳定和繁荣的经济”。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q29",
+          "order": 29,
+          "questionType": "single_choice",
+          "stem": "___(29)___",
+          "options": ["A. They urge it to change its bank laws.", "B. Banks strictly protect the privacy of their clients.", "C. Private banking has a long tradition in the country.", "D. Banks play an important role in Switzerland's economy.", "E. Foreigners in troubled areas also kept money in Swiss banks.", "F. For one, the country has a very stable and prosperous economy."],
+          "answer": "B",
+          "answerExplanation": "本段首句提到瑞士银行遵循非常严格的隐私规定，空格前一句是关于隐私法律的内容，空格后一句继续讲泄露账户信息即构成犯罪，故选B“银行严格保护客户的隐私”。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q30",
+          "order": 30,
+          "questionType": "single_choice",
+          "stem": "___(30)___",
+          "options": ["A. They urge it to change its bank laws.", "B. Banks strictly protect the privacy of their clients.", "C. Private banking has a long tradition in the country.", "D. Banks play an important role in Switzerland's economy.", "E. Foreigners in troubled areas also kept money in Swiss banks.", "F. For one, the country has a very stable and prosperous economy."],
+          "answer": "A",
+          "answerExplanation": "空格前一句：瑞士政府最近承受着来自其他国家的巨大压力；空格后一句：他们希望银行披露潜在罪犯的姓名。选A，they 指代其他国家，敦促瑞士修改银行法律。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2021-04-s5",
+      "type": "填词补文",
+      "order": 5,
+      "passageTitle": "Education in New Zealand",
+      "passageText": "Education in New Zealand is compulsory(强制的) between the ages of 6 and 16. All children between these ages must ___(31)___ school. Most children begin their schooling at 5. This period includes primary and secondary education, and it is ___(32)___.\n\nEarly childhood covers the period from birth to 6 years old. This period may include both care and education. There are many ___(33)___ such as play centers and kindergartens. More and more people are realizing the ___(34)___ of early childhood education. Now 60 percent of children under 5 join in some form of pre-school education.\n\nChildren go to primary school for 8 years or up to the age of about 13. They ___(35)___ go to secondary schools for a further 5 years. Some students may decide to leave school at 16.\n\nHigher education ___(36)___ any education or training that takes place after secondary school. In New Zealand, this includes universities, ___(37)___, and training schools.\n\nNew Zealand is ___(38)___ becoming multi-cultural. More and more international ___(39)___ are studying there. The education system is adapting to ___(40)___ the needs of different cultural groups.",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "00015-2021-04-q31",
+          "order": 31,
+          "questionType": "single_choice",
+          "stem": "___(31)___",
+          "options": ["A. meet", "B. students", "C. quickly", "D. means", "E. free", "F. wisely", "G. then", "H. value", "I. choices", "J. quit", "K. attend", "L. colleges"],
+          "answer": "K",
+          "answerExplanation": "情态动词must后接动词原形，本句意思为“在这个年龄段的所有孩子都必须上学”，符合题意的是K选项 attend（attend school 上学）。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q32",
+          "order": 32,
+          "questionType": "single_choice",
+          "stem": "___(32)___",
+          "options": ["A. meet", "B. students", "C. quickly", "D. means", "E. free", "F. wisely", "G. then", "H. value", "I. choices", "J. quit", "K. attend", "L. colleges"],
+          "answer": "E",
+          "answerExplanation": "空格前为it is主系表结构，it 指代 this period（即6岁前的义务教育阶段），空格处应为表语，符合题意的形容词是E选项 free，指这段教育是免费的。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q33",
+          "order": 33,
+          "questionType": "single_choice",
+          "stem": "___(33)___",
+          "options": ["A. meet", "B. students", "C. quickly", "D. means", "E. free", "F. wisely", "G. then", "H. value", "I. choices", "J. quit", "K. attend", "L. colleges"],
+          "answer": "I",
+          "answerExplanation": "many之后应接可数名词复数，后一句such as play centers and kindergartens是举例说明，故本空指“很多选择”，选I choices。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q34",
+          "order": 34,
+          "questionType": "single_choice",
+          "stem": "___(34)___",
+          "options": ["A. meet", "B. students", "C. quickly", "D. means", "E. free", "F. wisely", "G. then", "H. value", "I. choices", "J. quit", "K. attend", "L. colleges"],
+          "answer": "H",
+          "answerExplanation": "the后面加名词，且该名词被of early childhood education修饰，整句意为“越来越多的人意识到幼儿教育的价值”，选H value。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q35",
+          "order": 35,
+          "questionType": "single_choice",
+          "stem": "___(35)___",
+          "options": ["A. meet", "B. students", "C. quickly", "D. means", "E. free", "F. wisely", "G. then", "H. value", "I. choices", "J. quit", "K. attend", "L. colleges"],
+          "answer": "G",
+          "answerExplanation": "本句不缺句子成分，空格修饰动词go，且承接上一句的时间顺序（先读8年小学，然后再读5年中学），选G then。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q36",
+          "order": 36,
+          "questionType": "single_choice",
+          "stem": "___(36)___",
+          "options": ["A. meet", "B. students", "C. quickly", "D. means", "E. free", "F. wisely", "G. then", "H. value", "I. choices", "J. quit", "K. attend", "L. colleges"],
+          "answer": "D",
+          "answerExplanation": "主句缺谓语动词，根据上下文时态应为一般现在时，主语Higher education为第三人称单数，谓语动词用第三人称单数形式，选D means（意味着、指的是）。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q37",
+          "order": 37,
+          "questionType": "single_choice",
+          "stem": "___(37)___",
+          "options": ["A. meet", "B. students", "C. quickly", "D. means", "E. free", "F. wisely", "G. then", "H. value", "I. choices", "J. quit", "K. attend", "L. colleges"],
+          "answer": "L",
+          "answerExplanation": "空格处为与universities和training schools并列的名词，选L colleges（学院）。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q38",
+          "order": 38,
+          "questionType": "single_choice",
+          "stem": "___(38)___",
+          "options": ["A. meet", "B. students", "C. quickly", "D. means", "E. free", "F. wisely", "G. then", "H. value", "I. choices", "J. quit", "K. attend", "L. colleges"],
+          "answer": "C",
+          "answerExplanation": "本句不缺句子成分，空格处修饰谓语动词becoming，需填副词，根据句义（新西兰正快速走向多元文化）选C quickly。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q39",
+          "order": 39,
+          "questionType": "single_choice",
+          "stem": "___(39)___",
+          "options": ["A. meet", "B. students", "C. quickly", "D. means", "E. free", "F. wisely", "G. then", "H. value", "I. choices", "J. quit", "K. attend", "L. colleges"],
+          "answer": "B",
+          "answerExplanation": "空格处缺少international修饰的名词，且be动词用are，因此应为可数名词复数形式，选B students（国际学生）。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q40",
+          "order": 40,
+          "questionType": "single_choice",
+          "stem": "___(40)___",
+          "options": ["A. meet", "B. students", "C. quickly", "D. means", "E. free", "F. wisely", "G. then", "H. value", "I. choices", "J. quit", "K. attend", "L. colleges"],
+          "answer": "A",
+          "answerExplanation": "空格处缺谓语动词，to后接动词原形，根据句义（教育体系正努力满足不同文化群体的需求）选A meet（meet needs 满足需要，固定搭配）。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2021-04-s6",
+      "type": "完形填空",
+      "order": 6,
+      "passageTitle": "Body Image",
+      "passageText": "Many people are not satisfied (satisfy) with their body images. They are ___(41)___(encourage) to have plastic surgeries(整形手术), diet plans, or diet pills.\n\nHowever, to build a positive body image ___(42)___(require) a balanced diet and a ___(43)___(health) lifestyle. In our daily life, to eat more fruits and ___(44)___(vegetable) than meat will help us keep fit, and the best way to keep ourselves in shape is to do some vigorous exercise every day.\n\nBesides, a correct attitude is ___(45)___(equal) important. We should not feel ___(46)___(embarrass) about our bodies. We should not believe our body is a shame of personal ___(47)___(fail). We do not need to be as ___(48)___(attract) as everyone else. Instead, we should love ourselves rather than desire for ___(49)___(possible) standards. We should have a real and clear understanding of our body parts, and appreciate our body for the way it is. In this way, we will feel ___(50)___(comfort) and confident.",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "00015-2021-04-q41",
+          "order": 41,
+          "questionType": "fill_blank_transform",
+          "stem": "encourage",
+          "options": [],
+          "answer": "encouraged",
+          "answerExplanation": "空格处缺少非谓语动词，与主语They构成被动关系，表示“被鼓励”，故填过去分词 encouraged。",
+          "knowledgePoints": ["被动语态"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q42",
+          "order": 42,
+          "questionType": "fill_blank_transform",
+          "stem": "require",
+          "options": [],
+          "answer": "requires",
+          "answerExplanation": "空格处缺谓语动词，根据上下文时态为一般现在时，主语为不定式to build a positive body image，视为第三人称单数，故谓语动词用第三人称单数形式 requires。",
+          "knowledgePoints": ["动词时态"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q43",
+          "order": 43,
+          "questionType": "fill_blank_transform",
+          "stem": "health",
+          "options": [],
+          "answer": "healthy",
+          "answerExplanation": "空格处于a之后、名词lifestyle之前，应填形容词修饰lifestyle，故改为 healthy。",
+          "knowledgePoints": ["形容词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q44",
+          "order": 44,
+          "questionType": "fill_blank_transform",
+          "stem": "vegetable",
+          "options": [],
+          "answer": "vegetables",
+          "answerExplanation": "and连接并列名词，前面fruits为复数形式，故vegetable也应填复数形式 vegetables。",
+          "knowledgePoints": ["名词单复数"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q45",
+          "order": 45,
+          "questionType": "fill_blank_transform",
+          "stem": "equal",
+          "options": [],
+          "answer": "equally",
+          "answerExplanation": "空格处不缺句子成分，需修饰形容词important，故填副词 equally。",
+          "knowledgePoints": ["副词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q46",
+          "order": 46,
+          "questionType": "fill_blank_transform",
+          "stem": "embarrass",
+          "options": [],
+          "answer": "embarrassed",
+          "answerExplanation": "空格处缺表语性质的形容词，表示主语（人）“感到尴尬”，故填过去分词形式 embarrassed。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q47",
+          "order": 47,
+          "questionType": "fill_blank_transform",
+          "stem": "fail",
+          "options": [],
+          "answer": "failure",
+          "answerExplanation": "空格处缺少a shame of personal之后的单数名词，故填名词形式 failure（失败）。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q48",
+          "order": 48,
+          "questionType": "fill_blank_transform",
+          "stem": "attract",
+          "options": [],
+          "answer": "attractive",
+          "answerExplanation": "句型as...as中间应填形容词或副词，此处修饰主语的状态，故改为形容词 attractive。",
+          "knowledgePoints": ["形容词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q49",
+          "order": 49,
+          "questionType": "fill_blank_transform",
+          "stem": "possible",
+          "options": [],
+          "answer": "impossible",
+          "answerExplanation": "根据句义“我们应该爱自己，而不是渴望不可能达到的标准”，若填possible则句义不合逻辑，故改为反义形容词 impossible。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-04-q50",
+          "order": 50,
+          "questionType": "fill_blank_transform",
+          "stem": "comfort",
+          "options": [],
+          "answer": "comfortable",
+          "answerExplanation": "and连接并列的表语成分，需与后面的confident（形容词）保持一致，故填形容词 comfortable。",
+          "knowledgePoints": ["形容词构词"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2021-04-s7",
+      "type": "写作",
+      "order": 7,
+      "passageTitle": null,
+      "passageText": "",
+      "writingPrompt": "假设你的美国朋友John给你发来一封电子邮件，表示他对中国传统文化很感兴趣，希望你能为他简要介绍一个中国的传统节日（Traditional Chinese Festival），以下是你给他回复邮件的主要内容：\n节日名称\n①节日由来\n②人们如何庆祝这一节日\n请以Li Ke署名。\n请根据要求撰写篇100词左右的英语短文。",
+      "scorePerQuestion": 30,
+      "totalScore": 30,
+      "questions": [
+        {
+          "questionId": "00015-2021-04-q51",
+          "order": 51,
+          "questionType": "essay",
+          "stem": "请根据要求撰写一篇100词左右的英语短文，介绍一个中国传统节日，内容需包括节日由来和庆祝方式，以Li Ke署名回复John的邮件。",
+          "options": [],
+          "answer": "",
+          "answerExplanation": "官方范文：\n\nAn Unforgettable Holiday\n\nDear John,\nHow are you?\nI am writing to share with you the introduction of one of traditional Chinese festivals-the Spring Festival.\nIn order to celebrate the coming of new year, people set a festival called the Spring Festival in the past.\nThere are many ways to celebrate this festival. On the one hand, parents will prepare a big meal for the whole family at the Spring Festival. On the other hand, children can get red packets from their relatives as presents, which makes them comfortable and confident.\nIn a word, the Spring Festival is important and I like it very much. I look forward to hearing from you\n\nBest wishes\nLi ke",
+          "knowledgePoints": ["写作-说明类"],
+          "difficultyTag": null
+        }
+      ]
+    }
+  ],
+  "parsingNotes": [
+    "第三部分（段落大意与句子补全）的实际试卷结构与PARSING_GUIDE.md中00015历年典型结构表描述的“16~20题段落配标题、21~25题句子补全”不同：本套试卷实际为 Task1（第16~19题，为短文①②③④四个段落各选一个标题，候选项A-E共5个，其中B选项为干扰项未被使用）+ Task2（第20~25题，六个句子补全，候选项A-G共7个，其中G选项为干扰项未被使用）。已按试卷实际印刷内容记录，questions数组顺序为16-25共10题，与答案页给出的10个答案一一对应。",
+    "第五部分（填词补文）指导语原文在页面上出现个别疑似排版/印刷问题的字词（如“中造”“容将其”“作者”等），推测为原卷排版瑕疵，不影响短文正文与选项内容的准确转录，已按可理解的规范表述记录scorePerQuestion/totalScore等结构化字段，指导语原文未逐字保留于JSON中。",
+    "全卷10页图片经过完整比对，标题页课程代码（00015）、课程名称（英语(二)）、年份（2021）、月份（4月）与任务给定信息一致；正文及答案页字迹清晰，未发现模糊难辨、无法确定答案的题目，因此除以上两条结构性说明外，未记录其他因图片质量导致的不确定项。"
+  ]
+}

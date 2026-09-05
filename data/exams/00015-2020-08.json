@@ -1,0 +1,1062 @@
+{
+  "examId": "00015-2020-08",
+  "title": "2020年8月高等教育自学考试英语(二)试卷",
+  "year": 2020,
+  "month": 8,
+  "courseCode": "00015",
+  "courseName": "英语(二)",
+  "sourceFile": "40797114-2020_08____________.pdf",
+  "totalScore": 100,
+  "timeLimitMinutes": 150,
+  "status": "待校对",
+  "sections": [
+    {
+      "sectionId": "00015-2020-08-s1",
+      "type": "阅读判断",
+      "order": 1,
+      "passageTitle": "Bicycle Commuting",
+      "passageText": "I may not be a movie star, best-selling author, or millionaire when I grow up, but one thing I will be known for, at least locally, is commuting by bicycle. It's sad to see how few people do even though many could. Lots of people eagerly campaign for the reduction of greenhouse gases, but by driving cars, they're still contributing to the problem.\n\nYou might be picturing me as an extreme environmentalist (环保主义者), but I'm not one of those teenagers who wear shirts that say \"Help save the world: Recycle.\" Actually, my interest in exercise, health, and fitness led me to cycling.\n\nCycling can help you lose weight, improve your health, and prevent many diseases. Cycling also carries a relatively low chance of injury.\n\nWhile being good for your body, bicycle commuting is also a great way to cut greenhouse gases. Many environmentalists recycle, plant trees, and drive hybrid cars (混合动力汽车), but bicycle commuting could be even more effective than all of those combined. You could cut down the amount of greenhouse gases just by commuting by bicycle a few times a week.\n\nBicycle commuting saves money too. When you buy your bicycle and the things that usually go with it, you might be shocked by the cost. But if you think about the increasingly high gas prices, you will know for sure that you can save a significant amount each year by not driving a car.\n\nYou might think that you don't have time for bicycle commuting. Actually, you probably do. You could cut back on your TV time and pick up this activity. It helps you care for the environment, save money, and most importantly get fit.",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2020-08-q1",
+          "order": 1,
+          "questionType": "single_choice",
+          "stem": "I will write a best-selling book on cycling. ( )",
+          "options": [
+            "A. True",
+            "B. False",
+            "C. Not Given"
+          ],
+          "answer": "C",
+          "answerExplanation": "原文只说作者会因骑行通勤而在当地小有名气，并未提到会写关于骑行的畅销书，文中未提及，选C。",
+          "knowledgePoints": [
+            "阅读细节定位"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q2",
+          "order": 2,
+          "questionType": "single_choice",
+          "stem": "Many local people commute by bicycle. ( )",
+          "options": [
+            "A. True",
+            "B. False",
+            "C. Not Given"
+          ],
+          "answer": "B",
+          "answerExplanation": "原文说“很少人这样做（It's sad to see how few people do）”，与题干“很多当地人骑车通勤”相反，选B。",
+          "knowledgePoints": [
+            "阅读细节定位"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q3",
+          "order": 3,
+          "questionType": "single_choice",
+          "stem": "I am devoted to environmental protection. ( )",
+          "options": [
+            "A. True",
+            "B. False",
+            "C. Not Given"
+          ],
+          "answer": "B",
+          "answerExplanation": "原文说“我并不是那些环保主义少年中的一员”，与题干相反，选B。",
+          "knowledgePoints": [
+            "阅读细节定位"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q4",
+          "order": 4,
+          "questionType": "single_choice",
+          "stem": "I started cycling to improve my health. ( )",
+          "options": [
+            "A. True",
+            "B. False",
+            "C. Not Given"
+          ],
+          "answer": "A",
+          "answerExplanation": "原文“my interest in exercise, health, and fitness led me to cycling”与题干一致，选A。",
+          "knowledgePoints": [
+            "阅读细节定位"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q5",
+          "order": 5,
+          "questionType": "single_choice",
+          "stem": "People are less likely to get injured while cycling. ( )",
+          "options": [
+            "A. True",
+            "B. False",
+            "C. Not Given"
+          ],
+          "answer": "A",
+          "answerExplanation": "原文“Cycling also carries a relatively low chance of injury”与题干一致，选A。",
+          "knowledgePoints": [
+            "阅读细节定位"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q6",
+          "order": 6,
+          "questionType": "single_choice",
+          "stem": "People drive to work for convenience. ( )",
+          "options": [
+            "A. True",
+            "B. False",
+            "C. Not Given"
+          ],
+          "answer": "C",
+          "answerExplanation": "原文未提及人们为了方便而开车上班，文中未提及，选C。",
+          "knowledgePoints": [
+            "阅读推理判断"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q7",
+          "order": 7,
+          "questionType": "single_choice",
+          "stem": "Bicycle commuting could be more effective in reducing greenhouse gases. ( )",
+          "options": [
+            "A. True",
+            "B. False",
+            "C. Not Given"
+          ],
+          "answer": "A",
+          "answerExplanation": "原文“bicycle commuting could be even more effective than all of those combined”与题干一致，选A。",
+          "knowledgePoints": [
+            "阅读细节定位"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q8",
+          "order": 8,
+          "questionType": "single_choice",
+          "stem": "People are in a good mood while cycling. ( )",
+          "options": [
+            "A. True",
+            "B. False",
+            "C. Not Given"
+          ],
+          "answer": "C",
+          "answerExplanation": "原文未提及骑车时心情如何，文中未提及，选C。",
+          "knowledgePoints": [
+            "阅读推理判断"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q9",
+          "order": 9,
+          "questionType": "single_choice",
+          "stem": "Gas prices keep going up. ( )",
+          "options": [
+            "A. True",
+            "B. False",
+            "C. Not Given"
+          ],
+          "answer": "A",
+          "answerExplanation": "原文“the increasingly high gas prices”与题干一致，选A。",
+          "knowledgePoints": [
+            "阅读细节定位"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q10",
+          "order": 10,
+          "questionType": "single_choice",
+          "stem": "Bikes are inexpensive to most people. ( )",
+          "options": [
+            "A. True",
+            "B. False",
+            "C. Not Given"
+          ],
+          "answer": "B",
+          "answerExplanation": "原文“you might be shocked by the cost”暗示购置自行车及装备花费不低，与题干“对大多数人来说便宜”相反，选B。",
+          "knowledgePoints": [
+            "阅读细节定位"
+          ],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2020-08-s2",
+      "type": "阅读理解选择",
+      "order": 2,
+      "passageTitle": "Spilt (打翻的) Milk",
+      "passageText": "I recently heard a story about a famous scientist who had made several very important medical achievements. He was asked why he was so much more creative than the average person.\n\nHe responded that it all came from an experience when he was about two. He had been trying to remove a bottle of milk from the refrigerator when he lost his grip (紧握) and it fell, spilling (打翻) the milk all over the floor.\n\nWhen his mother came into the kitchen, instead of yelling at him, or punishing him, she said, \"Robert, what a wonderful mess you have made! Well, the damage has already been done. Would you like to play in the milk for a few minutes before we clean it up?\"\n\nIndeed, he did. After a few minutes, his mother said, \"Robert, whenever you make a mess like this, eventually you have to clean it up. So, how would you like to do that? We could use a sponge (海绵) or a towel. Which do you prefer?\" He chose the sponge and together they cleaned up the spilt milk.\n\nHis mother then said, \"You know, what we have here is a failed experiment in how to effectively carry a big milk bottle with two tiny hands. Let's go out in the back yard and fill the bottle with water and see if you can discover a way to carry it without dropping it.\" The little boy learned that if he grasped the bottle at the top near the lip with both hands, he could carry it without dropping it.\n\nThe scientist remarked that it was then that he knew he didn't need to be afraid to make mistakes. Instead, mistakes were just opportunities for learning something new, which is, after all, what scientific experiments are all about. Even if the experiment \"doesn't work,\" we usually learn something valuable from it.",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2020-08-q11",
+          "order": 11,
+          "questionType": "single_choice",
+          "stem": "This story is about a scientist who ______.",
+          "options": [
+            "A. was extraordinary when he was young",
+            "B. became well-known after an interview",
+            "C. was smarter than the average person",
+            "D. achieved great success in the medical field"
+          ],
+          "answer": "D",
+          "answerExplanation": "原文首句“a famous scientist who had made several very important medical achievements”表明该科学家在医学上取得重大成就，选D。",
+          "knowledgePoints": [
+            "段落主旨理解"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q12",
+          "order": 12,
+          "questionType": "single_choice",
+          "stem": "He got the milk spilt all over the kitchen floor because he ____.",
+          "options": [
+            "A. dropped the bottle",
+            "B. was naughty",
+            "C. slipped and fell",
+            "D. was weak"
+          ],
+          "answer": "A",
+          "answerExplanation": "原文“he lost his grip and it fell, spilling the milk”表明他没拿稳瓶子致其掉落，选A。",
+          "knowledgePoints": [
+            "阅读细节定位"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q13",
+          "order": 13,
+          "questionType": "single_choice",
+          "stem": "After seeing the spilt milk, his mother ____.",
+          "options": [
+            "A. shouted at him",
+            "B. cleaned the floor herself",
+            "C. encouraged him to play in the milk",
+            "D. forced him to clean the kitchen"
+          ],
+          "answer": "C",
+          "answerExplanation": "原文母亲说“Would you like to play in the milk for a few minutes before we clean it up?”即鼓励他先玩牛奶，选C。",
+          "knowledgePoints": [
+            "阅读细节定位"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q14",
+          "order": 14,
+          "questionType": "single_choice",
+          "stem": "The mother and the son went out in the back yard to ____.",
+          "options": [
+            "A. fill the bottle with milk",
+            "B. clean the bottle",
+            "C. find a way to carry the bottle",
+            "D. search for a new bottle"
+          ],
+          "answer": "C",
+          "answerExplanation": "原文“fill the bottle with water and see if you can discover a way to carry it without dropping it”表明是去找拿瓶子不洒的方法，选C。",
+          "knowledgePoints": [
+            "阅读细节定位"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q15",
+          "order": 15,
+          "questionType": "single_choice",
+          "stem": "According to the text, mistakes give us chances to ____.",
+          "options": [
+            "A. know the truth",
+            "B. learn something new",
+            "C. do some experiments",
+            "D. teach a child a lesson"
+          ],
+          "answer": "B",
+          "answerExplanation": "原文末段“mistakes were just opportunities for learning something new”与题干一致，选B。",
+          "knowledgePoints": [
+            "阅读推理判断"
+          ],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2020-08-s3",
+      "type": "段落大意与句子补全",
+      "order": 3,
+      "passageTitle": "Volunteers",
+      "passageText": "①Volunteers are people who work without being paid. They do the work because they want to. We need volunteers because there are many things that need to be done in society which the Government can't afford to pay for.\n\n②Volunteers are motivated by a desire to help others and to make the world a better place. Statistics suggest that more than one million people do voluntary work in New Zealand. Some volunteers do the kind of work that they are particularly interested in, but perhaps haven't had the chance to do during their working lives. Others make use of their professional skills and experience.\n\n③Volunteers contribute to society in a number of ways. For example, some give their time to help preserve the natural environment. While there are government-run projects to maintain national parks and forests, the projects would not succeed without volunteers. Some environmental organizations rely solely on voluntary labor.\n\n④\"Meals on Wheels\" is a voluntary organization run by the Red Cross. It delivers meals to elderly people who are unable to cook for themselves. Every year volunteer drivers deliver a million meals. This enables elderly people to remain in their own houses.\n\n⑤Volunteer Service Abroad was started in 1962. It sends volunteers to poor countries. To be a volunteer you should be between the ages of 25 and 77, of good health and have a skill or ability that is requested by the country. Volunteers spend two years helping the local people improve their lives. Two years is a long time, but when they return, many volunteers say: \"It was the best two years of my life.\"",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2020-08-q16",
+          "order": 16,
+          "questionType": "single_choice",
+          "stem": "Paragraph ①",
+          "options": [
+            "A. Definition of volunteers",
+            "B. How volunteers are organized",
+            "C. How volunteers contribute to society",
+            "D. Why people want to be volunteers",
+            "E. An organization sending volunteers abroad",
+            "F. An organization delivering meals to the elderly"
+          ],
+          "answer": "A",
+          "answerExplanation": "第①段是对志愿者的定义（work without being paid），选A。",
+          "knowledgePoints": [
+            "段落大意概括"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q17",
+          "order": 17,
+          "questionType": "single_choice",
+          "stem": "Paragraph ②",
+          "options": [
+            "A. Definition of volunteers",
+            "B. How volunteers are organized",
+            "C. How volunteers contribute to society",
+            "D. Why people want to be volunteers",
+            "E. An organization sending volunteers abroad",
+            "F. An organization delivering meals to the elderly"
+          ],
+          "answer": "D",
+          "answerExplanation": "第②段讲人们想成为志愿者的原因（motivated by a desire to help others...），选D。",
+          "knowledgePoints": [
+            "段落大意概括"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q18",
+          "order": 18,
+          "questionType": "single_choice",
+          "stem": "Paragraph ③",
+          "options": [
+            "A. Definition of volunteers",
+            "B. How volunteers are organized",
+            "C. How volunteers contribute to society",
+            "D. Why people want to be volunteers",
+            "E. An organization sending volunteers abroad",
+            "F. An organization delivering meals to the elderly"
+          ],
+          "answer": "C",
+          "answerExplanation": "第③段讲志愿者以多种方式为社会做贡献（contribute to society in a number of ways），选C。",
+          "knowledgePoints": [
+            "段落大意概括"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q19",
+          "order": 19,
+          "questionType": "single_choice",
+          "stem": "Paragraph ④",
+          "options": [
+            "A. Definition of volunteers",
+            "B. How volunteers are organized",
+            "C. How volunteers contribute to society",
+            "D. Why people want to be volunteers",
+            "E. An organization sending volunteers abroad",
+            "F. An organization delivering meals to the elderly"
+          ],
+          "answer": "F",
+          "answerExplanation": "第④段介绍“Meals on Wheels”这一为老人送餐的组织，选F。",
+          "knowledgePoints": [
+            "段落大意概括"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q20",
+          "order": 20,
+          "questionType": "single_choice",
+          "stem": "Paragraph ⑤",
+          "options": [
+            "A. Definition of volunteers",
+            "B. How volunteers are organized",
+            "C. How volunteers contribute to society",
+            "D. Why people want to be volunteers",
+            "E. An organization sending volunteers abroad",
+            "F. An organization delivering meals to the elderly"
+          ],
+          "answer": "E",
+          "answerExplanation": "第⑤段第一句介绍“Volunteer Service Abroad”这一向海外派遣志愿者的组织，选E。",
+          "knowledgePoints": [
+            "段落大意概括"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q21",
+          "order": 21,
+          "questionType": "single_choice",
+          "stem": "People do voluntary work because they want to ______.",
+          "options": [
+            "A. help others",
+            "B. leaving their homes",
+            "C. cooking for the elderly",
+            "D. using their professional skills",
+            "E. find their experience rewarding",
+            "F. preserve the natural environment"
+          ],
+          "answer": "A",
+          "answerExplanation": "原文“motivated by a desire to help others”与题干一致，选A。",
+          "knowledgePoints": [
+            "逻辑关系判断"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q22",
+          "order": 22,
+          "questionType": "single_choice",
+          "stem": "Some volunteers help others by ______.",
+          "options": [
+            "A. help others",
+            "B. leaving their homes",
+            "C. cooking for the elderly",
+            "D. using their professional skills",
+            "E. find their experience rewarding",
+            "F. preserve the natural environment"
+          ],
+          "answer": "D",
+          "answerExplanation": "原文“Others make use of their professional skills and experience”对应“using their professional skills”，选D。",
+          "knowledgePoints": [
+            "逻辑关系判断"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q23",
+          "order": 23,
+          "questionType": "single_choice",
+          "stem": "Some organizations rely on volunteers to help ______.",
+          "options": [
+            "A. help others",
+            "B. leaving their homes",
+            "C. cooking for the elderly",
+            "D. using their professional skills",
+            "E. find their experience rewarding",
+            "F. preserve the natural environment"
+          ],
+          "answer": "F",
+          "answerExplanation": "原文“Some environmental organizations rely solely on voluntary labor”对应保护自然环境，选F。",
+          "knowledgePoints": [
+            "逻辑关系判断"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q24",
+          "order": 24,
+          "questionType": "single_choice",
+          "stem": "The elderly can have their meals delivered without ______.",
+          "options": [
+            "A. help others",
+            "B. leaving their homes",
+            "C. cooking for the elderly",
+            "D. using their professional skills",
+            "E. find their experience rewarding",
+            "F. preserve the natural environment"
+          ],
+          "answer": "B",
+          "answerExplanation": "原文“This enables elderly people to remain in their own houses”对应“无需离开家”，选B。",
+          "knowledgePoints": [
+            "逻辑关系判断"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q25",
+          "order": 25,
+          "questionType": "single_choice",
+          "stem": "Many volunteers returning from poor countries ______.",
+          "options": [
+            "A. help others",
+            "B. leaving their homes",
+            "C. cooking for the elderly",
+            "D. using their professional skills",
+            "E. find their experience rewarding",
+            "F. preserve the natural environment"
+          ],
+          "answer": "E",
+          "answerExplanation": "原文“It was the best two years of my life”表明志愿者认为经历很有价值，选E。",
+          "knowledgePoints": [
+            "逻辑关系判断"
+          ],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2020-08-s4",
+      "type": "填句补文",
+      "order": 4,
+      "passageTitle": "How to Talk to a Doctor",
+      "passageText": "It's one of the saddest situations in modern medicine: The average doctor's appointment lasts 15 minutes or less. ___(26)___ That doesn't leave much time for chatting about the weather or your mood.\n\nWhat you don't realize —but what I see very clearly as a doctor— is that what the patient says is more important than ever. ___(27)___ They can also make it much harder for me to figure out what's wrong with you.\n\nMedical schools teach a specific way to conduct an office visit. Part one is the complaint. ___(28)___ Part two in the physical exam. And part three is when the doctor gives you a diagnosis and prescribes tests or a treatment. Chances are, you focus on part three, but the patients who receive the best care are those who master part one. The key is to describe in detail what you've been feeling—not just \"bad,\" but what kind of bad, for how long, and after what kind of activity.\n\n___(29)___ Even though I've been a doctor for many years, I tend to be a little nervous when I'm the one sitting on the exam table. If I haven't prepared, I lose track of the details I intended to share. ___(30)___ When the doctor asks you questions, you can be more specific, and the diagnosis and treatment will be more accurate. And there may be a few minutes left over for a little pleasant conversation!",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2020-08-q26",
+          "order": 26,
+          "questionType": "single_choice",
+          "stem": "选择最适合填入短文空格(26)处的句子。",
+          "options": [
+            "A. No wonder you feel rushed.",
+            "B. Of course, that's easier said than done.",
+            "C. It is wise to see a doctor with your friend.",
+            "D. It is also called the description of your problem.",
+            "E. So I take a few minutes to write down some crucial details.",
+            "F. In fact, your descriptions can help me give you great care."
+          ],
+          "answer": "A",
+          "answerExplanation": "空前提到问诊时间只有15分钟或更短，空后说没时间闲聊天气或心情，A项“难怪你感觉很赶时间”承上启下，选A。",
+          "knowledgePoints": [
+            "连贯性衔接"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q27",
+          "order": 27,
+          "questionType": "single_choice",
+          "stem": "选择最适合填入短文空格(27)处的句子。",
+          "options": [
+            "A. No wonder you feel rushed.",
+            "B. Of course, that's easier said than done.",
+            "C. It is wise to see a doctor with your friend.",
+            "D. It is also called the description of your problem.",
+            "E. So I take a few minutes to write down some crucial details.",
+            "F. In fact, your descriptions can help me give you great care."
+          ],
+          "answer": "F",
+          "answerExplanation": "空前说病人所说的话比以往更重要，空后说这些话也会让医生更难判断病情，F项“你的描述其实能帮助我更好地照顾你”承接上文逻辑，选F。",
+          "knowledgePoints": [
+            "连贯性衔接"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q28",
+          "order": 28,
+          "questionType": "single_choice",
+          "stem": "选择最适合填入短文空格(28)处的句子。",
+          "options": [
+            "A. No wonder you feel rushed.",
+            "B. Of course, that's easier said than done.",
+            "C. It is wise to see a doctor with your friend.",
+            "D. It is also called the description of your problem.",
+            "E. So I take a few minutes to write down some crucial details.",
+            "F. In fact, your descriptions can help me give you great care."
+          ],
+          "answer": "D",
+          "answerExplanation": "空前说“Part one is the complaint”，D项“这也被称为对你问题的描述”是对“complaint”的解释说明，选D。",
+          "knowledgePoints": [
+            "逻辑关系判断"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q29",
+          "order": 29,
+          "questionType": "single_choice",
+          "stem": "选择最适合填入短文空格(29)处的句子。",
+          "options": [
+            "A. No wonder you feel rushed.",
+            "B. Of course, that's easier said than done.",
+            "C. It is wise to see a doctor with your friend.",
+            "D. It is also called the description of your problem.",
+            "E. So I take a few minutes to write down some crucial details.",
+            "F. In fact, your descriptions can help me give you great care."
+          ],
+          "answer": "B",
+          "answerExplanation": "空后说“即使当了这么多年医生，自己看病时也会紧张”，B项“这当然是说起来容易做起来难”引出下文，选B。",
+          "knowledgePoints": [
+            "连贯性衔接"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q30",
+          "order": 30,
+          "questionType": "single_choice",
+          "stem": "选择最适合填入短文空格(30)处的句子。",
+          "options": [
+            "A. No wonder you feel rushed.",
+            "B. Of course, that's easier said than done.",
+            "C. It is wise to see a doctor with your friend.",
+            "D. It is also called the description of your problem.",
+            "E. So I take a few minutes to write down some crucial details.",
+            "F. In fact, your descriptions can help me give you great care."
+          ],
+          "answer": "E",
+          "answerExplanation": "空前说如果没准备好会记不清细节，E项“所以我会花几分钟写下一些关键细节”承接该做法，选E。",
+          "knowledgePoints": [
+            "连贯性衔接"
+          ],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2020-08-s5",
+      "type": "填词补文",
+      "order": 5,
+      "passageTitle": "Planting a Garden",
+      "passageText": "Planting a garden is a lot like having a family. Both require a great deal of work, ___(31)___ as they grow and as the seasons ___(32)___. As summer days lengthen, your plants become ___(33)___ on you, much like your children depend on you for food and drink. Like a ___(34)___ child asking for drink of water, your plants do the same. Their bent body issues a demand much the way your child requests milk or juice. Getting enough water, they would thrive soon.\n\nYou might also find you have to ___(35)___ the space around your plants, much like you pick up toys and clothes that have been thrown in your kid's room. Similarly, roses need to be pruned (修剪), and weeds need to be pulled. To keep children healthy, parents protect their children against disease with ___(36)___, and gardeners do the same with insect repellent (驱虫剂). To nourish (滋养) them, parents ___(37)___ children vitamins, and gardeners use fertilizer, as both promote healthy growth.\n\nAs children grow up, they need less care. However, here's where the similarity ends. While plants die or become ___(38)___ during winter, children ___(39)___ maintain an important role in the family, and parents will find their ___(40)___ does not come to an end.",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "00015-2020-08-q31",
+          "order": 31,
+          "questionType": "single_choice",
+          "stem": "选择最适合填入短文空格(31)处的词。",
+          "options": [
+            "A. help",
+            "B. clean",
+            "C. change",
+            "D. inactive",
+            "E. dependent",
+            "F. still",
+            "G. strong",
+            "H. give",
+            "I. responsibility",
+            "J. thirsty",
+            "K. medicine",
+            "L. especially"
+          ],
+          "answer": "L",
+          "answerExplanation": "as为介词，前面需用副词修饰，结合“尤其是随着孩子/植物长大”之意，选L（especially）。",
+          "knowledgePoints": [
+            "词汇辨析"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q32",
+          "order": 32,
+          "questionType": "single_choice",
+          "stem": "选择最适合填入短文空格(32)处的词。",
+          "options": [
+            "A. help",
+            "B. clean",
+            "C. change",
+            "D. inactive",
+            "E. dependent",
+            "F. still",
+            "G. strong",
+            "H. give",
+            "I. responsibility",
+            "J. thirsty",
+            "K. medicine",
+            "L. especially"
+          ],
+          "answer": "C",
+          "answerExplanation": "根据文意，随着季节“变化”，change符合语境，选C。",
+          "knowledgePoints": [
+            "词汇辨析"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q33",
+          "order": 33,
+          "questionType": "single_choice",
+          "stem": "选择最适合填入短文空格(33)处的词。",
+          "options": [
+            "A. help",
+            "B. clean",
+            "C. change",
+            "D. inactive",
+            "E. dependent",
+            "F. still",
+            "G. strong",
+            "H. give",
+            "I. responsibility",
+            "J. thirsty",
+            "K. medicine",
+            "L. especially"
+          ],
+          "answer": "E",
+          "answerExplanation": "“your plants become ___ on you”对应后文“much like your children depend on you”，应选E（dependent）。",
+          "knowledgePoints": [
+            "词汇辨析"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q34",
+          "order": 34,
+          "questionType": "single_choice",
+          "stem": "选择最适合填入短文空格(34)处的词。",
+          "options": [
+            "A. help",
+            "B. clean",
+            "C. change",
+            "D. inactive",
+            "E. dependent",
+            "F. still",
+            "G. strong",
+            "H. give",
+            "I. responsibility",
+            "J. thirsty",
+            "K. medicine",
+            "L. especially"
+          ],
+          "answer": "J",
+          "answerExplanation": "“a ___ child asking for drink of water”指口渴的孩子求水喝，选J（thirsty）。",
+          "knowledgePoints": [
+            "词汇辨析"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q35",
+          "order": 35,
+          "questionType": "single_choice",
+          "stem": "选择最适合填入短文空格(35)处的词。",
+          "options": [
+            "A. help",
+            "B. clean",
+            "C. change",
+            "D. inactive",
+            "E. dependent",
+            "F. still",
+            "G. strong",
+            "H. give",
+            "I. responsibility",
+            "J. thirsty",
+            "K. medicine",
+            "L. especially"
+          ],
+          "answer": "B",
+          "answerExplanation": "“you have to ___ the space around your plants”对应后文“pick up toys and clothes”，选B（clean）。",
+          "knowledgePoints": [
+            "词汇辨析"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q36",
+          "order": 36,
+          "questionType": "single_choice",
+          "stem": "选择最适合填入短文空格(36)处的词。",
+          "options": [
+            "A. help",
+            "B. clean",
+            "C. change",
+            "D. inactive",
+            "E. dependent",
+            "F. still",
+            "G. strong",
+            "H. give",
+            "I. responsibility",
+            "J. thirsty",
+            "K. medicine",
+            "L. especially"
+          ],
+          "answer": "K",
+          "answerExplanation": "“protect their children against disease with ___”指用药物防病，选K（medicine）。",
+          "knowledgePoints": [
+            "固定搭配"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q37",
+          "order": 37,
+          "questionType": "single_choice",
+          "stem": "选择最适合填入短文空格(37)处的词。",
+          "options": [
+            "A. help",
+            "B. clean",
+            "C. change",
+            "D. inactive",
+            "E. dependent",
+            "F. still",
+            "G. strong",
+            "H. give",
+            "I. responsibility",
+            "J. thirsty",
+            "K. medicine",
+            "L. especially"
+          ],
+          "answer": "H",
+          "answerExplanation": "“parents ___ children vitamins”对应“give sb. sth.”结构，选H（give）。",
+          "knowledgePoints": [
+            "固定搭配"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q38",
+          "order": 38,
+          "questionType": "single_choice",
+          "stem": "选择最适合填入短文空格(38)处的词。",
+          "options": [
+            "A. help",
+            "B. clean",
+            "C. change",
+            "D. inactive",
+            "E. dependent",
+            "F. still",
+            "G. strong",
+            "H. give",
+            "I. responsibility",
+            "J. thirsty",
+            "K. medicine",
+            "L. especially"
+          ],
+          "answer": "D",
+          "answerExplanation": "“plants die or become ___ during winter”指植物在冬天变得不活跃，选D（inactive）。",
+          "knowledgePoints": [
+            "词汇辨析"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q39",
+          "order": 39,
+          "questionType": "single_choice",
+          "stem": "选择最适合填入短文空格(39)处的词。",
+          "options": [
+            "A. help",
+            "B. clean",
+            "C. change",
+            "D. inactive",
+            "E. dependent",
+            "F. still",
+            "G. strong",
+            "H. give",
+            "I. responsibility",
+            "J. thirsty",
+            "K. medicine",
+            "L. especially"
+          ],
+          "answer": "F",
+          "answerExplanation": "“children ___ maintain an important role”指孩子仍然扮演重要角色，选F（still）。",
+          "knowledgePoints": [
+            "词汇辨析"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q40",
+          "order": 40,
+          "questionType": "single_choice",
+          "stem": "选择最适合填入短文空格(40)处的词。",
+          "options": [
+            "A. help",
+            "B. clean",
+            "C. change",
+            "D. inactive",
+            "E. dependent",
+            "F. still",
+            "G. strong",
+            "H. give",
+            "I. responsibility",
+            "J. thirsty",
+            "K. medicine",
+            "L. especially"
+          ],
+          "answer": "I",
+          "answerExplanation": "“parents will find their ___ does not come to an end”指父母的责任不会结束，选I（responsibility）。",
+          "knowledgePoints": [
+            "词汇辨析"
+          ],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2020-08-s6",
+      "type": "完形填空",
+      "order": 6,
+      "passageTitle": "What Makes Us Different",
+      "passageText": "The reason Earth differs (differ) from all the other ___(41)___ (planet) in the universe is because of you and me. At first, we were living in caves, then came the ice age, then the meltdown, and ___(42)___ (final), what we are today. We and Earth as a whole have changed so much. The only thing that hasn't changed is our greed and ___(43)___ (jealous).\n\nWhile we were in caves, we fought for food. While we were living on the ice, we fought for ___(44)___ (warm), clothing, and food. Now, we are ___(45)___ (fight) over land. Why do we fight for land that was never in our ___(46)___ (possess)? Wars, big or small, take place every day. Earth is a single nation. All the land masses on it belong to the planet, not to us. Everyone is the same, regardless of race, gender, or religion. We all deserve to be ___(47)___ (treat) equally. We are all also unique, but that doesn't make us any ___(48)___ (little) human than the next person.\n\nIf we can start by ___(49)___ (pay) a compliment (赞美) to a different person each day, our world will be ___(50)___ (friendly) to live in. If we at least help one person in need and let room for love to grow in our hearts, the world will be a better place.",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "00015-2020-08-q41",
+          "order": 41,
+          "questionType": "fill_blank_transform",
+          "stem": "planet",
+          "options": [],
+          "answer": "planets",
+          "answerExplanation": "官方仅给出答案，无详细解析。",
+          "knowledgePoints": [
+            "名词单复数"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q42",
+          "order": 42,
+          "questionType": "fill_blank_transform",
+          "stem": "final",
+          "options": [],
+          "answer": "finally",
+          "answerExplanation": "官方仅给出答案，无详细解析。",
+          "knowledgePoints": [
+            "副词构词"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q43",
+          "order": 43,
+          "questionType": "fill_blank_transform",
+          "stem": "jealous",
+          "options": [],
+          "answer": "jealousy",
+          "answerExplanation": "官方仅给出答案，无详细解析。",
+          "knowledgePoints": [
+            "词性转换"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q44",
+          "order": 44,
+          "questionType": "fill_blank_transform",
+          "stem": "warm",
+          "options": [],
+          "answer": "warmth",
+          "answerExplanation": "官方仅给出答案，无详细解析。",
+          "knowledgePoints": [
+            "词性转换"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q45",
+          "order": 45,
+          "questionType": "fill_blank_transform",
+          "stem": "fight",
+          "options": [],
+          "answer": "fighting",
+          "answerExplanation": "官方仅给出答案，无详细解析。",
+          "knowledgePoints": [
+            "动词时态"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q46",
+          "order": 46,
+          "questionType": "fill_blank_transform",
+          "stem": "possess",
+          "options": [],
+          "answer": "possession",
+          "answerExplanation": "官方仅给出答案，无详细解析。",
+          "knowledgePoints": [
+            "词性转换"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q47",
+          "order": 47,
+          "questionType": "fill_blank_transform",
+          "stem": "treat",
+          "options": [],
+          "answer": "treated",
+          "answerExplanation": "官方仅给出答案，无详细解析。",
+          "knowledgePoints": [
+            "被动语态"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q48",
+          "order": 48,
+          "questionType": "fill_blank_transform",
+          "stem": "little",
+          "options": [],
+          "answer": "less",
+          "answerExplanation": "官方仅给出答案，无详细解析。",
+          "knowledgePoints": [
+            "比较级最高级"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q49",
+          "order": 49,
+          "questionType": "fill_blank_transform",
+          "stem": "pay",
+          "options": [],
+          "answer": "paying",
+          "answerExplanation": "官方仅给出答案，无详细解析。",
+          "knowledgePoints": [
+            "动词时态"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-08-q50",
+          "order": 50,
+          "questionType": "fill_blank_transform",
+          "stem": "friendly",
+          "options": [],
+          "answer": "friendlier",
+          "answerExplanation": "官方仅给出答案，无详细解析。",
+          "knowledgePoints": [
+            "比较级最高级"
+          ],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2020-08-s7",
+      "type": "写作",
+      "order": 7,
+      "passageTitle": null,
+      "writingPrompt": "某英文报社正在举办题为“Spring is Coming”的征文活动。请你根据下述写作要点提交一篇英文短文应征。\n·简要描写春天的景象\n·介绍人们在春天里的各种活动\n（请根据所提供材料中的要求完成一篇100词左右的英文写作任务。）",
+      "scorePerQuestion": 30,
+      "totalScore": 30,
+      "questions": [
+        {
+          "questionId": "00015-2020-08-q51",
+          "order": 51,
+          "questionType": "essay",
+          "stem": "某英文报社正在举办题为“Spring is Coming”的征文活动。请你根据下述写作要点提交一篇英文短文应征。\n·简要描写春天的景象\n·介绍人们在春天里的各种活动\n（请根据所提供材料中的要求完成一篇100词左右的英文写作任务。）",
+          "options": [],
+          "answer": "",
+          "answerExplanation": "官方评分参考未给出评分细则，只提供了一篇范文供参考：\nNowadays, spring has become a popular topic that arouses the concern of the society. It is related to our life.\n\nThere are a lot of views we can see in spring. On the one hand, many beautiful flowers and plants are growing in the garden. On the other hand, many kinds of animals recover from the coldness, which starts a new life cycle.\n\nAs an important role in the nature, we also have a great number of activities in spring. Firstly, people can fly kites with their children, which not only exercises their bodies but also improves their health. Secondly, inviting friends to go out for fun is also a good way to enrich our life in spring.\n\nIn a word, I like the coming spring very much and I will benefit a lot from it.",
+          "knowledgePoints": [
+            "写作-说明类"
+          ],
+          "difficultyTag": null
+        }
+      ]
+    }
+  ],
+  "parsingNotes": [
+    "timeLimitMinutes 填写为150分钟，是该课程（00015英语二）历年通行的考试时长，本次扫描页面未印刷具体时长信息，未能在原卷上直接确认，建议人工核对。",
+    "第一部分（阅读判断）passageText 原始扫描图片中部分字母因印刷/扫描质量问题显示不全（如 \"I's sad\" 疑似 \"It's sad\"、\"they're sill contributing\" 疑似 \"they're still contributing\"、\"plant tees\" 疑似 \"plant trees\"），已根据上下文校正为符合语法与文意的拼写，但未能与更清晰版本核对，建议人工复核原图确认。",
+    "第六部分（完形填空词形变换）passageText 中 \"then came the ice age\" 一句，原扫描图片显示为 \"the came the ice age\"，语法上明显应为 \"then came\"，已按此校正，但原文具体印刷文字未能100%确认，建议人工核对原图。",
+    "第六部分 passageText 中 \"We all deserve to be treated equally\" 一句，原扫描图片显示为 \"We are all deserve to be...\"（语法不通顺），已校正为 \"We all deserve to be...\"，具体原文措辞未能完全确认，建议人工核对原图。",
+    "第六部分（41-50题）官方答案页只给出了正确单词列表，没有逐题解析，answerExplanation 统一填写“官方仅给出答案，无详细解析”。",
+    "第七部分（写作，第51题）官方评分参考仅给出一篇参考范文，未给出具体评分标准/要点分值，answer 字段按规范留空，范文全文记录在 answerExplanation 中供人工校对时参考。"
+  ]
+}
