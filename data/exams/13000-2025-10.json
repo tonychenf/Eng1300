@@ -1,0 +1,661 @@
+{
+  "examId": "13000-2025-10",
+  "title": "2025年10月高等教育自学考试英语(专升本)试题",
+  "year": 2025,
+  "month": 10,
+  "courseCode": "13000",
+  "courseName": "英语(专升本)",
+  "sourceFile": "24248197-2025_10___13000__________.pdf",
+  "totalScore": 100,
+  "timeLimitMinutes": 150,
+  "status": "待校对",
+  "sections": [
+    {
+      "sectionId": "13000-2025-10-s1",
+      "type": "阅读判断",
+      "order": 1,
+      "passageTitle": "A Long-term Investment or a Quick Fix",
+      "passageText": "There's something about French women. They have a stylish and cool feel that American women have long been trying to imitate. The two countries have quite different approaches to beauty. Mathilde Thomas, co-founder of French beauty brand Caudalie, will explain the subject in her new book, The French Beauty Solution. She said the key to French beauty is the belief that \"beauty is something to give you pleasure. Because when you feel good, you look good.\"\n\nIn 2010, she went to the U.S. to expand her brand. She traveled all over the country meeting customers. She found that the American concept of beauty was more about pain than pleasure. Many women said they made their beauty choices based on the notion of \"no pain, no gain.\" They thought they had to suffer to be beautiful. In contrast, she and French women believe the notion of beauty should be pleasing to you.\n\nThomas' book discusses how women in the U.S. are all about the \"quick fix.\" This means they will try a product that will instantly solve a beauty problem. They don't care if it hurts, is expensive, or is damaging in the long run. That's quite different from the French view of beauty. In the book, Thomas sees the French view as an essential and pleasing part of the day. It is also a lifelong and active investment that makes you look and feel good.\n\nIn the book, Thomas says, \"Our beauty routine is based on prevention and upkeep. And it is viewed as an essential, ongoing investment. What I saw here was much more of a tendency toward the quick solution. Millions of American women consider beauty a priority in their daily routine. However, many of their habits are either too expensive, too painful, or simply not effective.\"",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "13000-2025-10-q1",
+          "order": 1,
+          "questionType": "single_choice",
+          "stem": "French women are more stylish in the eyes of American women.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "第一段首句即说明法国女性在美国女性眼中一直有时尚、酷的感觉，是美国女性一直试图模仿的对象，与题干信息一致。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q2",
+          "order": 2,
+          "questionType": "single_choice",
+          "stem": "Caudalie is an American beauty brand.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "官方答案：B False（Caudalie 是法国品牌），原文明确写为 \"French beauty brand Caudalie\"。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q3",
+          "order": 3,
+          "questionType": "single_choice",
+          "stem": "Thomas thinks that beauty is a privilege for the young.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "原文没有提到 Thomas 认为美丽是年轻人的特权，属于文中未提及信息。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q4",
+          "order": 4,
+          "questionType": "single_choice",
+          "stem": "Thomas went to America to promote her beauty products.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "第二段：\"In 2010, she went to the U.S. to expand her brand.\" 与题干一致。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q5",
+          "order": 5,
+          "questionType": "single_choice",
+          "stem": "American women base their idea of beauty on pleasure.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "官方答案：B False（美国女性认为美丽是\"痛苦\"的），原文说 American concept of beauty was more about pain than pleasure，与题干相反。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q6",
+          "order": 6,
+          "questionType": "single_choice",
+          "stem": "French women share Thomas' notion of beauty.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "第二段末句：\"she and French women believe the notion of beauty should be pleasing to you.\" 说明法国女性与 Thomas 的理念一致。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q7",
+          "order": 7,
+          "questionType": "single_choice",
+          "stem": "French women invest more in beauty products than before.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "原文提到法国女性把美丽视为长期投资，但没有说\"比以前投入更多\"，属于文中未提及信息。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q8",
+          "order": 8,
+          "questionType": "single_choice",
+          "stem": "American women prefer a quick solution to their beauty problems.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "第三段：\"women in the U.S. are all about the 'quick fix.'\" 与题干一致。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q9",
+          "order": 9,
+          "questionType": "single_choice",
+          "stem": "American women like Thomas' beauty products.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "原文没有提及美国女性对 Thomas 产品的喜好，属于文中未提及信息。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q10",
+          "order": 10,
+          "questionType": "single_choice",
+          "stem": "American women's beauty routine is based on prevention.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "官方答案：B False（这是法国女性的理念），第四段说 \"Our beauty routine is based on prevention and upkeep\" 指的是法国人的美容理念，而美国人则倾向于 quick solution。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "13000-2025-10-s2",
+      "type": "阅读理解选择",
+      "order": 2,
+      "passageTitle": "An Important Piece of Life Advice for the Young",
+      "passageText": "I spend a lot of time interviewing older people in my research on their lives. In one project, I asked them the question: \"What can young people do to avoid having regrets when they come to the end of life?\" One of the most important messages they have for younger people is to travel—and to do it now.\n\nAn old woman once told me that among the most regretful elders she knows are those who put off travel until it was too late—a mistake she almost made if it had not been for her husband. Her husband said, \"I'm not waiting until I retire. Who knows what things will be like then?\"\n\nSo, here's a clear opportunity to avoid a future regret: travel in your first 30 years, while you have time and energy. This message comes from some of the elders who delayed travel until it was too late. One 86-year-old lady I talked to had spent her life close to home. With a sad look in her eyes, she told me: \"I always wanted to go to Hawaii, but I never made it. Oh, it's too late for me.\"\n\nI can hear some people saying: That's all well and good, but how can we afford it? The elders counter that argument by saying that travel is so rewarding that it should take precedence over other things younger people spend money on. The key is travel's value specifically for the young; it broadens their horizons, helps them to find a focus for their lives, and challenges them in new ways.\n\nOf course, travel is by no means only for the young. Seeing the world is also important in the middle 30 years and the last 30 years. Travel is just that important to feeling like your life has been well-lived.",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "13000-2025-10-q11",
+          "order": 11,
+          "questionType": "single_choice",
+          "stem": "The writer of this text is most probably a ________.",
+          "options": ["A. technician", "B. librarian", "C. researcher", "D. consultant"],
+          "answer": "C",
+          "answerExplanation": "首段作者说 \"I spend a lot of time interviewing older people in my research on their lives\"，说明作者是从事研究工作的人。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q12",
+          "order": 12,
+          "questionType": "single_choice",
+          "stem": "What can we infer about the old woman and her husband?",
+          "options": ["A. They had many regrets in their life.", "B. They traveled a lot before retirement.", "C. They made a big mistake in their work.", "D. They delayed travel until it was too late."],
+          "answer": "B",
+          "answerExplanation": "第二段丈夫说 \"I'm not waiting until I retire\"，说明他们没有推迟旅行，退休前就已经旅行了很多，与D项相反。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q13",
+          "order": 13,
+          "questionType": "single_choice",
+          "stem": "According to Para. 4, the elders think that younger people should ________.",
+          "options": ["A. give priority to travel", "B. make time for their families", "C. find a focus for their lives", "D. work hard to save money"],
+          "answer": "A",
+          "answerExplanation": "第四段：\"travel is so rewarding that it should take precedence over other things younger people spend money on\"，即年轻人应优先考虑旅行。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q14",
+          "order": 14,
+          "questionType": "single_choice",
+          "stem": "The 86-year-old lady feels sad as she can no longer ________.",
+          "options": ["A. stay in Hawaii", "B. go on a tour", "C. live close to home", "D. take care of herself"],
+          "answer": "B",
+          "answerExplanation": "第三段：老太太说自己一直想去夏威夷但从未成行，\"it's too late for me\"，指她已无法再去旅行。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q15",
+          "order": 15,
+          "questionType": "single_choice",
+          "stem": "The writer of the text thinks that travel is a ________.",
+          "options": ["A. great midlife activity", "B. challenge for the old", "C. lifestyle for the young", "D. lifelong engagement"],
+          "answer": "D",
+          "answerExplanation": "末段：\"travel is by no means only for the young... Travel is just that important to feeling like your life has been well-lived.\" 说明作者认为旅行应贯穿人的一生。",
+          "knowledgePoints": ["观点态度理解"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "13000-2025-10-s3",
+      "type": "段落大意与句子补全",
+      "order": 3,
+      "passageTitle": "Benefits of Spending Time with Animals",
+      "passageText": "① A pet treatment can solve all sorts of problems, says animal expert Arden Moore. Spending time around animals, like bird-watching, being accompanied by a therapy dog, or playing with a pet spider, can be good to your well-being. \"There's something about the animal kingdom that enables us to enjoy life a little better,\" she says.\n\n② According to Moore, petting your cat or dog makes the animal happy, and it relaxes you as well. It is especially so when you are under some stress. \"Give your dog or cat a head-to-tail rub by running hand over hand through the body,\" she says. Your touch relaxes the animal. It also releases feel-good hormones (荷尔蒙) in you, and reduces your heart rate.\n\n③ Talking with animals may lower your blood pressure and improve your overall health. Moore suggests engaging animals in \"happy talk,\" or speaking in a cheerful tone. She says, \"Happy talk or laughter around animals releases hormones in humans. Then, your blood pressure will be lowered. And animals will feel better too.\"\n\n④ Eating beside an animal may improve your eating habits. \"In nursing homes, if there's a fish tank where people are eating, seeing those fish actually motivates some residents to eat,\" says Moore. The result of recent research supports the view. It shows that the people who ate near their pets improved some of their eating patterns.\n\n⑤ A good relationship with your animal friends may lead to better relations with humans. According to a study at the University of Michigan School of Nursing, observing animals in nature can teach valuable characteristics like patience, and help restore mental energy. Taking care of an animal can also teach responsibility and stimulate feelings of trust, openness, and companionship.",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "13000-2025-10-q16",
+          "order": 16,
+          "questionType": "single_choice",
+          "stem": "Task 1: Paragraph ①",
+          "options": ["A. Animals help reduce your stress.", "B. Animals improve human relationships.", "C. Animals make your life more enjoyable.", "D. Animals can change your way of life.", "E. Animals help improve your eating habits.", "F. Animals help lower your blood pressure."],
+          "answer": "C",
+          "answerExplanation": "第①段核心是宠物/动物能让人\"enjoy life a little better\"，对应 C。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q17",
+          "order": 17,
+          "questionType": "single_choice",
+          "stem": "Task 1: Paragraph ②",
+          "options": ["A. Animals help reduce your stress.", "B. Animals improve human relationships.", "C. Animals make your life more enjoyable.", "D. Animals can change your way of life.", "E. Animals help improve your eating habits.", "F. Animals help lower your blood pressure."],
+          "answer": "A",
+          "answerExplanation": "第②段讲抚摸宠物能让人放松，尤其在有压力时（\"when you are under some stress\"），对应 A。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q18",
+          "order": 18,
+          "questionType": "single_choice",
+          "stem": "Task 1: Paragraph ③",
+          "options": ["A. Animals help reduce your stress.", "B. Animals improve human relationships.", "C. Animals make your life more enjoyable.", "D. Animals can change your way of life.", "E. Animals help improve your eating habits.", "F. Animals help lower your blood pressure."],
+          "answer": "F",
+          "answerExplanation": "第③段讲与动物交谈可以降低血压（\"lower your blood pressure\"），对应 F。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q19",
+          "order": 19,
+          "questionType": "single_choice",
+          "stem": "Task 1: Paragraph ④",
+          "options": ["A. Animals help reduce your stress.", "B. Animals improve human relationships.", "C. Animals make your life more enjoyable.", "D. Animals can change your way of life.", "E. Animals help improve your eating habits.", "F. Animals help lower your blood pressure."],
+          "answer": "E",
+          "answerExplanation": "第④段讲在动物旁边进食能改善饮食习惯（\"improve your eating habits\"），对应 E。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q20",
+          "order": 20,
+          "questionType": "single_choice",
+          "stem": "Task 1: Paragraph ⑤",
+          "options": ["A. Animals help reduce your stress.", "B. Animals improve human relationships.", "C. Animals make your life more enjoyable.", "D. Animals can change your way of life.", "E. Animals help improve your eating habits.", "F. Animals help lower your blood pressure."],
+          "answer": "B",
+          "answerExplanation": "第⑤段首句：\"A good relationship with your animal friends may lead to better relations with humans.\" 对应 B。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q21",
+          "order": 21,
+          "questionType": "single_choice",
+          "stem": "Task 2: Playing with your pet is good ________.",
+          "options": ["A. in nature", "B. if you keep a pet", "C. to your well-being", "D. when you talk with it", "E. you'll have a better appetite", "F. your heart rate will be reduced"],
+          "answer": "C",
+          "answerExplanation": "对应第①段 \"can be good to your well-being\"。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q22",
+          "order": 22,
+          "questionType": "single_choice",
+          "stem": "Task 2: When you're petting your pet, ________.",
+          "options": ["A. in nature", "B. if you keep a pet", "C. to your well-being", "D. when you talk with it", "E. you'll have a better appetite", "F. your heart rate will be reduced"],
+          "answer": "F",
+          "answerExplanation": "对应第②段 \"reduces your heart rate\"。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q23",
+          "order": 23,
+          "questionType": "single_choice",
+          "stem": "Task 2: Your pet will feel happy ________.",
+          "options": ["A. in nature", "B. if you keep a pet", "C. to your well-being", "D. when you talk with it", "E. you'll have a better appetite", "F. your heart rate will be reduced"],
+          "answer": "D",
+          "answerExplanation": "对应第③段 \"animals will feel better too\"（在与动物进行happy talk之后）。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q24",
+          "order": 24,
+          "questionType": "single_choice",
+          "stem": "Task 2: Eating near your pet, ________.",
+          "options": ["A. in nature", "B. if you keep a pet", "C. to your well-being", "D. when you talk with it", "E. you'll have a better appetite", "F. your heart rate will be reduced"],
+          "answer": "E",
+          "answerExplanation": "对应第④段人们在宠物旁进食改善了饮食习惯。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q25",
+          "order": 25,
+          "questionType": "single_choice",
+          "stem": "Task 2: You may develop your patience by watching animals ________.",
+          "options": ["A. in nature", "B. if you keep a pet", "C. to your well-being", "D. when you talk with it", "E. you'll have a better appetite", "F. your heart rate will be reduced"],
+          "answer": "A",
+          "answerExplanation": "对应第⑤段 \"observing animals in nature can teach valuable characteristics like patience\"。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "13000-2025-10-s4",
+      "type": "填句补文",
+      "order": 4,
+      "passageTitle": "What is Green Tourism?",
+      "passageText": "The aim of green tourism is to protect the environment and culture of an area. There are many choices for green tourism worldwide.\n\nThe number of tourists has been increasing these days. It makes green tourism a must in some areas. In order to protect the environment, it might seem wiser to ban tourists to these areas. But many areas need the income from tourism for their local economy. Green tourism offers the best solution to both. ___(26)___ At the same time, it keeps local businesses growing.\n\nGreen tourism might not mean a vacation spent with little or no comfort. ___(27)___ Green tourism resorts exist in almost every style and taste. From recycling systems to tree houses, there are many vacation choices.\n\nOn a green holiday, people study the local plants and culture. ___(28)___ Guides, tours and wildlife-viewing platforms help people experience a lot. But little or no impact is made on the environment. Sometimes, tourists can take an active part in improving the local area. They can work to protect the wildlife in the area. They can help to build a school. ___(29)___ These vacations can be a lot of work. But people find them very rewarding and interesting.\n\nNowadays, green tourism is becoming more popular. ___(30)___ More areas will take steps to have less of an impact on the environment, allowing tourists to enjoy the beauty that these areas have to offer for many years to come.",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "13000-2025-10-q26",
+          "order": 26,
+          "questionType": "single_choice",
+          "stem": "___(26)___",
+          "options": ["A. They also learn ways to protect them.", "B. It protects the environment of an area.", "C. They can do other things that are good for the area.", "D. Its effects need to be further studied.", "E. So there are likely to be more vacationing options available.", "F. On the contrary, people think that it can be a wonderful adventure."],
+          "answer": "B",
+          "answerExplanation": "空前提到绿色旅游能同时解决保护环境和支持地方经济两个问题，此处承接说明其如何保护环境，与后一句\"At the same time, it keeps local businesses growing\"并列。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q27",
+          "order": 27,
+          "questionType": "single_choice",
+          "stem": "___(27)___",
+          "options": ["A. They also learn ways to protect them.", "B. It protects the environment of an area.", "C. They can do other things that are good for the area.", "D. Its effects need to be further studied.", "E. So there are likely to be more vacationing options available.", "F. On the contrary, people think that it can be a wonderful adventure."],
+          "answer": "F",
+          "answerExplanation": "前句说绿色旅游不代表舒适度低的旅行，此处用\"On the contrary\"转折说明人们反而认为这是一场精彩的冒险，与前后文语气衔接自然。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q28",
+          "order": 28,
+          "questionType": "single_choice",
+          "stem": "___(28)___",
+          "options": ["A. They also learn ways to protect them.", "B. It protects the environment of an area.", "C. They can do other things that are good for the area.", "D. Its effects need to be further studied.", "E. So there are likely to be more vacationing options available.", "F. On the contrary, people think that it can be a wonderful adventure."],
+          "answer": "A",
+          "answerExplanation": "前句说游客学习当地动植物和文化（study the local plants and culture），此处承接说明他们也学习保护它们的方法。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q29",
+          "order": 29,
+          "questionType": "single_choice",
+          "stem": "___(29)___",
+          "options": ["A. They also learn ways to protect them.", "B. It protects the environment of an area.", "C. They can do other things that are good for the area.", "D. Its effects need to be further studied.", "E. So there are likely to be more vacationing options available.", "F. On the contrary, people think that it can be a wonderful adventure."],
+          "answer": "C",
+          "answerExplanation": "前面列举了游客可做的多项事情（保护野生动物、帮建学校等），此处总结他们还能做其他对当地有益的事情。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q30",
+          "order": 30,
+          "questionType": "single_choice",
+          "stem": "___(30)___",
+          "options": ["A. They also learn ways to protect them.", "B. It protects the environment of an area.", "C. They can do other things that are good for the area.", "D. Its effects need to be further studied.", "E. So there are likely to be more vacationing options available.", "F. On the contrary, people think that it can be a wonderful adventure."],
+          "answer": "E",
+          "answerExplanation": "前句说绿色旅游越来越受欢迎，此处顺承说明因此会有更多的度假选择，与后文\"More areas will take steps...\"逻辑连贯。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "13000-2025-10-s5",
+      "type": "填词补文",
+      "order": 5,
+      "passageTitle": "The Word \"Try\"",
+      "passageText": "The word \"try\" is a small word yet it has an amazing impact upon us. If someone says, \"I'll try to do that,\" you ___(31)___ that they will not put their whole ___(32)___ into it, and may not even do it at all. How ___(33)___ do you use the word \"try\" when talking about the things that ___(34)___ to you?\n\nThink about something that you would like to ___(35)___, say it to yourself in two ___(36)___ ways, and see how you feel. Firstly say, \"I'll try to...\" and ___(37)___ say, \"I will do...\"\n\nThe latter makes you feel ___(38)___ than the former, right? It gives you a sense of ___(39)___. Listen to the people around you. When they say they will try, notice if it gets done or not. Eliminate the word \"try\" from your ___(40)___ and see how your life improves.",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "13000-2025-10-q31",
+          "order": 31,
+          "questionType": "single_choice",
+          "stem": "___(31)___",
+          "options": ["A. matter", "B. different", "C. determination", "D. only", "E. achieve", "F. know", "G. smart", "H. next", "I. often", "J. better", "K. dictionary", "L. heart"],
+          "answer": "F",
+          "answerExplanation": "\"you know that they will not put their whole heart into it\"，know 与后面宾语从句搭配。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q32",
+          "order": 32,
+          "questionType": "single_choice",
+          "stem": "___(32)___",
+          "options": ["A. matter", "B. different", "C. determination", "D. only", "E. achieve", "F. know", "G. smart", "H. next", "I. often", "J. better", "K. dictionary", "L. heart"],
+          "answer": "L",
+          "answerExplanation": "固定搭配 \"put one's whole heart into something\"（全心投入）。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q33",
+          "order": 33,
+          "questionType": "single_choice",
+          "stem": "___(33)___",
+          "options": ["A. matter", "B. different", "C. determination", "D. only", "E. achieve", "F. know", "G. smart", "H. next", "I. often", "J. better", "K. dictionary", "L. heart"],
+          "answer": "I",
+          "answerExplanation": "\"How often do you use the word 'try'\"，often 与 How 搭配构成频率疑问句。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q34",
+          "order": 34,
+          "questionType": "single_choice",
+          "stem": "___(34)___",
+          "options": ["A. matter", "B. different", "C. determination", "D. only", "E. achieve", "F. know", "G. smart", "H. next", "I. often", "J. better", "K. dictionary", "L. heart"],
+          "answer": "A",
+          "answerExplanation": "固定搭配 \"matter to somebody\"（对某人重要），\"the things that matter to you\"。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q35",
+          "order": 35,
+          "questionType": "single_choice",
+          "stem": "___(35)___",
+          "options": ["A. matter", "B. different", "C. determination", "D. only", "E. achieve", "F. know", "G. smart", "H. next", "I. often", "J. better", "K. dictionary", "L. heart"],
+          "answer": "E",
+          "answerExplanation": "\"something that you would like to achieve\"，achieve 与 something 搭配，指想要达成的事情。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q36",
+          "order": 36,
+          "questionType": "single_choice",
+          "stem": "___(36)___",
+          "options": ["A. matter", "B. different", "C. determination", "D. only", "E. achieve", "F. know", "G. smart", "H. next", "I. often", "J. better", "K. dictionary", "L. heart"],
+          "answer": "B",
+          "answerExplanation": "\"say it to yourself in two different ways\"，different 修饰 ways。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q37",
+          "order": 37,
+          "questionType": "single_choice",
+          "stem": "___(37)___",
+          "options": ["A. matter", "B. different", "C. determination", "D. only", "E. achieve", "F. know", "G. smart", "H. next", "I. often", "J. better", "K. dictionary", "L. heart"],
+          "answer": "H",
+          "answerExplanation": "\"Firstly say... and next say...\"，next 与 firstly 构成顺序连接词。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q38",
+          "order": 38,
+          "questionType": "single_choice",
+          "stem": "___(38)___",
+          "options": ["A. matter", "B. different", "C. determination", "D. only", "E. achieve", "F. know", "G. smart", "H. next", "I. often", "J. better", "K. dictionary", "L. heart"],
+          "answer": "J",
+          "answerExplanation": "\"makes you feel better than the former\"，better 与 than 构成比较结构。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q39",
+          "order": 39,
+          "questionType": "single_choice",
+          "stem": "___(39)___",
+          "options": ["A. matter", "B. different", "C. determination", "D. only", "E. achieve", "F. know", "G. smart", "H. next", "I. often", "J. better", "K. dictionary", "L. heart"],
+          "answer": "C",
+          "answerExplanation": "固定搭配 \"a sense of determination\"（一种决心感）。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q40",
+          "order": 40,
+          "questionType": "single_choice",
+          "stem": "___(40)___",
+          "options": ["A. matter", "B. different", "C. determination", "D. only", "E. achieve", "F. know", "G. smart", "H. next", "I. often", "J. better", "K. dictionary", "L. heart"],
+          "answer": "K",
+          "answerExplanation": "\"Eliminate the word 'try' from your dictionary\"，dictionary 与 from your 搭配，喻指从自己的用语习惯中去掉这个词。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "13000-2025-10-s6",
+      "type": "完形填空",
+      "order": 6,
+      "passageTitle": "Communication in Groups",
+      "passageText": "The number of people in a group influences (influence) the quality of communication. Consider the ___(41)___ (differ) between communication between two friends and communication in a group. When two friends talk, there are ___(42)___ (simple) two people sending and receiving messages. In a group, there are several people ___(43)___ (do) the same thing. Each idea one expresses must be ___(44)___ (understand) by all others. Thus, the ___(45)___ (great) the number of people in a group, the fewer ___(46)___ (contribution) a member may make. So, you may think that small groups would be better. However, with too few members, a group has ___(47)___ (limit) resources. This ___(48)___ (affect) the advantage of groups for making a ___(49)___ (decide). Also, in a very small group, the members may be ___(50)___ (willing) to criticize others. So, I believe that five to seven members is the ideal size for a group.",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "13000-2025-10-q41",
+          "order": 41,
+          "questionType": "fill_blank_transform",
+          "stem": "differ",
+          "options": [],
+          "answer": "difference",
+          "answerExplanation": "此处需要名词作 the 的宾语，differ（动词）变为名词 difference。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q42",
+          "order": 42,
+          "questionType": "fill_blank_transform",
+          "stem": "simple",
+          "options": [],
+          "answer": "simply",
+          "answerExplanation": "此处修饰整个谓语部分（there are simply two people...），形容词 simple 变副词 simply。",
+          "knowledgePoints": ["副词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q43",
+          "order": 43,
+          "questionType": "fill_blank_transform",
+          "stem": "do",
+          "options": [],
+          "answer": "doing",
+          "answerExplanation": "\"several people doing the same thing\" 为现在分词作后置定语，修饰 people。",
+          "knowledgePoints": ["动词时态"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q44",
+          "order": 44,
+          "questionType": "fill_blank_transform",
+          "stem": "understand",
+          "options": [],
+          "answer": "understood",
+          "answerExplanation": "\"must be understood by all others\" 为被动语态，understand 变为过去分词 understood。",
+          "knowledgePoints": ["被动语态"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q45",
+          "order": 45,
+          "questionType": "fill_blank_transform",
+          "stem": "great",
+          "options": [],
+          "answer": "greater",
+          "answerExplanation": "\"the + 比较级..., the + 比较级...\" 结构（越……越……），great 变比较级 greater。",
+          "knowledgePoints": ["比较级最高级"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q46",
+          "order": 46,
+          "questionType": "fill_blank_transform",
+          "stem": "contribution",
+          "options": [],
+          "answer": "contributions",
+          "answerExplanation": "\"the fewer contributions\"，fewer 修饰可数名词复数，contribution 变复数 contributions。",
+          "knowledgePoints": ["名词单复数"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q47",
+          "order": 47,
+          "questionType": "fill_blank_transform",
+          "stem": "limit",
+          "options": [],
+          "answer": "limited",
+          "answerExplanation": "\"has limited resources\"，limited 作形容词修饰 resources，limit 变为过去分词形式的形容词 limited。",
+          "knowledgePoints": ["形容词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q48",
+          "order": 48,
+          "questionType": "fill_blank_transform",
+          "stem": "affect",
+          "options": [],
+          "answer": "affects",
+          "answerExplanation": "主语 This 为第三人称单数，谓语动词 affect 需加 -s，变为 affects。",
+          "knowledgePoints": ["动词时态"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q49",
+          "order": 49,
+          "questionType": "fill_blank_transform",
+          "stem": "decide",
+          "options": [],
+          "answer": "decision",
+          "answerExplanation": "\"making a decision\" 中 a 后接名词，decide 变名词 decision。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-10-q50",
+          "order": 50,
+          "questionType": "fill_blank_transform",
+          "stem": "willing",
+          "options": [],
+          "answer": "unwilling",
+          "answerExplanation": "根据语境（人数太少的小组成员反而不愿意批评他人），willing 需加否定前缀 un- 变为 unwilling。",
+          "knowledgePoints": ["形容词构词"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "13000-2025-10-s7",
+      "type": "写作",
+      "order": 7,
+      "passageTitle": null,
+      "passageText": null,
+      "writingPrompt": "某英文报社正在举办题为\"Starting from Ourselves to Save Electricity\"的征文活动。请你根据下述写作要点提交一篇英文短文应征，内容包括：\n• 当前我国电力资源短缺\n• 如何从小事做起，节约用电\n（请根据所提供材料中的要求完成一篇100词左右的英文写作任务。）",
+      "scorePerQuestion": 30,
+      "totalScore": 30,
+      "questions": [
+        {
+          "questionId": "13000-2025-10-q51",
+          "order": 51,
+          "questionType": "essay",
+          "stem": "Starting from Ourselves to Save Electricity：请根据写作要点，写一篇100词左右的英文短文，内容包括：（1）当前我国电力资源短缺；（2）如何从小事做起，节约用电。",
+          "options": [],
+          "answer": "",
+          "answerExplanation": "官方参考范文：\"Starting from Ourselves to Save Electricity\nNowadays, electricity shortage has become a serious issue in China, affecting both daily life and industrial production. To tackle this problem, everyone should take action from small things in daily life.\nWe can start by turning off lights and electrical appliances when not in use, using energy-saving bulbs, and reducing the use of air conditioners. Unplugging chargers and choosing natural light during the day also help. Moreover, we should promote the idea of saving electricity among family and friends.\nIn short, if everyone contributes a little, we can make a big difference in conserving electricity and protecting our environment.\"",
+          "knowledgePoints": ["写作-说明类"],
+          "difficultyTag": null
+        }
+      ]
+    }
+  ],
+  "parsingNotes": [
+    "该课程13000《英语(专升本)》本套试卷的结构与00015《英语(二)》历年结构完全一致：共7部分（阅读判断10分、阅读理解选择10分、段落大意与句子补全10分、填句补文10分、填词补文15分、完形填空15分、写作30分），合计100分，未发现差异，故各 section 的 type 直接复用了 PARSING_GUIDE.md 中给出的00015对照表。",
+    "试卷封面（第1页）未印刷具体考试时长（考试时间/分钟数），timeLimitMinutes 字段的150分钟是参照该系列自考课程的惯例填写，并非该PDF原文印刷内容，建议人工核实官方公告确认本场考试实际时长。",
+    "答题纸/试题原图中写作题材料框内和答案页第16-20题与Task2之间均印有\"自考押题 通过率高 微信344647\"字样的广告水印，判断为与试题内容无关的第三方广告插入文字，解析时已从 writingPrompt 及 passageText 中排除，未计入正文内容。",
+    "全卷图片清晰，第1-10页（试题8页+答案2页）均可清楚辨认文字与选项字母，未发现字迹模糊、答案缺失或版式导致题目与选项对应关系不确定的情况。",
+    "第16-20题（段落大意匹配）与第21-25题（句子补全）共享同一部分（第三部分），但两组题目分别对应各自独立的6选5候选池（A-F），已按题目在 options 字段中分别列出各自完整候选池，与 PARSING_GUIDE.md 第85行\"该题所在任务的完整候选池\"要求一致。",
+    "第41题（difference）作为示例词，原文中的 'influences (influence)' 为已经给出答案的示范例子并非考题，未计入 questions 数组（题号从41开始，对应原文第一个空格）。"
+  ]
+}
