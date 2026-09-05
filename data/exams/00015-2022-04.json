@@ -1,0 +1,658 @@
+{
+  "examId": "00015-2022-04",
+  "title": "2022年4月高等教育自学考试英语(二)试题",
+  "year": 2022,
+  "month": 4,
+  "courseCode": "00015",
+  "courseName": "英语(二)",
+  "sourceFile": "c6011334-2022_04____________.pdf",
+  "totalScore": 100,
+  "timeLimitMinutes": 150,
+  "status": "待校对",
+  "sections": [
+    {
+      "sectionId": "00015-2022-04-s1",
+      "type": "阅读判断",
+      "order": 1,
+      "passageTitle": "Famous Brands",
+      "passageText": "Why do we always buy certain shoes or clothes that have a famous brand? Why do we have to copy other people? The people we often admire the most are those who have their own styles. They don't want to copy someone else's.\n\nBig companies give free products to famous people, such as sportsmen and movie stars. They intend to get people like you to buy their products. When you spend a lot of money on an expensive pair of shoes, they may not suit you. You might enjoy more if you buy something else at the same price! Besides the brand, you may want to know why they are asking that price. The brand may sometimes have nothing to do with the quality of the product.\n\nIt can be of bad quality and badly made. This makes you think why it has the designer's name on it. It's very important for designers to use their creative talent to make something beautiful. But today the making of money has become more important. So they just copy other products and their standards fall.\n\nCreative products should be available to people at a reasonable price. In this way, big companies wouldn't be able to dominate (控制) the market and encourage people to spend too much money on their products.\n\nThey are dominating the market by telling us what to buy. If you go into a toy shop or children's clothes shop, you'll find the whole section for girls is almost all pink. Because of the domination of big companies, the original arts and crafts are beginning to die out. It would be a real shame if these arts and crafts were to disappear.",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2022-04-q1",
+          "order": 1,
+          "questionType": "single_choice",
+          "stem": "We like the people with their own styles.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "根据第一段“The people we often admire the most are those who have their own styles.”可知人们喜欢有自己风格的人，说法正确。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q2",
+          "order": 2,
+          "questionType": "single_choice",
+          "stem": "Big companies give famous people free products to attract buyers.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "根据第二段“Big companies give free products to famous people...They intend to get people like you to buy their products.”可知大公司为名人提供免费产品以吸引大家购买，说法正确。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q3",
+          "order": 3,
+          "questionType": "single_choice",
+          "stem": "Expensive products often suit people better.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "根据第二段“When you spend a lot of money on an expensive pair of shoes, they may not suit you.”可知昂贵的产品不一定更适合消费者，说法错误。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q4",
+          "order": 4,
+          "questionType": "single_choice",
+          "stem": "Famous brand products are of better quality.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "根据第二、三段“The brand may sometimes have nothing to do with the quality of the product. It can be of bad quality and badly made.”可知品牌有时与产品质量无关，甚至质量很差，说法错误。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q5",
+          "order": 5,
+          "questionType": "single_choice",
+          "stem": "Creativity is important in making good products.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "根据第三段“It's very important for designers to use their creative talent to make something beautiful.”可知创造力对做出好产品很重要，说法正确。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q6",
+          "order": 6,
+          "questionType": "single_choice",
+          "stem": "Famous designers work overtime.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "全文未提及设计师加班的信息，故选C。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q7",
+          "order": 7,
+          "questionType": "single_choice",
+          "stem": "Young people like creative products.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "全文未提及年轻人是否喜欢有创意的产品，故选C。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q8",
+          "order": 8,
+          "questionType": "single_choice",
+          "stem": "Big companies price their products reasonably.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "根据第四段“Creative products should be available to people at a reasonable price. In this way, big companies wouldn't be able to dominate the market...”可反推大公司目前的定价并不合理，说法错误。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q9",
+          "order": 9,
+          "questionType": "single_choice",
+          "stem": "Mothers prefer to shop for children's clothes.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "全文未提及妈妈购物的信息，故选C。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q10",
+          "order": 10,
+          "questionType": "single_choice",
+          "stem": "The domination of big companies does harm to creativity.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "根据最后一段“Because of the domination of big companies, the original arts and crafts are beginning to die out.”可知大公司的市场主导地位损害了创造力，说法正确。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2022-04-s2",
+      "type": "阅读理解选择",
+      "order": 2,
+      "passageTitle": "Self-esteem (自尊) and Body Image",
+      "passageText": "Self-esteem is all about what people think of themselves. It is important because feeling good about yourself can affect how you act. People who have high self-esteem will make friends easily. They are more in control of their behavior, and will enjoy life more.\n\nSome teenagers struggle with their self-esteem when they grow into adults because the body goes through many changes. Along with the changes comes a natural desire to feel accepted. What's more, they can't help but compare themselves with others. They may compare themselves with the people around them or with actors and other famous people they see on TV, in movies, or in magazines.\n\nThe physical changes can affect how both girls and boys feel about themselves. Some girls may feel uncomfortable about their growing bodies. Others may wish that they were developing faster. Girls may feel like being thin but boys may feel like they don't look big enough.\n\nIt's not just body development that affects self-esteem. Many other factors can affect a person's body image too. Family life, for example, can sometimes influence self-esteem. Some parents spend more time criticizing their kids and the way they look than praising them. This can reduce kids' ability to develop good self-esteem. Also their classmates and peers may tease them about the way they look. These sometimes can affect their self-esteem.\n\nIf there are things about yourself that you want to change and you can change, do this by making goals for yourself. If there are things that you can't change, recognize that your body is your own. It's no one's business but your own what your body is like. Actually, to be happy with yourself, all you need to do is to change the way you see your body.",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2022-04-q11",
+          "order": 11,
+          "questionType": "single_choice",
+          "stem": "People with high self-esteem often ________.",
+          "options": ["A. control others' behavior", "B. think highly of others", "C. have lots of friends", "D. work very hard"],
+          "answer": "C",
+          "answerExplanation": "根据第一段“People who have high self-esteem will make friends easily.”推知自尊心强的人朋友多，选C。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q12",
+          "order": 12,
+          "questionType": "single_choice",
+          "stem": "Some teenagers struggle with their self-esteem because ________.",
+          "options": ["A. their teachers don't like them", "B. their bodies have changed a lot", "C. they cannot accept famous people", "D. they need more time to watch TV"],
+          "answer": "B",
+          "answerExplanation": "根据第二段“Some teenagers struggle with their self-esteem when they grow into adults because the body goes through many changes.”可知是因为身体经历了很多变化，选B。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q13",
+          "order": 13,
+          "questionType": "single_choice",
+          "stem": "The word \"tease\" (Line 5, Para. 4) most probably means ________.",
+          "options": ["A. laugh at", "B. talk about", "C. argue with", "D. look at"],
+          "answer": "A",
+          "answerExplanation": "根据上下文，同学和同伴对外貌的“tease”会影响自尊，推断该词意为“嘲笑”，选A。",
+          "knowledgePoints": ["词义猜测"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q14",
+          "order": 14,
+          "questionType": "single_choice",
+          "stem": "To help kids develop good self-esteem, parents should ________.",
+          "options": ["A. compare them with others", "B. make goals for them", "C. criticize their peers", "D. praise them"],
+          "answer": "D",
+          "answerExplanation": "根据第四段“Some parents spend more time criticizing their kids...than praising them. This can reduce kids' ability to develop good self-esteem.”反推父母应多表扬孩子，选D。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q15",
+          "order": 15,
+          "questionType": "single_choice",
+          "stem": "To be happy with yourself, you should ________.",
+          "options": ["A. do business", "B. love your body", "C. find new friends", "D. change your behavior"],
+          "answer": "B",
+          "answerExplanation": "根据末段“to be happy with yourself, all you need to do is to change the way you see your body.”可知应接纳/爱自己的身体，选B。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2022-04-s3",
+      "type": "段落大意与句子补全",
+      "order": 3,
+      "passageTitle": "Helping Children Cope with Stress",
+      "passageText": "① To adults, childhood can seem to be happy and free from worries. But children still experience stress. Things like school and their social life can sometimes create pressures that are too difficult for them to deal with. While they may not talk about their troubles, they do want their parents to reach out and help them.\n\n② Children deal with stress in both healthy and unhealthy ways. As a parent, you can't protect your children from stress, but you can help them develop healthy ways to cope with stress and solve everyday problems. By doing so, you not only help your children handle their current stresses, but also prepare them to deal with future stresses. Here are a few tips for you.\n\n③ When you notice that something is upsetting your child, you need to tell your child about it. If you can, name the feeling you think your child is experiencing. This shouldn't sound like blame. It's just a casual observation, and you're interested in hearing more about your child's concern. Be sympathetic and show that you care and want to understand.\n\n④ Also ask your child to tell you what's wrong. Listen attentively and calmly—with interest, patience, openness, and caring. Don't hurry to make judgements. Do not blame or criticize your child for what he or she has done. The idea is to listen to your child's concerns and feelings. Try to get the whole story by patiently asking questions. Take your time. And let your child take his or her time, too.\n\n⑤ Remember to be patient. As a parent, it hurts to see your child unhappy or stressed. But you should not try to solve every problem for your child. Instead, try to help your child grow into a good problem-solver—a child who knows how to deal with life's ups and downs, express feelings in words, calm down when needed, and never give in to difficulties.",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2022-04-q16",
+          "order": 16,
+          "questionType": "single_choice",
+          "stem": "Paragraph ①:",
+          "options": ["A. Help your child deal with stress", "B. Show your concern and care", "C. Be patient with your child", "D. Stories help children", "E. Listen to your child", "F. Children have stress"],
+          "answer": "F",
+          "answerExplanation": "第①段讲“But children still experience stress.”，主旨是孩子也承受压力，对应F。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q17",
+          "order": 17,
+          "questionType": "single_choice",
+          "stem": "Paragraph ②:",
+          "options": ["A. Help your child deal with stress", "B. Show your concern and care", "C. Be patient with your child", "D. Stories help children", "E. Listen to your child", "F. Children have stress"],
+          "answer": "A",
+          "answerExplanation": "第②段讲父母可以帮助孩子用健康的方式应对压力，对应A。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q18",
+          "order": 18,
+          "questionType": "single_choice",
+          "stem": "Paragraph ③:",
+          "options": ["A. Help your child deal with stress", "B. Show your concern and care", "C. Be patient with your child", "D. Stories help children", "E. Listen to your child", "F. Children have stress"],
+          "answer": "B",
+          "answerExplanation": "第③段讲“Be sympathetic and show that you care and want to understand.”，对应B。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q19",
+          "order": 19,
+          "questionType": "single_choice",
+          "stem": "Paragraph ④:",
+          "options": ["A. Help your child deal with stress", "B. Show your concern and care", "C. Be patient with your child", "D. Stories help children", "E. Listen to your child", "F. Children have stress"],
+          "answer": "E",
+          "answerExplanation": "第④段讲倾听孩子讲述问题，对应E。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q20",
+          "order": 20,
+          "questionType": "single_choice",
+          "stem": "Paragraph ⑤:",
+          "options": ["A. Help your child deal with stress", "B. Show your concern and care", "C. Be patient with your child", "D. Stories help children", "E. Listen to your child", "F. Children have stress"],
+          "answer": "C",
+          "answerExplanation": "第⑤段讲“Remember to be patient.”，对应C。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q21",
+          "order": 21,
+          "questionType": "single_choice",
+          "stem": "Children can meet pressures ________.",
+          "options": ["A. in trouble", "B. in healthy ways", "C. to forget their problems", "D. what he/she has done", "E. from school and their social life", "F. to solve problems themselves"],
+          "answer": "E",
+          "answerExplanation": "根据第①段“Things like school and their social life can sometimes create pressures...”可知孩子的压力来自学校和社交生活，选E。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q22",
+          "order": 22,
+          "questionType": "single_choice",
+          "stem": "Parents can help their children cope with stress ________.",
+          "options": ["A. in trouble", "B. in healthy ways", "C. to forget their problems", "D. what he/she has done", "E. from school and their social life", "F. to solve problems themselves"],
+          "answer": "B",
+          "answerExplanation": "根据第②段“you can help them develop healthy ways to cope with stress”，选B。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q23",
+          "order": 23,
+          "questionType": "single_choice",
+          "stem": "Talk to your child when he/she is ________.",
+          "options": ["A. in trouble", "B. in healthy ways", "C. to forget their problems", "D. what he/she has done", "E. from school and their social life", "F. to solve problems themselves"],
+          "answer": "A",
+          "answerExplanation": "根据第③段“When you notice that something is upsetting your child, you need to tell your child about it.”，选A。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q24",
+          "order": 24,
+          "questionType": "single_choice",
+          "stem": "Don't blame your child for ________.",
+          "options": ["A. in trouble", "B. in healthy ways", "C. to forget their problems", "D. what he/she has done", "E. from school and their social life", "F. to solve problems themselves"],
+          "answer": "D",
+          "answerExplanation": "根据第④段“Do not blame or criticize your child for what he or she has done.”，选D。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q25",
+          "order": 25,
+          "questionType": "single_choice",
+          "stem": "Parents should teach their children ________.",
+          "options": ["A. in trouble", "B. in healthy ways", "C. to forget their problems", "D. what he/she has done", "E. from school and their social life", "F. to solve problems themselves"],
+          "answer": "F",
+          "answerExplanation": "根据第⑤段“try to help your child grow into a good problem-solver”，选F。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2022-04-s4",
+      "type": "填句补文",
+      "order": 4,
+      "passageTitle": "The Coyote (丛林狼)",
+      "passageText": "The coyote is a relative of the dog and the wolf. Like its relatives, it mostly feeds on other animals. It will, however, eat a wide variety of foods, including insects, fruits and vegetables.\n\nCoyotes are found throughout most of North America, from Mexico and Central America to Canada and Alaska. The color of its coat depends on where it lives. ___(26)___\n\nLike the wolf, coyotes live in groups, or packs. The coyote pack is usually smaller than a wolf pack. ___(27)___ The pack will often divide into pairs to hunt. Female coyotes give birth to baby coyotes once a year. Over half of the babies will die before they reach adulthood. Male babies usually leave the pack to find their own territory. ___(28)___\n\nWolves and coyotes compete for the same animals for food. Since the coyote is smaller than the wolf, wolves will usually drive the coyote out of any shared living areas.\n\nThe coyote adapts easily to new areas. Unlike the wolf, the coyote's living area increased when more and more people settled across North America. ___(29)___ Once the New England settlers eliminated wolves, the coyote moved in. Scientists who have studied the coyote believe it is better than the wolf at living in human areas.\n\n___(30)___ They find enough supply of food in these areas, since coyotes are willing to eat garbage, rodents (such as rabbits and mice) and even small pets. Scientists estimate that as many as 2,000 coyotes may be living in the Chicago area.",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2022-04-q26",
+          "order": 26,
+          "questionType": "single_choice",
+          "stem": "26",
+          "options": ["A. Female babies stay with the parent's pack.", "B. The coyote is not an endangered species.", "C. Coyotes are now found in most large cities.", "D. All members of the pack are usually related.", "E. Mountain coyotes are darker than those living in the desert.", "F. For example, the coyote was not native to New England."],
+          "answer": "E",
+          "answerExplanation": "空前“The color of its coat depends on where it lives.”，与E“Mountain coyotes are darker than those living in the desert.”衔接，说明毛色因栖息地而异。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q27",
+          "order": 27,
+          "questionType": "single_choice",
+          "stem": "27",
+          "options": ["A. Female babies stay with the parent's pack.", "B. The coyote is not an endangered species.", "C. Coyotes are now found in most large cities.", "D. All members of the pack are usually related.", "E. Mountain coyotes are darker than those living in the desert.", "F. For example, the coyote was not native to New England."],
+          "answer": "D",
+          "answerExplanation": "空前后讲族群规模及成员关系，D“All members of the pack are usually related.”衔接最合适。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q28",
+          "order": 28,
+          "questionType": "single_choice",
+          "stem": "28",
+          "options": ["A. Female babies stay with the parent's pack.", "B. The coyote is not an endangered species.", "C. Coyotes are now found in most large cities.", "D. All members of the pack are usually related.", "E. Mountain coyotes are darker than those living in the desert.", "F. For example, the coyote was not native to New England."],
+          "answer": "A",
+          "answerExplanation": "根据“Male babies usually leave the pack to find their own territory.”与雄性对应，A讲雌性幼崽留在族群中，形成对比呼应。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q29",
+          "order": 29,
+          "questionType": "single_choice",
+          "stem": "29",
+          "options": ["A. Female babies stay with the parent's pack.", "B. The coyote is not an endangered species.", "C. Coyotes are now found in most large cities.", "D. All members of the pack are usually related.", "E. Mountain coyotes are darker than those living in the desert.", "F. For example, the coyote was not native to New England."],
+          "answer": "F",
+          "answerExplanation": "空后“Once the New England settlers eliminated wolves, the coyote moved in.”与F“the coyote was not native to New England.”衔接，举例说明丛林狼扩张至新英格兰地区。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q30",
+          "order": 30,
+          "questionType": "single_choice",
+          "stem": "30",
+          "options": ["A. Female babies stay with the parent's pack.", "B. The coyote is not an endangered species.", "C. Coyotes are now found in most large cities.", "D. All members of the pack are usually related.", "E. Mountain coyotes are darker than those living in the desert.", "F. For example, the coyote was not native to New England."],
+          "answer": "C",
+          "answerExplanation": "空后“They find enough supply of food in these areas”中的“these areas”对应C“Coyotes are now found in most large cities.”里的大城市。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2022-04-s5",
+      "type": "填词补文",
+      "order": 5,
+      "passageTitle": "Slavery in the United States",
+      "passageText": "In most parts of the United States in the early 1800s, blacks had no rights at all. They did not have the right to vote. It was against the ___(31)___ for them to go to school with whites. In some states, it was even ___(32)___ for them to learn to read and write. Free people had the right to come and go as they ___(33)___, but slaves had to have a pass, or paper, from their ___(34)___ in order to leave the master's land. Slaves were often ___(35)___ from their families when they were sold. They had to work very ___(36)___ hours, but were not paid. If they did not do as they were told, they could be beaten. If they tried to escape, they were hunted down with dogs, and could be tortured or even ___(37)___ when caught.\n\nUntil about 1800, there were slaves in ___(38)___ every state in the United States. But slaves were not a big part of the Northern way of ___(39)___. Northern factories hired workers and did not use slaves. By 1850, all Northern states had made slavery illegal.\n\nIn the Southern states, however, most of the field workers were slaves; one out of every four families ___(40)___ slaves. These people were often rich and had large farms.",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "00015-2022-04-q31",
+          "order": 31,
+          "questionType": "single_choice",
+          "stem": "31",
+          "options": ["A. seldom", "B. master", "C. separated", "D. illegal", "E. killed", "F. life", "G. owned", "H. law", "I. long", "J. almost", "K. liked", "L. played"],
+          "answer": "H",
+          "answerExplanation": "“It was against the ___ for them to go to school with whites.”，the后接名词，根据句意选“law（法律）”。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q32",
+          "order": 32,
+          "questionType": "single_choice",
+          "stem": "32",
+          "options": ["A. seldom", "B. master", "C. separated", "D. illegal", "E. killed", "F. life", "G. owned", "H. law", "I. long", "J. almost", "K. liked", "L. played"],
+          "answer": "D",
+          "answerExplanation": "空处需形容词，根据上文“law”呼应，选“illegal（违法的）”。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q33",
+          "order": 33,
+          "questionType": "single_choice",
+          "stem": "33",
+          "options": ["A. seldom", "B. master", "C. separated", "D. illegal", "E. killed", "F. life", "G. owned", "H. law", "I. long", "J. almost", "K. liked", "L. played"],
+          "answer": "K",
+          "answerExplanation": "“Free people had the right to come and go as they ___”，固定表达“as they liked”，选K。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q34",
+          "order": 34,
+          "questionType": "single_choice",
+          "stem": "34",
+          "options": ["A. seldom", "B. master", "C. separated", "D. illegal", "E. killed", "F. life", "G. owned", "H. law", "I. long", "J. almost", "K. liked", "L. played"],
+          "answer": "B",
+          "answerExplanation": "“from their ___ in order to leave the master's land”，需名词，根据句意选“master（主人）”。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q35",
+          "order": 35,
+          "questionType": "single_choice",
+          "stem": "35",
+          "options": ["A. seldom", "B. master", "C. separated", "D. illegal", "E. killed", "F. life", "G. owned", "H. law", "I. long", "J. almost", "K. liked", "L. played"],
+          "answer": "C",
+          "answerExplanation": "“Slaves were often ___ from their families”，固定搭配“be separated from”，选C。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q36",
+          "order": 36,
+          "questionType": "single_choice",
+          "stem": "36",
+          "options": ["A. seldom", "B. master", "C. separated", "D. illegal", "E. killed", "F. life", "G. owned", "H. law", "I. long", "J. almost", "K. liked", "L. played"],
+          "answer": "I",
+          "answerExplanation": "“They had to work very ___ hours”，根据句意选“long（长时间的）”。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q37",
+          "order": 37,
+          "questionType": "single_choice",
+          "stem": "37",
+          "options": ["A. seldom", "B. master", "C. separated", "D. illegal", "E. killed", "F. life", "G. owned", "H. law", "I. long", "J. almost", "K. liked", "L. played"],
+          "answer": "E",
+          "answerExplanation": "“could be tortured or even ___ when caught”，与“tortured”并列，选“killed（杀死）”。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q38",
+          "order": 38,
+          "questionType": "single_choice",
+          "stem": "38",
+          "options": ["A. seldom", "B. master", "C. separated", "D. illegal", "E. killed", "F. life", "G. owned", "H. law", "I. long", "J. almost", "K. liked", "L. played"],
+          "answer": "J",
+          "answerExplanation": "“there were slaves in ___ every state”，根据句意选“almost（几乎）”。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q39",
+          "order": 39,
+          "questionType": "single_choice",
+          "stem": "39",
+          "options": ["A. seldom", "B. master", "C. separated", "D. illegal", "E. killed", "F. life", "G. owned", "H. law", "I. long", "J. almost", "K. liked", "L. played"],
+          "answer": "F",
+          "answerExplanation": "“the Northern way of ___”，固定表达“way of life（生活方式）”，选F。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q40",
+          "order": 40,
+          "questionType": "single_choice",
+          "stem": "40",
+          "options": ["A. seldom", "B. master", "C. separated", "D. illegal", "E. killed", "F. life", "G. owned", "H. law", "I. long", "J. almost", "K. liked", "L. played"],
+          "answer": "G",
+          "answerExplanation": "“one out of every four families ___ slaves”，需动词，选“owned（拥有）”。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2022-04-s6",
+      "type": "完形填空",
+      "order": 6,
+      "passageTitle": "Rubbish: Easy to Produce, but Hard to Get Rid of",
+      "passageText": "We produce a lot of rubbish. There is no question about it. The amount of rubbish we throw away is surprising (surprise). Scientists report that Americans produce about five ___(41)___ (pound) of rubbish per person—every day. Forty years ago, each person ___(42)___ (produce) only half of it each day. There are ___(43)___ (near) 300 million people in the US. You do the math. How much rubbish do we produce every day?\n\nIn ___(44)___ (add) to the amount of rubbish we produce, how we get rid of it is another problem. The plastic bags that we place outside of our homes need to be ___(45)___ (carry) away every week. These bags are not ___(46)___ (friend) to the environment at all.\n\nNobody is sure how long a plastic bag takes to totally break down, because we've only been ___(47)___ (use) plastic as a business for about 90 years. It is ___(48)___ (believe), however, that it may take 100 years for a plastic bag to completely break down. I am sure that you will feel ___(49)___ (happy) to think that a plastic bag can live longer than the ___(50)___ (major) of people on earth.",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "00015-2022-04-q41",
+          "order": 41,
+          "questionType": "fill_blank_transform",
+          "stem": "pound",
+          "options": [],
+          "answer": "pounds",
+          "answerExplanation": "空前是“five”，名词需用复数形式，填“pounds”。",
+          "knowledgePoints": ["名词单复数"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q42",
+          "order": 42,
+          "questionType": "fill_blank_transform",
+          "stem": "produce",
+          "options": [],
+          "answer": "produced",
+          "answerExplanation": "根据“Forty years ago”可知谓语动词应为过去式，填“produced”。",
+          "knowledgePoints": ["动词时态"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q43",
+          "order": 43,
+          "questionType": "fill_blank_transform",
+          "stem": "near",
+          "options": [],
+          "answer": "nearly",
+          "answerExplanation": "修饰数量“300 million people”，需用副词，填“nearly（将近）”。",
+          "knowledgePoints": ["副词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q44",
+          "order": 44,
+          "questionType": "fill_blank_transform",
+          "stem": "add",
+          "options": [],
+          "answer": "addition",
+          "answerExplanation": "固定搭配“in addition to（除……之外）”，填名词“addition”。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q45",
+          "order": 45,
+          "questionType": "fill_blank_transform",
+          "stem": "carry",
+          "options": [],
+          "answer": "carried",
+          "answerExplanation": "“need to be ___ away”，be动词后接过去分词构成被动语态，填“carried”。",
+          "knowledgePoints": ["被动语态"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q46",
+          "order": 46,
+          "questionType": "fill_blank_transform",
+          "stem": "friend",
+          "options": [],
+          "answer": "friendly",
+          "answerExplanation": "“are not ___ to the environment”，需形容词，填“friendly（友好的）”。",
+          "knowledgePoints": ["形容词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q47",
+          "order": 47,
+          "questionType": "fill_blank_transform",
+          "stem": "use",
+          "options": [],
+          "answer": "using",
+          "answerExplanation": "“we've only been ___ plastic as a business”，现在完成进行时（have been doing），填“using”。",
+          "knowledgePoints": ["动词时态"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q48",
+          "order": 48,
+          "questionType": "fill_blank_transform",
+          "stem": "believe",
+          "options": [],
+          "answer": "believed",
+          "answerExplanation": "固定句型“It is believed that...（人们认为……）”，填“believed”。",
+          "knowledgePoints": ["被动语态"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q49",
+          "order": 49,
+          "questionType": "fill_blank_transform",
+          "stem": "happy",
+          "options": [],
+          "answer": "unhappy",
+          "answerExplanation": "根据句意（塑料袋能比大多数人活得更长，令人感到不快），填形容词“unhappy”。",
+          "knowledgePoints": ["形容词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-04-q50",
+          "order": 50,
+          "questionType": "fill_blank_transform",
+          "stem": "major",
+          "options": [],
+          "answer": "majority",
+          "answerExplanation": "“the ___ of people”，固定搭配“majority of（大多数）”，需名词，填“majority”。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2022-04-s7",
+      "type": "写作",
+      "order": 7,
+      "passageTitle": null,
+      "passageText": null,
+      "writingPrompt": "假设你的外国朋友John想学习汉语，征求你的意见。请给他写一封电子邮件，内容包括：\n1. 支持他学汉语；\n2. 给出学习建议。\n请以Li Ke署名。",
+      "scorePerQuestion": 30,
+      "totalScore": 30,
+      "questions": [
+        {
+          "questionId": "00015-2022-04-q51",
+          "order": 51,
+          "questionType": "essay",
+          "stem": "请根据所提供材料中的要求完成一篇100词左右的英文写作任务。",
+          "options": [],
+          "answer": "",
+          "answerExplanation": "官方参考范文：\nDear John,\n\nIn your last email, you said that you wanted to learn Chinese. I was very surprised when I heard that and I support your decision. Now, I am writing to give you some advice.\n\nI think the best way is to communicate with others. So you should go to public places to listen and talk with some Chinese. In addition, you can listen to the radio or watch television to practise listening. What's more, you can read some simple Chinese newspapers, books or magazines. In the end, listening to Chinese songs is also a good way.\n\nI think as long as you have a strong will, you are sure to achieve your goal.\n\nBest Regards,\nLi Ke",
+          "knowledgePoints": ["写作-观点类"],
+          "difficultyTag": null
+        }
+      ]
+    }
+  ],
+  "parsingNotes": [
+    "第3部分（Task 2，第21-25题）的句子补全题在试卷原文中不是短文内部的挖空，而是短文后独立列出的句子，passageText 中未插入题号占位符，仅在questions的stem中保留了原句；这与PARSING_GUIDE第2节描述的挖空型短文略有不同，特此说明。",
+    "第49题（happy的变形）官方答案为unhappy，考查加否定前缀构成反义形容词，PARSING_GUIDE的考点标签表中没有'前缀构词'这一专门标签，此处按guide要求复用了最接近的'形容词构词'标签，未新造标签。",
+    "全部51题的正确答案均来自PDF末尾'2022.4答案解析'官方页面，图片文字清晰，未发现模糊或缺失的题目/答案，无需人工复核具体某题的答案内容。"
+  ]
+}
