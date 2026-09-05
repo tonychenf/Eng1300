@@ -1,0 +1,659 @@
+{
+  "examId": "13000-2024-10",
+  "title": "2024年10月高等教育自学考试英语(专升本)试题",
+  "year": 2024,
+  "month": 10,
+  "courseCode": "13000",
+  "courseName": "英语(专升本)",
+  "sourceFile": "87682e53-2024_10____________.pdf",
+  "totalScore": 100,
+  "timeLimitMinutes": 150,
+  "status": "待校对",
+  "sections": [
+    {
+      "sectionId": "13000-2024-10-s1",
+      "type": "阅读判断",
+      "order": 1,
+      "passageTitle": "The Magic of Tidying Up",
+      "passageText": "If you haven't worn your shoes lately, thank them for their hard work and consider letting them go. \"It is natural for me to say thank-you to the goods that support us,\" says Marie Kondo, the author of The Life-Changing Magic of Tidying Up. Her method of connecting with belongings that \"spark joy\" and saying goodbye to the rest is popular all over the world.\n\nKondo's method encourages a one-time rapid and dramatic organizing event. For her, tidying is to thank anything that doesn't \"spark joy\" and send them to a more appreciative owner. The results can be life-changing. People suddenly find themselves surrounded by things that provide clarity (简洁). Even her book, Kondo says, should be thrown away when it's no longer needed.\n\nKondo suggested starting with clothes, then books, then documents, and last and most difficult, photos and mementos (纪念品). Instead of deciding what to get rid of, she says, the focus should be on what to keep: things that spark joy or are truly necessary.\n\nAfter joyfully sending away mountains of unneeded or unloved belongings, Kondo turns to organizing what is left. The key is storing things mostly in drawers, arranged so that everything can be seen at a glance and nothing is stacked. So T-shirts and socks (the ones you've kept because they make you happy) are rolled and arranged beautifully.\n\nKondo has been fond of tidying since she was five, enjoying arranging shoes and pencils while other kids played outside. She believes the inside of a house should be a place where there are no unnecessary things, and our thoughts become clear. It is the place where we appreciate all the things that support us. It is where we review and rethink about ourselves.",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "13000-2024-10-q1",
+          "order": 1,
+          "questionType": "single_choice",
+          "stem": "Kondo wrote a book to help people make their home tidy.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "第一段提到她是The Life-Changing Magic of Tidying Up一书的作者，其整理法风靡全球，帮助人们整理家居，与题目信息一致。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q2",
+          "order": 2,
+          "questionType": "single_choice",
+          "stem": "The Life-Changing Magic of Tidying Up is a bestseller.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "原文只提到该书的方法广受欢迎（popular all over the world），未提及该书是否为畅销书（bestseller）。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q3",
+          "order": 3,
+          "questionType": "single_choice",
+          "stem": "Kondo's method encourages slow and gradual organizing.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "第二段明确说她的方法鼓励一次性快速而剧烈的整理（a one-time rapid and dramatic organizing event），与“slow and gradual”相反。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q4",
+          "order": 4,
+          "questionType": "single_choice",
+          "stem": "Most people throw Kondo's book away after reading it.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "原文只说“她的书在不再需要时也应该被扔掉”（Kondo的建议），并未说明大多数读者读完后真的把书扔掉。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q5",
+          "order": 5,
+          "questionType": "single_choice",
+          "stem": "Kondo says clothes are the items to be thrown away first.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "第三段：Kondo suggested starting with clothes, then books, then documents...，与题干一致。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q6",
+          "order": 6,
+          "questionType": "single_choice",
+          "stem": "Deciding what to send away is more important than what to keep.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "第三段：Instead of deciding what to get rid of, the focus should be on what to keep，说明“保留什么”才是重点，与题干相反。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q7",
+          "order": 7,
+          "questionType": "single_choice",
+          "stem": "T-shirts should be kept one upon another in drawers.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "第四段：nothing is stacked，T恤等物品应卷起摆放而不是叠放（one upon another），与题干相反。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q8",
+          "order": 8,
+          "questionType": "single_choice",
+          "stem": "Kondo became interested in tidying at the age of five.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "第五段：Kondo has been fond of tidying since she was five，与题干一致。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q9",
+          "order": 9,
+          "questionType": "single_choice",
+          "stem": "Kondo's own house is small but clean.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "全文未提及Kondo自己房子的大小或整洁程度。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q10",
+          "order": 10,
+          "questionType": "single_choice",
+          "stem": "Kondo believes a well-organized house makes people's mind clear.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "第五段：our thoughts become clear，与题干一致。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "13000-2024-10-s2",
+      "type": "阅读理解选择",
+      "order": 2,
+      "passageTitle": "The Grand in Grandmother",
+      "passageText": "When I was growing up, my parents took teaching jobs in a remote town, leaving me in the care of my grandmother.\n\nNanay, as we called her, did not hug or kiss children. Her tongue was sharp and her words harsh. She was a tyrant (独裁者), but she was there. As early as I could remember, Nanay had always been a part of my life. I believed grandmothers lived forever.\n\nShe taught me many lessons, though I often ignored them. Nanay urged me never to accept second-best. For her, \"good enough\" was never enough, from the grades you bring home from school to the service you receive in restaurants.\n\nWhen I was 13, Nanay sent me to Manila to attend high school, and I stayed there for university. I came back each summer, but after I got married the visits became less frequent. Soon all of her grandchildren had moved out. Nanay was left on her own. In her letters to me, she wrote of how lonely she was, but I never made the effort to spend more time with her.\n\nNanay died last year. She was 83. After the funeral, I went to our old house. Grandmother had kept so many things from my childhood: the toys; the letters I wrote home in my high school and university years, either asking for more rice or thanking her for sending fruit. Photos of her grandchildren were on display in the living room.\n\nWhen I visited her grave and reflected on all her birthdays I had allowed to pass, I was filled with sorrow. I thought about all the stories she never got a chance to tell me, about her life, about the girl she once had been, about the town I left behind. It occurred to me that perhaps she did not tell me because I did not know how to ask.",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "13000-2024-10-q11",
+          "order": 11,
+          "questionType": "single_choice",
+          "stem": "The author was left in the care of Nanay because ________.",
+          "options": ["A. his parents worked far away", "B. Nanay loved children", "C. he wanted to stay with Nanay", "D. Nanay was a good teacher"],
+          "answer": "A",
+          "answerExplanation": "第一段：my parents took teaching jobs in a remote town, leaving me in the care of my grandmother，说明父母去远方教书，才把作者留给外婆照顾。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q12",
+          "order": 12,
+          "questionType": "single_choice",
+          "stem": "In his childhood, the author thought that Nanay was ________.",
+          "options": ["A. friendly", "B. unkind", "C. lonely", "D. patient"],
+          "answer": "B",
+          "answerExplanation": "第二段：did not hug or kiss children，Her tongue was sharp and her words harsh，She was a tyrant，说明幼时作者认为外婆不慈祥/严厉。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q13",
+          "order": 13,
+          "questionType": "single_choice",
+          "stem": "According to the author, Nanay ________.",
+          "options": ["A. ignored teaching the children", "B. received little education", "C. urged him to work for the best", "D. preferred to live on her own"],
+          "answer": "C",
+          "answerExplanation": "第三段：Nanay urged me never to accept second-best，说明外婆一直督促作者追求最好，不接受“过得去”。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q14",
+          "order": 14,
+          "questionType": "single_choice",
+          "stem": "The author felt sad because he missed ________.",
+          "options": ["A. the stories about Nanay", "B. Nanay's funeral", "C. the photo display of Nanay", "D. Nanay's lessons"],
+          "answer": "A",
+          "answerExplanation": "末段：I thought about all the stories she never got a chance to tell me...，作者为错过了解外婆故事的机会而感到悲伤。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q15",
+          "order": 15,
+          "questionType": "single_choice",
+          "stem": "The tone of the text can be described as ________.",
+          "options": ["A. humorous", "B. joyful", "C. critical", "D. regretful"],
+          "answer": "D",
+          "answerExplanation": "全文回顾作者对外婆的疏忽与愧疚（filled with sorrow, 未能多陪伴外婆），整体基调是遗憾/懊悔（regretful）。",
+          "knowledgePoints": ["观点态度理解"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "13000-2024-10-s3",
+      "type": "段落大意与句子补全",
+      "order": 3,
+      "passageTitle": "Exercise and Dieting",
+      "passageText": "If you are overweight, it could lead to health conditions including increased blood pressure or heart disease. If you're worried about how heavy you are, ask the doctor for advice. If you only have to lose some weight, the best thing to do is stop eating when you are full, eat healthily and get more energetic.\n\n❶ Becoming more active is the best way of burning off those additional calories (卡路里). You don't need go to the gym to do this. Just increase the amount of walking you do each day or just go for a bike ride. You put on weight if you eat more than you need; this is because you accumulate any energy not used into fat.\n\n❷ Every day you should drink about 8 glasses of water. You will need more if the weather is hot or while you are doing physical activity. Try to cut down on those drinks high in sugar.\n\n❸ You don't need to give up drinking alcohol, but too much drinking can cause harm. Drinking less can help lose pounds. The guideline for women is 3 units per day, and for men, 4 units per day. A good goal for better health is to stretch your drinking over a week and not save it for the weekends. Overdrinking for a long time can also harm the liver.\n\n❹ Never skip breakfast, as it provides you with energy to keep you going through the day. Many people miss breakfast thinking it helps them lose extra pounds. But it doesn't at all, and even worse, they can lose out on minerals and vitamins. It is clear that eating breakfast can help control your weight.\n\nTo sum up, if you are thinking about going on a diet, make sure you consider the above guidelines.",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "13000-2024-10-q16",
+          "order": 16,
+          "questionType": "single_choice",
+          "stem": "Paragraph ❶:",
+          "options": ["A. Seeing a doctor", "B. Having breakfast", "C. Drinking enough water", "D. Doing physical exercise", "E. Drinking alcohol moderately"],
+          "answer": "D",
+          "answerExplanation": "该段讲通过多运动（走路、骑车）燃烧多余热量，对应“Doing physical exercise”。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q17",
+          "order": 17,
+          "questionType": "single_choice",
+          "stem": "Paragraph ❷:",
+          "options": ["A. Seeing a doctor", "B. Having breakfast", "C. Drinking enough water", "D. Doing physical exercise", "E. Drinking alcohol moderately"],
+          "answer": "C",
+          "answerExplanation": "该段讲每天应喝约8杯水，对应“Drinking enough water”。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q18",
+          "order": 18,
+          "questionType": "single_choice",
+          "stem": "Paragraph ❸:",
+          "options": ["A. Seeing a doctor", "B. Having breakfast", "C. Drinking enough water", "D. Doing physical exercise", "E. Drinking alcohol moderately"],
+          "answer": "E",
+          "answerExplanation": "该段讲饮酒应适量（不必戒酒但要控制量），对应“Drinking alcohol moderately”。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q19",
+          "order": 19,
+          "questionType": "single_choice",
+          "stem": "Paragraph ❹:",
+          "options": ["A. Seeing a doctor", "B. Having breakfast", "C. Drinking enough water", "D. Doing physical exercise", "E. Drinking alcohol moderately"],
+          "answer": "B",
+          "answerExplanation": "该段讲不要不吃早餐，对应“Having breakfast”。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q20",
+          "order": 20,
+          "questionType": "single_choice",
+          "stem": "Before losing weight, you'd better ________.",
+          "options": ["A. into fat", "B. in sugar", "C. harm the liver", "D. seek advice from a doctor", "E. 3 units of alcohol every day", "F. a lack of minerals and vitamins", "G. 4 glasses of water each day"],
+          "answer": "D",
+          "answerExplanation": "引言段：If you're worried about how heavy you are, ask the doctor for advice，对应“seek advice from a doctor”。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q21",
+          "order": 21,
+          "questionType": "single_choice",
+          "stem": "The unused energy will be accumulated ________.",
+          "options": ["A. into fat", "B. in sugar", "C. harm the liver", "D. seek advice from a doctor", "E. 3 units of alcohol every day", "F. a lack of minerals and vitamins", "G. 4 glasses of water each day"],
+          "answer": "A",
+          "answerExplanation": "第❶段：you accumulate any energy not used into fat，对应“into fat”。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q22",
+          "order": 22,
+          "questionType": "single_choice",
+          "stem": "You should reduce drinks rich ________.",
+          "options": ["A. into fat", "B. in sugar", "C. harm the liver", "D. seek advice from a doctor", "E. 3 units of alcohol every day", "F. a lack of minerals and vitamins", "G. 4 glasses of water each day"],
+          "answer": "B",
+          "answerExplanation": "第❷段：Try to cut down on those drinks high in sugar，对应“in sugar”。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q23",
+          "order": 23,
+          "questionType": "single_choice",
+          "stem": "Women are advised to drink ________.",
+          "options": ["A. into fat", "B. in sugar", "C. harm the liver", "D. seek advice from a doctor", "E. 3 units of alcohol every day", "F. a lack of minerals and vitamins", "G. 4 glasses of water each day"],
+          "answer": "E",
+          "answerExplanation": "第❸段：The guideline for women is 3 units per day，对应“3 units of alcohol every day”。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q24",
+          "order": 24,
+          "questionType": "single_choice",
+          "stem": "Longtime overdrinking may ________.",
+          "options": ["A. into fat", "B. in sugar", "C. harm the liver", "D. seek advice from a doctor", "E. 3 units of alcohol every day", "F. a lack of minerals and vitamins", "G. 4 glasses of water each day"],
+          "answer": "C",
+          "answerExplanation": "第❸段：Overdrinking for a long time can also harm the liver，对应“harm the liver”。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q25",
+          "order": 25,
+          "questionType": "single_choice",
+          "stem": "Missing breakfast may cause ________.",
+          "options": ["A. into fat", "B. in sugar", "C. harm the liver", "D. seek advice from a doctor", "E. 3 units of alcohol every day", "F. a lack of minerals and vitamins", "G. 4 glasses of water each day"],
+          "answer": "F",
+          "answerExplanation": "第❹段：they can lose out on minerals and vitamins，对应“a lack of minerals and vitamins”。选项G为干扰项，未被使用。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "13000-2024-10-s4",
+      "type": "填句补文",
+      "order": 4,
+      "passageTitle": "Enjoy Yourself and Improve Your English",
+      "passageText": "One student I knew in Tanzania was the daughter of a school teacher. On the first day of the long school holidays, a whole set of graded English books arrived at her house. ___(26)___ The daughter read them all, starting from the easiest and working up to the most difficult. The holidays passed quickly and when the new school term started, she was far ahead of her classmates in English.\n\n___(27)___ I think there are three. First, learning a new language takes time and practice. It is the same with any skill, like swimming. There are no quicker ways.\n\nSecond, successful learning means moving from the easy to the difficult. ___(28)___ You have to play very simple tunes before you move on, step by step, to more complex ones.\n\n___(29)___ The student was not trying to improve her English, though her English did improve. She liked the stories and was using them to pass the time. She became better at English without knowing it. Her brain was learning the language while she was concentrating on the stories.\n\nHowever, many students give two main reasons for not reading much. ___(30)___ I am afraid this reason is very weak and simply not true. The other reason is that they do not enjoy it. This reason is stronger. In fact it can be divided into two. You may not enjoy reading because either the language is difficult, or the stories are boring.",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "13000-2024-10-q26",
+          "order": 26,
+          "questionType": "single_choice",
+          "stem": "___(26)___",
+          "options": ["A. One is that they have no time.", "B. Why don't students read more?", "C. What lessons does this story teach us?", "D. Her mother had bought them for the school.", "E. Third, reading stories in a new language is enjoyable.", "F. This is just like learning to play the piano."],
+          "answer": "D",
+          "answerExplanation": "上文说一整套英语分级读物送到了她家，本句需解释书的来源，D“她妈妈为学校买的”承接自然。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q27",
+          "order": 27,
+          "questionType": "single_choice",
+          "stem": "___(27)___",
+          "options": ["A. One is that they have no time.", "B. Why don't students read more?", "C. What lessons does this story teach us?", "D. Her mother had bought them for the school.", "E. Third, reading stories in a new language is enjoyable.", "F. This is just like learning to play the piano."],
+          "answer": "C",
+          "answerExplanation": "下文以“I think there are three”回答“这个故事教给我们什么道理”，故C（提出问题）与后文的三点道理衔接。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q28",
+          "order": 28,
+          "questionType": "single_choice",
+          "stem": "___(28)___",
+          "options": ["A. One is that they have no time.", "B. Why don't students read more?", "C. What lessons does this story teach us?", "D. Her mother had bought them for the school.", "E. Third, reading stories in a new language is enjoyable.", "F. This is just like learning to play the piano."],
+          "answer": "F",
+          "answerExplanation": "下文提到“弹简单曲子再到复杂曲子”，F“这就像学钢琴一样”引出弹钢琴的类比，逻辑衔接。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q29",
+          "order": 29,
+          "questionType": "single_choice",
+          "stem": "___(29)___",
+          "options": ["A. One is that they have no time.", "B. Why don't students read more?", "C. What lessons does this story teach us?", "D. Her mother had bought them for the school.", "E. Third, reading stories in a new language is enjoyable.", "F. This is just like learning to play the piano."],
+          "answer": "E",
+          "answerExplanation": "此处是第三点道理，E“第三，用新语言读故事很有趣”承接前文“first...second...”的结构，并与下文“she liked the stories”呼应。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q30",
+          "order": 30,
+          "questionType": "single_choice",
+          "stem": "___(30)___",
+          "options": ["A. One is that they have no time.", "B. Why don't students read more?", "C. What lessons does this story teach us?", "D. Her mother had bought them for the school.", "E. Third, reading stories in a new language is enjoyable.", "F. This is just like learning to play the piano."],
+          "answer": "A",
+          "answerExplanation": "下文说“I am afraid this reason is very weak”指代前面提出的一个理由，A“其一是他们没时间”正是被反驳的理由。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "13000-2024-10-s5",
+      "type": "填词补文",
+      "order": 5,
+      "passageTitle": "My Little Niece",
+      "passageText": "My little niece, a ten-month-old baby, is the most lovely child I have ever seen. Her face is like a red apple and her eyes are like ___(31)___ stars. When you carry her in your arms, she likes to put her arms around your neck. All the ___(32)___ in the family love her very much and often try to make her smile. But quite ___(33)___ it is she who makes us ___(34)___. Once I winked (眨眼) at her and she smiled. When I did it again, she watched me ___(35)___. Then she tried to imitate. While I closed one eye to wink, she had to close ___(36)___ eyes at the same time, and then ___(37)___ opened them again. And that was her way to wink. We all ___(38)___ into laughter. When we looked at her again, she was staring at us, puzzled, as if she were ___(39)___, \"What are you laughing at?\" We all love this ___(40)___ little baby.",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "13000-2024-10-q31",
+          "order": 31,
+          "questionType": "single_choice",
+          "stem": "___(31)___",
+          "options": ["A. laugh", "B. both", "C. drink", "D. grown-ups", "E. attentively", "F. asking", "G. cute", "H. flowers", "I. burst", "J. often", "K. bright", "L. quickly"],
+          "answer": "K",
+          "answerExplanation": "“her eyes are like ___ stars”，形容眼睛像明亮的星星，选bright。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q32",
+          "order": 32,
+          "questionType": "single_choice",
+          "stem": "___(32)___",
+          "options": ["A. laugh", "B. both", "C. drink", "D. grown-ups", "E. attentively", "F. asking", "G. cute", "H. flowers", "I. burst", "J. often", "K. bright", "L. quickly"],
+          "answer": "D",
+          "answerExplanation": "“All the ___ in the family love her”，指家里的大人们，选grown-ups。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q33",
+          "order": 33,
+          "questionType": "single_choice",
+          "stem": "___(33)___",
+          "options": ["A. laugh", "B. both", "C. drink", "D. grown-ups", "E. attentively", "F. asking", "G. cute", "H. flowers", "I. burst", "J. often", "K. bright", "L. quickly"],
+          "answer": "J",
+          "answerExplanation": "“But quite ___ it is she who makes us laugh”，指常常是她逗笑我们，选often，与quite搭配表示“常常”。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q34",
+          "order": 34,
+          "questionType": "single_choice",
+          "stem": "___(34)___",
+          "options": ["A. laugh", "B. both", "C. drink", "D. grown-ups", "E. attentively", "F. asking", "G. cute", "H. flowers", "I. burst", "J. often", "K. bright", "L. quickly"],
+          "answer": "A",
+          "answerExplanation": "“it is she who makes us ___”，指她逗我们发笑，选laugh。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q35",
+          "order": 35,
+          "questionType": "single_choice",
+          "stem": "___(35)___",
+          "options": ["A. laugh", "B. both", "C. drink", "D. grown-ups", "E. attentively", "F. asking", "G. cute", "H. flowers", "I. burst", "J. often", "K. bright", "L. quickly"],
+          "answer": "E",
+          "answerExplanation": "“she watched me ___”，指她专注地看着“我”眨眼，选attentively（专注地）。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q36",
+          "order": 36,
+          "questionType": "single_choice",
+          "stem": "___(36)___",
+          "options": ["A. laugh", "B. both", "C. drink", "D. grown-ups", "E. attentively", "F. asking", "G. cute", "H. flowers", "I. burst", "J. often", "K. bright", "L. quickly"],
+          "answer": "B",
+          "answerExplanation": "“she had to close ___ eyes at the same time”，指她只能同时闭上两只眼睛，选both。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q37",
+          "order": 37,
+          "questionType": "single_choice",
+          "stem": "___(37)___",
+          "options": ["A. laugh", "B. both", "C. drink", "D. grown-ups", "E. attentively", "F. asking", "G. cute", "H. flowers", "I. burst", "J. often", "K. bright", "L. quickly"],
+          "answer": "L",
+          "answerExplanation": "“then ___ opened them again”，指很快又睁开眼睛，选quickly。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q38",
+          "order": 38,
+          "questionType": "single_choice",
+          "stem": "___(38)___",
+          "options": ["A. laugh", "B. both", "C. drink", "D. grown-ups", "E. attentively", "F. asking", "G. cute", "H. flowers", "I. burst", "J. often", "K. bright", "L. quickly"],
+          "answer": "I",
+          "answerExplanation": "“We all ___ into laughter”，固定搭配burst into laughter（突然大笑），选burst。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q39",
+          "order": 39,
+          "questionType": "single_choice",
+          "stem": "___(39)___",
+          "options": ["A. laugh", "B. both", "C. drink", "D. grown-ups", "E. attentively", "F. asking", "G. cute", "H. flowers", "I. burst", "J. often", "K. bright", "L. quickly"],
+          "answer": "F",
+          "answerExplanation": "“as if she were ___, ‘What are you laughing at?’”，指她好像在问，选asking。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q40",
+          "order": 40,
+          "questionType": "single_choice",
+          "stem": "___(40)___",
+          "options": ["A. laugh", "B. both", "C. drink", "D. grown-ups", "E. attentively", "F. asking", "G. cute", "H. flowers", "I. burst", "J. often", "K. bright", "L. quickly"],
+          "answer": "G",
+          "answerExplanation": "“We all love this ___ little baby”，形容这个小婴儿可爱，选cute。“drink”和“flowers”为未使用的干扰项。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "13000-2024-10-s6",
+      "type": "完形填空",
+      "order": 6,
+      "passageTitle": "Observing the Nature",
+      "passageText": "Nature is amazingly (amazing) complex. Every day many different things happen in nature. Look around and observe. What do you see happening?\n\n___(41)___ (Live) things grow and die as ___(42)___ (season) change. In nature, even the quietest place is not empty, because insects fill the air. Nature is so ___(43)___ (vary) that there are millions of kinds of plants and animals to study. Time and patience are ___(44)___ (need) to learn from nature. And that's ___(45)___ (particular) true of the study of animals.\n\nYou can't just press a button on a bird and have it tell you how fast it can fly. And monkeys don't wear signs ___(46)___ (tell) you how they take care of their young. To learn these things, you have to observe.\n\n___(47)___ (Scientist) observe animals in different ways. And each of them ___(48)___ (give) the world something through their observations. Some help us make sense of the ___(49)___ (nature) world. Others help us see the ___(50)___ (important) of protecting it.",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "13000-2024-10-q41",
+          "order": 41,
+          "questionType": "fill_blank_transform",
+          "stem": "Live",
+          "options": [],
+          "answer": "Living",
+          "answerExplanation": "“___ things grow and die”，需要现在分词作形容词修饰things，Live→Living（活的）。官方评分说明：本部分无0.5分和1分的计分，语法或拼写错误均不给分，英美拼写均可接受。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q42",
+          "order": 42,
+          "questionType": "fill_blank_transform",
+          "stem": "season",
+          "options": [],
+          "answer": "seasons",
+          "answerExplanation": "“as ___ change”，季节有多个，需用复数形式seasons。",
+          "knowledgePoints": ["名词单复数"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q43",
+          "order": 43,
+          "questionType": "fill_blank_transform",
+          "stem": "vary",
+          "options": [],
+          "answer": "varied",
+          "answerExplanation": "“Nature is so ___ that...”，be动词后需要形容词，vary→varied（多样的）。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q44",
+          "order": 44,
+          "questionType": "fill_blank_transform",
+          "stem": "need",
+          "options": [],
+          "answer": "needed",
+          "answerExplanation": "“Time and patience are ___ to learn from nature”，被动语态are needed（是必需的）。",
+          "knowledgePoints": ["被动语态"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q45",
+          "order": 45,
+          "questionType": "fill_blank_transform",
+          "stem": "particular",
+          "options": [],
+          "answer": "particularly",
+          "answerExplanation": "“that's ___ true of...”，修饰形容词true，需用副词particularly（尤其）。",
+          "knowledgePoints": ["副词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q46",
+          "order": 46,
+          "questionType": "fill_blank_transform",
+          "stem": "tell",
+          "options": [],
+          "answer": "telling",
+          "answerExplanation": "“signs ___ you how they take care of their young”，现在分词短语作后置定语修饰signs，tell→telling。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q47",
+          "order": 47,
+          "questionType": "fill_blank_transform",
+          "stem": "Scientist",
+          "options": [],
+          "answer": "Scientists",
+          "answerExplanation": "“___ observe animals in different ways”，句子主语，泛指科学家们，用复数Scientists。",
+          "knowledgePoints": ["名词单复数"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q48",
+          "order": 48,
+          "questionType": "fill_blank_transform",
+          "stem": "give",
+          "options": [],
+          "answer": "gives",
+          "answerExplanation": "“each of them ___ the world something”，主语each为第三人称单数，一般现在时需用gives。",
+          "knowledgePoints": ["动词时态"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q49",
+          "order": 49,
+          "questionType": "fill_blank_transform",
+          "stem": "nature",
+          "options": [],
+          "answer": "natural",
+          "answerExplanation": "“the ___ world”，修饰world需要形容词，nature→natural（自然的）。",
+          "knowledgePoints": ["形容词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2024-10-q50",
+          "order": 50,
+          "questionType": "fill_blank_transform",
+          "stem": "important",
+          "options": [],
+          "answer": "importance",
+          "answerExplanation": "“see the ___ of protecting it”，the后接名词，important→importance（重要性）。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "13000-2024-10-s7",
+      "type": "写作",
+      "order": 7,
+      "passageTitle": null,
+      "passageText": null,
+      "writingPrompt": "某英文报社正在举行征文活动，请你以“Uses of the Internet”为题写一篇英文短文应征，内容包括：\n• 你常用网络做哪些事\n• 网络对你的生活有何影响\n请根据所提供材料中的要求完成一篇100词左右的英文写作任务。",
+      "scorePerQuestion": 30,
+      "totalScore": 30,
+      "questions": [
+        {
+          "questionId": "13000-2024-10-q51",
+          "order": 51,
+          "questionType": "essay",
+          "stem": "请以“Uses of the Internet”为题，写一篇100词左右的英文短文，内容包括：(1) 你常用网络做哪些事；(2) 网络对你的生活有何影响。",
+          "options": [],
+          "answer": "",
+          "answerExplanation": "官方范文（略），仅给出评分参考。评分原则：本题总分30分，按5个档次评分——第一档25~30分（圆满完成任务，内容要点表达清楚，语法词汇满足要求，语言运用准确恰当）；第二档19~24分（完成任务，表达全部或关键要点，语言基本正确，小错不影响理解）；第三档13~18分（基本完成任务，提及关键要点可能有遗漏，语言错误不影响理解）；第四档7~12分（完成部分任务，遗漏或未能清楚表达要点，语法词汇单调，错误较多部分影响理解）；第五档1~6分（未完成任务，明显遗漏要点，语言错误很多严重影响理解）；0分（信息或语言太少无法评价，或与题目要求完全无关）。评分依总体印象给分而非逐错扣分，英式、美式拼写及用法均可接受，书写差或字数明显不足降低一个档次。",
+          "knowledgePoints": ["写作-说明类"],
+          "difficultyTag": null
+        }
+      ]
+    }
+  ],
+  "parsingNotes": [
+    "试卷首页（第1页）未印刷考试时长（timeLimitMinutes），本文件按同类课程惯例暂填150分钟，需人工核对官方公布的考试时长是否确为150分钟。",
+    "该课程13000《英语(专升本)》2024年10月这份试卷的部分构成（7个部分：阅读判断10分、阅读理解选择10分、段落大意与句子补全10分、填句补文10分、填词补文15分、完形填空(词形变换)15分、写作30分，共100分）与00015《英语(二)》PARSING_GUIDE.md中给出的典型结构完全一致，故所有section均直接复用guide里的type取值，未新增或调整type。",
+    "第51题写作为主观题，官方答案页仅注明“范文（略）”并给出五档评分标准，未提供具体范文内容，故本文件的answer留空，answerExplanation中完整记录了官方评分档次说明，供人工阅卷参考。",
+    "PDF经pdftoppm转换后实际生成10页图片（第1-8页为试题正文，第9-10页为无独立页码的答案及评分参考页，页面自身标注为“答案及评分参考第1页/第2页”），与任务描述中的“共8页”不完全一致，但内容完整，未发现缺页或内容缺失。"
+  ]
+}

@@ -1,0 +1,771 @@
+{
+  "examId": "00015-2016-04",
+  "title": "2016年4月高等教育自学考试英语(二)试题",
+  "year": 2016,
+  "month": 4,
+  "courseCode": "00015",
+  "courseName": "英语(二)",
+  "sourceFile": "f44bbbd6-2016_04____________.pdf",
+  "totalScore": 100,
+  "timeLimitMinutes": 150,
+  "status": "待校对",
+  "sections": [
+    {
+      "sectionId": "00015-2016-04-s1",
+      "type": "阅读判断",
+      "order": 1,
+      "passageTitle": "Red Nose Day",
+      "passageText": "Red Nose Day (RND) is a well-known event in the UK. The aim of the day is to raise money for Comic Relief. This is a charity that helps people in need in Africa and in the UK.\n\nComic Relief was started in 1985 by Richard Curtis. He wrote the famous films \"Four Weddings and a Funeral\" and \"Notting Hill\". Richard started Comic Relief in response to the severe famine in Ethiopia. It's called Red Nose Day as on this day many people buy a plastic red nose to wear! The money made from selling red noses goes to the charity.\n\nRed Nose Day takes place every two years in the spring. It is now so well established that many people consider it to be an unofficial national holiday.\n\nThe slogan for the last RND was \"Do Something Funny for Money.\" The money that was collected was used to help fund projects in such areas as education and mental health. Money-raising events take place on this day all over the country and many schools participate. People also donate money by post in banks by phone using a credit card and online.\n\nIn the evening of Red Nose Day a telethon takes place on the BBC TV channels. This is like a television marathon (马拉松) that shows some of the events of the day and reports how the money raised will be spent. People also upload videos of local charity events onto the Internet.\n\nSo if you are ever in the UK on Red Nose Day, you will know why you find normal people wearing red noses and doing silly things! It's all for a good cause!",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2016-04-q1",
+          "order": 1,
+          "questionType": "single_choice",
+          "stem": "Red Nose Day is a famous event in Britain.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "根据短文第一段第一句，it is a well-known event，非常著名的。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q2",
+          "order": 2,
+          "questionType": "single_choice",
+          "stem": "Comic Relief aims to help people all over the world.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "根据短文第一段最后一句，Comic Relief只 help people in Africa and in the UK，并非全世界。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q3",
+          "order": 3,
+          "questionType": "single_choice",
+          "stem": "Richard Curtis is a well-known actor and film director.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "文中只提到他写了这些著名电影(He wrote the famous films...)，没有说他是演员或导演，也没有说他"很有名"，信息未提及。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q4",
+          "order": 4,
+          "questionType": "single_choice",
+          "stem": "Many people wear a red nose on Red Nose Day.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "根据第二段"many people buy a plastic red nose to wear"及短文最后一段"you will know why you find normal people wearing red noses"可知。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q5",
+          "order": 5,
+          "questionType": "single_choice",
+          "stem": "Red Nose Day takes place every year.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "根据第三段 \"takes place every two years in the spring\"，每两年举行一次，不是每年。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q6",
+          "order": 6,
+          "questionType": "single_choice",
+          "stem": "Red Nose Day has become an official national holiday.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "根据第三段最后一句，是 \"unofficial\" national holiday，并非官方节日。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q7",
+          "order": 7,
+          "questionType": "single_choice",
+          "stem": "The funnier people look the more money they collect.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "文中没有提到"打扮得越滑稽募到的钱越多"这类因果关系，信息未提及。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q8",
+          "order": 8,
+          "questionType": "single_choice",
+          "stem": "People give money to Comic Relief in many ways.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "根据第四段最后一句，人们可以通过邮寄、银行、电话、信用卡和网上等多种方式捐款(donate money by post in banks by phone using a credit card and online)。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q9",
+          "order": 9,
+          "questionType": "single_choice",
+          "stem": "Many schools take part in the money-raising events on Red Nose Day.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "根据第四段倒数第二句 \"many schools participate\"，很多学校参加募款活动。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q10",
+          "order": 10,
+          "questionType": "single_choice",
+          "stem": "The Red Nose Day telethon has attracted lots of film stars.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "文中没有提到电影明星参与telethon，信息未提及。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2016-04-s2",
+      "type": "阅读理解选择",
+      "order": 2,
+      "passageTitle": "Those Who Ride on Two Wheels",
+      "passageText": "In the United States there are six million tennis players and twelve million golfers. These figures would not surprise most people. But many would be surprised to learn that twenty million Americans ride motorcycles (摩托车). Few people realize that motorcycling is fast becoming one of America's most popular sports.\n\nAccording to the Cycle News, many kinds of people enjoy motorcycling. They include black people and white people businessmen professionals and blue-collar workers. Among them about 55% are businessmen 3% are in the professions and 9% in government service.\n\nSuch information is offered by the Cycle News in the hope of improving the general public's impression of the sport. The public has tended to believe that all motorcyclists are wild and lawless young men.\n\nThere are several things about motorcycling that the average citizen dislikes. A motorcyclist's appearance has something to do with this dislike. Motorcyclists often look dirty; in fact they are dirty. On the road there is little to protect them from mud. For practical reasons they often dress in old clothing which looks much less respectable than the clothing of people who ride in cars. For the same reason motorcyclists usually wear dark colors. Perhaps this helps to explain why they are sometimes suspected of having bad natures.\n\nProbably motorcycles themselves also produce anger and fear. They are noisy, though some trucks are even noisier. But trucks are acceptable because they perform a needed service. Motorcycles on the other hand make an uncomfortable noise just to give their riders pleasure. Roaring along quiet streets they wake sleeping families and make babies cry.\n\nYet, as motorcycling becomes more and more common it will be interesting to see how people in general feel about the sport. Perhaps it will someday become as 'respectable' as tennis or golf.",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2016-04-q11",
+          "order": 1,
+          "questionType": "single_choice",
+          "stem": "According to the text more and more Americans like ___.",
+          "options": ["A. playing tennis", "B. playing golf", "C. motorcycling", "D. car-racing"],
+          "answer": "C",
+          "answerExplanation": "根据短文大意，通篇都在讲 motorcycling 越来越受欢迎。",
+          "knowledgePoints": ["段落主旨理解"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q12",
+          "order": 2,
+          "questionType": "single_choice",
+          "stem": "According to the Cycle News, over half of the motorcyclists are ___.",
+          "options": ["A. black people", "B. white people", "C. businessmen", "D. professionals"],
+          "answer": "C",
+          "answerExplanation": "根据短文第二段 \"about 55% are businessmen\"，超过一半是商人。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q13",
+          "order": 3,
+          "questionType": "single_choice",
+          "stem": "The Cycle News wants to ___.",
+          "options": ["A. make motorcyclists lawful citizens", "B. improve the image of motorcycling", "C. persuade people to buy motorcycles", "D. raise the status of blue-collar workers"],
+          "answer": "B",
+          "answerExplanation": "根据第三段第二句 \"in the hope of improving the general public's impression of the sport\"。",
+          "knowledgePoints": ["观点态度理解"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q14",
+          "order": 4,
+          "questionType": "single_choice",
+          "stem": "Motorcyclists usually wear dark colors because ___.",
+          "options": ["A. they want to be respectable", "B. they want to be impressive", "C. the colors look different", "D. the colors suit their sport"],
+          "answer": "D",
+          "answerExplanation": "根据第四段，路上多泥，出于实际考虑他们穿旧衣服；出于同样的理由(for the same reason)他们穿深色衣服，即颜色适合这项运动的实际需要。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q15",
+          "order": 5,
+          "questionType": "single_choice",
+          "stem": "Some people dislike the motorcycle because it is ___.",
+          "options": ["A. noisy", "B. heavy", "C. costly", "D. illegal"],
+          "answer": "A",
+          "answerExplanation": "根据倒数第二段 \"make an uncomfortable noise\"，摩托车太吵闹。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2016-04-s3",
+      "type": "段落大意与句子补全",
+      "order": 3,
+      "passageTitle": "How to Forgive Forget and Let Go",
+      "passageText": "① Forgiving someone does not mean releasing them from an earlier guilt. What if the person who wronged you is not living? What if the person is someone who made you extremely embarrassed during school 20 or 30 years ago? Letting go of emotional pain does not mean that nothing happened; it means that you no longer want to be controlled by it.\n\n② Recognize that forgiveness is not denial. Whatever caused the pain was a real incident. Denying that it happened means it is too painful to work through the emotions. There is no timeline on forgiveness. Some steps take longer to get through and it is acceptable to set them aside for a period of time. Part of forgiveness is understanding whether or not someone takes responsibility for what happened and may even show regret.\n\n③ Understand that not everyone who forgives reconciles with the person who caused the pain. There are relationships that are harmful and even physically dangerous. While it is possible to forgive the past and move beyond it, it may also mean that the person who was involved can no longer play an active role in your life. If a person or situation is not safe, it may be best not to reconcile the relationship now. Work on forgiveness at a time when you are emotionally healthy and physically safe.\n\n④ Make a conscious decision to forgive someone. Even if they never apologize for what happened determine within yourself that it is fine to proceed without this apology. Apologies should not be asking for forgiveness. Apologies should be offered as an effort of true regret. They should be admitting that taking personal responsibility for the situation is important. Even without that apology make up your mind to forgive forget and eventually let go.",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2016-04-q16",
+          "order": 1,
+          "questionType": "single_choice",
+          "stem": "Task 1: 为第①段选择最恰当的段落大意 (Paragraph 1)",
+          "options": [
+            "A. Forgiving should be at a safe time.",
+            "B. Forgiving is not to deny what happened.",
+            "C. Forgiving is not to free someone from blame.",
+            "D. Forgiving can happen without an apology.",
+            "E. Forgiving can lead us away from the past hurt."
+          ],
+          "answer": "C",
+          "answerExplanation": "第①段首句 \"Forgiving someone does not mean releasing them from an earlier guilt\"，即原谅别人不代表让对方免除过错责任。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q17",
+          "order": 2,
+          "questionType": "single_choice",
+          "stem": "Task 1: 为第②段选择最恰当的段落大意 (Paragraph 2)",
+          "options": [
+            "A. Forgiving should be at a safe time.",
+            "B. Forgiving is not to deny what happened.",
+            "C. Forgiving is not to free someone from blame.",
+            "D. Forgiving can happen without an apology.",
+            "E. Forgiving can lead us away from the past hurt."
+          ],
+          "answer": "B",
+          "answerExplanation": "第②段首句 \"forgiveness is not denial\"，原谅不代表否认事情发生过。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q18",
+          "order": 3,
+          "questionType": "single_choice",
+          "stem": "Task 1: 为第③段选择最恰当的段落大意 (Paragraph 3)",
+          "options": [
+            "A. Forgiving should be at a safe time.",
+            "B. Forgiving is not to deny what happened.",
+            "C. Forgiving is not to free someone from blame.",
+            "D. Forgiving can happen without an apology.",
+            "E. Forgiving can lead us away from the past hurt."
+          ],
+          "answer": "A",
+          "answerExplanation": "第③段 \"if a person or a situation is not safe, it may be best not to reconcile the relationship now. Work on forgiveness at a time when you are emotionally healthy and physically safe.\"",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q19",
+          "order": 4,
+          "questionType": "single_choice",
+          "stem": "Task 1: 为第④段选择最恰当的段落大意 (Paragraph 4)",
+          "options": [
+            "A. Forgiving should be at a safe time.",
+            "B. Forgiving is not to deny what happened.",
+            "C. Forgiving is not to free someone from blame.",
+            "D. Forgiving can happen without an apology.",
+            "E. Forgiving can lead us away from the past hurt."
+          ],
+          "answer": "D",
+          "answerExplanation": "第④段第二句 \"Even if they never apologize for what happened... it is fine to proceed without this apology\"，可知就算对方从未道歉，也可以原谅。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q20",
+          "order": 5,
+          "questionType": "single_choice",
+          "stem": "Task 2: You may forgive someone ________",
+          "options": [
+            "A. you may not become friends",
+            "B. to offer forgiveness",
+            "C. who are still dangerous to you",
+            "D. who wronged you long time ago",
+            "E. you may never get rid of emotional pain",
+            "F. who only forgive those showing regret",
+            "G. for being forgiven"
+          ],
+          "answer": "D",
+          "answerExplanation": "根据第①段 \"What if the person who wronged you is not living?\"，可知你可以原谅曾经无理对待过你的人。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q21",
+          "order": 6,
+          "questionType": "single_choice",
+          "stem": "Task 2: There is no fixed time ________",
+          "options": [
+            "A. you may not become friends",
+            "B. to offer forgiveness",
+            "C. who are still dangerous to you",
+            "D. who wronged you long time ago",
+            "E. you may never get rid of emotional pain",
+            "F. who only forgive those showing regret",
+            "G. for being forgiven"
+          ],
+          "answer": "B",
+          "answerExplanation": "根据第②段 \"There is no timeline on forgiveness\"，可知没有固定的原谅他人的时间。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q22",
+          "order": 7,
+          "questionType": "single_choice",
+          "stem": "Task 2: Even if you've forgiven someone, ________",
+          "options": [
+            "A. you may not become friends",
+            "B. to offer forgiveness",
+            "C. who are still dangerous to you",
+            "D. who wronged you long time ago",
+            "E. you may never get rid of emotional pain",
+            "F. who only forgive those showing regret",
+            "G. for being forgiven"
+          ],
+          "answer": "A",
+          "answerExplanation": "根据第③段第一句 \"not everyone who forgives reconciles with the person who caused the pain\"，原谅不代表一定会和好成为朋友。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q23",
+          "order": 8,
+          "questionType": "single_choice",
+          "stem": "Task 2: Don't rush to forgive those ________",
+          "options": [
+            "A. you may not become friends",
+            "B. to offer forgiveness",
+            "C. who are still dangerous to you",
+            "D. who wronged you long time ago",
+            "E. you may never get rid of emotional pain",
+            "F. who only forgive those showing regret",
+            "G. for being forgiven"
+          ],
+          "answer": "C",
+          "answerExplanation": "根据第③段 \"if a person or situation is not safe, it may be best not to reconcile the relationship now\"，可知，如果现在情况不够安全，还是先不要和好。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q24",
+          "order": 9,
+          "questionType": "single_choice",
+          "stem": "Task 2: Some people apologize merely ________",
+          "options": [
+            "A. you may not become friends",
+            "B. to offer forgiveness",
+            "C. who are still dangerous to you",
+            "D. who wronged you long time ago",
+            "E. you may never get rid of emotional pain",
+            "F. who only forgive those showing regret",
+            "G. for being forgiven"
+          ],
+          "answer": "G",
+          "answerExplanation": "根据第④段 \"Apologies should not be asking for forgiveness\"，可知有些人道歉仅仅是为了获得原谅（这并不是真正的道歉）。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q25",
+          "order": 10,
+          "questionType": "single_choice",
+          "stem": "Task 2: If you expect an apology ________",
+          "options": [
+            "A. you may not become friends",
+            "B. to offer forgiveness",
+            "C. who are still dangerous to you",
+            "D. who wronged you long time ago",
+            "E. you may never get rid of emotional pain",
+            "F. who only forgive those showing regret",
+            "G. for being forgiven"
+          ],
+          "answer": "E",
+          "answerExplanation": "根据文章中心思想及第④段最后一句可知，如果一直执着于等待对方道歉，可能永远无法摆脱情感上的痛苦。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2016-04-s4",
+      "type": "填句补文",
+      "order": 4,
+      "passageTitle": "Natural Resources",
+      "passageText": "Throughout history people have often selected where they want to live based on the natural resources that are available in the area. ___(26)___ Some of these resources include water, food sources such as fruits and vegetables and animals that can be caught or hunted.\n\nA region's natural resources determine the way of life of its people. ___(27)___ On the other hand, poor soil will either send people looking for better places or attract people with other purposes for the land such as setting up businesses or factories.\n\n___(28)___ People who wish to make a living as fishermen can do so by the ocean, but cannot do so in the desert. Desert people have many traditional and unique foods, which cannot be found in the forest. Each area attracts people based on their interests and purposes.\n\nAreas that have rich water resources will naturally have more people. Traditional, villages, towns and cities built near water have been the most successful. People there are able to use the water resources to meet their daily needs. ___(29)___ Places that are hard to reach, such as high mountains or dry deserts, will have fewer people living in them.\n\n___(30)___ For too long, people have destroyed natural resources using up those resources that cannot be easily replaced. On the earth, we are lucky to have many resources that are renewable, such as sun, wind, water and trees. As more and more focus is placed on the use of renewable resources, it will become easier to protect our planet from further harm.",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2016-04-q26",
+          "order": 1,
+          "questionType": "single_choice",
+          "stem": "第26空",
+          "options": [
+            "A. It is easy to find new resources in nature.",
+            "B. Renewable resources are those that can be replaced easily.",
+            "C. While you may not think of oceans as natural resources they are.",
+            "D. for example regions with rich soil can support farming societies.",
+            "E. They can also use the water to help them move goods to other areas.",
+            "F. Natural resources are useful to people and they come from the earth."
+          ],
+          "answer": "F",
+          "answerExplanation": "第一段主要讲的就是natural resources这一主题，且下文具体展开有哪些自然资源、有什么作用，故选总起句F。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q27",
+          "order": 2,
+          "questionType": "single_choice",
+          "stem": "第27空",
+          "options": [
+            "A. It is easy to find new resources in nature.",
+            "B. Renewable resources are those that can be replaced easily.",
+            "C. While you may not think of oceans as natural resources they are.",
+            "D. for example regions with rich soil can support farming societies.",
+            "E. They can also use the water to help them move goods to other areas.",
+            "F. Natural resources are useful to people and they come from the earth."
+          ],
+          "answer": "D",
+          "answerExplanation": "空格后紧接 \"On the other hand, poor soil...\"，说明前面应先举出与之相对的rich soil的例子。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q28",
+          "order": 3,
+          "questionType": "single_choice",
+          "stem": "第28空",
+          "options": [
+            "A. It is easy to find new resources in nature.",
+            "B. Renewable resources are those that can be replaced easily.",
+            "C. While you may not think of oceans as natural resources they are.",
+            "D. for example regions with rich soil can support farming societies.",
+            "E. They can also use the water to help them move goods to other areas.",
+            "F. Natural resources are useful to people and they come from the earth."
+          ],
+          "answer": "C",
+          "answerExplanation": "空格后讲到 fisherman 靠海为生，可知前面是在引出海洋资源这一话题。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q29",
+          "order": 4,
+          "questionType": "single_choice",
+          "stem": "第29空",
+          "options": [
+            "A. It is easy to find new resources in nature.",
+            "B. Renewable resources are those that can be replaced easily.",
+            "C. While you may not think of oceans as natural resources they are.",
+            "D. for example regions with rich soil can support farming societies.",
+            "E. They can also use the water to help them move goods to other areas.",
+            "F. Natural resources are useful to people and they come from the earth."
+          ],
+          "answer": "E",
+          "answerExplanation": "前文一直讲人们利用水资源满足日常需要，此处顺接说明水资源的另一好处——帮助运输货物到其他地区。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q30",
+          "order": 5,
+          "questionType": "single_choice",
+          "stem": "第30空",
+          "options": [
+            "A. It is easy to find new resources in nature.",
+            "B. Renewable resources are those that can be replaced easily.",
+            "C. While you may not think of oceans as natural resources they are.",
+            "D. for example regions with rich soil can support farming societies.",
+            "E. They can also use the water to help them move goods to other areas.",
+            "F. Natural resources are useful to people and they come from the earth."
+          ],
+          "answer": "B",
+          "answerExplanation": "末段主要讲可循环资源(renewable resources)，故先给出其定义句B。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2016-04-s5",
+      "type": "填词补文",
+      "order": 5,
+      "passageTitle": "Business English Helps",
+      "passageText": "English plays an important role in the workplace. When it is used in the correct and proper ___(31)___ it can help to promote a career or a business. Some may ___(32)___ or want to study business English ___(33)___ they start their careers. Those who are already working have the ___(34)___ to see what they can and cannot do ___(35)___ in English in their current job.\n\nBusiness English provides you with valuable skills needed for your work. For example you will learn ___(36)___ to negotiate. Being able to deal with a ___(37)___ and knowing how to bargain and ___(38)___ an agreement can make a ___(39)___ difference to the outcome.\n\nBusiness English learning encourages professional and efficient communication, and promotes service to customers and business partners, ___(40)___ is a great advantage for any business.",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "00015-2016-04-q31",
+          "order": 1,
+          "questionType": "single_choice",
+          "stem": "第31空",
+          "options": ["A. big", "B. need", "C. what", "D. before", "E. reach", "F. which", "G. conflict", "H. effectively", "I. way", "J. how", "K. small", "L. opportunity"],
+          "answer": "I",
+          "answerExplanation": "\"in the correct and proper way\"，以一种正确恰当的方式，固定搭配。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q32",
+          "order": 2,
+          "questionType": "single_choice",
+          "stem": "第32空",
+          "options": ["A. big", "B. need", "C. what", "D. before", "E. reach", "F. which", "G. conflict", "H. effectively", "I. way", "J. how", "K. small", "L. opportunity"],
+          "answer": "B",
+          "answerExplanation": "根据 \"or want to\" 可知前面并列一个动词，语境为"需要或想要学习商务英语"。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q33",
+          "order": 3,
+          "questionType": "single_choice",
+          "stem": "第33空",
+          "options": ["A. big", "B. need", "C. what", "D. before", "E. reach", "F. which", "G. conflict", "H. effectively", "I. way", "J. how", "K. small", "L. opportunity"],
+          "answer": "D",
+          "answerExplanation": "语境为"在开始职业生涯之前"学习商务英语，选表示时间先后的连词before。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q34",
+          "order": 4,
+          "questionType": "single_choice",
+          "stem": "第34空",
+          "options": ["A. big", "B. need", "C. what", "D. before", "E. reach", "F. which", "G. conflict", "H. effectively", "I. way", "J. how", "K. small", "L. opportunity"],
+          "answer": "L",
+          "answerExplanation": "\"have the opportunity to see...\"，有机会看到/明白。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q35",
+          "order": 5,
+          "questionType": "single_choice",
+          "stem": "第35空",
+          "options": ["A. big", "B. need", "C. what", "D. before", "E. reach", "F. which", "G. conflict", "H. effectively", "I. way", "J. how", "K. small", "L. opportunity"],
+          "answer": "H",
+          "answerExplanation": "空格修饰动词do，应用副词，排除其他非副词选项，选effectively(有效地)。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q36",
+          "order": 6,
+          "questionType": "single_choice",
+          "stem": "第36空",
+          "options": ["A. big", "B. need", "C. what", "D. before", "E. reach", "F. which", "G. conflict", "H. effectively", "I. way", "J. how", "K. small", "L. opportunity"],
+          "answer": "J",
+          "answerExplanation": "\"learn how to negotiate\"，学习怎样去谈判。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q37",
+          "order": 7,
+          "questionType": "single_choice",
+          "stem": "第37空",
+          "options": ["A. big", "B. need", "C. what", "D. before", "E. reach", "F. which", "G. conflict", "H. effectively", "I. way", "J. how", "K. small", "L. opportunity"],
+          "answer": "G",
+          "answerExplanation": "\"deal with a conflict\"，处理冲突，空格处需要名词。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q38",
+          "order": 8,
+          "questionType": "single_choice",
+          "stem": "第38空",
+          "options": ["A. big", "B. need", "C. what", "D. before", "E. reach", "F. which", "G. conflict", "H. effectively", "I. way", "J. how", "K. small", "L. opportunity"],
+          "answer": "E",
+          "answerExplanation": "\"reach an agreement\"达成协议，固定搭配。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q39",
+          "order": 9,
+          "questionType": "single_choice",
+          "stem": "第39空",
+          "options": ["A. big", "B. need", "C. what", "D. before", "E. reach", "F. which", "G. conflict", "H. effectively", "I. way", "J. how", "K. small", "L. opportunity"],
+          "answer": "A",
+          "answerExplanation": "\"make a big difference\"产生巨大影响，固定搭配。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q40",
+          "order": 10,
+          "questionType": "single_choice",
+          "stem": "第40空",
+          "options": ["A. big", "B. need", "C. what", "D. before", "E. reach", "F. which", "G. conflict", "H. effectively", "I. way", "J. how", "K. small", "L. opportunity"],
+          "answer": "F",
+          "answerExplanation": "非限制性定语从句，指代前面整个分句所述内容，用which引导。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2016-04-s6",
+      "type": "完形填空",
+      "order": 6,
+      "passageTitle": "Silent Listening",
+      "passageText": "If something bad just happened (happen) to your friend, what would you do? Would you mention it to him and say you feel sorry about it? Would you offer support or advice? According to Ruth Clark, such ___(41)___ (treat) could mean well, but it might not be what he ___(42)___ (real) wants or needs.\n\nClark asked some college students to imagine some ___(43)___ (pleasant) situations, e.g. a low exam grade or the dad's ___(44)___ (lose) of his job. The students were then ___(45)___ (ask) how they would like to be treated by a friend who learned of the bad situation from someone else. The results were a little ___(46)___ (surprise). Some said they would want and expect their friend to mention the ___(47)___ (annoy) situation, but most of the students in the study ___(48)___ (respond) that they would like the friend not to do it. The students made the ___(49)___ (decide) for themselves whether to discuss their problem with a friend. So there is value in being a silent ___(50)___ (listen) around a troubled friend.",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "00015-2016-04-q41",
+          "order": 1,
+          "questionType": "fill_blank_transform",
+          "stem": "treat",
+          "options": [],
+          "answer": "treatment",
+          "answerExplanation": "在句中作主语，用名词形式treatment。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q42",
+          "order": 2,
+          "questionType": "fill_blank_transform",
+          "stem": "real",
+          "options": [],
+          "answer": "really",
+          "answerExplanation": "放在动词wants前面修饰动词，用副词really。",
+          "knowledgePoints": ["副词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q43",
+          "order": 3,
+          "questionType": "fill_blank_transform",
+          "stem": "pleasant",
+          "options": [],
+          "answer": "unpleasant",
+          "answerExplanation": "根据后面所举例子（低分、失业）可知应为否定形式unpleasant(不愉快的)。",
+          "knowledgePoints": ["形容词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q44",
+          "order": 4,
+          "questionType": "fill_blank_transform",
+          "stem": "lose",
+          "options": [],
+          "answer": "loss",
+          "answerExplanation": "\"the dad's loss of his job\"，此处需要名词形式loss。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q45",
+          "order": 5,
+          "questionType": "fill_blank_transform",
+          "stem": "ask",
+          "options": [],
+          "answer": "asked",
+          "answerExplanation": "全文时态为一般过去时，故用过去式asked。",
+          "knowledgePoints": ["动词时态"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q46",
+          "order": 6,
+          "questionType": "fill_blank_transform",
+          "stem": "surprise",
+          "options": [],
+          "answer": "surprising",
+          "answerExplanation": "修饰物(the results)，令人惊讶的，用现在分词形式surprising；若修饰人才用surprised。",
+          "knowledgePoints": ["形容词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q47",
+          "order": 7,
+          "questionType": "fill_blank_transform",
+          "stem": "annoy",
+          "options": [],
+          "answer": "annoying",
+          "answerExplanation": "修饰物(situation)，令人烦恼的，用现在分词形式annoying。",
+          "knowledgePoints": ["形容词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q48",
+          "order": 8,
+          "questionType": "fill_blank_transform",
+          "stem": "respond",
+          "options": [],
+          "answer": "responded",
+          "answerExplanation": "与全文时态保持一致，用过去式responded。",
+          "knowledgePoints": ["动词时态"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q49",
+          "order": 9,
+          "questionType": "fill_blank_transform",
+          "stem": "decide",
+          "options": [],
+          "answer": "decision",
+          "answerExplanation": "\"make the decision\"，固定搭配make + 名词，用名词形式decision。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2016-04-q50",
+          "order": 10,
+          "questionType": "fill_blank_transform",
+          "stem": "listen",
+          "options": [],
+          "answer": "listener",
+          "answerExplanation": "根据句意此处应填指人的名词，即"倾听者"listener。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2016-04-s7",
+      "type": "写作",
+      "order": 7,
+      "passageTitle": null,
+      "passageText": null,
+      "writingPrompt": "请根据所提供材料中的要求完成一篇100词左右的英文写作任务。将你的答案写在答题卡相应的位置上。\n\n某英文报社正在举行题为\"fight against haze(雾霾)\"的征文活动。请你就此题目写一篇英文短文应征，内容包括：\n•雾霾会造成哪些危害\n•我们可以采取哪些对措施",
+      "scorePerQuestion": 30,
+      "totalScore": 30,
+      "questions": [
+        {
+          "questionId": "00015-2016-04-q51",
+          "order": 1,
+          "questionType": "essay",
+          "stem": "Fight against Haze —— 根据写作要求，写一篇约100词的英文短文，内容包括雾霾造成的危害以及可以采取的应对措施。",
+          "options": [],
+          "answer": "",
+          "answerExplanation": "官方给出的是参考范文（非唯一标准答案，仅供评分参考），原文如下：\n\nFight against Haze\n\nNowadays, with the development of economy and industry, pollution becomes a enormous problem of our societies. And haze turned out to be the top one that we should deal with.\n\nThe reason that haze should be controlled is basic on several effects of it. First of all, haze is what we called PM2.5 which could bring into our lungs with inhalation and caused some lung disease. Also, living in haze weather would enhance the chance of getting cancer.\n\nLearning about the harmful factors, the easiest way for civilians is wearing mask to keep it out of our lungs, which is only the surface. Haze is the exhaust gas from factories and cars. Using public transportation could help to control the end gas.\n\nOverall, fighting against haze is not only one person's war, is depending on everyone's behavior.",
+          "knowledgePoints": ["写作-说明类"],
+          "difficultyTag": null
+        }
+      ]
+    }
+  ],
+  "parsingNotes": [
+    "第20题题干原图为\"You may forgive some________________\"，扫描图片中空格前文字不够清晰，无法100%确认是\"someone\"还是被截断的其他词；根据语法结构及匹配选项D(\"who wronged you long time ago\"，为定语从句需先行词)推断补全为\"You may forgive someone\"，建议人工核对原图确认。",
+    "第三部分短文第③段原图\"Work on forgiveness at d time when you are emotionally healthy...\"中\"d time\"疑似印刷/扫描错误，按上下文语义已校正为\"a time\"，建议人工核对原图确认是否为原文本身的印刷错误。",
+    "第三部分Task 1选项E原图OCR显示为\"Foigiving can lead us away from the past hurt.\"，已按语境校正拼写为\"Forgiving\"；该选项为未被使用的干扰项，不影响任何题目答案，仅记录以供核对原图拼写。",
+    "第四部分（填句补文）选项D原图显示为\"for example regions with rich soil can support fanning societies.\"，\"fanning\"疑似\"farming\"的印刷或扫描误差，已按语义校正为\"farming societies\"，建议人工核对原图确认。",
+    "第23题官方答案页给出的英文引文为\"if a person or situation is not safe, it may be best to reconcile with them now\"，但对照原文短文第③段实际为\"it may be best NOT to reconcile the relationship now\"，且答案页中文注释\"还是先不要和好了\"与NOT一致，判断官方答案页此处引文遗漏了\"not\"（属于官方材料本身的笔误），已在本题answerExplanation中按\"not\"的原意补全说明，未改变答案C本身。",
+    "第28题官方答案页解析原文包含\"候鸟讲的是住在fisherman捕鱼的人\"字样，其中\"候鸟\"一词与本段内容（渔民、沙漠、森林）逻辑上不相关，疑似官方答案页本身的笔误或与其他材料混淆，本题answerExplanation已按官方原文思路（说明段落在引出海洋资源话题）转述，未直接照抄\"候鸟\"字样，请人工核对原答案页图片确认该处官方表述本意。",
+    "第七部分写作题材料原图\"我们可以采取哪些对措施\"字迹偏小、扫描清晰度一般，\"对措施\"这一表述在中文语法上不通顺，怀疑印刷原文可能是\"哪些应对措施\"或\"哪些措施\"，现按图片字面转录，建议人工核对原图确认准确文字（不影响写作任务的整体理解，考生按\"应对措施\"作答即可）。",
+    "官方答案页除简要中文提示和原文关键句定位外，未提供逐题完整的解析文字，各题answerExplanation已尽量依据官方提示与原文定位还原依据，未编造额外解析内容。",
+    "第51题写作为主观题，官方仅给出一篇参考范文（范文本身含有少量语法瑕疵，如\"pollution becomes a enormous problem\"应为\"an enormous problem\"，\"is basic on\"应为\"is based on\"等，均按原图原样转录，未做修改），并非评分标准细则或唯一正确答案，实际评分需按官方评分标准的档次描述人工核定，本题answer字段留空。"
+  ]
+}
