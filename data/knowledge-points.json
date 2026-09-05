@@ -1,0 +1,107 @@
+[
+  {
+    "tagId": "kp-001",
+    "name": "写作-综合",
+    "questionCount": 1
+  },
+  {
+    "tagId": "kp-002",
+    "name": "写作-观点类",
+    "questionCount": 4
+  },
+  {
+    "tagId": "kp-003",
+    "name": "写作-记叙类",
+    "questionCount": 1
+  },
+  {
+    "tagId": "kp-004",
+    "name": "写作-说明类",
+    "questionCount": 10
+  },
+  {
+    "tagId": "kp-005",
+    "name": "副词构词",
+    "questionCount": 17
+  },
+  {
+    "tagId": "kp-006",
+    "name": "动词时态",
+    "questionCount": 21
+  },
+  {
+    "tagId": "kp-007",
+    "name": "名词单复数",
+    "questionCount": 19
+  },
+  {
+    "tagId": "kp-008",
+    "name": "固定搭配",
+    "questionCount": 57
+  },
+  {
+    "tagId": "kp-009",
+    "name": "形容词构词",
+    "questionCount": 28
+  },
+  {
+    "tagId": "kp-010",
+    "name": "段落主旨理解",
+    "questionCount": 10
+  },
+  {
+    "tagId": "kp-011",
+    "name": "段落大意概括",
+    "questionCount": 72
+  },
+  {
+    "tagId": "kp-012",
+    "name": "比较级最高级",
+    "questionCount": 5
+  },
+  {
+    "tagId": "kp-013",
+    "name": "被动语态",
+    "questionCount": 16
+  },
+  {
+    "tagId": "kp-014",
+    "name": "观点态度理解",
+    "questionCount": 7
+  },
+  {
+    "tagId": "kp-015",
+    "name": "词义猜测",
+    "questionCount": 9
+  },
+  {
+    "tagId": "kp-016",
+    "name": "词性转换",
+    "questionCount": 47
+  },
+  {
+    "tagId": "kp-017",
+    "name": "词汇辨析",
+    "questionCount": 103
+  },
+  {
+    "tagId": "kp-018",
+    "name": "连贯性衔接",
+    "questionCount": 68
+  },
+  {
+    "tagId": "kp-019",
+    "name": "逻辑关系判断",
+    "questionCount": 90
+  },
+  {
+    "tagId": "kp-020",
+    "name": "阅读推理判断",
+    "questionCount": 44
+  },
+  {
+    "tagId": "kp-021",
+    "name": "阅读细节定位",
+    "questionCount": 166
+  }
+]
