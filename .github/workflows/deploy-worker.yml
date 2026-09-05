@@ -217,14 +217,23 @@ jobs:
             echo "::warning::未设置仓库 Secret「ADMIN_PASSWORD」，跳过超级管理员初始化。"
             exit 0
           fi
-          CODE=$(curl -sS -m 30 -o /tmp/setup.json -w '%{http_code}' -X POST "$WORKER_URL/api/setup" \
-            -H "X-Setup-Token: $SETUP_TOKEN_VALUE" -H 'Content-Type: application/json' \
-            --data "$(jq -n --arg p "$ADMIN_PASSWORD" '{username:"admin",password:$p}')" 2>/dev/null || echo 000)
-          case "$CODE" in
-            201) echo "超级管理员 admin 创建成功。" ;;
-            409) echo "用户表已有数据，之前已初始化过，跳过。" ;;
-            *)   echo "::error::初始化超级管理员失败，HTTP $CODE"; cat /tmp/setup.json 2>/dev/null || true; exit 1 ;;
-          esac
+          # 刚写入的 SETUP_TOKEN 需要一点时间同步到边缘节点，在此期间
+          # Worker 读到的还是旧值，会返回 403，因此这里要重试。
+          for i in $(seq 1 24); do
+            CODE=$(curl -sS -m 30 -o /tmp/setup.json -w '%{http_code}' -X POST "$WORKER_URL/api/setup" \
+              -H "X-Setup-Token: $SETUP_TOKEN_VALUE" -H 'Content-Type: application/json' \
+              --data "$(jq -n --arg p "$ADMIN_PASSWORD" '{username:"admin",password:$p}')" 2>/dev/null || echo 000)
+            case "$CODE" in
+              201) echo "超级管理员 admin 创建成功。"; exit 0 ;;
+              409) echo "用户表已有数据，之前已初始化过，跳过。"; exit 0 ;;
+              403) echo "第 $i 次尝试：密钥尚未生效（403），10 秒后重试…" ;;
+              *)   echo "第 $i 次尝试返回 $CODE，10 秒后重试…" ;;
+            esac
+            sleep 10
+          done
+          echo "::error::初始化超级管理员失败，最后一次响应："
+          cat /tmp/setup.json 2>/dev/null || true
+          exit 1
 
       - name: Verify deployment
         env:
