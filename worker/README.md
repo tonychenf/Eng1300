@@ -6,16 +6,22 @@
 - D1 是 Cloudflare 的免费托管数据库，数据**持久保存**，不会因为服务重启/重新部署而丢失（这点比很多"免费 Node 托管"更适合我们这个需要保存用户账号的场景——调研发现同类免费平台如 Render，免费档的磁盘是"临时"的，一旦服务休眠重启，本地 SQLite 文件就会被清空，账号数据会随机消失，不适合这个用途）。
 - 已经在本地用 `wrangler dev`（Cloudflare 官方 CLI 的本地模拟环境）完整跑通了一遍登录、建号、越权拦截、禁用账号的流程，逻辑与 `../server` 那版一致。
 
-## 我需要你提供什么才能部署上线
+## 怎么部署：由 GitHub Actions 自动完成
 
-Cloudflare 账号必须是**你自己的**（这样这套系统以后才归你管理），我这边没办法替你注册账号或完成登录验证。麻烦你花大概 2 分钟做这几步，把结果发给我，剩下的部署工作我来完成：
+Claude Code 的沙盒开发环境出站网络策略禁止访问 `api.cloudflare.com`，无法在里面直接部署。因此部署交给 GitHub Actions 执行（`.github/workflows/deploy-worker.yml`），它跑在 GitHub 的运行器上，网络不受限制。
 
-1. **注册/登录 Cloudflare**：https://dash.cloudflare.com/sign-up （免费，Workers + D1 这档不需要绑信用卡）。如果你已经有账号可跳过。
-2. **拿到 Account ID**：登录后在右侧栏能看到 "Account ID"，复制给我。
-3. **创建 API Token**：打开 https://dash.cloudflare.com/profile/api-tokens → "Create Token" → 选择模板 "Edit Cloudflare Workers"（会自动包含 Workers 脚本编辑 + D1 编辑权限）→ 创建后把生成的 Token 值发给我。
-   - 这个 Token 部署完成后你可以随时在同一个页面里删除/重新生成，不影响已经部署好的服务。
+流水线会自动完成：解析 Cloudflare 账号 ID → 确保 workers.dev 子域名存在 → 创建（或复用）D1 数据库 → 建表 → 部署 Worker → 生成并写入 `JWT_SECRET` / `SETUP_TOKEN` → 调用一次 `/api/setup` 创建超级管理员 → 输出公网地址。
 
-拿到这两样东西后，我会在这边执行：创建 D1 数据库、写入表结构、部署 Worker，最后给你一个形如 `https://eng1300-mvp.<你的子域>.workers.dev` 的公网地址。
+**唯一需要人工做的一步**：在仓库里添加两个 Secret（Settings → Secrets and variables → Actions → New repository secret）：
+
+| Secret 名称 | 值 |
+|---|---|
+| `CLOUDFLARE_API_TOKEN` | Cloudflare API Token（模板选 "Edit Cloudflare Workers"，需含 D1:Edit 权限） |
+| `ADMIN_PASSWORD` | 你想用的超级管理员 `admin` 初始密码 |
+
+添加后重跑一次流水线即可。流水线是幂等的：数据库和密钥已存在时会复用，不会重复创建，也不会覆盖已有的超级管理员账号。
+
+Cloudflare API Token 的获取方式：https://dash.cloudflare.com/profile/api-tokens → "Create Token" → 模板 "Edit Cloudflare Workers"。部署完成后可随时在同一页面删除或轮换该 Token。
 
 ## 部署后的初始化（我会代你执行，这里记录做了什么）
 

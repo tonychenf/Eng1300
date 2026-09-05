@@ -1,0 +1,216 @@
+name: Deploy MVP worker
+
+# 这个沙盒开发环境的出站网络策略禁止访问 api.cloudflare.com，所以部署改由
+# GitHub Actions 的运行器代为执行：创建 D1 数据库、建表、写入密钥、发布 Worker、
+# 初始化超级管理员，全部自动完成，只需要仓库里配好 Secrets。
+
+on:
+  push:
+    branches:
+      - claude/english-exam-question-bank-a8nbiu
+    paths:
+      - 'worker/**'
+      - '.github/workflows/deploy-worker.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-worker
+  cancel-in-progress: false
+
+env:
+  WORKER_NAME: eng1300-mvp
+  D1_NAME: eng1300-mvp
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Check required secrets
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "::error::缺少仓库 Secret「CLOUDFLARE_API_TOKEN」。请到 Settings → Secrets and variables → Actions 添加后重新运行。"
+            exit 1
+          fi
+
+      - name: Install dependencies
+        working-directory: worker
+        run: npm install
+
+      - name: Resolve Cloudflare account
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          RESP=$(curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts")
+          if [ "$(echo "$RESP" | jq -r '.success')" != "true" ]; then
+            echo "::error::读取 Cloudflare 账号失败，Token 可能已失效或权限不足。"
+            echo "$RESP" | jq -c '.errors // .'
+            exit 1
+          fi
+          COUNT=$(echo "$RESP" | jq '.result | length')
+          if [ "$COUNT" -eq 0 ]; then
+            echo "::error::这个 Token 没有关联到任何 Cloudflare 账号。"
+            exit 1
+          fi
+          ACCOUNT_ID=$(echo "$RESP" | jq -r '.result[0].id')
+          ACCOUNT_NAME=$(echo "$RESP" | jq -r '.result[0].name')
+          echo "使用账号：$ACCOUNT_NAME"
+          echo "CLOUDFLARE_ACCOUNT_ID=$ACCOUNT_ID" >> "$GITHUB_ENV"
+
+      - name: Ensure workers.dev subdomain
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          SUB=$(curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/subdomain" \
+            | jq -r '.result.subdomain // empty')
+          if [ -z "$SUB" ]; then
+            CAND="eng1300-$(echo "$CLOUDFLARE_ACCOUNT_ID" | cut -c1-8)"
+            echo "账号还没有 workers.dev 子域名，尝试注册：$CAND"
+            RESP=$(curl -sS -X PUT -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+              -H 'Content-Type: application/json' --data "{\"subdomain\":\"$CAND\"}" \
+              "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/subdomain")
+            if [ "$(echo "$RESP" | jq -r '.success')" != "true" ]; then
+              echo "::error::注册 workers.dev 子域名失败，请手动在 Cloudflare 控制台 Workers 页面设置一次子域名后重跑。"
+              echo "$RESP" | jq -c '.errors // .'
+              exit 1
+            fi
+            SUB="$CAND"
+          fi
+          echo "workers.dev 子域名：$SUB"
+          echo "WORKERS_SUBDOMAIN=$SUB" >> "$GITHUB_ENV"
+
+      - name: Find or create D1 database
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          BASE="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/d1/database"
+          LIST=$(curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "$BASE?name=$D1_NAME")
+          if [ "$(echo "$LIST" | jq -r '.success')" != "true" ]; then
+            echo "::error::读取 D1 数据库列表失败。请确认 API Token 含有 D1:Edit 权限（Cloudflare 后台 → API Tokens → 编辑该 Token → 添加 Account / D1 / Edit）。"
+            echo "$LIST" | jq -c '.errors // .'
+            exit 1
+          fi
+          DB_ID=$(echo "$LIST" | jq -r --arg n "$D1_NAME" '[.result[] | select(.name==$n)][0].uuid // empty')
+          if [ -z "$DB_ID" ]; then
+            echo "数据库不存在，正在创建：$D1_NAME"
+            CREATE=$(curl -sS -X POST -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+              -H 'Content-Type: application/json' --data "{\"name\":\"$D1_NAME\"}" "$BASE")
+            if [ "$(echo "$CREATE" | jq -r '.success')" != "true" ]; then
+              echo "::error::创建 D1 数据库失败。"
+              echo "$CREATE" | jq -c '.errors // .'
+              exit 1
+            fi
+            DB_ID=$(echo "$CREATE" | jq -r '.result.uuid')
+          fi
+          echo "D1 database id: $DB_ID"
+          echo "D1_DATABASE_ID=$DB_ID" >> "$GITHUB_ENV"
+
+      - name: Point wrangler.toml at the database
+        working-directory: worker
+        run: |
+          sed -i "s|^database_id = \".*\"|database_id = \"$D1_DATABASE_ID\"|" wrangler.toml
+          grep '^database_id' wrangler.toml
+
+      - name: Apply database migration
+        working-directory: worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          PAYLOAD=$(jq -n --arg sql "$(cat migrations/0001_init.sql)" '{sql:$sql}')
+          RESP=$(curl -sS -X POST -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            -H 'Content-Type: application/json' --data "$PAYLOAD" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/d1/database/$D1_DATABASE_ID/query")
+          if [ "$(echo "$RESP" | jq -r '.success')" != "true" ]; then
+            echo "::error::建表失败。"
+            echo "$RESP" | jq -c '.errors // .'
+            exit 1
+          fi
+          echo "users 表已就绪。"
+
+      - name: Deploy worker
+        working-directory: worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: npx wrangler deploy
+
+      - name: Ensure worker secrets
+        working-directory: worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          EXISTING=$(curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/$WORKER_NAME/secrets" \
+            | jq -r '[.result[]?.name] | join(" ")')
+          echo "已存在的密钥：${EXISTING:-（无）}"
+
+          if ! echo " $EXISTING " | grep -q " JWT_SECRET "; then
+            printf '%s' "$(openssl rand -hex 32)" | npx wrangler secret put JWT_SECRET
+            echo "已生成并写入 JWT_SECRET。"
+          fi
+
+          if echo " $EXISTING " | grep -q " SETUP_TOKEN "; then
+            echo "SETUP_TOKEN 已存在，跳过初始化（说明之前已经建过超级管理员）。"
+            echo "BOOTSTRAP=no" >> "$GITHUB_ENV"
+          else
+            TOKEN_VALUE=$(openssl rand -hex 24)
+            echo "::add-mask::$TOKEN_VALUE"
+            printf '%s' "$TOKEN_VALUE" | npx wrangler secret put SETUP_TOKEN
+            echo "SETUP_TOKEN_VALUE=$TOKEN_VALUE" >> "$GITHUB_ENV"
+            echo "BOOTSTRAP=yes" >> "$GITHUB_ENV"
+          fi
+
+      - name: Bootstrap super admin
+        if: env.BOOTSTRAP == 'yes'
+        env:
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+        run: |
+          if [ -z "$ADMIN_PASSWORD" ]; then
+            echo "::warning::未设置仓库 Secret「ADMIN_PASSWORD」，跳过超级管理员初始化。添加该 Secret 后重跑本流水线即可创建 admin 账号。"
+            exit 0
+          fi
+
+          URL="https://$WORKER_NAME.$WORKERS_SUBDOMAIN.workers.dev"
+          for i in 1 2 3 4 5 6; do
+            CODE=$(curl -sS -o /tmp/setup.json -w '%{http_code}' -X POST "$URL/api/setup" \
+              -H "X-Setup-Token: $SETUP_TOKEN_VALUE" -H 'Content-Type: application/json' \
+              --data "$(jq -n --arg p "$ADMIN_PASSWORD" '{username:"admin",password:$p}')" || echo 000)
+            if [ "$CODE" = "201" ]; then
+              echo "超级管理员 admin 创建成功。"
+              exit 0
+            fi
+            if [ "$CODE" = "409" ]; then
+              echo "用户表已有数据，跳过初始化。"
+              exit 0
+            fi
+            echo "第 $i 次尝试返回 $CODE，等待部署生效后重试…"
+            sleep 10
+          done
+          echo "::error::初始化超级管理员失败，最后一次响应："
+          cat /tmp/setup.json || true
+          exit 1
+
+      - name: Summary
+        run: |
+          URL="https://$WORKER_NAME.$WORKERS_SUBDOMAIN.workers.dev"
+          {
+            echo "## 部署完成"
+            echo ""
+            echo "**公网地址：** $URL"
+            echo ""
+            echo "健康检查：\`$URL/api/health\`"
+            echo ""
+            echo "登录接口：\`POST $URL/api/auth/login\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "DEPLOYED_URL=$URL"
