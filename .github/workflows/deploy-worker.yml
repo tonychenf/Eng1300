@@ -50,22 +50,46 @@ jobs:
       - name: Resolve Cloudflare account
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ACCOUNT_ID_SECRET: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          RESP=$(curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
-            "https://api.cloudflare.com/client/v4/accounts")
-          if [ "$(echo "$RESP" | jq -r '.success')" != "true" ]; then
-            echo "::error::读取 Cloudflare 账号失败，Token 可能已失效或权限不足。"
-            echo "$RESP" | jq -c '.errors // .'
+          VERIFY=$(curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/user/tokens/verify")
+          echo "Token 状态：$(echo "$VERIFY" | jq -r '.result.status // "unknown"')"
+          if [ "$(echo "$VERIFY" | jq -r '.success')" != "true" ]; then
+            echo "::error::Cloudflare 拒绝了这个 API Token，请检查是否填错或已过期。"
+            echo "$VERIFY" | jq -c '.errors // .'
             exit 1
           fi
-          COUNT=$(echo "$RESP" | jq '.result | length')
-          if [ "$COUNT" -eq 0 ]; then
-            echo "::error::这个 Token 没有关联到任何 Cloudflare 账号。"
+
+          ACCOUNT_ID=""
+          # 1) 优先使用显式配置的 Account ID
+          if [ -n "$ACCOUNT_ID_SECRET" ]; then
+            ACCOUNT_ID="$ACCOUNT_ID_SECRET"
+            echo "使用 Secret 中配置的 Account ID。"
+          fi
+
+          # 2) 否则尝试列出账号（需要 Token 具备 Account Settings:Read 权限）
+          if [ -z "$ACCOUNT_ID" ]; then
+            RESP=$(curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+              "https://api.cloudflare.com/client/v4/accounts")
+            ACCOUNT_ID=$(echo "$RESP" | jq -r '.result[0].id // empty')
+            [ -n "$ACCOUNT_ID" ] && echo "通过账号列表接口自动识别到账号。"
+          fi
+
+          # 3) 再退一步：从域名（zone）信息里反查所属账号
+          if [ -z "$ACCOUNT_ID" ]; then
+            ZONES=$(curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+              "https://api.cloudflare.com/client/v4/zones")
+            ACCOUNT_ID=$(echo "$ZONES" | jq -r '.result[0].account.id // empty')
+            [ -n "$ACCOUNT_ID" ] && echo "通过域名信息反查到账号。"
+          fi
+
+          if [ -z "$ACCOUNT_ID" ]; then
+            echo "::error::拿不到 Cloudflare Account ID。这个 Token 没有 Account Settings:Read 权限，也查不到任何域名。请添加仓库 Secret「CLOUDFLARE_ACCOUNT_ID」：登录 Cloudflare 控制台 → 左侧 Workers & Pages，页面右侧或浏览器地址栏 dash.cloudflare.com/<这一串就是 Account ID>/workers。"
             exit 1
           fi
-          ACCOUNT_ID=$(echo "$RESP" | jq -r '.result[0].id')
-          ACCOUNT_NAME=$(echo "$RESP" | jq -r '.result[0].name')
-          echo "使用账号：$ACCOUNT_NAME"
+
+          echo "::add-mask::$ACCOUNT_ID"
           echo "CLOUDFLARE_ACCOUNT_ID=$ACCOUNT_ID" >> "$GITHUB_ENV"
 
       - name: Ensure workers.dev subdomain
