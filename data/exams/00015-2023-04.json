@@ -1,0 +1,764 @@
+{
+  "examId": "00015-2023-04",
+  "title": "2023年4月高等教育自学考试英语(二)试题",
+  "year": 2023,
+  "month": 4,
+  "courseCode": "00015",
+  "courseName": "英语(二)",
+  "sourceFile": "17f2b527-2023_04____________.pdf",
+  "totalScore": 100,
+  "timeLimitMinutes": 150,
+  "status": "待校对",
+  "sections": [
+    {
+      "sectionId": "00015-2023-04-s1",
+      "type": "阅读判断",
+      "order": 1,
+      "passageTitle": "Why Dogs Bury Their Favorite Bones",
+      "passageText": "You may find it crazy that your dog buries his favorite bone or chew toy, only to dig it up a day or two later, but there is actually a reason behind it—it is simply in their nature. For thousands of years, dogs have buried their bones. The practice itself started long before dogs were even pets when they had to bury bones to survive.\n\nWhen dogs lived in the wild, sometimes food was scarce. If they were able to find food, dogs became very protective of it. Sometimes they would have more bones than they could eat for one meal. To keep other dogs and animals from stealing their bones, dogs would bury them in the ground. When it was time for the next meal, they would dig up their bones and enjoy them again. This would continue until the bones were gone.\n\nEven though most dogs have plenty of food to eat today, their instincts still tell them to bury their bones and favorite toys. They do this to keep other dogs and animals from stealing them, just like their ancestors did. Some dogs keep at least two bones buried at once. When they want to dig up one, they will bury one more. This may leave a backyard full of holes and bones.\n\nHow do dogs decide where to bury their bones? A dog cannot bury a bone just anywhere. He must first find the perfect spot. This involves using his nose to find a spot that is free from other dogs and animals. Often it is near a tree or a large rock, but it could be anywhere in the yard. Once the dog finds the perfect spot, he uses his front paws to dig a hole, drops the bone in and covers up the hole to protect his treasure.",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2023-04-q1",
+          "order": 1,
+          "questionType": "single_choice",
+          "stem": "Dogs bury their favorite bones or chew toys by nature.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "根据第一段 \"...but there is actually a reason behind it—it is simply in their nature.\" 可知狗埋骨头是天性，说法正确。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q2",
+          "order": 2,
+          "questionType": "single_choice",
+          "stem": "Dogs started to bury their bones when they became pets.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "根据第一段 \"The practice itself started long before dogs were even pets when they had to bury bones to survive.\" 可知狗在成为宠物之前就已经会埋骨头了，说法错误。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q3",
+          "order": 3,
+          "questionType": "single_choice",
+          "stem": "Dogs in the wild occasionally had enough food.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "根据第二段 \"If they were able to find food, dogs became very protective of it. Sometimes they would have more bones than they could eat for one meal.\" 可知野外的狗有时会有足够（甚至多余）的食物，说法正确。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q4",
+          "order": 4,
+          "questionType": "single_choice",
+          "stem": "Dogs would bury their extra food for their babies.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "文中未提及狗为幼崽埋食物这一信息。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q5",
+          "order": 5,
+          "questionType": "single_choice",
+          "stem": "Animals would start a fierce fight over food in ancient times.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "文中没有提到动物为争夺食物而展开激烈争斗。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q6",
+          "order": 6,
+          "questionType": "single_choice",
+          "stem": "Some dogs tend to store up more than one bone at the same time.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "根据第三段 \"Some dogs keep at least two bones buried at once.\" 可知有些狗一次至少埋两根骨头，说法正确。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q7",
+          "order": 7,
+          "questionType": "single_choice",
+          "stem": "The backyard of a dog owner may be full of holes dug by his dog.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "根据第三段 \"This may leave a backyard full of holes and bones.\" 可知说法正确。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q8",
+          "order": 8,
+          "questionType": "single_choice",
+          "stem": "Dogs often bury their bones far away from trees.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "根据最后一段 \"Often it is near a tree or a large rock, but it could be anywhere in the yard.\" 可知狗常在树或大石头附近埋骨头，与题干相反，说法错误。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q9",
+          "order": 9,
+          "questionType": "single_choice",
+          "stem": "Dogs use their paws to find spots for burying bones.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "根据最后一段 \"This involves using his nose to find a spot...\" 可知狗是用鼻子而非爪子找地点，爪子是用来挖洞的，说法错误。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q10",
+          "order": 10,
+          "questionType": "single_choice",
+          "stem": "Dogs bury more bones than chew toys.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "文中没有比较狗埋骨头和埋咀嚼玩具的数量多少。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2023-04-s2",
+      "type": "阅读理解选择",
+      "order": 2,
+      "passageTitle": "Public Wi-Fi Users Neglect Safety",
+      "passageText": "A recent survey shows that 25% of Internet users have done online banking through public Wi-Fi in the last three months. It also shows that 27% have bought a product or service with a credit card this way.\n\nExperts worry that hackers (黑客) will take advantage of these practices. Doug Shadel said that hackers usually attack in two ways. They may create Wi-Fi hotspots that have the same name of the ones you trust, such as a hotel or a coffee shop. They may also provide a stronger Wi-Fi signal to get between you and the safe hotspot. In either case, the hackers can see your email, credit card information, user names and passwords.\n\nSometimes hackers just set up their electronic traps near a business where people enjoy the free Wi-Fi. \"In most cases they are after your personal information,\" Shadel said. \"If you use the same user name and password for many accounts, they can get into them all. It's possible for any hacker to do it. The software to hack into a Wi-Fi network is available at little or no cost.\"\n\n\"It's difficult for people to know if a Wi-Fi network is safe,\" Shadel said. \"So you should just think they are not. Any shared Internet access, free or paid, carries the same level of risk. It is safe only when you or someone you trust directly controls it.\"\n\nShadel sometimes checks email through public Wi-Fi. But he never does any banking that way. In an unfamiliar place, he uses a Virtual Private Network (VPN). \"This service creates a passage between your device and a safe place on the Internet,\" he said.",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2023-04-q11",
+          "order": 11,
+          "questionType": "single_choice",
+          "stem": "A recent survey finds that 25% of Internet users use public Wi-Fi to ________.",
+          "options": ["A. do banking", "B. buy things", "C. provide service", "D. play cards"],
+          "answer": "A",
+          "answerExplanation": "根据第一段 \"A recent survey shows that 25% of Internet users have done online banking through public Wi-Fi in the last three months.\" 可知答案选A。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q12",
+          "order": 12,
+          "questionType": "single_choice",
+          "stem": "The phrase \"take advantage of\" (Para. 2) can best be replaced by \"________\".",
+          "options": ["A. adjust to", "B. benefit from", "C. lead to", "D. result from"],
+          "answer": "B",
+          "answerExplanation": "根据第二段 \"Experts worry that hackers will take advantage of these practices.\" 可知\"take advantage of\"意为\"利用/从中获益\"，可替换为\"benefit from\"，答案选B。",
+          "knowledgePoints": ["词义猜测"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q13",
+          "order": 13,
+          "questionType": "single_choice",
+          "stem": "According to Shadel, any hacker can ________.",
+          "options": ["A. create different passwords", "B. open an electronic account", "C. steal people's information", "D. write software for businesses"],
+          "answer": "C",
+          "answerExplanation": "根据第三段 \"In most cases they are after your personal information... It's possible for any hacker to do it.\" 可知任何黑客都能盗取他人个人信息，答案选C。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q14",
+          "order": 14,
+          "questionType": "single_choice",
+          "stem": "For the sake of safety, Internet users are advised to ________.",
+          "options": ["A. test shared Internet access", "B. rely on paid Internet access", "C. look for free Internet access", "D. avoid shared Internet access"],
+          "answer": "D",
+          "answerExplanation": "根据第四段 \"Any shared Internet access, free or paid, carries the same level of risk. It is safe only when you or someone you trust directly controls it.\" 可知应避免使用共享的网络接入，答案选D。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q15",
+          "order": 15,
+          "questionType": "single_choice",
+          "stem": "Shadel uses public Wi-Fi to ________.",
+          "options": ["A. learn about VPN", "B. deal with his emails", "C. keep his account safe", "D. handle financial matters"],
+          "answer": "B",
+          "answerExplanation": "根据最后一段 \"Shadel sometimes checks email through public Wi-Fi. But he never does any banking that way.\" 可知他用公共Wi-Fi查看邮件，但不用来办理银行业务，答案选B。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2023-04-s3",
+      "type": "段落大意与句子补全",
+      "order": 3,
+      "passageTitle": "I Use Every Second Before I Go to Work",
+      "passageText": "❶ I wake up at 6 a.m. every day. The first thing I do when I wake up is grab my smartphone and take it to the bathroom with me, where I start my day by consuming quite a lot of information. I go to some websites, but the main site that I focus on during this time is Nuzzel, a collector of headlines and links. I recommend everyone look into it if they feel they don't have time to properly focus on every website individually.\n\n❷ After visiting those sites, I head to Twitter, my No.1 outlet for communication with the public. Twitter is becoming a listening platform. There is such a volume of information on the platform that you need pay attention to. So I spend a great amount of my morning responding to people and starting conversations.\n\n❸ After all this comes my workout (锻炼) with my trainer. I usually work out for about 45 minutes. The specific workout routine varies depending on the day of the week, what I ate, and how much I've been traveling.\n\n❹ After the workout, I head back home to get my children ready for school. I say bye to them and give them each a kiss before they leave. Then, I'm off to my office, often before 9 a.m.\n\n❺ In the car to my office, I call my mom, dad or sister. I talk to them just to learn what they're up to. I really value those small moments. By the time I step into my office, so much is going through my head. My day starts the minute I open my eyes.",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2023-04-q16",
+          "order": 16,
+          "questionType": "single_choice",
+          "stem": "Paragraph ❶:",
+          "options": [
+            "A. I do some morning exercise.",
+            "B. I phone my parents or sister.",
+            "C. I prepare my kids for school.",
+            "D. I communicate with others online.",
+            "E. I help my kids with their homework.",
+            "F. I visit websites to get information."
+          ],
+          "answer": "F",
+          "answerExplanation": "根据段落内容\"The first thing I do when I wake up is grab my smartphone... I start my day by consuming quite a lot of information. I go to some websites...\"可知该段主要写自己访问网站获取信息，答案选F。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q17",
+          "order": 17,
+          "questionType": "single_choice",
+          "stem": "Paragraph ❷:",
+          "options": [
+            "A. I do some morning exercise.",
+            "B. I phone my parents or sister.",
+            "C. I prepare my kids for school.",
+            "D. I communicate with others online.",
+            "E. I help my kids with their homework.",
+            "F. I visit websites to get information."
+          ],
+          "answer": "D",
+          "answerExplanation": "根据\"I spend a great amount of my morning responding to people and starting conversations.\"可知该段主要写自己在网上与他人交流，答案选D。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q18",
+          "order": 18,
+          "questionType": "single_choice",
+          "stem": "Paragraph ❸:",
+          "options": [
+            "A. I do some morning exercise.",
+            "B. I phone my parents or sister.",
+            "C. I prepare my kids for school.",
+            "D. I communicate with others online.",
+            "E. I help my kids with their homework.",
+            "F. I visit websites to get information."
+          ],
+          "answer": "A",
+          "answerExplanation": "根据\"After all this comes my workout with my trainer.\"可知该段主要写自己做晨间锻炼，答案选A。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q19",
+          "order": 19,
+          "questionType": "single_choice",
+          "stem": "Paragraph ❹:",
+          "options": [
+            "A. I do some morning exercise.",
+            "B. I phone my parents or sister.",
+            "C. I prepare my kids for school.",
+            "D. I communicate with others online.",
+            "E. I help my kids with their homework.",
+            "F. I visit websites to get information."
+          ],
+          "answer": "C",
+          "answerExplanation": "根据\"After the workout, I head back home to get my children ready for school.\"可知该段主要写自己帮孩子准备上学，答案选C。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q20",
+          "order": 20,
+          "questionType": "single_choice",
+          "stem": "Paragraph ❺:",
+          "options": [
+            "A. I do some morning exercise.",
+            "B. I phone my parents or sister.",
+            "C. I prepare my kids for school.",
+            "D. I communicate with others online.",
+            "E. I help my kids with their homework.",
+            "F. I visit websites to get information."
+          ],
+          "answer": "B",
+          "answerExplanation": "根据\"In the car to my office, I call my mom, dad or sister.\"可知该段主要写自己给父母或妹妹打电话，答案选B。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q21",
+          "order": 21,
+          "questionType": "single_choice",
+          "stem": "Nuzzel helps me ________.",
+          "options": [
+            "A. to listen to others",
+            "B. step into my office",
+            "C. kiss them goodbye",
+            "D. affect my workout routine",
+            "E. to learn how they are doing",
+            "F. to surf the Internet efficiently"
+          ],
+          "answer": "F",
+          "answerExplanation": "根据第一段\"I recommend everyone look into it if they feel they don't have time to properly focus on every website individually.\"可知Nuzzel网站能帮助作者更高效地上网获取信息，答案选F。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q22",
+          "order": 22,
+          "questionType": "single_choice",
+          "stem": "On Twitter I am able ________.",
+          "options": [
+            "A. to listen to others",
+            "B. step into my office",
+            "C. kiss them goodbye",
+            "D. affect my workout routine",
+            "E. to learn how they are doing",
+            "F. to surf the Internet efficiently"
+          ],
+          "answer": "A",
+          "answerExplanation": "根据第二段\"Twitter is becoming a listening platform.\"可知作者可以通过Twitter倾听大众的意见，答案选A。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q23",
+          "order": 23,
+          "questionType": "single_choice",
+          "stem": "There are several factors that ________.",
+          "options": [
+            "A. to listen to others",
+            "B. step into my office",
+            "C. kiss them goodbye",
+            "D. affect my workout routine",
+            "E. to learn how they are doing",
+            "F. to surf the Internet efficiently"
+          ],
+          "answer": "D",
+          "answerExplanation": "根据第三段\"The specific workout routine varies depending on the day of the week, what I ate, and how much I've been traveling.\"可知有多个因素影响锻炼计划，答案选D。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q24",
+          "order": 24,
+          "questionType": "single_choice",
+          "stem": "Before my kids go to school, I ________.",
+          "options": [
+            "A. to listen to others",
+            "B. step into my office",
+            "C. kiss them goodbye",
+            "D. affect my workout routine",
+            "E. to learn how they are doing",
+            "F. to surf the Internet efficiently"
+          ],
+          "answer": "C",
+          "answerExplanation": "根据第四段\"I say bye to them and give them each a kiss before they leave.\"可知作者在孩子上学前会亲吻他们道别，答案选C。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q25",
+          "order": 25,
+          "questionType": "single_choice",
+          "stem": "I call my parents ________.",
+          "options": [
+            "A. to listen to others",
+            "B. step into my office",
+            "C. kiss them goodbye",
+            "D. affect my workout routine",
+            "E. to learn how they are doing",
+            "F. to surf the Internet efficiently"
+          ],
+          "answer": "E",
+          "answerExplanation": "根据最后一段\"I talk to them just to learn what they're up to.\"可知作者打电话给父母是为了了解他们的近况，答案选E。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2023-04-s4",
+      "type": "填句补文",
+      "order": 4,
+      "passageTitle": "Banning Mobile Phones at School",
+      "passageText": "It is a question that keeps some parents awake at night. Should children be allowed to take mobile phones to school? ___(26)___ For parents who want their children to do well at school, it is no.\n\nBanning mobile phones at school is effective. According to a UK study, after schools banned mobile phones, the test scores of students improved by 6.4%. The findings will influence the debate about children and mobile phones. In the UK, more than 90% of teenagers own a mobile phone; in the US, 75% have one. The popular mobile phone is a problem in the eye of teachers. ___(27)___ In a 2001 survey, no school banned mobiles. By 2007, this had risen to 50%. By 2012, 98% of schools had taken action. Some did not allow phones. The others required them to be handed in at the beginning of the day.\n\n___(28)___ New York City has lifted a 10-year ban on phones at school. It says that lifting the ban will promote equality. \"This view is wrong,\" the researchers of the UK study write. \"We found that the ban led to improvements in test scores among students. Low-achieving students gained the most. ___(29)___ Allowing phones into schools will harm the lowest-achieving students the most.\"\n\nThe UK study was carried out at Birmingham, London, Leicester and Manchester schools before and after bans were introduced. \"Technology is commonly viewed as increasing efficiency,\" the researchers write. \"Modern technology is used in the classroom to improve student performance. ___(30)___ Some students will pay no attention to their class.\"",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2023-04-q26",
+          "order": 26,
+          "questionType": "single_choice",
+          "stem": "空(26)",
+          "options": [
+            "A. They are worried about the trend.",
+            "B. The mobile phone is a good example.",
+            "C. However, there are potential problems.",
+            "D. Now researchers say that they have an answer.",
+            "E. Therefore, lifting the ban may in fact lead to the opposite.",
+            "F. However, some schools are starting to allow limited use of mobile phones."
+          ],
+          "answer": "D",
+          "answerExplanation": "根据空格前后文\"Should children be allowed to take mobile phones to school?___ For parents who want their children to do well at school, it is no.\"可知选D，意思是\"现在研究人员说他们找到了答案\"，承接下文对该问题的解答。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q27",
+          "order": 27,
+          "questionType": "single_choice",
+          "stem": "空(27)",
+          "options": [
+            "A. They are worried about the trend.",
+            "B. The mobile phone is a good example.",
+            "C. However, there are potential problems.",
+            "D. Now researchers say that they have an answer.",
+            "E. Therefore, lifting the ban may in fact lead to the opposite.",
+            "F. However, some schools are starting to allow limited use of mobile phones."
+          ],
+          "answer": "A",
+          "answerExplanation": "根据空格前文\"The popular mobile phone is a problem in the eye of teachers.\"可知选A，\"they\"指教师，\"the trend\"指手机普及的趋势。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q28",
+          "order": 28,
+          "questionType": "single_choice",
+          "stem": "空(28)",
+          "options": [
+            "A. They are worried about the trend.",
+            "B. The mobile phone is a good example.",
+            "C. However, there are potential problems.",
+            "D. Now researchers say that they have an answer.",
+            "E. Therefore, lifting the ban may in fact lead to the opposite.",
+            "F. However, some schools are starting to allow limited use of mobile phones."
+          ],
+          "answer": "F",
+          "answerExplanation": "根据空格后文\"New York City has lifted a 10-year ban on phones at school.\"可知选F，与下文纽约市解除手机禁令相呼应。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q29",
+          "order": 29,
+          "questionType": "single_choice",
+          "stem": "空(29)",
+          "options": [
+            "A. They are worried about the trend.",
+            "B. The mobile phone is a good example.",
+            "C. However, there are potential problems.",
+            "D. Now researchers say that they have an answer.",
+            "E. Therefore, lifting the ban may in fact lead to the opposite.",
+            "F. However, some schools are starting to allow limited use of mobile phones."
+          ],
+          "answer": "E",
+          "answerExplanation": "根据空格前后文\"Low-achieving students gained the most.___ Allowing phones into schools will harm the lowest-achieving students the most.\"可知选E，表示因果的\"Therefore\"衔接上下文。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q30",
+          "order": 30,
+          "questionType": "single_choice",
+          "stem": "空(30)",
+          "options": [
+            "A. They are worried about the trend.",
+            "B. The mobile phone is a good example.",
+            "C. However, there are potential problems.",
+            "D. Now researchers say that they have an answer.",
+            "E. Therefore, lifting the ban may in fact lead to the opposite.",
+            "F. However, some schools are starting to allow limited use of mobile phones."
+          ],
+          "answer": "C",
+          "answerExplanation": "根据空格前后文\"Modern technology is used in the classroom to improve student performance.___ Some students will pay no attention to their class.\"可知选C，表转折，引出潜在问题。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2023-04-s5",
+      "type": "填词补文",
+      "order": 5,
+      "passageTitle": "Failing Forward",
+      "passageText": "There are several key abilities that allow successful people to fail forward instead of taking each setback personally. First, successful people don't blame themselves when they fail. They take ___(31)___ for each setback, but they don't take the failure personally. Second, successful people don't ___(32)___ themselves by individual failures. They ___(33)___ that each setback is a small ___(34)___ of the whole. Third, achievers are ___(35)___ to vary their approaches to problems. That's important in every walk of life. If one ___(36)___ doesn't work for you, if it brings repeated failures, ___(37)___ try something else. To fail forward, you must do what works for you, not ___(38)___ what works for other people. Finally, successful people are ___(39)___. They don't let one error keep them down. They learn from their mistakes and ___(40)___ on.",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "00015-2023-04-q31",
+          "order": 31,
+          "questionType": "single_choice",
+          "stem": "空(31)",
+          "options": ["A. lucky", "B. move", "C. responsibility", "D. then", "E. necessarily", "F. part", "G. tough", "H. willing", "I. approach", "J. recognize", "K. easily", "L. define"],
+          "answer": "C",
+          "answerExplanation": "\"take responsibility for\"意为\"对……负责\"，该空填\"responsibility\"。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q32",
+          "order": 32,
+          "questionType": "single_choice",
+          "stem": "空(32)",
+          "options": ["A. lucky", "B. move", "C. responsibility", "D. then", "E. necessarily", "F. part", "G. tough", "H. willing", "I. approach", "J. recognize", "K. easily", "L. define"],
+          "answer": "L",
+          "answerExplanation": "该空填动词，根据句意\"successful people don't define themselves by individual failures\"（成功人士不会以个人的失败来定义自己），选\"define\"。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q33",
+          "order": 33,
+          "questionType": "single_choice",
+          "stem": "空(33)",
+          "options": ["A. lucky", "B. move", "C. responsibility", "D. then", "E. necessarily", "F. part", "G. tough", "H. willing", "I. approach", "J. recognize", "K. easily", "L. define"],
+          "answer": "J",
+          "answerExplanation": "该空填动词，根据句意判断选择\"recognize\"（意识到）最为恰当。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q34",
+          "order": 34,
+          "questionType": "single_choice",
+          "stem": "空(34)",
+          "options": ["A. lucky", "B. move", "C. responsibility", "D. then", "E. necessarily", "F. part", "G. tough", "H. willing", "I. approach", "J. recognize", "K. easily", "L. define"],
+          "answer": "F",
+          "answerExplanation": "\"a small part of the whole\"意为\"整体的一小部分\"，该空选\"part\"。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q35",
+          "order": 35,
+          "questionType": "single_choice",
+          "stem": "空(35)",
+          "options": ["A. lucky", "B. move", "C. responsibility", "D. then", "E. necessarily", "F. part", "G. tough", "H. willing", "I. approach", "J. recognize", "K. easily", "L. define"],
+          "answer": "H",
+          "answerExplanation": "\"be willing to do\"意为\"乐意做某事\"，该空选\"willing\"。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q36",
+          "order": 36,
+          "questionType": "single_choice",
+          "stem": "空(36)",
+          "options": ["A. lucky", "B. move", "C. responsibility", "D. then", "E. necessarily", "F. part", "G. tough", "H. willing", "I. approach", "J. recognize", "K. easily", "L. define"],
+          "answer": "I",
+          "answerExplanation": "该空填名词，根据上下文\"If one approach doesn't work for you\"选\"approach\"（方法）。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q37",
+          "order": 37,
+          "questionType": "single_choice",
+          "stem": "空(37)",
+          "options": ["A. lucky", "B. move", "C. responsibility", "D. then", "E. necessarily", "F. part", "G. tough", "H. willing", "I. approach", "J. recognize", "K. easily", "L. define"],
+          "answer": "D",
+          "answerExplanation": "\"then\"意为\"接下来，然后\"，根据句意\"...if it brings repeated failures, then try something else.\"判断选\"then\"。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q38",
+          "order": 38,
+          "questionType": "single_choice",
+          "stem": "空(38)",
+          "options": ["A. lucky", "B. move", "C. responsibility", "D. then", "E. necessarily", "F. part", "G. tough", "H. willing", "I. approach", "J. recognize", "K. easily", "L. define"],
+          "answer": "E",
+          "answerExplanation": "句意为\"要做适合自己的事情，而不一定是适合他人的事情\"，空格处填副词表示\"不一定\"，选\"necessarily\"。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q39",
+          "order": 39,
+          "questionType": "single_choice",
+          "stem": "空(39)",
+          "options": ["A. lucky", "B. move", "C. responsibility", "D. then", "E. necessarily", "F. part", "G. tough", "H. willing", "I. approach", "J. recognize", "K. easily", "L. define"],
+          "answer": "G",
+          "answerExplanation": "根据后文\"They don't let one error keep them down.\"（他们不会因为一个错误就气馁）可知该空填\"tough\"，意思是\"坚强的\"。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q40",
+          "order": 40,
+          "questionType": "single_choice",
+          "stem": "空(40)",
+          "options": ["A. lucky", "B. move", "C. responsibility", "D. then", "E. necessarily", "F. part", "G. tough", "H. willing", "I. approach", "J. recognize", "K. easily", "L. define"],
+          "answer": "B",
+          "answerExplanation": "\"move on\"意为\"继续前进\"，该空选\"move\"。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2023-04-s6",
+      "type": "完形填空",
+      "order": 6,
+      "passageTitle": "Achieving Success in a Presentation",
+      "passageText": "The success of a presentation (present) is leaving your audience with something of value. What do they get from ___(41)___ (spend) time listening to your presentation? Many people think that they need to be brilliant to present well. They think that they need to be smart, witty and ___(42)___ (charm) before they start to write a speech. Those qualities can come ___(43)___ (natural), but most often, they come as a result of the passion and knowledge of the ___(44)___ (speak).\n\nOne of the vital factors in having an ___(45)___ (effect) presentation is serving the needs of your audience. Caring for your audience's needs ___(46)___ (require) no perfection. You can make ___(47)___ (mistake) and it's going to be OK. The ___(48)___ (equip) can fail and it's still going to be OK. You don't have to use humor to be a ___(49)___ (win). With that in mind, the real point is more like being successful at ___(50)___ (reach) your audience.",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "00015-2023-04-q41",
+          "order": 41,
+          "questionType": "fill_blank_transform",
+          "stem": "spend",
+          "options": [],
+          "answer": "spending",
+          "answerExplanation": "该题考察动词-ing形式作介词from的宾语，句子结构要求空格处填入动词的-ing形式，答案为spending。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q42",
+          "order": 42,
+          "questionType": "fill_blank_transform",
+          "stem": "charm",
+          "options": [],
+          "answer": "charming",
+          "answerExplanation": "根据前面并列的形容词\"smart（聪明的）\"、\"witty（风趣的）\"，可推断此处应填形容词，\"charming\"意为\"富有魅力的\"。",
+          "knowledgePoints": ["形容词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q43",
+          "order": 43,
+          "questionType": "fill_blank_transform",
+          "stem": "natural",
+          "options": [],
+          "answer": "naturally",
+          "answerExplanation": "该空在动词\"come\"后面，修饰动词需用副词，填\"naturally\"（天生地）。",
+          "knowledgePoints": ["副词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q44",
+          "order": 44,
+          "questionType": "fill_blank_transform",
+          "stem": "speak",
+          "options": [],
+          "answer": "speaker",
+          "answerExplanation": "该空填名词，文章指\"演讲者\"，填入名词\"speaker\"。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q45",
+          "order": 45,
+          "questionType": "fill_blank_transform",
+          "stem": "effect",
+          "options": [],
+          "answer": "effective",
+          "answerExplanation": "该空修饰名词\"presentation（演讲）\"，需填形容词\"effective\"（有效的）。",
+          "knowledgePoints": ["形容词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q46",
+          "order": 46,
+          "questionType": "fill_blank_transform",
+          "stem": "require",
+          "options": [],
+          "answer": "requires",
+          "answerExplanation": "句子的主语是\"Caring for your audience's needs\"（动名词短语作主语，视为单数），谓语动词需用第三人称单数现在时，故填\"requires\"。",
+          "knowledgePoints": ["动词时态"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q47",
+          "order": 47,
+          "questionType": "fill_blank_transform",
+          "stem": "mistake",
+          "options": [],
+          "answer": "mistakes",
+          "answerExplanation": "根据句子语境\"You can make ___ and it's going to be OK.\"应填名词\"mistake\"的复数形式\"mistakes\"。",
+          "knowledgePoints": ["名词单复数"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q48",
+          "order": 48,
+          "questionType": "fill_blank_transform",
+          "stem": "equip",
+          "options": [],
+          "answer": "equipment",
+          "answerExplanation": "该空作句子主语，需填名词形式\"equipment\"（设备）。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q49",
+          "order": 49,
+          "questionType": "fill_blank_transform",
+          "stem": "win",
+          "options": [],
+          "answer": "winner",
+          "answerExplanation": "该空应填入名词，文章意为\"胜利者\"，填入\"winner\"。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-04-q50",
+          "order": 50,
+          "questionType": "fill_blank_transform",
+          "stem": "reach",
+          "options": [],
+          "answer": "reaching",
+          "answerExplanation": "空格前是介词\"at\"，后面需接动词的-ing形式作宾语，填\"reaching\"。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2023-04-s7",
+      "type": "写作",
+      "order": 7,
+      "passageTitle": null,
+      "passageText": null,
+      "writingPrompt": "假设你刚找到一份满意的工作。请给你的美国朋友Tom写一封英文电子邮件，分享你的喜悦，内容包括：\n1. 你找了一份什么工作\n2. 你为什么喜欢这份工作\n请以Li Ke署名。（100词左右）",
+      "scorePerQuestion": 30,
+      "totalScore": 30,
+      "questions": [
+        {
+          "questionId": "00015-2023-04-q51",
+          "order": 51,
+          "questionType": "essay",
+          "stem": "假设你刚找到一份满意的工作。请给你的美国朋友Tom写一封英文电子邮件，分享你的喜悦，内容包括：你找了一份什么工作；你为什么喜欢这份工作。请以Li Ke署名。请根据所提供材料中的要求完成一篇100词左右的英文写作任务。",
+          "options": [],
+          "answer": "",
+          "answerExplanation": "官方范文：\nDear Tom,\nI hope this email finds you well. I just wanted to share some exciting news with you. I recently found a job that I'm really happy about and wanted to tell you all about it.\nI like to be a teacher. Three reasons have led me to choose this job. First, teaching is learning. To make my lectures more helpful and interesting, I have to read more books, learn new knowledge and gain a better understanding of the world, which is the very thing I enjoy in my life. Second, teaching means freedom and independence. As a teacher, I'm free to use my own ideas and make my own decisions. Finally, I like teaching because it offers certain peace of mind.\nAll in all, the reasons above make me like teaching best.\nAnyway, I just wanted to share my good news with you. Hope you're doing well!\nYours\nLi Ke\n（此为官方给出的参考范文，用于给学生做写作参考，不代表评分档次划分标准的详细说明；官方答案页未给出分档评分细则。）",
+          "knowledgePoints": ["写作-说明类"],
+          "difficultyTag": null
+        }
+      ]
+    }
+  ],
+  "parsingNotes": [
+    "全部14页PDF均清晰可辨，未发现图片模糊或字迹无法辨认导致答案不确定的情况。",
+    "timeLimitMinutes 字段填150分钟，为该课程（00015英语二）历年惯例时长，试卷封面本身未印刷考试时长，请人工核实此份是否有特殊时长要求。",
+    "答案页第51题（写作）官方仅给出一篇参考范文，未提供具体的分档评分标准（如各档次对应分数区间、评分要点），故 answerExplanation 中如实注明\"官方仅给出范文，无详细分档评分标准\"，请人工结合课程评分标准补充。",
+    "第三部分（概括段落大意与句子补全）第16-20题与第21-25题共享同一篇短文但对应两个不同的候选选项池（Task 1 六个段落大意选项 A-F，Task 2 六个句子补全选项 A-F），已在各题 options 字段中按对应任务分别列出完整候选池，请人工确认前端展示时按任务分组显示选项。"
+  ]
+}

@@ -1,0 +1,659 @@
+{
+  "examId": "00015-2020-10",
+  "title": "2020年10月高等教育自学考试英语(二)试题",
+  "year": 2020,
+  "month": 10,
+  "courseCode": "00015",
+  "courseName": "英语(二)",
+  "sourceFile": "a4117ad5-2020_10____________.pdf",
+  "totalScore": 100,
+  "timeLimitMinutes": 150,
+  "status": "待校对",
+  "sections": [
+    {
+      "sectionId": "00015-2020-10-s1",
+      "type": "阅读判断",
+      "order": 1,
+      "passageTitle": "Booking Online and Saving the Environment",
+      "passageText": "When you are looking to book a holiday, it is unlikely that you will think about how green your booking decision is, but it is something that you should think about. By \"green\" we mean the impact on the environment.\n\nWhen looking to book a holiday, you will probably find that you are faced with two main decisions. The first is to go into a travel agency, pick up brochure(宣传册), read through them and go back with just one and book with the travel agents directly or over the phone. The second is to go onto the Internet.\n\nThe Internet holds many advantages over the travel agencies. The main one is convenience. You can go online to look at holidays at any time of the day. The travel agents, however, are usually very busy at times when people can actually go, i.e. lunch hours or at the weekend. You could use the telephone but you wouldn't be able to see the pictures or the details of the holidays, so you would probably be sent a brochure anyway.\n\nThere are websites on the Internet that make shopping for holiday deals much easier. These websites are known as price comparison websites. They search through lots of different tour operators, and the results are displayed on one page, from which you can choose.\n\nCompared with the travel agencies, booking online is greener. The piles of brochures are definitely not green, and the amount of unnecessary paper used can't be good for the environment. In the days of the Internet, there is really no need for such a large amount of paper to be wasted. So booking online will not only save you time and effort, it will do a little bit towards saving the environment, too!",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2020-10-q1",
+          "order": 1,
+          "questionType": "single_choice",
+          "stem": "When planning holidays, few people will think about being green.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "第一段说 it is unlikely that you will think about how green your booking decision is（人们不太可能考虑预订是否环保），与题干意思一致，故选A。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q2",
+          "order": 2,
+          "questionType": "single_choice",
+          "stem": "There are two main choices when people look to book their holidays.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "第二段开头明确提到 two main decisions：去旅行社或上网预订，与题干一致，故选A。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q3",
+          "order": 3,
+          "questionType": "single_choice",
+          "stem": "People go to travel agencies and make their decisions directly.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "第二段说明去旅行社的人通常先拿宣传册通读后再挑一本回去，直接或通过电话与代理人预订，并非当场直接做决定，故选B。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q4",
+          "order": 4,
+          "questionType": "single_choice",
+          "stem": "The main advantage of booking online is saving money.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "第三段明确说网络预订最主要的优点是 convenience（方便），并非省钱，故选B。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q5",
+          "order": 5,
+          "questionType": "single_choice",
+          "stem": "Many people go to travel agencies at lunch time.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "第三段提到旅行社在人们实际能去的时间（如午饭时间或周末）通常很忙，可推断很多人在午饭时间去旅行社，故选A。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q6",
+          "order": 6,
+          "questionType": "single_choice",
+          "stem": "Booking holidays by telephone requires less communicative skills.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "第三段只提到电话预订看不到图片和详情，并未提及是否需要更少的交流技巧，文中未提及，故选C。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q7",
+          "order": 7,
+          "questionType": "single_choice",
+          "stem": "There are limited choices at price comparison websites.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "第四段说这些网站搜索了很多不同的旅行社（lots of different tour operators），选择并不有限，与题干相反，故选B。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q8",
+          "order": 8,
+          "questionType": "single_choice",
+          "stem": "Travel agencies make the best use of price comparison websites.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "全文没有提到旅行社会充分利用价格对比网站，文中未提及，故选C。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q9",
+          "order": 9,
+          "questionType": "single_choice",
+          "stem": "Travelers collect brochures as a hobby.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "文中并未提到旅行者以收集宣传册为爱好，文中未提及，故选C。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q10",
+          "order": 10,
+          "questionType": "single_choice",
+          "stem": "Booking online is a way to save the environment.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "最后一段明确说网络预订比去旅行社更绿色环保，是一种保护环境的方式，故选A。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2020-10-s2",
+      "type": "阅读理解选择",
+      "order": 2,
+      "passageTitle": "Urban Gardening",
+      "passageText": "Urban gardening refers to the practice of planting a garden the city. Apartments, town homes, and other areas with little or no land are being used for gardening. This method of gardening is becoming more common as the amount of land for gardening in cities is becoming smaller and smaller.\n\nContainers, hanging baskets and raised beds are examples of items people use to create a garden in a confined space. Some cities also offer a shared community garden for people who have no room to grow plants at home.\n\nMany types of plants can be grown in containers and baskets. Tomatoes and peppers, for instance, can grow in containers on windowsills(窗台). Plants grown on a windowsill should usually receive at least six to eight hours of sunlight daily. Herbs are often grown in containers or baskets in the kitchen. They do not require much space and can be handy for cooking.\n\nPeople who want to grow more plants may use raised beds which are usually made of wood pieces and filled with a mixture of soil and fertilizers. They can be built on top of any hard surface, including roof tops. People like them because the beds often cost much less than most other methods of gardening.\n\nCommunity gardening could be an option for anyone who does not have space for a garden at home. Most cities that offer this will rent a small plot and to someone for a fee, or allow them to use it free of charge Instead of dividing the and into separate plots, some cities allow everyone in the neighborhood to share and work on the same land. This method could be beneficial for people in the neighborhood who share the passion for growing things.",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2020-10-q11",
+          "order": 1,
+          "questionType": "single_choice",
+          "stem": "Urban gardening came into being as a result of ____.",
+          "options": ["A. the lack of land for gardening", "B. new technology", "C. government encouragement", "D. the increasing population"],
+          "answer": "A",
+          "answerExplanation": "第一段说明城市中用于园艺的土地越来越少，因此出现了这种园艺方式，故选A。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q12",
+          "order": 2,
+          "questionType": "single_choice",
+          "stem": "The word \"confined\" (Para. 2) means ____.",
+          "options": ["A. open", "B. empty", "C. limited", "D. occupied"],
+          "answer": "C",
+          "answerExplanation": "confined 意为“狭窄的、有限制的”，与 limited 意思一致，故选C。",
+          "knowledgePoints": ["词义猜测"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q13",
+          "order": 3,
+          "questionType": "single_choice",
+          "stem": "Plants grown on windowsills require a lot of ____.",
+          "options": ["A. water", "B. space", "C. soil", "D. sunlight"],
+          "answer": "D",
+          "answerExplanation": "第三段提到在窗台上种植的植物每天至少需要接收六到八小时的光照，故选D。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q14",
+          "order": 4,
+          "questionType": "single_choice",
+          "stem": "Raised beds are popular because they ____.",
+          "options": ["A. are efficient", "B. are cheap", "C. last long", "D. contain fertilizers"],
+          "answer": "B",
+          "answerExplanation": "第四段说人们喜欢种植床是因为它比大部分其他种植方法花费更少，故选B。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q15",
+          "order": 5,
+          "questionType": "single_choice",
+          "stem": "Community gardening is beneficial because it ____.",
+          "options": ["A. saves more land", "B. requires less work", "C. increases output", "D. connects people"],
+          "answer": "D",
+          "answerExplanation": "最后一段说这种方式对社区中拥有共同种植热情的人有好处，可推断出它能让人们因共同爱好而联系起来，故选D。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2020-10-s3",
+      "type": "段落大意与句子补全",
+      "order": 3,
+      "passageTitle": "My Science Teacher",
+      "passageText": "①Usually when people decide to be teachers, they go to college, get a degree, and find a job at a school They prepare lesson plans, give out homework, and make up tests. To them, it is just a job, a way to make a living. But for my science teacher, Mrs. Cook, teaching is not just her b; it's who she is. She teaches through her heart.\n\n②She has so much enthusiasm in her lessons. She is the one who goes out late at night to buy 10 pounds of sugar for our experiments. She brings in water from the nearby canal to make her point, and to make us remember the lesson. She makes think that each new fact could change our lives.\n\n③Mrs. Cook wants all of us to do well in school. She tries to reach each student. She neither ignores the sleeping kid in the back, nor let the problem students alone. She shows special concern to slow students, and often helps them after school. None of us can slip away from her attention.\n\n④Middle school is probably one of the hardest times of our lives. We change friends so often, and fight with our parents constantly. But Mrs. Cook has made this year so much better for us than it could have been. We know that if we had to turn to anybody, it would be her. And I'm not alone in feeling is way; she is a role model for our whole class.\n\n⑤Science had never been my favorite subject. I had never borrowed science books. I had never performed experiments in my home. But this year, it's the science class that I don't mind waking up for, the test I don't mind taking. I have Mrs. Cook to thank for that. She has taught us so much more than just a single subject.",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2020-10-q16",
+          "order": 1,
+          "questionType": "single_choice",
+          "stem": "Paragraph ①",
+          "options": ["A. Mrs. Cook makes our school life easier.", "B. I enjoy science class now.", "C. Mrs. Cook cares about each student.", "D. Mrs. Cook is strict with her students.", "E. Mrs. Cook's lessons are well-prepared.", "F. Teaching is more than a job for Mrs. Cook."],
+          "answer": "F",
+          "answerExplanation": "第一段最后一句说对Mrs. Cook来说教学不仅仅是工作，而是她本身，她用心教学，对应F。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q17",
+          "order": 2,
+          "questionType": "single_choice",
+          "stem": "Paragraph ②",
+          "options": ["A. Mrs. Cook makes our school life easier.", "B. I enjoy science class now.", "C. Mrs. Cook cares about each student.", "D. Mrs. Cook is strict with her students.", "E. Mrs. Cook's lessons are well-prepared.", "F. Teaching is more than a job for Mrs. Cook."],
+          "answer": "E",
+          "answerExplanation": "第二段讲述她深夜外出买实验用的糖、取水做实验以帮助学生记住课程内容，说明她的课程准备充分，对应E。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q18",
+          "order": 3,
+          "questionType": "single_choice",
+          "stem": "Paragraph ③",
+          "options": ["A. Mrs. Cook makes our school life easier.", "B. I enjoy science class now.", "C. Mrs. Cook cares about each student.", "D. Mrs. Cook is strict with her students.", "E. Mrs. Cook's lessons are well-prepared.", "F. Teaching is more than a job for Mrs. Cook."],
+          "answer": "C",
+          "answerExplanation": "第三段讲她关注每个学生，对进度慢的学生特别关心并放学后帮助他们，对应C。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q19",
+          "order": 4,
+          "questionType": "single_choice",
+          "stem": "Paragraph ④",
+          "options": ["A. Mrs. Cook makes our school life easier.", "B. I enjoy science class now.", "C. Mrs. Cook cares about each student.", "D. Mrs. Cook is strict with her students.", "E. Mrs. Cook's lessons are well-prepared.", "F. Teaching is more than a job for Mrs. Cook."],
+          "answer": "A",
+          "answerExplanation": "第四段说Mrs. Cook使这一年的学校生活变得更好，对应A。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q20",
+          "order": 5,
+          "questionType": "single_choice",
+          "stem": "Paragraph ⑤",
+          "options": ["A. Mrs. Cook makes our school life easier.", "B. I enjoy science class now.", "C. Mrs. Cook cares about each student.", "D. Mrs. Cook is strict with her students.", "E. Mrs. Cook's lessons are well-prepared.", "F. Teaching is more than a job for Mrs. Cook."],
+          "answer": "B",
+          "answerExplanation": "第五段说作者以前不喜欢科学课，现在却不介意为科学课醒来、不介意考试，说明现在喜欢科学课了，对应B。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q21",
+          "order": 6,
+          "questionType": "single_choice",
+          "stem": "To become a school teacher, one needs____",
+          "options": ["A. in class", "B. my teacher", "C. after school", "D. a role model", "E. a college degree", "F. teaching materials"],
+          "answer": "E",
+          "answerExplanation": "第一段说人们决定当老师时需要先去学院获得学位，对应E。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q22",
+          "order": 7,
+          "questionType": "single_choice",
+          "stem": "Mrs. Cook often goes out to collect____",
+          "options": ["A. in class", "B. my teacher", "C. after school", "D. a role model", "E. a college degree", "F. teaching materials"],
+          "answer": "F",
+          "answerExplanation": "第二段说她外出购买糖、取水等用于实验教学的材料，对应F“教学材料”。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q23",
+          "order": 8,
+          "questionType": "single_choice",
+          "stem": "Mrs. Cook offers slow students extra help____",
+          "options": ["A. in class", "B. my teacher", "C. after school", "D. a role model", "E. a college degree", "F. teaching materials"],
+          "answer": "C",
+          "answerExplanation": "第三段说她经常在放学后（after school）帮助进度慢的学生，对应C。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q24",
+          "order": 9,
+          "questionType": "single_choice",
+          "stem": "Our whole class take Mrs. Cook as____",
+          "options": ["A. in class", "B. my teacher", "C. after school", "D. a role model", "E. a college degree", "F. teaching materials"],
+          "answer": "D",
+          "answerExplanation": "第四段最后一句说她是我们整个班级的榜样（a role model），对应D。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q25",
+          "order": 10,
+          "questionType": "single_choice",
+          "stem": "I am lucky to have Mrs. Cook as____",
+          "options": ["A. in class", "B. my teacher", "C. after school", "D. a role model", "E. a college degree", "F. teaching materials"],
+          "answer": "B",
+          "answerExplanation": "题干是“我很幸运有Mrs. Cook作为____”，as后需接名词，剩余选项中只有B“my teacher”符合语法与题意，对应B。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2020-10-s4",
+      "type": "填句补文",
+      "order": 4,
+      "passageTitle": "Lack of Sleep Is Dangerous",
+      "passageText": "Do you know that if you miss out too much sleep you will die? It's true! If you stay awake for a long, long time, your brain and body will break down.\n\nThe unofficial world record for staying awake is 11 days, and it's held by Randy Gardner. ___(26)___ He also had help from TV, and radio reporters, a sleep researcher and a doctor.\n\nWhat happened? ___(27)___ Then his brain started to lose sense. On day 4, he thought a street sign was really a person. Okay 6, he began to speak very slowly. On day 9, he couldn't finish sentences. On day 10, Randy thought he saw a forest in the next room. ___(28)___ Eventually, after he'd broken the world record, Randy was told to go to sleep. Experiments that keep people awake for dangerously long periods are always stopped before the patients break down.\n\nRats, however aren't so well cared for. ___(29)___ That's sooner than if they a been allowed to sleep out were given no food. They get really thin. But that's not because they stop eating-quite the opposite. Even though these rats are eating food, their bodies can't process it in the normal way. On top of that, their little bodies lose more heat than normal, which makes them weak. This means that they need more food to stay at a healthy temperature. ___(30)___\n\nAnd that's what lack of sleep does for you.",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2020-10-q26",
+          "order": 1,
+          "questionType": "single_choice",
+          "stem": "空格(26)",
+          "options": ["A. In fact, he went a bit crazy.", "B. Normally rats wouldn't catch a cold.", "C. Towards the end, the health of these rats is failing.", "D. When kept from sleeping, they die within three weeks.", "E. Randy asked two of his friends to stop him falling asleep.", "F. First of all, staying awake long made Randy bad-tempered."],
+          "answer": "E",
+          "answerExplanation": "空格前一句说非官方世界纪录是连续11天不睡觉，由Randy Gardner创造；空格后一句说“他也获得了来自电视、电台记者等的帮助”，根据also可推知空格处应先说有人帮助他保持清醒，对应E。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q27",
+          "order": 2,
+          "questionType": "single_choice",
+          "stem": "空格(27)",
+          "options": ["A. In fact, he went a bit crazy.", "B. Normally rats wouldn't catch a cold.", "C. Towards the end, the health of these rats is failing.", "D. When kept from sleeping, they die within three weeks.", "E. Randy asked two of his friends to stop him falling asleep.", "F. First of all, staying awake long made Randy bad-tempered."],
+          "answer": "F",
+          "answerExplanation": "空格前问“发生了什么？”，空格后说“然后他的大脑开始失去意识”，根据Then可推知空格处先发生了别的事，对应F（长时间保持清醒使Randy脾气变差）。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q28",
+          "order": 3,
+          "questionType": "single_choice",
+          "stem": "空格(28)",
+          "options": ["A. In fact, he went a bit crazy.", "B. Normally rats wouldn't catch a cold.", "C. Towards the end, the health of these rats is failing.", "D. When kept from sleeping, they die within three weeks.", "E. Randy asked two of his friends to stop him falling asleep.", "F. First of all, staying awake long made Randy bad-tempered."],
+          "answer": "A",
+          "answerExplanation": "空格前描述他第8、9天不睡觉的异常状况，空格后描述他最终被告知可以睡觉了；剩余选项ABCD中只有A的主语是he（其余是描述rats的），对应A。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q29",
+          "order": 4,
+          "questionType": "single_choice",
+          "stem": "空格(29)",
+          "options": ["A. In fact, he went a bit crazy.", "B. Normally rats wouldn't catch a cold.", "C. Towards the end, the health of these rats is failing.", "D. When kept from sleeping, they die within three weeks.", "E. Randy asked two of his friends to stop him falling asleep.", "F. First of all, staying awake long made Randy bad-tempered."],
+          "answer": "D",
+          "answerExplanation": "空格前说老鼠没有被很好地照料，空格后说“这比不给它们食物、让它们不睡觉更快”，说明空格处应给出一个结果性陈述，对应D（被剥夺睡眠会在三周内死亡）。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q30",
+          "order": 5,
+          "questionType": "single_choice",
+          "stem": "空格(30)",
+          "options": ["A. In fact, he went a bit crazy.", "B. Normally rats wouldn't catch a cold.", "C. Towards the end, the health of these rats is failing.", "D. When kept from sleeping, they die within three weeks.", "E. Randy asked two of his friends to stop him falling asleep.", "F. First of all, staying awake long made Randy bad-tempered."],
+          "answer": "C",
+          "answerExplanation": "段落最后一句说“这就是缺乏睡眠对你造成的后果”，暗示前文应是一个不好的结果，对应C（这些老鼠的健康每况愈下）。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2020-10-s5",
+      "type": "填词补文",
+      "order": 5,
+      "passageTitle": "Talking Counts!",
+      "passageText": "Most words in a child's vocabulary come from everyday encounters with language. Children___(31)___ up language from books, media, are conversations.\n\nYou can increase your child's vocabulary and___(32)___ knowledge by having conversations with them. With babies, you've talk to them about what you're doing so they can begin to___(33)___ words with concept. As your baby begins to speak, start asking, \"What's that?\" when___(34)___ to objects or pictures. Elaborate on their___(35)___ answers as a way to have them listening to more words. \"Yes, that is a banana! It's___(36)___ and smooth.\"\n\nWith young children, you can talk about the things you see in your___(37)___, on trips around town, or on televising These conversations help build a child's___(38)___ of his world. When reading, pause to ask questions on the story. Ask, \"Why do you think he did that? or \"What do you think going to happen___(39)___?\" Tell your children stories from your own life, or about the day they were___(40)___. This helps develop their personal and cultural identity.",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "00015-2020-10-q31",
+          "order": 1,
+          "questionType": "single_choice",
+          "stem": "空格(31)",
+          "options": ["A. link", "B. simple", "C. secondly", "D. neighborhood", "E. yellow", "F. build", "G. understanding", "H. pointing", "I. pick", "J. born", "K. background", "L. next"],
+          "answer": "I",
+          "answerExplanation": "句中缺少一个动词原形，可与up组成短语的有build up（增强）和pick up（获得），根据句意应是从书本等渠道“获得”语言而非“增强”语言，故选I（pick）。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q32",
+          "order": 2,
+          "questionType": "single_choice",
+          "stem": "空格(32)",
+          "options": ["A. link", "B. simple", "C. secondly", "D. neighborhood", "E. yellow", "F. build", "G. understanding", "H. pointing", "I. pick", "J. born", "K. background", "L. next"],
+          "answer": "K",
+          "answerExplanation": "官方仅给出答案，无详细解析。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q33",
+          "order": 3,
+          "questionType": "single_choice",
+          "stem": "空格(33)",
+          "options": ["A. link", "B. simple", "C. secondly", "D. neighborhood", "E. yellow", "F. build", "G. understanding", "H. pointing", "I. pick", "J. born", "K. background", "L. next"],
+          "answer": "A",
+          "answerExplanation": "空格处应为动词原形（begin to do），且需能与with搭配，表示“把文字和概念连接起来”，只有link符合，故选A。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q34",
+          "order": 4,
+          "questionType": "single_choice",
+          "stem": "空格(34)",
+          "options": ["A. link", "B. simple", "C. secondly", "D. neighborhood", "E. yellow", "F. build", "G. understanding", "H. pointing", "I. pick", "J. born", "K. background", "L. next"],
+          "answer": "H",
+          "answerExplanation": "when后面缺少一个-ing形式，pointing to（指向）比understanding更符合“指向物体或图片时问那是什么”的题意，故选H。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q35",
+          "order": 5,
+          "questionType": "single_choice",
+          "stem": "空格(35)",
+          "options": ["A. link", "B. simple", "C. secondly", "D. neighborhood", "E. yellow", "F. build", "G. understanding", "H. pointing", "I. pick", "J. born", "K. background", "L. next"],
+          "answer": "B",
+          "answerExplanation": "空格处应为修饰answers的形容词，意为把孩子简单的答案详细复述一遍以让他们听到更多单词，simple最符合题意，故选B。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q36",
+          "order": 6,
+          "questionType": "single_choice",
+          "stem": "空格(36)",
+          "options": ["A. link", "B. simple", "C. secondly", "D. neighborhood", "E. yellow", "F. build", "G. understanding", "H. pointing", "I. pick", "J. born", "K. background", "L. next"],
+          "answer": "E",
+          "answerExplanation": "空格处缺少修饰banana的形容词，yellow（黄色的）符合香蕉的特性，故选E。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q37",
+          "order": 7,
+          "questionType": "single_choice",
+          "stem": "空格(37)",
+          "options": ["A. link", "B. simple", "C. secondly", "D. neighborhood", "E. yellow", "F. build", "G. understanding", "H. pointing", "I. pick", "J. born", "K. background", "L. next"],
+          "answer": "D",
+          "answerExplanation": "空格处缺少名词，句意为“可以和孩子讨论在你的社区（neighborhood）中看到的事物”，故选D。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q38",
+          "order": 8,
+          "questionType": "single_choice",
+          "stem": "空格(38)",
+          "options": ["A. link", "B. simple", "C. secondly", "D. neighborhood", "E. yellow", "F. build", "G. understanding", "H. pointing", "I. pick", "J. born", "K. background", "L. next"],
+          "answer": "G",
+          "answerExplanation": "句意为“这些对话有助于建立孩子对世界的理解（understanding）”，故选G。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q39",
+          "order": 9,
+          "questionType": "single_choice",
+          "stem": "空格(39)",
+          "options": ["A. link", "B. simple", "C. secondly", "D. neighborhood", "E. yellow", "F. build", "G. understanding", "H. pointing", "I. pick", "J. born", "K. background", "L. next"],
+          "answer": "L",
+          "answerExplanation": "句意为“你认为接下来（next）将会发生什么”，故选L。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q40",
+          "order": 10,
+          "questionType": "single_choice",
+          "stem": "空格(40)",
+          "options": ["A. link", "B. simple", "C. secondly", "D. neighborhood", "E. yellow", "F. build", "G. understanding", "H. pointing", "I. pick", "J. born", "K. background", "L. next"],
+          "answer": "J",
+          "answerExplanation": "空格处缺少动词的过去分词形式，was/were born（出生）符合题意“讲述他们出生的那天”，故选J。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2020-10-s6",
+      "type": "完形填空",
+      "order": 6,
+      "passageTitle": "Water Shortage",
+      "passageText": "Getting water seems (seem) so easy for many people. You will be_____(41)(mistake) if you think there is an_____(42)(end) supply of water. In fact, the world has a water shortage. Seventy percent of the world is_____(43)(cover) in water. But most of it is salt water. Only a small_____(44)(percent) is fresh drinking water. Countries_____(45)(include) Spain, Italy and South Africa actually import water from countries such as the United States and Australia. _____(46)(surprising), 1.1 billion people on earth have difficulty_____(47)(get) clean drinking water. This global problem is predicted to get_____(48)(bad) as the atmosphere becomes warmer.\n\nEvery person in Britain_____(49)(use) about 150 litres of water a day. In some countries people only have 5 to 10 litres a day! They would be_____(50)(shock) to learn how we waste drinking water.",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "00015-2020-10-q41",
+          "order": 1,
+          "questionType": "fill_blank_transform",
+          "stem": "mistake",
+          "options": [],
+          "answer": "mistaken",
+          "answerExplanation": "空格处缺少一个形容词，与前面的will be搭配表示“你会是错误的”，be mistaken为固定用法，故填mistaken。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q42",
+          "order": 2,
+          "questionType": "fill_blank_transform",
+          "stem": "end",
+          "options": [],
+          "answer": "endless",
+          "answerExplanation": "空格处于an之后、名词supply之前，应为形容词；根据句意（若认为水资源供应无穷无尽则你就错了），应填表示“无穷无尽的”的endless。",
+          "knowledgePoints": ["形容词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q43",
+          "order": 3,
+          "questionType": "fill_blank_transform",
+          "stem": "cover",
+          "options": [],
+          "answer": "covered",
+          "answerExplanation": "空格处应填动词的过去分词与is构成一般现在时的被动语态，表示“百分之七十的地球被水覆盖”，故填covered。",
+          "knowledgePoints": ["被动语态"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q44",
+          "order": 4,
+          "questionType": "fill_blank_transform",
+          "stem": "percent",
+          "options": [],
+          "answer": "percentage",
+          "answerExplanation": "空格处作句子主语，缺少名词，故填percentage（百分比/部分）。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q45",
+          "order": 5,
+          "questionType": "fill_blank_transform",
+          "stem": "include",
+          "options": [],
+          "answer": "including",
+          "answerExplanation": "该句谓语动词是import，空格处应填非谓语动词形式；included表被动完成，including表主动进行，符合“包括西班牙、意大利、南非等国家”的题意，故填including。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q46",
+          "order": 6,
+          "questionType": "fill_blank_transform",
+          "stem": "surprising",
+          "options": [],
+          "answer": "Surprisingly",
+          "answerExplanation": "空格处是逗号前单独出现、用来修饰整个句子的状语成分，应使用副词形式surprisingly（句首大写）。",
+          "knowledgePoints": ["副词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q47",
+          "order": 7,
+          "questionType": "fill_blank_transform",
+          "stem": "get",
+          "options": [],
+          "answer": "getting",
+          "answerExplanation": "have difficulty (in) doing sth是固定搭配，in可省略，故填getting。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q48",
+          "order": 8,
+          "questionType": "fill_blank_transform",
+          "stem": "bad",
+          "options": [],
+          "answer": "worse",
+          "answerExplanation": "句意为“随着大气变暖，这个全球性问题预计会变得更糟”，应使用比较级，故填worse。",
+          "knowledgePoints": ["比较级最高级"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q49",
+          "order": 9,
+          "questionType": "fill_blank_transform",
+          "stem": "use",
+          "options": [],
+          "answer": "uses",
+          "answerExplanation": "该句缺少谓语动词，主语every person为第三人称单数，一般现在时应填uses。",
+          "knowledgePoints": ["动词时态"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2020-10-q50",
+          "order": 10,
+          "questionType": "fill_blank_transform",
+          "stem": "shock",
+          "options": [],
+          "answer": "shocked",
+          "answerExplanation": "该句谓语为would be，空格处应填表示状态的形容词，be shocked（感到震惊）为固定用法，故填shocked。",
+          "knowledgePoints": ["被动语态"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2020-10-s7",
+      "type": "写作",
+      "order": 7,
+      "passageTitle": null,
+      "passageText": null,
+      "writingPrompt": "某英文报社正在举办题为\"An Unforgettable Holiday\"的征文活动。请就此题目写一篇英文短文应征，内容包括：①哪一个假期令你难忘 ②为什么令你难忘。请根据所提供材料中的要求完成一篇100词左右的英文写作任务。",
+      "scorePerQuestion": 30,
+      "totalScore": 30,
+      "questions": [
+        {
+          "questionId": "00015-2020-10-q51",
+          "order": 1,
+          "questionType": "essay",
+          "stem": "An Unforgettable Holiday：请写一篇100词左右的英文短文，说明哪一个假期令你难忘、为什么令你难忘。",
+          "options": [],
+          "answer": "",
+          "answerExplanation": "官方参考范文：\n\nAn Unforgettable Holiday\n\nWhen it comes to an unforgettable holiday, everyone has his or her own idea. Some people like the Chinese New Year holiday, while others are interested in the winter holiday. From my point of view, I prefer the first one.\n\nThere are mainly two reasons for my view. On the one hand, it can help me keep fit. For example, I usually go to play basketball during the long holiday, which not only exercises my body but also improves my health. On the other hand, during the holiday, going out for fun can make me refreshed after a period of stressful working or studying and increase my study effectiveness very well.\n\nIn a word, I like the Chinese New Year holiday very much and benefit a lot from it.\n\n（官方答案页只提供了这篇参考范文，没有额外的评分细则或要点表。）",
+          "knowledgePoints": ["写作-记叙类"],
+          "difficultyTag": null
+        }
+      ]
+    }
+  ],
+  "parsingNotes": [
+    "原始试卷图片本身存在多处印刷缺字/疑似错字，均已按原图逐字抄录、未擅自修正，需人工核对官方原卷确认，包括：第3部分《My Science Teacher》第①段\"her b\"疑似应为\"her job\"；第②段\"She makes think that\"疑似缺\"us\"；第④段\"I'm not alone in feeling is way\"疑似应为\"feeling this way\"；第2部分《Urban Gardening》第①段\"planting a garden the city\"疑似缺\"in\"，第⑤段\"will rent a small plot and to someone\"疑似应为\"...it to someone\"、\"dividing the and into separate plots\"疑似应为\"...the land into separate plots\"；第4部分《Lack of Sleep Is Dangerous》\"Okay 6, he began to speak\"疑似应为\"On day 6\"、\"they a been allowed to sleep\"疑似应为\"they'd been allowed to sleep\"；第5部分《Talking Counts!》\"media, are conversations\"疑似应为\"media, and conversations\"、\"you've talk to them\"疑似应为\"you've talked to them\"、\"on televising\"疑似应为\"on television\"。",
+    "第五部分（填词补文）第32题官方答案页只给出正确答案字母K，未提供解析说明，answerExplanation按规范填写为\"官方仅给出答案，无详细解析\"，需人工核对。",
+    "试卷标题页未印刷考试时长，timeLimitMinutes填150分钟为该课程（00015英语(二)）历年惯例值，未在本卷原文中直接找到印刷依据，建议人工核对确认。",
+    "第七部分写作题（第51题）官方答案页只提供了一篇参考范文，没有额外的评分细则或要点表，已将范文全文抄录于该题answerExplanation字段中。"
+  ]
+}

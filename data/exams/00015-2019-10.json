@@ -1,0 +1,656 @@
+{
+  "examId": "00015-2019-10",
+  "title": "2019年10月高等教育自学考试英语(二)试题",
+  "year": 2019,
+  "month": 10,
+  "courseCode": "00015",
+  "courseName": "英语(二)",
+  "sourceFile": "915b49d0-2019_10____________.pdf",
+  "totalScore": 100,
+  "timeLimitMinutes": 150,
+  "status": "待校对",
+  "sections": [
+    {
+      "sectionId": "00015-2019-10-s1",
+      "type": "阅读判断",
+      "order": 1,
+      "passageTitle": "To Lease (租赁) or Not to Lease",
+      "passageText": "Planning to lease a car because you don't think you can afford to buy? Think again. Leasing can end up being just as expensive as buying.\n\nMost people think about leasing because they believe it will cost them less money. They're right--it is cheaper, but only in the short term. For example, if you were to lease a new Subaru Forester, you might pay $300 per month for the car. If you were to buy the same car, you would pay about $400 per month. Over a three-year lease, you would save $3,600-a big savings. But after your lease is over, you have to give the car back.\n\nMany people want to lease because they can drive a more expensive car than they might otherwise be able to afford. For example, if you spend $300 monthly on a car, you might be able to lease a new Ford Explorer. For the same price, you might have to buy a used Explorer, or buy a new but much less expensive model. A lease, therefore, allows you to drive the latest models of more expensive cars. However whatever car you can afford to buy, you get to keep it, and it will always have resell or trade-in (以旧换新) value if you want to upgrade to a new car later.\n\nFurthermore, people who lease cars are often shocked by how much they must pay when the lease is over. Most leases limit you to a certain number of miles. If you go over that, you must pay for each mile. As a result, you may end up paying thousands of dollars in mileage (里程) fees. In addition, when you lease, you have to pay for regular maintenance and repairs to the vehicle. Since you must return the car finally, you are paying to repair someone else's car.\n\nBy now, the benefits of buying over leasing should be clear. Remember: whatever model you can afford to buy, it is yours after you make the payments. There's no giving back, and that makes all the difference.",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2019-10-q1",
+          "order": 1,
+          "questionType": "single_choice",
+          "stem": "People usually think leasing a car can save money.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "根据第二段 \"Most people think about leasing because they believe it will cost them less money.\" 可知，人们往往认为租车省钱。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q2",
+          "order": 2,
+          "questionType": "single_choice",
+          "stem": "Leasing a car costs less in the long term.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "根据第二段 \"They're right--it is cheaper, but only in the short term.\" 可知，只有短期内省钱，长期并不省钱，故为False。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q3",
+          "order": 3,
+          "questionType": "single_choice",
+          "stem": "More people like to lease cars than before.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "原文未提及租车人数是否比以前增多，故选Not Given。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q4",
+          "order": 4,
+          "questionType": "single_choice",
+          "stem": "People can lease a car they cannot afford.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "根据第三段 \"Many people want to lease because they can drive a more expensive car than they might otherwise be able to afford.\" 可知，人们可以租买不起的车。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q5",
+          "order": 5,
+          "questionType": "single_choice",
+          "stem": "Young people prefer to lease the latest models of cars.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "原文未提及年轻人的偏好，故选Not Given。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q6",
+          "order": 6,
+          "questionType": "single_choice",
+          "stem": "Ford Explorer is the most popular model in the leasing market.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "原文只是举Ford Explorer为例子，未说明它是租赁市场最受欢迎的车型，故选Not Given。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q7",
+          "order": 7,
+          "questionType": "single_choice",
+          "stem": "People often pay more than they expect for a lease.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "根据第四段 \"people who lease cars are often shocked by how much they must pay when the lease is over\" 可知，人们经常为租赁支付超出预期的费用。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q8",
+          "order": 8,
+          "questionType": "single_choice",
+          "stem": "People need to pay for each mile they drive during the lease.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "根据第四段 \"Most leases limit you to a certain number of miles. If you go over that, you must pay for each mile.\" 可知，只有超出里程限制的部分才按英里付费，并非每英里都要付钱，故为False。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q9",
+          "order": 9,
+          "questionType": "single_choice",
+          "stem": "Leasing companies pay for repairs to the leased cars.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "根据第四段 \"when you lease, you have to pay for regular maintenance and repairs to the vehicle\" 可知，租赁期间是承租人自己负责养护和维修费用，并非租赁公司支付，故为False。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q10",
+          "order": 10,
+          "questionType": "single_choice",
+          "stem": "The author advises people to buy an affordable car.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "根据尾段可知，作者认为买一部经济上负担得起的车较为恰当。",
+          "knowledgePoints": ["观点态度理解"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2019-10-s2",
+      "type": "阅读理解选择",
+      "order": 2,
+      "passageTitle": "Mental Illness Hits Small Business Owners Hard",
+      "passageText": "While there is a growing focus on mental health in the workplace, there are fewer resources and support available to those running small businesses.\n\nThere are many reasons people choose to have their own boss working on something they love, being able to set their own hours, or having some control over whom they work with. Yet the reality many small business owners face is far less attractive-financial stress, long working hours and unclear boundaries between work and family life. And all of these factors can have a huge impact on their mental health.\n\nLeanne Fawkner is business owner of an award-winning skin-care range (系列产品). She knows very well the impact that a small business can have on the mental health of its owner. When her successful business struggled due to the global financial crisis, she suffered a lot mentally. \"As business slowed, I was more and more affected,\" she says. \"I couldn't separate myself from my business. It was the worst experience of my life. I could no longer go to work and was crying all day.\"\n\nFawkner was diagnosed with depression. She had to take several months off work. Fortunately, her husband was able to keep things going while Fawkner was recovering. She saw a counselor (咨询师) for help and took part in workplace mental health promotion program. This program was designed for small to medium business owners.\n\n\"The stories on the DVD in the program were so helpful. I was crying because I didn't feel so alone.\" For Fawkner, small business owners are overlooked. While employees in larger organizations often have access to employee assistance programs, small business owners are struggling on their own.",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2019-10-q11",
+          "order": 11,
+          "questionType": "single_choice",
+          "stem": "One reason to have one's own business is that one can have more_____.",
+          "options": ["A. flexible working hours", "B. support from others", "C. available resources", "D. life experience"],
+          "answer": "A",
+          "answerExplanation": "根据第二段 \"There are many reasons people choose to have their own boss working on something they love, being able to set their own hours...\" 可知，自己当老板的原因之一是可以有更灵活的工作时间，对应A。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q12",
+          "order": 12,
+          "questionType": "single_choice",
+          "stem": "small business owner usually has_____.",
+          "options": ["A. a more colorful life", "B. a bigger profit", "C. less stress from work", "D. longer working time"],
+          "answer": "D",
+          "answerExplanation": "根据第二段 \"Yet the reality many small business owners face is far less attractive-financial stress, long working hours and unclear boundaries between work and family life.\" 可知，小企业主通常工作时间更长，对应D。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q13",
+          "order": 13,
+          "questionType": "single_choice",
+          "stem": "Fawkner's business ran into trouble because_____.",
+          "options": ["A. it was taken over by her husband", "B. she had a serious mental problem", "C. it was hit by the financial crisis", "D. she started a mental health program"],
+          "answer": "C",
+          "answerExplanation": "根据第三段 \"When her successful business struggled due to the global financial crisis, she suffered a lot mentally.\" 可知，她的生意因金融危机陷入困境，对应C。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q14",
+          "order": 14,
+          "questionType": "single_choice",
+          "stem": "Fawkner didn't feel so alone because_____.",
+          "options": ["A. she had her family around", "B. she could watch DVD at work", "C. others had similar experiences", "D. the counselor was helpful to her"],
+          "answer": "C",
+          "answerExplanation": "根据后两段 \"She saw a counselor for help and took part in workplace mental health promotion program\" 和 \"The stories on the DVD in the program were so helpful. I was crying because I didn't feel so alone.\" 可知，不觉得孤独是因为别人也有类似的经历，对应C。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q15",
+          "order": 15,
+          "questionType": "single_choice",
+          "stem": "According to Fawkner, small business owners need more _____.",
+          "options": ["A. financial aid", "B. technical knowledge", "C. management skills", "D. mental health assistance"],
+          "answer": "D",
+          "answerExplanation": "根据尾段 \"small business owners are overlooked. While employees in larger organizations often have access to employee assistance programs, small business owners are struggling on their own.\" 并呼应全文主题，可知小型企业的业主需要更多心理健康方面的帮助，对应D。",
+          "knowledgePoints": ["观点态度理解"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2019-10-s3",
+      "type": "段落大意与句子补全",
+      "order": 3,
+      "passageTitle": "Secrets for a Happier You",
+      "passageText": "Some people are naturally blessed with a cheerful character. They spread warmth and sunshine wherever they go. They attract people like bees to honey. So what is it that makes these people so different from others?\n\n①The most important secret to happiness is to be grateful for the good things in your life--whatever may be your financial position. Instead of appreciating material wealth, be thankful for the loved ones in your life and enjoy the little pleasures of life that come your way.\n\n②The next most important secret is to develop relationships. Increasing social contacts helps boost brain power. Therefore, work towards improving your relationships and take time off to get in touch with friends. This will lift some burden off your shoulders, especially when you share your thoughts and feelings. Socializing can give you an added boost to your moods.\n\n③Thirdly, do not hold a grudge (怨恨) against anyone. Instead, learn to be kind, generous, and forgiving towards others, even to the person who hurt you. Be sympathetic and understanding, and try not to criticize others. Focus on the positives of a person instead of the negatives, for none of us is born perfect. It will keep your heart and mind free and peaceful.\n\n④Besides, involve yourself in some creative process, be it dancing, writing or drawing. This can bring out the hidden talent in you to achieve magical happiness. Or pick up new skills and feel the great sense of satisfaction by carrying out certain tasks which you otherwise would never have felt.\n\n⑤Finally, follow a daily regular sleep-wake cycle to keep you energetic and happy. Exercise regularly or practice relaxation techniques like deep breathing and yoga (瑜伽). Ensure you get eight to nine hours of sleep every day and have a well-balanced diet.",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2019-10-q16",
+          "order": 16,
+          "questionType": "single_choice",
+          "stem": "Paragraph ①",
+          "options": ["A. Help people in need", "B. Have a healthy lifestyle", "C. Do something creative", "D. Better your social relationships", "E. Be thankful for what you have", "F. Learn to understand and forgive"],
+          "answer": "E",
+          "answerExplanation": "根据该段首句 \"The most important secret to happiness is to be grateful for the good things in your life--whatever may be your financial position.\" 可知，最重要的秘诀是心存感激，对应E。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q17",
+          "order": 17,
+          "questionType": "single_choice",
+          "stem": "Paragraph ②",
+          "options": ["A. Help people in need", "B. Have a healthy lifestyle", "C. Do something creative", "D. Better your social relationships", "E. Be thankful for what you have", "F. Learn to understand and forgive"],
+          "answer": "D",
+          "answerExplanation": "根据该段首句 \"The next most important secret is to develop relationships.\" 可知，本段讲改善社会关系，对应D。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q18",
+          "order": 18,
+          "questionType": "single_choice",
+          "stem": "Paragraph ③",
+          "options": ["A. Help people in need", "B. Have a healthy lifestyle", "C. Do something creative", "D. Better your social relationships", "E. Be thankful for what you have", "F. Learn to understand and forgive"],
+          "answer": "F",
+          "answerExplanation": "根据该段首句 \"Thirdly, do not hold a grudge against anyone.\" 及后文可知，本段讲学会理解和原谅，对应F。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q19",
+          "order": 19,
+          "questionType": "single_choice",
+          "stem": "Paragraph ④",
+          "options": ["A. Help people in need", "B. Have a healthy lifestyle", "C. Do something creative", "D. Better your social relationships", "E. Be thankful for what you have", "F. Learn to understand and forgive"],
+          "answer": "C",
+          "answerExplanation": "根据该段首句 \"Besides, involve yourself in some creative process, be it dancing, writing or drawing.\" 可知，本段讲做一些有创造力的事情，对应C。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q20",
+          "order": 20,
+          "questionType": "single_choice",
+          "stem": "Paragraph ⑤",
+          "options": ["A. Help people in need", "B. Have a healthy lifestyle", "C. Do something creative", "D. Better your social relationships", "E. Be thankful for what you have", "F. Learn to understand and forgive"],
+          "answer": "B",
+          "answerExplanation": "根据该段首句 \"Finally, follow a daily regular sleep-wake cycle to keep you energetic and happy.\" 可知，本段讲养成健康的生活方式，对应B。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q21",
+          "order": 21,
+          "questionType": "single_choice",
+          "stem": "A cheerful character makes you_____",
+          "options": ["A. more intelligent", "B. even if you are poor", "C. different from others", "D. even when you are hurt", "E. to develop your potential", "F. to gain more material wealth"],
+          "answer": "C",
+          "answerExplanation": "根据开头 \"Some people are naturally blessed with a cheerful character...So what is it that makes these people so different from others?\" 可知，开朗的性格使人与众不同，对应C。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q22",
+          "order": 22,
+          "questionType": "single_choice",
+          "stem": "Enjoy the pleasures of life_____",
+          "options": ["A. more intelligent", "B. even if you are poor", "C. different from others", "D. even when you are hurt", "E. to develop your potential", "F. to gain more material wealth"],
+          "answer": "B",
+          "answerExplanation": "根据第一段首句 \"whatever may be your financial position\" 可知，即使你贫穷也要享受生活的乐趣，对应B。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q23",
+          "order": 23,
+          "questionType": "single_choice",
+          "stem": "Socializing can make you_____",
+          "options": ["A. more intelligent", "B. even if you are poor", "C. different from others", "D. even when you are hurt", "E. to develop your potential", "F. to gain more material wealth"],
+          "answer": "A",
+          "answerExplanation": "根据第二段 \"Increasing social contacts helps boost brain power.\" 可知，社交能让人更聪明，对应A。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q24",
+          "order": 24,
+          "questionType": "single_choice",
+          "stem": "Try to forgive_____",
+          "options": ["A. more intelligent", "B. even if you are poor", "C. different from others", "D. even when you are hurt", "E. to develop your potential", "F. to gain more material wealth"],
+          "answer": "D",
+          "answerExplanation": "根据第三段 \"Instead, learn to be kind, generous, and forgiving towards others, even to the person who hurt you.\" 可知，即使被伤害也要学会原谅，对应D。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q25",
+          "order": 25,
+          "questionType": "single_choice",
+          "stem": "Creative activities enable you_____",
+          "options": ["A. more intelligent", "B. even if you are poor", "C. different from others", "D. even when you are hurt", "E. to develop your potential", "F. to gain more material wealth"],
+          "answer": "E",
+          "answerExplanation": "根据第四段 \"This can bring out the hidden talent in you to achieve magical happiness.\" 可知，创造性活动可以发掘你的潜能，对应E。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2019-10-s4",
+      "type": "填句补文",
+      "order": 4,
+      "passageTitle": "Cultural Differences in England and France",
+      "passageText": "Cultural differences can take many forms. I have noticed many differences in French culture compared to English culture, from the way people dress, to their attitudes towards food, to what they do for fun. One thing that has struck me in particular in France is people's personal interactions with each other. ___(26)___\n\nFirstly, it's the kissing. Everyone kisses each other on the cheek. It's greeting, instead of saying \"hi\" or \"hello\". ___(27)___ Everyone participates in the kissing ritual, the young, the old, male, female, strangers and friends. I kiss my friends. I kiss the teachers at the school. And even if I'm in a hurry, I am still expected to make time to give acquaintances a quick kiss on the cheek as I rush past. I don't mind it. ___(28)___ It quickly turns strangers into acquaintances, and acquaintances into friends.\n\nAnother thing that I've noticed is that people in France are much more open with people they don't know. ___(29)___ In France, however, on long train journeys people have often started a conversation with me for no reason. They have a chat simply to pass the time. And I really enjoy being able to share a part of my life and my story with someone else.\n\nWhatever impressions you may have about French people, I have found that they are, for the most part, open and at ease talking to strangers. ___(30)___",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2019-10-q26",
+          "order": 26,
+          "questionType": "single_choice",
+          "stem": "空(26)",
+          "options": ["A. In fact, I quite like it.", "B. They differ a lot from those in the UK.", "C. Often the kiss is a substitute for words.", "D. This makes me more comfortable with them too.", "E. Britons often greet each other with hugs and kisses.", "F. In England, you talk to a stranger only if completely necessary."],
+          "answer": "B",
+          "answerExplanation": "根据本段第二句 \"I have noticed many differences in French culture compared to English culture\" 及空前内容，选B\"英法文化不同\"，引出下文对比。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q27",
+          "order": 27,
+          "questionType": "single_choice",
+          "stem": "空(27)",
+          "options": ["A. In fact, I quite like it.", "B. They differ a lot from those in the UK.", "C. Often the kiss is a substitute for words.", "D. This makes me more comfortable with them too.", "E. Britons often greet each other with hugs and kisses.", "F. In England, you talk to a stranger only if completely necessary."],
+          "answer": "C",
+          "answerExplanation": "根据空前\"It's greeting, instead of saying 'hi' or 'hello'\"，选C\"亲吻常常代替语言\"，语义衔接。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q28",
+          "order": 28,
+          "questionType": "single_choice",
+          "stem": "空(28)",
+          "options": ["A. In fact, I quite like it.", "B. They differ a lot from those in the UK.", "C. Often the kiss is a substitute for words.", "D. This makes me more comfortable with them too.", "E. Britons often greet each other with hugs and kisses.", "F. In England, you talk to a stranger only if completely necessary."],
+          "answer": "A",
+          "answerExplanation": "根据上一句\"I don't mind it\"，本句递进说明\"我其实很喜欢\"，对应A。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q29",
+          "order": 29,
+          "questionType": "single_choice",
+          "stem": "空(29)",
+          "options": ["A. In fact, I quite like it.", "B. They differ a lot from those in the UK.", "C. Often the kiss is a substitute for words.", "D. This makes me more comfortable with them too.", "E. Britons often greet each other with hugs and kisses.", "F. In England, you talk to a stranger only if completely necessary."],
+          "answer": "F",
+          "answerExplanation": "根据下一句\"In France, however...\"的转折，说明此处谈到英国的情况作对比，对应F。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q30",
+          "order": 30,
+          "questionType": "single_choice",
+          "stem": "空(30)",
+          "options": ["A. In fact, I quite like it.", "B. They differ a lot from those in the UK.", "C. Often the kiss is a substitute for words.", "D. This makes me more comfortable with them too.", "E. Britons often greet each other with hugs and kisses.", "F. In England, you talk to a stranger only if completely necessary."],
+          "answer": "D",
+          "answerExplanation": "上一句提到法国人开朗、乐于与陌生人交谈，本句顺势说明这也让作者感到更舒适，对应D。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2019-10-s5",
+      "type": "填词补文",
+      "order": 5,
+      "passageTitle": "Success for 99 cents",
+      "passageText": "How do you sell things in a time when the economy is down and people just don't want to ___(31)___? Try the 99 cent approach.\n\nSteve Jobs, former ___(32)___ of Apple Computers, tried it and ___(33)___ saved the music industry. He ___(34)___ a standard price of 99 cents for each song that he wanted to sell on iTunes and built a successful music download company.\n\nIn the 1960s, Dave Gold ___(35)___ a store that sold alcoholic drinks in southern California. He sold wine in three ___(36)___ categories: $0.79, $0.99 and $1.49. When he saw that the 99 cent wine did best, he started selling the other two at the same price and sales went up. In 1982, he started ___(37)___ 99 cent stores across the US. Today the company is ___(38)___ almost 500 million dollars and has 280 shops.\n\nWhy does 99 cent price tag (标签) make so much success? Researchers have found out that the price ending with 99 shows a ___(39)___ price for consumers. It looks less and consumers ___(40)___ feel that they can get something back.",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "00015-2019-10-q31",
+          "order": 31,
+          "questionType": "single_choice",
+          "stem": "空(31)",
+          "options": ["A. owned", "B. market", "C. set", "D. worth", "E. finally", "F. several", "G. buy", "H. usually", "I. boss", "J. sell", "K. lower", "L. price"],
+          "answer": "G",
+          "answerExplanation": "填动词原形，\"购买\"，与前面的\"want to\"搭配，构成\"don't want to buy\"。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q32",
+          "order": 32,
+          "questionType": "single_choice",
+          "stem": "空(32)",
+          "options": ["A. owned", "B. market", "C. set", "D. worth", "E. finally", "F. several", "G. buy", "H. usually", "I. boss", "J. sell", "K. lower", "L. price"],
+          "answer": "I",
+          "answerExplanation": "填名词，\"former ___ of Apple Computers\"，指史蒂夫·乔布斯曾是苹果公司的老板，对应I（boss）。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q33",
+          "order": 33,
+          "questionType": "single_choice",
+          "stem": "空(33)",
+          "options": ["A. owned", "B. market", "C. set", "D. worth", "E. finally", "F. several", "G. buy", "H. usually", "I. boss", "J. sell", "K. lower", "L. price"],
+          "answer": "E",
+          "answerExplanation": "填副词，\"最终\"，修饰\"saved the music industry\"。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q34",
+          "order": 34,
+          "questionType": "single_choice",
+          "stem": "空(34)",
+          "options": ["A. owned", "B. market", "C. set", "D. worth", "E. finally", "F. several", "G. buy", "H. usually", "I. boss", "J. sell", "K. lower", "L. price"],
+          "answer": "C",
+          "answerExplanation": "\"set a price\"为固定搭配，\"定价\"，He set a standard price of 99 cents。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q35",
+          "order": 35,
+          "questionType": "single_choice",
+          "stem": "空(35)",
+          "options": ["A. owned", "B. market", "C. set", "D. worth", "E. finally", "F. several", "G. buy", "H. usually", "I. boss", "J. sell", "K. lower", "L. price"],
+          "answer": "A",
+          "answerExplanation": "填动词，\"拥有\"，Dave Gold owned a store。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q36",
+          "order": 36,
+          "questionType": "single_choice",
+          "stem": "空(36)",
+          "options": ["A. owned", "B. market", "C. set", "D. worth", "E. finally", "F. several", "G. buy", "H. usually", "I. boss", "J. sell", "K. lower", "L. price"],
+          "answer": "L",
+          "answerExplanation": "\"three ___ categories\"指\"三个价位档次\"，对应L（price）。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q37",
+          "order": 37,
+          "questionType": "single_choice",
+          "stem": "空(37)",
+          "options": ["A. owned", "B. market", "C. set", "D. worth", "E. finally", "F. several", "G. buy", "H. usually", "I. boss", "J. sell", "K. lower", "L. price"],
+          "answer": "F",
+          "answerExplanation": "\"started ___ 99 cent stores\"指开了几家店，对应F（several）。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q38",
+          "order": 38,
+          "questionType": "single_choice",
+          "stem": "空(38)",
+          "options": ["A. owned", "B. market", "C. set", "D. worth", "E. finally", "F. several", "G. buy", "H. usually", "I. boss", "J. sell", "K. lower", "L. price"],
+          "answer": "D",
+          "answerExplanation": "\"be worth+钱\"为固定搭配，\"值……\"，the company is worth almost 500 million dollars。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q39",
+          "order": 39,
+          "questionType": "single_choice",
+          "stem": "空(39)",
+          "options": ["A. owned", "B. market", "C. set", "D. worth", "E. finally", "F. several", "G. buy", "H. usually", "I. boss", "J. sell", "K. lower", "L. price"],
+          "answer": "K",
+          "answerExplanation": "\"shows a ___ price for consumers\"指看起来更低的价格，对应K（lower）。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q40",
+          "order": 40,
+          "questionType": "single_choice",
+          "stem": "空(40)",
+          "options": ["A. owned", "B. market", "C. set", "D. worth", "E. finally", "F. several", "G. buy", "H. usually", "I. boss", "J. sell", "K. lower", "L. price"],
+          "answer": "H",
+          "answerExplanation": "填副词，\"往往\"，consumers usually feel that they can get something back。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2019-10-s6",
+      "type": "完形填空",
+      "order": 6,
+      "passageTitle": "Learning from mistakes",
+      "passageText": "Lots of people dare not make mistakes (mistake). They fear they will be laughed at or ___(41)___(blame) by others. They fear they will lose their money and ___(42)___(belonging) or be under heavy stress. But risks are ___(43)___(possible) to avoid and they do pave the way towards success. Have you ever ___(44)___(hear) of anyone who achieves success without making any mistakes?\n\nSo it is only ___(45)___(nature) that making mistakes should be considered a must. You shouldn't worry about that as you ___(46)___(probable) get lots of advantages out of your mistakes. By making mistakes, you can at least distinguish between the correct and the ___(47)___(correct) parts of what you did. Robert Stevenson once said: \"Our business in life is not to be ___(48)___(success), but to continue to fail in good spirits.\"\n\nYou needn't worry about anything as long as you keep on going by ___(49)___(wise) learning from your mistakes and ___(50)___(try) even harder.",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "00015-2019-10-q41",
+          "order": 41,
+          "questionType": "fill_blank_transform",
+          "stem": "blame",
+          "options": [],
+          "answer": "blamed",
+          "answerExplanation": "被动语态，与前面的\"will be laughed at\"并列，构成\"will be...blamed\"，故填过去分词blamed。",
+          "knowledgePoints": ["被动语态"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q42",
+          "order": 42,
+          "questionType": "fill_blank_transform",
+          "stem": "belonging",
+          "options": [],
+          "answer": "belongings",
+          "answerExplanation": "名词复数形式，指\"财产\"，与\"money\"并列作\"lose\"的宾语。",
+          "knowledgePoints": ["名词单复数"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q43",
+          "order": 43,
+          "questionType": "fill_blank_transform",
+          "stem": "possible",
+          "options": [],
+          "answer": "impossible",
+          "answerExplanation": "填反义词\"不可能的\"，risks are impossible to avoid，加否定前缀im-。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q44",
+          "order": 44,
+          "questionType": "fill_blank_transform",
+          "stem": "hear",
+          "options": [],
+          "answer": "heard",
+          "answerExplanation": "现在完成时态\"have you ever heard\"，用过去分词。",
+          "knowledgePoints": ["动词时态"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q45",
+          "order": 45,
+          "questionType": "fill_blank_transform",
+          "stem": "nature",
+          "options": [],
+          "answer": "natural",
+          "answerExplanation": "填形容词\"自然的\"，it is only natural that...，名词nature转形容词natural。",
+          "knowledgePoints": ["形容词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q46",
+          "order": 46,
+          "questionType": "fill_blank_transform",
+          "stem": "probable",
+          "options": [],
+          "answer": "probably",
+          "answerExplanation": "填副词\"可能\"，修饰动词get，形容词probable转副词probably。",
+          "knowledgePoints": ["副词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q47",
+          "order": 47,
+          "questionType": "fill_blank_transform",
+          "stem": "correct",
+          "options": [],
+          "answer": "incorrect",
+          "answerExplanation": "填反义词\"不正确的、不恰当的\"，与前面的correct对比，加否定前缀in-。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q48",
+          "order": 48,
+          "questionType": "fill_blank_transform",
+          "stem": "success",
+          "options": [],
+          "answer": "successful",
+          "answerExplanation": "填形容词\"成功的\"，not to be successful，名词success转形容词successful。",
+          "knowledgePoints": ["形容词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q49",
+          "order": 49,
+          "questionType": "fill_blank_transform",
+          "stem": "wise",
+          "options": [],
+          "answer": "wisely",
+          "answerExplanation": "填副词\"明智地\"，修饰learning，形容词wise转副词wisely。",
+          "knowledgePoints": ["副词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-10-q50",
+          "order": 50,
+          "questionType": "fill_blank_transform",
+          "stem": "try",
+          "options": [],
+          "answer": "trying",
+          "answerExplanation": "与前面的learning并列，用动名词形式trying，构成\"by...learning...and trying\"并列结构。",
+          "knowledgePoints": ["动词时态"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2019-10-s7",
+      "type": "写作",
+      "order": 7,
+      "passageTitle": null,
+      "writingPrompt": "某英文报社正在举办题为\"Green Transportation\"的征文活动，请你根据下述写作要点提交一篇英文短文应征：\n(1) 你怎样理解绿色出行；\n(2) 你会选择哪种绿色出行方式；\n(3) 给出理由。\n（请根据要求撰写篇100词左右的英语短文。）",
+      "scorePerQuestion": 30,
+      "totalScore": 30,
+      "questions": [
+        {
+          "questionId": "00015-2019-10-q51",
+          "order": 51,
+          "questionType": "essay",
+          "stem": "根据写作要点，以\"Green Transportation\"为题撰写一篇100词左右的英语短文，内容包括：(1) 你怎样理解绿色出行；(2) 你会选择哪种绿色出行方式；(3) 给出理由。",
+          "options": [],
+          "answer": "",
+          "answerExplanation": "官方参考范文：Everyone has his or her own green transportation. Some like taking public transportation, while others fancy taking a walk to school or work. If you ask me what my green transportation is, my answer would be riding a bicycle. It is to be noted that riding a bicycle is one of the most popular ways to get around in cities. And it has a lot of benefits. To keep a green environment in our life, riding a bicycle is the best way. Firstly, riding a bicycle can be faster than taking a bus when there is a traffic jam. Secondly, I can make myself stronger by cycling. Finally, I can make friends who are bicycle lovers and do cycling trip together. In short, riding a bicycle is the best green transportation. I shall keep up riding a bicycle to get around in cities because it's environment-friendly and beneficial to me. 官方评分说明：可以分三段，每段开头缩进四个字母。标题可有可无。",
+          "knowledgePoints": ["写作-观点类"],
+          "difficultyTag": null
+        }
+      ]
+    }
+  ],
+  "parsingNotes": [
+    "第五部分（填词补文）的题型说明文字在原PDF中排版混乱、疑似印刷/OCR重叠导致字句错位（页5顶部'中造根据短文内下面的短文有十处空白...容将其分别放回原有位置，以恢复文章原貌，并在\"非选择题\"答题区内作者'），本JSON未逐字照抄该说明文字，仅按其他年份同类型部分的标准说明理解其含义（短文十处空白，从十二个候选词中选十个词填入），不影响passageText和题目本身内容的准确性，如需核对原始措辞建议人工查看原图页5。",
+    "写作部分官方答案页只提供了一篇参考范文和简短评分说明（可以分三段，每段开头缩进四个字母，标题可有可无），未给出详细评分细则，已如实记录在q51的answerExplanation中，未做任何编造。"
+  ]
+}
