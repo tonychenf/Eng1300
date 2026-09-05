@@ -1,0 +1,19 @@
+{
+  "name": "eng1300-mvp-server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "MVP server for testing multi-user login and role-based access (super admin vs normal user).",
+  "scripts": {
+    "seed": "node src/seed.js",
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "bash test/smoke.sh"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
