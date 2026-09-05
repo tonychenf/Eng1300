@@ -184,57 +184,91 @@ jobs:
             echo "已生成并写入 JWT_SECRET。"
           fi
 
-          if echo " $EXISTING " | grep -q " SETUP_TOKEN "; then
-            echo "SETUP_TOKEN 已存在，跳过初始化（说明之前已经建过超级管理员）。"
-            echo "BOOTSTRAP=no" >> "$GITHUB_ENV"
-          else
-            TOKEN_VALUE=$(openssl rand -hex 24)
-            echo "::add-mask::$TOKEN_VALUE"
-            printf '%s' "$TOKEN_VALUE" | npx wrangler secret put SETUP_TOKEN
-            echo "SETUP_TOKEN_VALUE=$TOKEN_VALUE" >> "$GITHUB_ENV"
-            echo "BOOTSTRAP=yes" >> "$GITHUB_ENV"
-          fi
+          # SETUP_TOKEN 每次运行都轮换成新值：它只在用户表为空时才有用，
+          # 这样即使某次初始化失败，下一次运行也仍然知道令牌、可以重试。
+          TOKEN_VALUE=$(openssl rand -hex 24)
+          echo "::add-mask::$TOKEN_VALUE"
+          printf '%s' "$TOKEN_VALUE" | npx wrangler secret put SETUP_TOKEN
+          echo "SETUP_TOKEN_VALUE=$TOKEN_VALUE" >> "$GITHUB_ENV"
+
+      - name: Wait for the worker to respond
+        run: |
+          URL="https://$WORKER_NAME.$WORKERS_SUBDOMAIN.workers.dev"
+          echo "WORKER_URL=$URL" >> "$GITHUB_ENV"
+          # 新注册的 workers.dev 子域名要等 Cloudflare 签发 HTTPS 证书，
+          # 这期间 TLS 握手会直接失败，需要耐心轮询。
+          for i in $(seq 1 40); do
+            CODE=$(curl -sS -m 15 -o /dev/null -w '%{http_code}' "$URL/api/health" 2>/dev/null || echo 000)
+            if [ "$CODE" = "200" ]; then
+              echo "服务已就绪（第 $i 次探测）。"
+              exit 0
+            fi
+            echo "第 $i 次探测返回 $CODE，15 秒后重试…"
+            sleep 15
+          done
+          echo "::error::等待约 10 分钟后服务仍不可访问。新子域名的 HTTPS 证书签发有时需要更久，稍后重跑本流水线即可。"
+          exit 1
 
       - name: Bootstrap super admin
-        if: env.BOOTSTRAP == 'yes'
         env:
           ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
         run: |
           if [ -z "$ADMIN_PASSWORD" ]; then
-            echo "::warning::未设置仓库 Secret「ADMIN_PASSWORD」，跳过超级管理员初始化。添加该 Secret 后重跑本流水线即可创建 admin 账号。"
+            echo "::warning::未设置仓库 Secret「ADMIN_PASSWORD」，跳过超级管理员初始化。"
             exit 0
           fi
+          CODE=$(curl -sS -m 30 -o /tmp/setup.json -w '%{http_code}' -X POST "$WORKER_URL/api/setup" \
+            -H "X-Setup-Token: $SETUP_TOKEN_VALUE" -H 'Content-Type: application/json' \
+            --data "$(jq -n --arg p "$ADMIN_PASSWORD" '{username:"admin",password:$p}')" 2>/dev/null || echo 000)
+          case "$CODE" in
+            201) echo "超级管理员 admin 创建成功。" ;;
+            409) echo "用户表已有数据，之前已初始化过，跳过。" ;;
+            *)   echo "::error::初始化超级管理员失败，HTTP $CODE"; cat /tmp/setup.json 2>/dev/null || true; exit 1 ;;
+          esac
 
-          URL="https://$WORKER_NAME.$WORKERS_SUBDOMAIN.workers.dev"
-          for i in 1 2 3 4 5 6; do
-            CODE=$(curl -sS -o /tmp/setup.json -w '%{http_code}' -X POST "$URL/api/setup" \
-              -H "X-Setup-Token: $SETUP_TOKEN_VALUE" -H 'Content-Type: application/json' \
-              --data "$(jq -n --arg p "$ADMIN_PASSWORD" '{username:"admin",password:$p}')" || echo 000)
-            if [ "$CODE" = "201" ]; then
-              echo "超级管理员 admin 创建成功。"
-              exit 0
+      - name: Verify deployment
+        env:
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+        run: |
+          FAIL=0
+          check() {
+            if [ "$2" = "$3" ]; then echo "  OK   $1"; else echo "  FAIL $1（期望 $3，实际 $2）"; FAIL=1; fi
+          }
+
+          CODE=$(curl -sS -m 20 -o /dev/null -w '%{http_code}' "$WORKER_URL/api/health" || echo 000)
+          check "健康检查" "$CODE" "200"
+
+          CODE=$(curl -sS -m 20 -o /dev/null -w '%{http_code}' "$WORKER_URL/api/me" || echo 000)
+          check "未登录访问 /api/me 被拒绝" "$CODE" "401"
+
+          if [ -n "$ADMIN_PASSWORD" ]; then
+            BODY=$(curl -sS -m 20 -X POST "$WORKER_URL/api/auth/login" \
+              -H 'Content-Type: application/json' \
+              --data "$(jq -n --arg p "$ADMIN_PASSWORD" '{username:"admin",password:$p}')" || echo '{}')
+            ROLE=$(echo "$BODY" | jq -r '.user.role // "none"')
+            check "admin 登录并返回超级管理员角色" "$ROLE" "SUPER_ADMIN"
+
+            TOKEN=$(echo "$BODY" | jq -r '.token // empty')
+            if [ -n "$TOKEN" ]; then
+              echo "::add-mask::$TOKEN"
+              CODE=$(curl -sS -m 20 -o /dev/null -w '%{http_code}' "$WORKER_URL/api/admin/users" \
+                -H "Authorization: Bearer $TOKEN" || echo 000)
+              check "超级管理员可访问后台用户接口" "$CODE" "200"
             fi
-            if [ "$CODE" = "409" ]; then
-              echo "用户表已有数据，跳过初始化。"
-              exit 0
-            fi
-            echo "第 $i 次尝试返回 $CODE，等待部署生效后重试…"
-            sleep 10
-          done
-          echo "::error::初始化超级管理员失败，最后一次响应："
-          cat /tmp/setup.json || true
-          exit 1
+          fi
+
+          [ "$FAIL" -eq 0 ] || { echo "::error::线上验证未全部通过。"; exit 1; }
+          echo "线上验证全部通过。"
 
       - name: Summary
         run: |
-          URL="https://$WORKER_NAME.$WORKERS_SUBDOMAIN.workers.dev"
           {
             echo "## 部署完成"
             echo ""
-            echo "**公网地址：** $URL"
+            echo "**公网地址：** $WORKER_URL"
             echo ""
-            echo "健康检查：\`$URL/api/health\`"
-            echo ""
-            echo "登录接口：\`POST $URL/api/auth/login\`"
+            echo "- 健康检查：\`GET $WORKER_URL/api/health\`"
+            echo "- 登录：\`POST $WORKER_URL/api/auth/login\`"
+            echo "- 后台用户管理（仅超级管理员）：\`GET $WORKER_URL/api/admin/users\`"
           } >> "$GITHUB_STEP_SUMMARY"
-          echo "DEPLOYED_URL=$URL"
+          echo "DEPLOYED_URL=$WORKER_URL"
