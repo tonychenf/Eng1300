@@ -1,0 +1,21 @@
+{
+  "name": "eng1300-mvp-worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Same MVP auth/permission server as ../server, ported to Cloudflare Workers + D1 so it can be deployed to a permanent free, always-on, multi-user public URL.",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:migrate:local": "wrangler d1 execute eng1300-mvp --local --file=./migrations/0001_init.sql",
+    "db:migrate:remote": "wrangler d1 execute eng1300-mvp --remote --file=./migrations/0001_init.sql"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "hono": "^4.6.14",
+    "jose": "^5.9.6"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}
