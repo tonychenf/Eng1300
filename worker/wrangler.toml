@@ -7,4 +7,4 @@ workers_dev = true
 [[d1_databases]]
 binding = "DB"
 database_name = "eng1300-mvp"
-database_id = "REPLACE_WITH_D1_DATABASE_ID"
+database_id = "6b41a46e-d960-4e6d-8a2c-7e1816883f32"
