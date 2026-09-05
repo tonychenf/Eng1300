@@ -48,7 +48,7 @@
           "stem": "Richard Curtis is a well-known actor and film director.",
           "options": ["A. True", "B. False", "C. Not Given"],
           "answer": "C",
-          "answerExplanation": "文中只提到他写了这些著名电影(He wrote the famous films...)，没有说他是演员或导演，也没有说他"很有名"，信息未提及。",
+          "answerExplanation": "文中只提到他写了这些著名电影(He wrote the famous films...)，没有说他是演员或导演，也没有说他“很有名”，信息未提及。",
           "knowledgePoints": ["阅读推理判断"],
           "difficultyTag": null
         },
@@ -59,7 +59,7 @@
           "stem": "Many people wear a red nose on Red Nose Day.",
           "options": ["A. True", "B. False", "C. Not Given"],
           "answer": "A",
-          "answerExplanation": "根据第二段"many people buy a plastic red nose to wear"及短文最后一段"you will know why you find normal people wearing red noses"可知。",
+          "answerExplanation": "根据第二段 \"many people buy a plastic red nose to wear\" 及短文最后一段 \"you will know why you find normal people wearing red noses\" 可知。",
           "knowledgePoints": ["阅读细节定位"],
           "difficultyTag": null
         },
@@ -92,7 +92,7 @@
           "stem": "The funnier people look the more money they collect.",
           "options": ["A. True", "B. False", "C. Not Given"],
           "answer": "C",
-          "answerExplanation": "文中没有提到"打扮得越滑稽募到的钱越多"这类因果关系，信息未提及。",
+          "answerExplanation": "文中没有提到\"打扮得越滑稽募到的钱越多\"这类因果关系，信息未提及。",
           "knowledgePoints": ["阅读推理判断"],
           "difficultyTag": null
         },
@@ -518,7 +518,7 @@
           "stem": "第32空",
           "options": ["A. big", "B. need", "C. what", "D. before", "E. reach", "F. which", "G. conflict", "H. effectively", "I. way", "J. how", "K. small", "L. opportunity"],
           "answer": "B",
-          "answerExplanation": "根据 \"or want to\" 可知前面并列一个动词，语境为"需要或想要学习商务英语"。",
+          "answerExplanation": "根据 \"or want to\" 可知前面并列一个动词，语境为\u201c需要或想要学习商务英语\u201d。",
           "knowledgePoints": ["词汇辨析"],
           "difficultyTag": null
         },
@@ -529,7 +529,7 @@
           "stem": "第33空",
           "options": ["A. big", "B. need", "C. what", "D. before", "E. reach", "F. which", "G. conflict", "H. effectively", "I. way", "J. how", "K. small", "L. opportunity"],
           "answer": "D",
-          "answerExplanation": "语境为"在开始职业生涯之前"学习商务英语，选表示时间先后的连词before。",
+          "answerExplanation": "语境为\"在开始职业生涯之前\"学习商务英语，选表示时间先后的连词before。",
           "knowledgePoints": ["词汇辨析"],
           "difficultyTag": null
         },
@@ -727,7 +727,7 @@
           "stem": "listen",
           "options": [],
           "answer": "listener",
-          "answerExplanation": "根据句意此处应填指人的名词，即"倾听者"listener。",
+          "answerExplanation": "根据句意此处应填指人的名词，即\"倾听者\"listener。",
           "knowledgePoints": ["词性转换"],
           "difficultyTag": null
         }
