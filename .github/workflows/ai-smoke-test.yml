@@ -1,0 +1,148 @@
+name: AI API smoke test
+
+# 开发沙盒的出站网络策略禁止访问 api.siliconflow.cn，所以 AI 接口的连通性与
+# 能力检测放在 GitHub Actions 运行器上跑。这个流水线只做只读探测，不改任何数据。
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - claude/english-exam-question-bank-a8nbiu
+    paths:
+      - '.github/workflows/ai-smoke-test.yml'
+
+permissions:
+  contents: read
+
+env:
+  BASE_URL: https://api.siliconflow.cn/v1
+  CHAT_MODEL: Qwen/Qwen3.5-4B
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check secret present
+        env:
+          KEY: ${{ secrets.SILICONFLOW_API_KEY }}
+        run: |
+          if [ -z "$KEY" ]; then
+            echo "::error::缺少仓库 Secret「SILICONFLOW_API_KEY」。请到 Settings → Secrets and variables → Actions 添加后重新运行。"
+            exit 1
+          fi
+
+      - name: 1. 连通性与模型列表
+        env:
+          KEY: ${{ secrets.SILICONFLOW_API_KEY }}
+        run: |
+          CODE=$(curl -sS -m 30 -o /tmp/models.json -w '%{http_code}' \
+            -H "Authorization: Bearer $KEY" "$BASE_URL/models" || echo 000)
+          echo "GET /models -> HTTP $CODE"
+          if [ "$CODE" != "200" ]; then
+            echo "::error::无法访问模型列表接口，Key 可能无效。响应："
+            head -c 500 /tmp/models.json || true
+            exit 1
+          fi
+          TOTAL=$(jq '.data | length' /tmp/models.json)
+          echo "账号可见模型数：$TOTAL"
+          echo ""
+          echo "--- 含 VL/Vision 字样的模型（可用于题库图片解析）---"
+          jq -r '.data[].id' /tmp/models.json | grep -iE 'vl|vision' || echo "（未发现视觉模型）"
+          echo ""
+          echo "--- 含 Qwen3.5 字样的模型 ---"
+          jq -r '.data[].id' /tmp/models.json | grep -i 'qwen3.5' || echo "（未发现 Qwen3.5 系列）"
+
+      - name: 2. 文本对话能力
+        env:
+          KEY: ${{ secrets.SILICONFLOW_API_KEY }}
+        run: |
+          PAYLOAD=$(jq -n --arg m "$CHAT_MODEL" '{
+            model: $m,
+            messages: [{role:"user", content:"用一句话回答：中国的首都是哪里？"}],
+            max_tokens: 64
+          }')
+          CODE=$(curl -sS -m 60 -o /tmp/chat.json -w '%{http_code}' -X POST \
+            -H "Authorization: Bearer $KEY" -H 'Content-Type: application/json' \
+            --data "$PAYLOAD" "$BASE_URL/chat/completions" || echo 000)
+          echo "POST /chat/completions -> HTTP $CODE"
+          if [ "$CODE" != "200" ]; then
+            echo "::error::模型 $CHAT_MODEL 调用失败，响应："
+            head -c 800 /tmp/chat.json || true
+            exit 1
+          fi
+          echo "回复内容：$(jq -r '.choices[0].message.content' /tmp/chat.json)"
+          echo "token用量：$(jq -c '.usage' /tmp/chat.json)"
+
+      - name: 3. 结构化 JSON 输出稳定性（连测3次）
+        env:
+          KEY: ${{ secrets.SILICONFLOW_API_KEY }}
+        run: |
+          PROMPT='请只输出JSON，不要任何其他文字。判断这道英语题的考点并给出解析，格式：{"knowledgePoint":"考点名","explanation":"一句话解析"}。题目：It is ___ (general) believed that watching TV can relax people. 括号内给出词根，需填正确形式。正确答案：generally'
+          OK=0
+          for i in 1 2 3; do
+            PAYLOAD=$(jq -n --arg m "$CHAT_MODEL" --arg p "$PROMPT" '{
+              model: $m,
+              messages: [{role:"user", content:$p}],
+              response_format: {type:"json_object"},
+              max_tokens: 256
+            }')
+            curl -sS -m 60 -o /tmp/json_$i.json -X POST \
+              -H "Authorization: Bearer $KEY" -H 'Content-Type: application/json' \
+              --data "$PAYLOAD" "$BASE_URL/chat/completions" || true
+            CONTENT=$(jq -r '.choices[0].message.content // empty' /tmp/json_$i.json)
+            if [ -n "$CONTENT" ] && echo "$CONTENT" | jq empty 2>/dev/null; then
+              echo "  第${i}次: 合法JSON  -> $(echo "$CONTENT" | jq -c .)"
+              OK=$((OK+1))
+            else
+              echo "  第${i}次: 非法JSON  -> $(echo "$CONTENT" | head -c 200)"
+            fi
+          done
+          echo "JSON 输出成功率：$OK/3"
+          if [ "$OK" -lt 2 ]; then
+            echo "::warning::该模型结构化 JSON 输出不稳定，批改/分析类功能需要加容错重试或换更大的模型"
+          fi
+
+      - name: 4. 图片理解能力（题库解析的前置条件）
+        env:
+          KEY: ${{ secrets.SILICONFLOW_API_KEY }}
+        run: |
+          # 生成一张写有 "AB12" 的测试图片，问模型图上是什么字
+          sudo apt-get install -y imagemagick >/dev/null 2>&1 || true
+          if command -v convert >/dev/null; then
+            convert -size 200x80 xc:white -pointsize 48 -fill black -annotate +20+55 'AB12' /tmp/t.png
+          else
+            echo "imagemagick 不可用，改用最小内嵌图片"
+            printf '\x89PNG\r\n\x1a\n' > /tmp/t.png
+          fi
+          B64=$(base64 -w0 /tmp/t.png)
+          PAYLOAD=$(jq -n --arg m "$CHAT_MODEL" --arg b "data:image/png;base64,$B64" '{
+            model: $m,
+            messages: [{role:"user", content:[
+              {type:"text", text:"图片上写的是什么字符？只回答字符本身。"},
+              {type:"image_url", image_url:{url:$b}}
+            ]}],
+            max_tokens: 64
+          }')
+          CODE=$(curl -sS -m 90 -o /tmp/vision.json -w '%{http_code}' -X POST \
+            -H "Authorization: Bearer $KEY" -H 'Content-Type: application/json' \
+            --data "$PAYLOAD" "$BASE_URL/chat/completions" || echo 000)
+          echo "视觉调用 -> HTTP $CODE"
+          if [ "$CODE" = "200" ]; then
+            echo "模型回复：$(jq -r '.choices[0].message.content' /tmp/vision.json)"
+            echo "（若回复中包含 AB12，说明该模型可读图；若答非所问则不具备真实视觉能力）"
+          else
+            echo "错误响应：$(head -c 600 /tmp/vision.json)"
+            echo "::warning::模型 $CHAT_MODEL 不支持图片输入 —— 题库 PDF 解析需要改用视觉模型（见步骤1列出的 VL 模型）"
+          fi
+
+      - name: 小结
+        run: |
+          {
+            echo "## AI 接口探测结果"
+            echo ""
+            echo "- 服务商：硅基流动（OpenAI 兼容协议）"
+            echo "- Base URL: \`$BASE_URL\`"
+            echo "- 测试模型: \`$CHAT_MODEL\`"
+            echo ""
+            echo "详见各步骤日志：模型列表、文本对话、JSON 稳定性、图片理解。"
+          } >> "$GITHUB_STEP_SUMMARY"
