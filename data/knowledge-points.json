@@ -7,42 +7,42 @@
   {
     "tagId": "kp-002",
     "name": "写作-观点类",
-    "questionCount": 4
+    "questionCount": 6
   },
   {
     "tagId": "kp-003",
     "name": "写作-记叙类",
-    "questionCount": 1
+    "questionCount": 2
   },
   {
     "tagId": "kp-004",
     "name": "写作-说明类",
-    "questionCount": 10
+    "questionCount": 12
   },
   {
     "tagId": "kp-005",
     "name": "副词构词",
-    "questionCount": 17
+    "questionCount": 24
   },
   {
     "tagId": "kp-006",
     "name": "动词时态",
-    "questionCount": 21
+    "questionCount": 31
   },
   {
     "tagId": "kp-007",
     "name": "名词单复数",
-    "questionCount": 19
+    "questionCount": 23
   },
   {
     "tagId": "kp-008",
     "name": "固定搭配",
-    "questionCount": 57
+    "questionCount": 76
   },
   {
     "tagId": "kp-009",
     "name": "形容词构词",
-    "questionCount": 28
+    "questionCount": 37
   },
   {
     "tagId": "kp-010",
@@ -52,56 +52,56 @@
   {
     "tagId": "kp-011",
     "name": "段落大意概括",
-    "questionCount": 72
+    "questionCount": 97
   },
   {
     "tagId": "kp-012",
     "name": "比较级最高级",
-    "questionCount": 5
+    "questionCount": 6
   },
   {
     "tagId": "kp-013",
     "name": "被动语态",
-    "questionCount": 16
+    "questionCount": 22
   },
   {
     "tagId": "kp-014",
     "name": "观点态度理解",
-    "questionCount": 7
+    "questionCount": 9
   },
   {
     "tagId": "kp-015",
     "name": "词义猜测",
-    "questionCount": 9
+    "questionCount": 11
   },
   {
     "tagId": "kp-016",
     "name": "词性转换",
-    "questionCount": 47
+    "questionCount": 59
   },
   {
     "tagId": "kp-017",
     "name": "词汇辨析",
-    "questionCount": 103
+    "questionCount": 135
   },
   {
     "tagId": "kp-018",
     "name": "连贯性衔接",
-    "questionCount": 68
+    "questionCount": 81
   },
   {
     "tagId": "kp-019",
     "name": "逻辑关系判断",
-    "questionCount": 90
+    "questionCount": 127
   },
   {
     "tagId": "kp-020",
     "name": "阅读推理判断",
-    "questionCount": 44
+    "questionCount": 64
   },
   {
     "tagId": "kp-021",
     "name": "阅读细节定位",
-    "questionCount": 166
+    "questionCount": 217
   }
 ]
