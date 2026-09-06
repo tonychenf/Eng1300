@@ -242,10 +242,13 @@ jobs:
 
       - name: Bootstrap super admin
         env:
+          # 两个名字都认：ADMIN_PASSWORD 是最早用的，ADMIN_PASS 是后来加的
           ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+          ADMIN_PASS: ${{ secrets.ADMIN_PASS }}
         run: |
+          ADMIN_PASSWORD="${ADMIN_PASSWORD:-$ADMIN_PASS}"
           if [ -z "$ADMIN_PASSWORD" ]; then
-            echo "::warning::未设置仓库 Secret「ADMIN_PASSWORD」，跳过超级管理员初始化。"
+            echo "::warning::未设置仓库 Secret「ADMIN_PASSWORD」或「ADMIN_PASS」，跳过超级管理员初始化。"
             exit 0
           fi
           # 刚写入的 SETUP_TOKEN 需要一点时间同步到边缘节点，在此期间
@@ -280,31 +283,59 @@ jobs:
 
       - name: Get admin token
         env:
+          # 两个名字都认，按顺序试；密码错误只算一次尝试，不做无谓重试，
+          # 免得把连续 5 次失败的限流额度耗光反而把 admin 锁住。
           ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+          ADMIN_PASS: ${{ secrets.ADMIN_PASS }}
         run: |
-          if [ -z "$ADMIN_PASSWORD" ]; then
-            echo "::warning::未设置 ADMIN_PASSWORD，后续需要登录的步骤会跳过。"
+          # 注意：这一步跑在 bash -e 下，`[ ... ] && cmd` 条件不成立会让整步退出，
+          # 所以这里一律写成 if。
+          CANDIDATES=()
+          LAST_CODE=""
+          if [ -n "$ADMIN_PASSWORD" ]; then CANDIDATES+=("ADMIN_PASSWORD"); fi
+          if [ -n "$ADMIN_PASS" ] && [ "$ADMIN_PASS" != "$ADMIN_PASSWORD" ]; then CANDIDATES+=("ADMIN_PASS"); fi
+          if [ ${#CANDIDATES[@]} -eq 0 ]; then
+            echo "::warning::未设置 ADMIN_PASSWORD 或 ADMIN_PASS，后续需要登录的步骤会跳过。"
             exit 0
           fi
-          # 整条流水线只登录这一次：既少一次触发登录限流的机会，
+
+          # 整条流水线只登录这一次：既少几次触发登录限流的机会，
           # 也让失败原因集中在一个地方看得见。
           TOKEN=""
-          for i in $(seq 1 6); do
-            CODE=$(curl -sS -m 30 -o /tmp/login.json -w '%{http_code}' -X POST "$WORKER_URL/api/auth/login" \
+          try_login() {
+            local name="$1" pwd="$2"
+            local code
+            code=$(curl -sS -m 30 -o /tmp/login.json -w '%{http_code}' -X POST "$WORKER_URL/api/auth/login" \
               -H 'Content-Type: application/json' \
-              --data "$(jq -n --arg p "$ADMIN_PASSWORD" '{username:"admin",password:$p}')" || echo 000)
+              --data "$(jq -n --arg p "$pwd" '{username:"admin",password:$p}')" || echo 000)
             TOKEN=$(jq -r '.token // empty' /tmp/login.json 2>/dev/null || echo '')
-            [ -n "$TOKEN" ] && break
-            echo "第 $i 次登录返回 HTTP $CODE：$(jq -c '.' /tmp/login.json 2>/dev/null || cat /tmp/login.json)"
-            # 429 是登录限流，锁定期 10 分钟，等下去也没用，直接报出来
-            if [ "$CODE" = "429" ]; then
-              echo "::error::admin 被登录限流锁定。等待 10 分钟后重跑，或先在数据库里清掉 login_attempts 记录。"
-              exit 1
+            LAST_CODE="$code"
+            if [ -n "$TOKEN" ]; then
+              echo "用 $name 登录成功。"
+              return 0
             fi
+            echo "用 $name 登录返回 HTTP $code：$(jq -c '.' /tmp/login.json 2>/dev/null || cat /tmp/login.json)"
+            return 1
+          }
+
+          for round in 1 2 3; do
+            for name in "${CANDIDATES[@]}"; do
+              try_login "$name" "${!name}" && break 2
+              # 429 是登录限流，锁定期 10 分钟，再试只会更糟
+              if [ "$LAST_CODE" = "429" ]; then
+                echo "::error::admin 被登录限流锁定。等待 10 分钟后重跑；本流水线会在登录前自动清一次锁定记录，所以重跑通常就能过。"
+                exit 1
+              fi
+            done
+            # 密码本身不对，重试也不会变对，只对网络/服务端错误重试
+            case "$LAST_CODE" in
+              401|403) break ;;
+            esac
             sleep 10
           done
+
           if [ -z "$TOKEN" ]; then
-            echo "::error::管理员登录失败，最后一次响应见上方日志。"
+            echo "::error::管理员登录失败（最后一次 HTTP $LAST_CODE）。若是 401，说明 Secret 里的密码与线上 admin 的实际密码不一致。"
             exit 1
           fi
           echo "::add-mask::$TOKEN"
