@@ -266,22 +266,48 @@ jobs:
           cat /tmp/setup.json 2>/dev/null || true
           exit 1
 
-      - name: Bootstrap student accounts
+      - name: Get admin token
         env:
           ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
-          STUDENT_PASSWORD: ${{ secrets.STUDENT_PASSWORD }}
         run: |
-          if [ -z "$ADMIN_PASSWORD" ] || [ -z "$STUDENT_PASSWORD" ]; then
-            echo "::warning::缺少 ADMIN_PASSWORD 或 STUDENT_PASSWORD，跳过学员账号初始化。"
+          if [ -z "$ADMIN_PASSWORD" ]; then
+            echo "::warning::未设置 ADMIN_PASSWORD，后续需要登录的步骤会跳过。"
             exit 0
           fi
-          TOKEN=$(curl -sS -m 30 -X POST "$WORKER_URL/api/auth/login" -H 'Content-Type: application/json' \
-            --data "$(jq -n --arg p "$ADMIN_PASSWORD" '{username:"admin",password:$p}')" | jq -r '.token // empty')
+          # 整条流水线只登录这一次：既少一次触发登录限流的机会，
+          # 也让失败原因集中在一个地方看得见。
+          TOKEN=""
+          for i in $(seq 1 6); do
+            CODE=$(curl -sS -m 30 -o /tmp/login.json -w '%{http_code}' -X POST "$WORKER_URL/api/auth/login" \
+              -H 'Content-Type: application/json' \
+              --data "$(jq -n --arg p "$ADMIN_PASSWORD" '{username:"admin",password:$p}')" || echo 000)
+            TOKEN=$(jq -r '.token // empty' /tmp/login.json 2>/dev/null || echo '')
+            [ -n "$TOKEN" ] && break
+            echo "第 $i 次登录返回 HTTP $CODE：$(jq -c '.' /tmp/login.json 2>/dev/null || cat /tmp/login.json)"
+            # 429 是登录限流，锁定期 10 分钟，等下去也没用，直接报出来
+            if [ "$CODE" = "429" ]; then
+              echo "::error::admin 被登录限流锁定。等待 10 分钟后重跑，或先在数据库里清掉 login_attempts 记录。"
+              exit 1
+            fi
+            sleep 10
+          done
           if [ -z "$TOKEN" ]; then
-            echo "::error::管理员登录失败，无法创建学员账号。"
+            echo "::error::管理员登录失败，最后一次响应见上方日志。"
             exit 1
           fi
           echo "::add-mask::$TOKEN"
+          echo "ADMIN_TOKEN=$TOKEN" >> "$GITHUB_ENV"
+          echo "管理员登录成功。"
+
+      - name: Bootstrap student accounts
+        env:
+          STUDENT_PASSWORD: ${{ secrets.STUDENT_PASSWORD }}
+        run: |
+          if [ -z "${ADMIN_TOKEN:-}" ] || [ -z "$STUDENT_PASSWORD" ]; then
+            echo "::warning::缺少管理员令牌或 STUDENT_PASSWORD，跳过学员账号初始化。"
+            exit 0
+          fi
+          TOKEN="$ADMIN_TOKEN"
           for i in $(seq -w 1 10); do
             NAME="T0$i"
             CODE=$(curl -sS -m 30 -o /tmp/user.json -w '%{http_code}' -X POST "$WORKER_URL/api/admin/users" \
@@ -296,22 +322,18 @@ jobs:
 
       - name: Configure AI providers
         env:
-          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
           # 复用 ai-smoke-test.yml 已经配好的那个 Secret
           AI_API_KEY: ${{ secrets.SILICONFLOW_API_KEY }}
           AI_BASE_URL: ${{ vars.AI_BASE_URL }}
           AI_PARSING_MODEL: ${{ vars.AI_PARSING_MODEL }}
           AI_TUTORING_MODEL: ${{ vars.AI_TUTORING_MODEL }}
         run: |
-          if [ -z "$ADMIN_PASSWORD" ] || [ -z "$AI_API_KEY" ]; then
-            echo "::warning::缺少 ADMIN_PASSWORD 或 SILICONFLOW_API_KEY，跳过 AI 配置（可稍后在后台页面手工填写）。"
+          if [ -z "${ADMIN_TOKEN:-}" ] || [ -z "$AI_API_KEY" ]; then
+            echo "::warning::缺少管理员令牌或 SILICONFLOW_API_KEY，跳过 AI 配置（可稍后在后台页面手工填写）。"
             exit 0
           fi
           AI_BASE_URL="${AI_BASE_URL:-https://api.siliconflow.cn/v1}"
-          TOKEN=$(curl -sS -m 30 -X POST "$WORKER_URL/api/auth/login" -H 'Content-Type: application/json' \
-            --data "$(jq -n --arg p "$ADMIN_PASSWORD" '{username:"admin",password:$p}')" | jq -r '.token // empty')
-          [ -n "$TOKEN" ] || { echo "::error::管理员登录失败，无法写入 AI 配置。"; exit 1; }
-          echo "::add-mask::$TOKEN"
+          TOKEN="$ADMIN_TOKEN"
 
           put_cfg() {
             PURPOSE=$1; MODEL=$2; VISION=$3
@@ -331,8 +353,6 @@ jobs:
           put_cfg TUTORING "${AI_TUTORING_MODEL:-Qwen/Qwen3-8B}" false
 
       - name: Verify deployment
-        env:
-          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
         run: |
           FAIL=0
           check() {
@@ -345,16 +365,13 @@ jobs:
           CODE=$(curl -sS -m 20 -o /dev/null -w '%{http_code}' "$WORKER_URL/api/me" || echo 000)
           check "未登录访问 /api/me 被拒绝" "$CODE" "401"
 
-          if [ -n "$ADMIN_PASSWORD" ]; then
-            BODY=$(curl -sS -m 20 -X POST "$WORKER_URL/api/auth/login" \
-              -H 'Content-Type: application/json' \
-              --data "$(jq -n --arg p "$ADMIN_PASSWORD" '{username:"admin",password:$p}')" || echo '{}')
-            ROLE=$(echo "$BODY" | jq -r '.user.role // "none"')
-            check "admin 登录并返回超级管理员角色" "$ROLE" "SUPER_ADMIN"
+          if [ -n "${ADMIN_TOKEN:-}" ]; then
+            ROLE=$(curl -sS -m 20 "$WORKER_URL/api/me" -H "Authorization: Bearer $ADMIN_TOKEN" \
+              | jq -r '.user.role // "none"' || echo none)
+            check "admin 令牌有效且为超级管理员" "$ROLE" "SUPER_ADMIN"
 
-            TOKEN=$(echo "$BODY" | jq -r '.token // empty')
-            if [ -n "$TOKEN" ]; then
-              echo "::add-mask::$TOKEN"
+            TOKEN="$ADMIN_TOKEN"
+            {
               CODE=$(curl -sS -m 20 -o /dev/null -w '%{http_code}' "$WORKER_URL/api/admin/users" \
                 -H "Authorization: Bearer $TOKEN" || echo 000)
               check "超级管理员可访问后台用户接口" "$CODE" "200"
@@ -372,7 +389,7 @@ jobs:
               PUBLISHED_Q=$(echo "$STATS" | jq -r '[.byType[].published] | add // 0')
               check "1020 道题全部已发布" "$PUBLISHED_Q" "1020"
               check "解析存疑记录已清零" "$(echo "$STATS" | jq -r '.unresolvedNotes')" "0"
-            fi
+            }
           fi
 
           # 前端：首页应返回 HTML，未知前端路由要回落到同一个 index.html
