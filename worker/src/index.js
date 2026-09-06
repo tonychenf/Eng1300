@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import bcrypt from 'bcryptjs';
-import { signToken, requireAuth, requireSuperAdmin } from './lib/auth.js';
+import { signToken, requireAuth, requireSuperAdmin, isQuotaError, bestEffortWrite } from './lib/auth.js';
 import { bankRouter } from './routes/admin-bank.js';
 import { aiRouter } from './routes/admin-ai.js';
 import { examRouter } from './routes/exam.js';
@@ -74,16 +74,26 @@ app.post('/api/auth/login', async (c) => {
          fail_count = excluded.fail_count,
          locked_until = excluded.locked_until,
          last_failed_at = excluded.last_failed_at`
-    ).bind(username, fails, lockedUntil, lockedUntil || '+0 minutes').run();
+    ).bind(username, fails, lockedUntil, lockedUntil || '+0 minutes').run()
+      // 额度用尽时计不了失败次数，限流会暂时失效；但密码本来就是错的，
+      // 该返回 401 就返回 401，不要变成一句看不懂的 503。
+      .catch((err) => { if (!isQuotaError(err)) throw err; });
 
     // 账号被禁用与密码错误分开提示；用户名不存在与密码错误统一提示，避免账号枚举
     if (user?.disabled) return c.json({ error: 'account_disabled' }, 403);
     return c.json({ error: 'invalid_credentials' }, 401);
   }
 
-  await c.env.DB.prepare('DELETE FROM login_attempts WHERE username = ?').bind(username).run();
-  await c.env.DB.prepare("UPDATE users SET last_login_at = datetime('now') WHERE id = ?")
-    .bind(user.id).run();
+  // 这两条都是记账，密码已经验过了，写不进去也得放人进来
+  await bestEffortWrite(
+    c.env.DB.prepare('DELETE FROM login_attempts WHERE username = ?').bind(username).run(),
+    '清除登录失败计数'
+  );
+  await bestEffortWrite(
+    c.env.DB.prepare("UPDATE users SET last_login_at = datetime('now') WHERE id = ?")
+      .bind(user.id).run(),
+    '更新最后登录时间'
+  );
 
   const token = await signToken(c.env, user);
   return c.json({ token, user: { id: user.id, username: user.username, role: user.role } });
@@ -218,8 +228,7 @@ app.onError((err, c) => {
   console.error(err);
   // D1 免费版每天有写入行数上限，用尽后所有写操作都会失败（登录也要写最后登录时间）。
   // 单独认出来，前端才能显示一句人能看懂的话，而不是"服务器内部错误"。
-  const msg = String(err?.message || '');
-  if (msg.includes('D1_ERROR') && /daily row (write|read) limit/i.test(msg)) {
+  if (isQuotaError(err)) {
     return c.json({
       error: 'storage_quota_exceeded',
       message: '数据库今日写入额度已用尽，将在世界时零点（北京时间八点）恢复。',
