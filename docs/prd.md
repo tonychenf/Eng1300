@@ -545,6 +545,48 @@ ai_usage_logs(id INTEGER PK AUTOINCREMENT, purpose TEXT, feature TEXT, tokens_in
 
 ## 10. AI 调用契约
 
+### 10.0 服务商与模型（已实测确认）
+
+| 项 | 值 |
+|---|---|
+| 服务商 | 硅基流动（api.siliconflow.cn），**OpenAI Chat Completions 兼容协议** |
+| Base URL | `https://api.siliconflow.cn/v1` |
+| 教学 AI | `Qwen/Qwen3-8B` |
+| 题库解析 OCR | `deepseek-ai/DeepSeek-OCR` |
+
+**题库解析改为两段式**（因为 DeepSeek-OCR 是文档文字识别模型，不是通用视觉推理模型）：
+
+```
+真题页面图片 --[DeepSeek-OCR]--> 纯文本 --[Qwen3-8B]--> 结构化JSON + 考点标签
+```
+
+#### 实测结论：所有结构化输出调用必须关闭思考模式
+
+Qwen3-8B 是推理模型，默认会消耗大量 token 在内部思考上。实测同一个"错题分析输出JSON"任务三种配置各调用 3 次：
+
+| 配置 | 字段完整的可用结果 | 单次延迟 | 现象 |
+|---|---|---|---|
+| `max_tokens=400`，思考默认开启 | 0/3 | — | 思考 token 吃光预算，正文为空 `{}` |
+| `max_tokens=2000`，思考默认开启 | 1/3 | 14–16s | 两次思考占满（393/395 tokens）返回空 |
+| `max_tokens=2000`，**`enable_thinking: false`** | **3/3** | **3–4s** | 字段完整，且快约 4 倍 |
+
+**因此本系统所有教学 AI 调用的必备参数**：
+
+```json
+{
+  "model": "Qwen/Qwen3-8B",
+  "response_format": {"type": "json_object"},
+  "enable_thinking": false,
+  "max_tokens": 2000
+}
+```
+
+不加 `enable_thinking: false` 会导致空响应率约 2/3，且延迟从 3 秒升到 15 秒以上（端到端结构化测试中甚至出现过超过 120 秒未返回）。这直接关系到学习模块"每答完一题立即出解析"的体验，**属于强制约束而非优化建议**。
+
+#### OCR 的已知局限
+
+DeepSeek-OCR 对同一行内的多个选项（如 `A. True  B. False  C. Not Given`）断行不稳定，两次测试分别输出为 `A. TrueB. FalseC. Not Given` 和 `A. True / B.FalseC.Not Given`。因此第二阶段的结构化 prompt 必须能容忍选项粘连，不能依赖 OCR 的换行来切分选项。
+
 ### 10.1 题库解析 AI
 
 - **输入**：整页图片（base64）+ 结构化抽取指令 + 目标 JSON schema
@@ -612,7 +654,7 @@ ai_usage_logs(id INTEGER PK AUTOINCREMENT, purpose TEXT, feature TEXT, tokens_in
 | 里程碑 | 内容 | 依赖 |
 |---|---|---|
 | M1 ✅ | 账号与权限、部署流水线 | 已完成 |
-| M2 | 题库落库 + 校对发布界面 + AI 配置 | 需要你提供 AI API |
+| M2 | 题库落库 + 校对发布界面 + AI 配置 | ✅ 依赖已解除（AI 已确认） |
 | M3 | 组卷 + 模考答题 + 客观题判分 + 成绩报告 | M2 |
 | M4 | 学习模块（两阶段自适应 + 即时反馈 + 总结） | M3 |
 | M5 | AI 批改与解析、错题本、能力评估 | M2 的 AI 配置 |
@@ -622,7 +664,7 @@ ai_usage_logs(id INTEGER PK AUTOINCREMENT, purpose TEXT, feature TEXT, tokens_in
 
 ## 14. 待确认问题
 
-1. **AI API 协议**（BRD 遗留，仍未确认）：你提供的 AI 接口是否为 OpenAI Chat Completions 兼容格式？解析 AI 是否具备图片理解能力？这是 M2 的前置依赖。
+1. ~~**AI API 协议**~~ **已确认并实测通过**：硅基流动 OpenAI 兼容协议，教学 AI 用 Qwen3-8B、OCR 用 DeepSeek-OCR，详见 §10.0。M2 的前置依赖已解除。
 2. **多课程的产品形态**：本 PRD 按"用户可自由切换两门课程"设计。若实际上每个用户只学其中一门，可以简化为在账号上绑定课程，登录后直接进入——你倾向哪种？
 3. **题库校对的工作量**：20 套卷共 1020 题，逐题确认工作量不小。是否需要提供"整卷快速通过（仅逐条确认 79 条存疑项）"的快捷方式，其余题目默认信任 AI 解析结果？
 4. **写作题在练习模式中的处理**：写作题每次 AI 批改成本较高且耗时较长，专项练习中是否需要包含写作题型？还是仅在模考中出现？

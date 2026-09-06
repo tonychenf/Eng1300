@@ -112,7 +112,8 @@ jobs:
                 -H "Authorization: Bearer $KEY" -H 'Content-Type: application/json' \
                 --data "$PAYLOAD" "$BASE_URL/chat/completions" || true
               local T1=$(date +%s)
-              local RESULT=$(check_json /tmp/r.json) && STATUS="✓" || STATUS="✗"
+              local RESULT
+              RESULT=$(check_json /tmp/r.json) && STATUS="✓" || STATUS="✗"
               local RT=$(jq -r '.usage.completion_tokens_details.reasoning_tokens // 0' /tmp/r.json)
               local CT=$(jq -r '.usage.completion_tokens // 0' /tmp/r.json)
               echo "  第${i}次 $STATUS 耗时$((T1-T0))s 思考token=$RT/总输出$CT"
@@ -183,13 +184,14 @@ jobs:
             "$OCR_TEXT")
           PAYLOAD=$(jq -n --arg m "$TUTOR_MODEL" --arg p "$PROMPT" '{
             model: $m, messages: [{role:"user", content:$p}],
-            response_format: {type:"json_object"}, max_tokens: 1024
+            response_format: {type:"json_object"}, max_tokens: 2000,
+            enable_thinking: false
           }')
-          CODE=$(curl -sS -m 120 -o /tmp/struct.json -w '%{http_code}' -X POST \
+          CODE=$(curl -sS -m 180 -o /tmp/struct.json -w '%{http_code}' -X POST \
             -H "Authorization: Bearer $KEY" -H 'Content-Type: application/json' \
             --data "$PAYLOAD" "$BASE_URL/chat/completions" || echo 000)
           echo "-> HTTP $CODE"
-          C=$(jq -r '.choices[0].message.content // empty' /tmp/struct.json)
+          C=$(jq -r '.choices[0].message.content // empty' /tmp/struct.json 2>/dev/null || echo "")
           if echo "$C" | jq empty 2>/dev/null; then
             echo "结构化成功，产出："
             echo "$C" | jq .
