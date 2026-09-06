@@ -17,3 +17,10 @@ UPDATE questions SET status = '已发布' WHERE status != '存疑';
 UPDATE exams
    SET status = '已发布', published_at = datetime('now')
  WHERE status != '已发布';
+
+-- 单独扣下的题目：解析存疑且无法从原卷补全，留在库里但不参与组卷。
+-- 13000-2026-04 第15题的官方答案提到 Kristina 被毒蜘蛛咬伤后迅速康复，
+-- 但该题所配的 Veganism 短文全文没有这个人也没有这段情节，题干无从作答。
+-- 标成"存疑"即可：抽题只认"已发布"，且整篇少一题就凑不满模板题量，
+-- 所配的整个阅读理解选择部分会一并落选，不会拆散原文。
+UPDATE questions SET status = '存疑' WHERE question_id = '13000-2026-04-q15';

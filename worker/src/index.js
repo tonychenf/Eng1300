@@ -1,50 +1,16 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import bcrypt from 'bcryptjs';
-import { SignJWT, jwtVerify } from 'jose';
+import { signToken, requireAuth, requireSuperAdmin } from './lib/auth.js';
 import { bankRouter } from './routes/admin-bank.js';
 import { aiRouter } from './routes/admin-ai.js';
+import { examRouter } from './routes/exam.js';
 
 const app = new Hono();
 app.use('/api/*', cors());
 
 const MAX_LOGIN_FAILURES = 5;
 const LOCK_MINUTES = 10;
-
-function secretKey(env) {
-  return new TextEncoder().encode(env.JWT_SECRET);
-}
-
-async function signToken(env, user) {
-  return new SignJWT({ username: user.username, role: user.role })
-    .setProtectedHeader({ alg: 'HS256' })
-    .setSubject(String(user.id))
-    .setIssuedAt()
-    .setExpirationTime('8h')
-    .sign(secretKey(env));
-}
-
-async function requireAuth(c, next) {
-  const header = c.req.header('Authorization') || '';
-  const token = header.startsWith('Bearer ') ? header.slice(7) : null;
-  if (!token) return c.json({ error: 'unauthorized' }, 401);
-  try {
-    const { payload } = await jwtVerify(token, secretKey(c.env));
-    const user = await c.env.DB.prepare('SELECT * FROM users WHERE id = ?')
-      .bind(Number(payload.sub)).first();
-    if (!user || user.disabled) return c.json({ error: 'unauthorized' }, 401);
-    c.set('user', { id: user.id, username: user.username, role: user.role });
-    await next();
-  } catch {
-    return c.json({ error: 'unauthorized' }, 401);
-  }
-}
-
-async function requireSuperAdmin(c, next) {
-  const user = c.get('user');
-  if (!user || user.role !== 'SUPER_ADMIN') return c.json({ error: 'forbidden' }, 403);
-  await next();
-}
 
 function randomPassword() {
   const bytes = crypto.getRandomValues(new Uint8Array(9));
@@ -154,6 +120,9 @@ app.get('/api/courses', requireAuth, async (c) => {
   ).all();
   return c.json({ courses: results });
 });
+
+// ---- 用户端：模考（鉴权在 exam.js 内按前缀挂） ----
+app.route('/api', examRouter);
 
 // ---- 后台 ----
 const admin = new Hono();
