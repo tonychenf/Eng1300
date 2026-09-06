@@ -51,9 +51,22 @@ done
 npx wrangler d1 execute eng1300-mvp --local --file=sql/publish-all.sql >/dev/null 2>&1
 
 echo "== 启动服务 =="
-npx wrangler dev --local --port $PORT > /tmp/m4-dev.log 2>&1 &
+DEV_LOG=/tmp/m4-dev.log
+npx wrangler dev --local --port $PORT > "$DEV_LOG" 2>&1 &
 SERVER_PID=$!
-for i in $(seq 1 60); do curl -s -o /dev/null "$BASE/health" && break; sleep 0.5; done
+# wrangler dev 启动时会去连几个 cloudflare.com 的地址，本环境的出站策略拒绝了它们，
+# 它要重试到超时才继续，因此启动可能要一分多钟。等不够久就会拿一个没起来的服务
+# 跑完整轮测试，出一堆看不懂的失败——所以这里等足，等不到就带日志报错退出。
+ready=0
+for i in $(seq 1 150); do
+  if curl -s -m 2 -o /dev/null "$BASE/health"; then ready=1; break; fi
+  sleep 1
+done
+if [ "$ready" != "1" ]; then
+  echo "服务在 150 秒内没有就绪，测试无法继续。dev 日志尾部："
+  tail -20 "$DEV_LOG" 2>/dev/null
+  exit 1
+fi
 
 curl -s -X POST "$BASE/setup" -H 'X-Setup-Token: test-setup-m4' \
   -H 'Content-Type: application/json' -d '{"username":"admin","password":"adminpass123"}' >/dev/null
