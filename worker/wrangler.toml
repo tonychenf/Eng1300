@@ -8,3 +8,11 @@ workers_dev = true
 binding = "DB"
 database_name = "eng1300-mvp"
 database_id = "6b41a46e-d960-4e6d-8a2c-7e1816883f32"
+
+# 前端构建产物（web/ 由 vite 输出到这里），与 Worker 一起部署到同一个域名。
+# not_found_handling 让所有前端路由回落到 index.html；
+# run_worker_first 保证 /api/* 永远交给 Worker，不被 SPA 回落吃掉。
+[assets]
+directory = "./public"
+not_found_handling = "single-page-application"
+run_worker_first = ["/api/*"]

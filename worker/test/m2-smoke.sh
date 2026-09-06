@@ -172,6 +172,20 @@ CODE=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$BASE/auth/login" -H 'Con
   -d '{"username":"T001","password":"newpass123"}')
 check "锁定期内正确密码也被拒(429)" "$CODE" "429"
 
+echo "== 前端托管与路由回落 =="
+ORIGIN="http://localhost:$PORT"
+TYPE=$(curl -s -o /tmp/m2-index.html -w '%{content_type}' "$ORIGIN/")
+case "$TYPE" in text/html*) check "首页返回 HTML" "ok" "ok" ;; *) check "首页返回 HTML" "$TYPE" "text/html" ;; esac
+if grep -q 'id="root"' /tmp/m2-index.html; then
+  check "首页是前端应用页面" "ok" "ok"
+else
+  check "首页是前端应用页面" "no" "ok"
+fi
+CODE=$(curl -s -o /dev/null -w '%{http_code}' "$ORIGIN/admin/bank")
+check "未知前端路由回落到 index.html(200)" "$CODE" "200"
+BODY=$(curl -s "$ORIGIN/api/does-not-exist")
+case "$BODY" in *not_found*) check "未知接口返回 JSON 404" "ok" "ok" ;; *) check "未知接口返回 JSON 404" "$BODY" "not_found" ;; esac
+
 echo
 echo "== 小结: $PASS 通过, $FAIL 失败 =="
 [ "$FAIL" -eq 0 ]

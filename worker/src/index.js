@@ -235,6 +235,10 @@ admin.route('/bank', bankRouter);
 admin.route('/ai', aiRouter);
 app.route('/api/admin', admin);
 
+// 静态资源由 wrangler [assets] 处理，Worker 只会收到 /api/*，
+// 未匹配的一律按接口返回 JSON，避免前端拿到一段 HTML 去 JSON.parse
+app.notFound((c) => c.json({ error: 'not_found' }, 404));
+
 app.onError((err, c) => {
   console.error(err);
   return c.json({ error: 'internal_error' }, 500);

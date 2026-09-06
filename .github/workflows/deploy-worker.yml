@@ -10,6 +10,9 @@ on:
       - claude/english-exam-question-bank-a8nbiu
     paths:
       - 'worker/**'
+      - 'web/**'
+      - 'data/**'
+      - 'scripts/**'
       - '.github/workflows/deploy-worker.yml'
   workflow_dispatch:
 
@@ -44,8 +47,15 @@ jobs:
           fi
 
       - name: Install dependencies
-        working-directory: worker
-        run: npm install
+        run: |
+          npm install --prefix worker --no-audit --no-fund
+          npm install --prefix web --no-audit --no-fund
+
+      - name: Build frontend
+        # vite 的产物直接落到 worker/public，随 wrangler deploy 一起上传
+        run: |
+          npm run build --prefix web
+          ls -la worker/public
 
       - name: Resolve Cloudflare account
         env:
@@ -147,21 +157,28 @@ jobs:
           sed -i "s|^database_id = \".*\"|database_id = \"$D1_DATABASE_ID\"|" wrangler.toml
           grep '^database_id' wrangler.toml
 
-      - name: Apply database migration
+      - name: Apply database migrations
         working-directory: worker
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
-          PAYLOAD=$(jq -n --arg sql "$(cat migrations/0001_init.sql)" '{sql:$sql}')
-          RESP=$(curl -sS -X POST -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
-            -H 'Content-Type: application/json' --data "$PAYLOAD" \
-            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/d1/database/$D1_DATABASE_ID/query")
-          if [ "$(echo "$RESP" | jq -r '.success')" != "true" ]; then
-            echo "::error::建表失败。"
-            echo "$RESP" | jq -c '.errors // .'
-            exit 1
-          fi
-          echo "users 表已就绪。"
+          # 迁移全部写成 IF NOT EXISTS / INSERT OR IGNORE，可以反复执行
+          for f in migrations/*.sql; do
+            echo "── 执行 $f"
+            npx wrangler d1 execute "$D1_NAME" --remote --yes --file="$f"
+          done
+
+      - name: Seed question bank
+        working-directory: worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          node ../scripts/build-seed-sql.mjs
+          # 每套试卷一个文件，内部先按 exam_id 删除再插入，重复执行不会产生脏数据
+          for f in seed/*.sql; do
+            echo "── 导入 $(basename "$f")"
+            npx wrangler d1 execute "$D1_NAME" --remote --yes --file="$f"
+          done
 
       - name: Deploy worker
         working-directory: worker
@@ -182,6 +199,12 @@ jobs:
           if ! echo " $EXISTING " | grep -q " JWT_SECRET "; then
             printf '%s' "$(openssl rand -hex 32)" | npx wrangler secret put JWT_SECRET
             echo "已生成并写入 JWT_SECRET。"
+          fi
+
+          # AI Key 的加密密钥。一旦轮换，已存的密文就解不开了，所以只在缺失时生成。
+          if ! echo " $EXISTING " | grep -q " ENCRYPTION_KEY "; then
+            printf '%s' "$(openssl rand -hex 32)" | npx wrangler secret put ENCRYPTION_KEY
+            echo "已生成并写入 ENCRYPTION_KEY。"
           fi
 
           # SETUP_TOKEN 每次运行都轮换成新值：它只在用户表为空时才有用，
@@ -235,6 +258,68 @@ jobs:
           cat /tmp/setup.json 2>/dev/null || true
           exit 1
 
+      - name: Bootstrap student accounts
+        env:
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+          STUDENT_PASSWORD: ${{ secrets.STUDENT_PASSWORD }}
+        run: |
+          if [ -z "$ADMIN_PASSWORD" ] || [ -z "$STUDENT_PASSWORD" ]; then
+            echo "::warning::缺少 ADMIN_PASSWORD 或 STUDENT_PASSWORD，跳过学员账号初始化。"
+            exit 0
+          fi
+          TOKEN=$(curl -sS -m 30 -X POST "$WORKER_URL/api/auth/login" -H 'Content-Type: application/json' \
+            --data "$(jq -n --arg p "$ADMIN_PASSWORD" '{username:"admin",password:$p}')" | jq -r '.token // empty')
+          if [ -z "$TOKEN" ]; then
+            echo "::error::管理员登录失败，无法创建学员账号。"
+            exit 1
+          fi
+          echo "::add-mask::$TOKEN"
+          for i in $(seq -w 1 10); do
+            NAME="T0$i"
+            CODE=$(curl -sS -m 30 -o /tmp/user.json -w '%{http_code}' -X POST "$WORKER_URL/api/admin/users" \
+              -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' \
+              --data "$(jq -n --arg u "$NAME" --arg p "$STUDENT_PASSWORD" '{username:$u,password:$p}')")
+            case "$CODE" in
+              201) echo "  已创建 $NAME" ;;
+              409) echo "  $NAME 已存在，跳过" ;;
+              *)   echo "::error::创建 $NAME 失败（HTTP $CODE）"; cat /tmp/user.json; exit 1 ;;
+            esac
+          done
+
+      - name: Configure AI providers
+        env:
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+          AI_BASE_URL: ${{ secrets.AI_BASE_URL }}
+          AI_API_KEY: ${{ secrets.AI_API_KEY }}
+          AI_PARSING_MODEL: ${{ secrets.AI_PARSING_MODEL }}
+          AI_TUTORING_MODEL: ${{ secrets.AI_TUTORING_MODEL }}
+        run: |
+          if [ -z "$ADMIN_PASSWORD" ] || [ -z "$AI_API_KEY" ]; then
+            echo "::warning::缺少 ADMIN_PASSWORD 或 AI_API_KEY，跳过 AI 配置（可稍后在后台页面手工填写）。"
+            exit 0
+          fi
+          TOKEN=$(curl -sS -m 30 -X POST "$WORKER_URL/api/auth/login" -H 'Content-Type: application/json' \
+            --data "$(jq -n --arg p "$ADMIN_PASSWORD" '{username:"admin",password:$p}')" | jq -r '.token // empty')
+          [ -n "$TOKEN" ] || { echo "::error::管理员登录失败，无法写入 AI 配置。"; exit 1; }
+          echo "::add-mask::$TOKEN"
+
+          put_cfg() {
+            PURPOSE=$1; MODEL=$2; VISION=$3
+            CODE=$(curl -sS -m 30 -o /tmp/ai.json -w '%{http_code}' -X PUT \
+              "$WORKER_URL/api/admin/ai/settings/$PURPOSE" \
+              -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' \
+              --data "$(jq -n --arg u "$AI_BASE_URL" --arg k "$AI_API_KEY" --arg m "$MODEL" \
+                --argjson v "$VISION" '{baseUrl:$u,apiKey:$k,model:$m,protocol:"openai",visionCapable:$v}')")
+            if [ "$CODE" = "200" ]; then
+              echo "  $PURPOSE 配置已写入（$MODEL）"
+            else
+              echo "::error::写入 $PURPOSE 配置失败（HTTP $CODE）"; cat /tmp/ai.json; exit 1
+            fi
+          }
+
+          put_cfg PARSING "${AI_PARSING_MODEL:-deepseek-ai/DeepSeek-OCR}" true
+          put_cfg TUTORING "${AI_TUTORING_MODEL:-Qwen/Qwen3-8B}" false
+
       - name: Verify deployment
         env:
           ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
@@ -263,8 +348,36 @@ jobs:
               CODE=$(curl -sS -m 20 -o /dev/null -w '%{http_code}' "$WORKER_URL/api/admin/users" \
                 -H "Authorization: Bearer $TOKEN" || echo 000)
               check "超级管理员可访问后台用户接口" "$CODE" "200"
+
+              STATS=$(curl -sS -m 20 "$WORKER_URL/api/admin/bank/stats" -H "Authorization: Bearer $TOKEN" || echo '{}')
+              EXAMS=$(echo "$STATS" | jq -r '[.byCourse[].exam_count] | add // 0')
+              check "题库已导入 20 套真题" "$EXAMS" "20"
+              QUESTIONS=$(echo "$STATS" | jq -r '[.byType[].total] | add // 0')
+              check "题库已导入 1020 道题" "$QUESTIONS" "1020"
             fi
           fi
+
+          # 前端：首页应返回 HTML，未知前端路由要回落到同一个 index.html
+          TYPE=$(curl -sS -m 20 -o /tmp/index.html -w '%{content_type}' "$WORKER_URL/" || echo none)
+          case "$TYPE" in
+            text/html*) echo "  OK   首页返回 HTML" ;;
+            *) echo "  FAIL 首页返回 $TYPE"; FAIL=1 ;;
+          esac
+          if grep -q 'id="root"' /tmp/index.html; then
+            echo "  OK   首页是前端应用页面"
+          else
+            echo "  FAIL 首页内容不是前端应用"; FAIL=1
+          fi
+
+          CODE=$(curl -sS -m 20 -o /dev/null -w '%{http_code}' "$WORKER_URL/admin/bank" || echo 000)
+          check "前端路由回落到 index.html" "$CODE" "200"
+
+          # /api/* 必须交给 Worker，不能被 SPA 回落吃掉
+          BODY=$(curl -sS -m 20 "$WORKER_URL/api/does-not-exist" || echo '')
+          case "$BODY" in
+            *not_found*) echo "  OK   未知接口返回 JSON 404" ;;
+            *) echo "  FAIL 未知接口被前端回落吃掉：$BODY"; FAIL=1 ;;
+          esac
 
           [ "$FAIL" -eq 0 ] || { echo "::error::线上验证未全部通过。"; exit 1; }
           echo "线上验证全部通过。"
@@ -278,6 +391,8 @@ jobs:
             echo ""
             echo "- 健康检查：\`GET $WORKER_URL/api/health\`"
             echo "- 登录：\`POST $WORKER_URL/api/auth/login\`"
+            echo "- 学员入口：$WORKER_URL/login"
+            echo "- 后台入口：$WORKER_URL/admin/login"
             echo "- 后台用户管理（仅超级管理员）：\`GET $WORKER_URL/api/admin/users\`"
           } >> "$GITHUB_STEP_SUMMARY"
           echo "DEPLOYED_URL=$WORKER_URL"
