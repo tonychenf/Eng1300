@@ -5,6 +5,10 @@ import { Loading } from './components/ui.jsx';
 import Login from './pages/Login.jsx';
 import ChangePassword from './pages/ChangePassword.jsx';
 import UserHome from './pages/UserHome.jsx';
+import ExamNew from './pages/ExamNew.jsx';
+import ExamTake from './pages/ExamTake.jsx';
+import ExamReport from './pages/ExamReport.jsx';
+import History from './pages/History.jsx';
 import Dashboard from './pages/admin/Dashboard.jsx';
 import BankList from './pages/admin/BankList.jsx';
 import BankReview from './pages/admin/BankReview.jsx';
@@ -23,6 +27,8 @@ const ADMIN_NAV = [
 
 const USER_NAV = [
   { to: '/app', label: '我的课程', end: true },
+  { to: '/app/exam/new', label: '模拟考试' },
+  { to: '/app/history', label: '历史记录' },
   { to: '/app/password', label: '修改密码' },
 ];
 
@@ -46,11 +52,19 @@ export default function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/admin/login" element={<Login admin />} />
 
+      {/* 作答页不套外壳：全屏、无侧边栏，减少考试中误触退出 */}
+      <Route path="/app/exam/:attemptId/take" element={
+        <Guard><ExamTake /></Guard>
+      } />
+
       <Route path="/app/*" element={
         <Guard>
           <Shell nav={USER_NAV} title="英语真题练习">
             <Routes>
               <Route index element={<UserHome />} />
+              <Route path="exam/new" element={<ExamNew />} />
+              <Route path="exam/:attemptId/report" element={<ExamReport />} />
+              <Route path="history" element={<History />} />
               <Route path="password" element={<ChangePassword />} />
               <Route path="*" element={<Navigate to="/app" replace />} />
             </Routes>

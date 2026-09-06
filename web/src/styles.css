@@ -306,3 +306,128 @@ h1, h2, h3 { margin: 0; line-height: 1.35; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
+
+/* ---------- 模考答题页 ---------- */
+
+/* 答题时不挂侧边栏和抽屉，减少误触退出的机会 */
+.exam-shell { min-height: 100%; display: flex; flex-direction: column; background: var(--page); }
+
+.exam-bar {
+  position: sticky; top: 0; z-index: 30;
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 12px;
+  background: #fff; border-bottom: 1px solid var(--line);
+  padding-top: calc(10px + env(safe-area-inset-top));
+}
+.exam-bar .grow { flex: 1; min-width: 0; }
+.exam-title { font-size: 14px; font-weight: 600; }
+.exam-sub { font-size: 12px; color: var(--muted); }
+
+/* 倒计时用等宽数字，避免每秒跳动时宽度抖来抖去 */
+.timer {
+  font-variant-numeric: tabular-nums;
+  font-size: 18px; font-weight: 700; letter-spacing: .5px;
+}
+.timer.warn { color: var(--danger); }
+
+.exam-body { flex: 1; padding: 16px 12px 96px; }
+@media (min-width: 640px) { .exam-body { padding: 20px 24px 96px; } }
+@media (min-width: 1024px) {
+  .exam-bar { padding-left: 40px; padding-right: 40px; }
+  .exam-body { padding: 24px 40px 40px; max-width: 1180px; margin: 0 auto; width: 100%; }
+}
+
+/* 原文与题目：手机上下堆叠，PC 左右分栏且原文吸顶跟随 */
+.exam-split { display: block; }
+.exam-split > * + * { margin-top: 16px; }
+@media (min-width: 1024px) {
+  .exam-split {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 24px; align-items: start;
+  }
+  .exam-split > * + * { margin-top: 0; }
+  .exam-passage { position: sticky; top: 84px; max-height: calc(100vh - 108px); overflow-y: auto; }
+}
+
+/* 手机上原文默认折起，免得每道题都要往下划半天 */
+.passage-toggle {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; min-height: var(--tap); padding: 0;
+  border: none; background: none; cursor: pointer;
+  font-size: 14px; font-weight: 600; color: var(--ink);
+}
+.passage-toggle > span:last-child { flex-shrink: 0; white-space: nowrap; margin-left: 12px; }
+@media (min-width: 1024px) {
+  .passage-toggle { cursor: default; pointer-events: none; }
+  /* PC 上原文一直展开，不需要展开/收起这个提示 */
+  .passage-toggle > span:last-child { display: none; }
+}
+
+.q-card { padding: 16px; border-bottom: 1px solid var(--line); }
+.q-card:last-child { border-bottom: none; }
+.q-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 24px; height: 24px; margin-right: 8px; flex-shrink: 0;
+  border-radius: 6px; background: var(--primary-tint); color: var(--primary);
+  font-size: 12px; font-weight: 700;
+}
+.q-stem { font-size: 15px; line-height: 1.7; }
+
+/* 选项整块可点，移动端不用瞄准小圆点 */
+.choice {
+  display: flex; align-items: flex-start; gap: 10px;
+  min-height: var(--tap); padding: 10px 12px; margin-top: 8px;
+  border: 1px solid var(--line); border-radius: 8px;
+  background: #fff; cursor: pointer; font-size: 14px; line-height: 1.6;
+}
+.choice:hover { border-color: var(--primary); }
+.choice input { margin-top: 3px; width: 18px; height: 18px; flex-shrink: 0; }
+.choice.picked { border-color: var(--primary); background: var(--primary-tint); }
+.choice .key { font-weight: 700; flex-shrink: 0; }
+
+/* 报告页的对错底色 */
+.choice.right { border-color: var(--ok); background: var(--ok-tint); }
+.choice.wrong { border-color: var(--danger); background: var(--danger-tint); }
+
+.wordbank { display: flex; flex-wrap: wrap; gap: 8px; }
+.wordbank button {
+  min-height: 36px; padding: 0 12px;
+  border: 1px solid var(--line); border-radius: 999px;
+  background: #fff; cursor: pointer; font-size: 13px;
+}
+.wordbank button.picked { border-color: var(--primary); background: var(--primary-tint); color: var(--primary); }
+
+/* 底部部分导航：手机固定在拇指可达处 */
+.sec-nav {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 25;
+  display: flex; gap: 6px; padding: 8px 10px;
+  padding-bottom: calc(8px + env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, .96); backdrop-filter: blur(8px);
+  border-top: 1px solid var(--line); overflow-x: auto;
+}
+.sec-nav button {
+  flex: 1 0 auto; min-width: 40px; min-height: 40px; padding: 0 8px;
+  border: 1px solid var(--line); border-radius: 8px; background: #fff;
+  font-size: 12px; cursor: pointer; white-space: nowrap;
+}
+.sec-nav button.active { border-color: var(--primary); background: var(--primary-tint); color: var(--primary); font-weight: 600; }
+.sec-nav button .done { color: var(--ok); margin-left: 4px; }
+@media (min-width: 1024px) {
+  .sec-nav {
+    position: static; margin-bottom: 20px; padding: 0;
+    background: none; border: none; backdrop-filter: none; overflow-x: visible;
+  }
+  .sec-nav button { flex: 0 0 auto; }
+}
+
+/* 得分条 */
+.bar { height: 8px; border-radius: 999px; background: #eef0f4; overflow: hidden; }
+.bar > span { display: block; height: 100%; background: var(--primary); border-radius: 999px; }
+.bar.ok > span { background: var(--ok); }
+.bar.warn > span { background: var(--warn); }
+
+.score-big { font-size: 40px; font-weight: 700; line-height: 1.1; }
+
+/* 原文折叠：手机上收起，PC 上恒常展开（那边是左右分栏，不占纵向空间） */
+.passage-body.collapsed { display: none; }
+@media (min-width: 1024px) { .passage-body.collapsed { display: block; } }

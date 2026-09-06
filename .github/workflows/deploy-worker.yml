@@ -435,6 +435,12 @@ jobs:
               PUBLISHED_Q=$(echo "$STATS" | jq -r '[.byType[].published] | add // 0')
               check "1020 道题全部已发布" "$PUBLISHED_Q" "1020"
               check "解析存疑记录已清零" "$(echo "$STATS" | jq -r '.unresolvedNotes')" "0"
+
+              # 缺原文的那道题按要求扣下，不参与组卷
+              HELD=$(curl -sS -m 20 "$WORKER_URL/api/admin/bank/exams/13000-2026-04" \
+                -H "Authorization: Bearer $TOKEN" \
+                | jq -r '[.sections[].questions[] | select(.question_id=="13000-2026-04-q15")][0].status')
+              check "13000-2026-04 第15题已扣下" "$HELD" "存疑"
             }
           fi
 
@@ -449,6 +455,10 @@ jobs:
           else
             echo "  FAIL 首页内容不是前端应用"; FAIL=1
           fi
+
+          CODE=$(curl -sS -m 20 -o /dev/null -w '%{http_code}' -X POST "$WORKER_URL/api/exams/generate" \
+            -H 'Content-Type: application/json' -d '{"courseCode":"13000"}' || echo 000)
+          check "未登录不能组卷" "$CODE" "401"
 
           CODE=$(curl -sS -m 20 -o /dev/null -w '%{http_code}' "$WORKER_URL/admin/bank" || echo 000)
           check "前端路由回落到 index.html" "$CODE" "200"

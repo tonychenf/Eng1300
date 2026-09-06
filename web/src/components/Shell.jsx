@@ -9,7 +9,8 @@ export default function Shell({ nav, title, admin = false, children }) {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // 换路由就收起抽屉，避免移动端遮罩残留
+  // 兜底：换路由一定收起抽屉。正常路径上点导航时就已经关了（见下面的 onClick），
+  // 这里管的是浏览器前进后退等不经过点击的跳转。
   useEffect(() => { setOpen(false); }, [location.pathname]);
 
   // 抽屉打开时锁定页面滚动
@@ -34,6 +35,7 @@ export default function Shell({ nav, title, admin = false, children }) {
             key={item.to}
             to={item.to}
             end={item.end}
+            onClick={() => setOpen(false)}
             className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
           >
             {item.label}
