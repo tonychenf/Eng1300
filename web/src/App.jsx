@@ -20,11 +20,15 @@ import BankReview from './pages/admin/BankReview.jsx';
 import Users from './pages/admin/Users.jsx';
 import AISettings from './pages/admin/AISettings.jsx';
 import SystemSettings from './pages/admin/SystemSettings.jsx';
+import Students from './pages/admin/Students.jsx';
+import Export from './pages/admin/Export.jsx';
 
 const ADMIN_NAV = [
   { to: '/admin', label: '题库总览', end: true },
   { to: '/admin/bank', label: '试卷与校对' },
+  { to: '/admin/students', label: '学员学情' },
   { to: '/admin/users', label: '账号管理' },
+  { to: '/admin/export', label: '数据导出' },
   { to: '/admin/ai', label: 'AI 配置' },
   { to: '/admin/settings', label: '系统参数' },
   { to: '/admin/password', label: '修改密码' },
@@ -94,6 +98,8 @@ export default function App() {
               <Route index element={<Dashboard />} />
               <Route path="bank" element={<BankList />} />
               <Route path="bank/:examId" element={<BankReview />} />
+              <Route path="students" element={<Students />} />
+              <Route path="export" element={<Export />} />
               <Route path="users" element={<Users />} />
               <Route path="ai" element={<AISettings />} />
               <Route path="settings" element={<SystemSettings />} />

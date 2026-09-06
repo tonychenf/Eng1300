@@ -7,6 +7,7 @@ import { aiRouter } from './routes/admin-ai.js';
 import { examRouter } from './routes/exam.js';
 import { practiceRouter } from './routes/practice.js';
 import { studyRouter } from './routes/study.js';
+import { adminStatsRouter } from './routes/admin-stats.js';
 
 const app = new Hono();
 app.use('/api/*', cors());
@@ -206,6 +207,7 @@ admin.put('/settings/:key', async (c) => {
 
 admin.route('/bank', bankRouter);
 admin.route('/ai', aiRouter);
+admin.route('/stats', adminStatsRouter);
 app.route('/api/admin', admin);
 
 // 静态资源由 wrangler [assets] 处理，Worker 只会收到 /api/*，
