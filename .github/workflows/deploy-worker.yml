@@ -281,6 +281,33 @@ jobs:
           npx wrangler d1 execute "$D1_NAME" --remote --yes \
             --command "DELETE FROM login_attempts WHERE username = 'admin';"
 
+      # 临时诊断步骤：线上登录返回 500，但本地同样的代码和迁移跑得通。
+      # 用 wrangler tail 抓一次真实请求的 Worker 日志，看是代码异常还是超限。
+      # 定位到原因后这一步就删掉。
+      - name: Diagnose login 500
+        working-directory: worker
+        continue-on-error: true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+        run: |
+          [ -n "$ADMIN_PASSWORD" ] || exit 0
+          npx wrangler tail --format json > /tmp/tail.json 2>/tmp/tail.err &
+          TAIL_PID=$!
+          sleep 12   # 等 tail 真正连上，否则抓不到这次请求
+          echo "--- 探一次登录 ---"
+          curl -sS -m 30 -o /tmp/probe.json -w 'HTTP %{http_code}\n' -X POST "$WORKER_URL/api/auth/login" \
+            -H 'Content-Type: application/json' \
+            --data "$(jq -n --arg p "$ADMIN_PASSWORD" '{username:"admin",password:$p}')" || true
+          cat /tmp/probe.json; echo
+          sleep 8
+          kill $TAIL_PID 2>/dev/null || true
+          echo "--- Worker 日志 ---"
+          cat /tmp/tail.json 2>/dev/null | head -c 8000 || echo '(没抓到日志)'
+          echo
+          echo "--- tail 自身的错误输出 ---"
+          head -c 1000 /tmp/tail.err 2>/dev/null || true
+
       - name: Get admin token
         env:
           # 两个名字都认，按顺序试；密码错误只算一次尝试，不做无谓重试，
@@ -432,8 +459,9 @@ jobs:
               check "00015 与 13000 已合并为一门课程" "$COURSES" "1"
               PUBLISHED_EXAMS=$(echo "$STATS" | jq -r '[.byCourse[].published_exams] | add // 0')
               check "20 套试卷全部已发布" "$PUBLISHED_EXAMS" "20"
+              # 1020 题里扣下缺原文的那一道，可抽题的是 1019
               PUBLISHED_Q=$(echo "$STATS" | jq -r '[.byType[].published] | add // 0')
-              check "1020 道题全部已发布" "$PUBLISHED_Q" "1020"
+              check "1019 道题可参与组卷（扣下 1 道缺原文的）" "$PUBLISHED_Q" "1019"
               check "解析存疑记录已清零" "$(echo "$STATS" | jq -r '.unresolvedNotes')" "0"
 
               # 缺原文的那道题按要求扣下，不参与组卷
