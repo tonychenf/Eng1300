@@ -76,30 +76,55 @@ jobs:
           echo "回复：$(jq -r '.choices[0].message.content' /tmp/chat.json | head -c 400)"
           echo "用量：$(jq -c '.usage' /tmp/chat.json)"
 
-      - name: 3. 教学AI 结构化JSON稳定性（连测3次）
+      - name: 3. 教学AI 结构化JSON（校验字段完整性 + 思考模式对比）
         env:
           KEY: ${{ secrets.SILICONFLOW_API_KEY }}
         run: |
           PROMPT='只输出JSON，不要任何其他文字或解释。分析这道题并按格式输出：{"knowledgePoint":"考点名","errorReason":"错因分析","memoryPoint":"记忆要点"}。题目：It is ___ (general) believed that watching TV can relax people. 需填入general的正确形式。正确答案：generally。学生答错，填的是：general'
-          OK=0
-          for i in 1 2 3; do
-            PAYLOAD=$(jq -n --arg m "$TUTOR_MODEL" --arg p "$PROMPT" '{
-              model: $m, messages: [{role:"user", content:$p}],
-              response_format: {type:"json_object"}, max_tokens: 400
-            }')
-            curl -sS -m 90 -o /tmp/j$i.json -X POST \
-              -H "Authorization: Bearer $KEY" -H 'Content-Type: application/json' \
-              --data "$PAYLOAD" "$BASE_URL/chat/completions" || true
-            C=$(jq -r '.choices[0].message.content // empty' /tmp/j$i.json)
-            if [ -n "$C" ] && echo "$C" | jq empty 2>/dev/null; then
-              echo "  第${i}次 ✓ 合法JSON: $(echo "$C" | jq -c .)"
-              OK=$((OK+1))
-            else
-              echo "  第${i}次 ✗ 非法: $(echo "$C" | head -c 300)"
-            fi
-          done
-          echo "JSON 成功率：$OK/3"
-          [ "$OK" -ge 2 ] || echo "::warning::结构化输出不稳定，需要加重试与容错解析"
+
+          # 校验必须是"字段齐全"的JSON，空对象{}不算通过
+          check_json() {
+            local f=$1
+            local C=$(jq -r '.choices[0].message.content // empty' "$f")
+            if [ -z "$C" ]; then echo "EMPTY_CONTENT"; return 1; fi
+            if ! echo "$C" | jq empty 2>/dev/null; then echo "INVALID_JSON"; return 1; fi
+            local N=$(echo "$C" | jq -r '[.knowledgePoint, .errorReason, .memoryPoint] | map(select(. != null and . != "")) | length')
+            if [ "$N" -lt 3 ]; then echo "MISSING_FIELDS(仅${N}/3): $(echo "$C" | jq -c .)"; return 1; fi
+            echo "$C" | jq -c .
+            return 0
+          }
+
+          run_case() {
+            local label=$1 tokens=$2 thinking=$3
+            echo ""
+            echo "=== $label (max_tokens=$tokens, enable_thinking=$thinking) ==="
+            local OK=0
+            for i in 1 2 3; do
+              if [ "$thinking" = "null" ]; then
+                PAYLOAD=$(jq -n --arg m "$TUTOR_MODEL" --arg p "$PROMPT" --argjson t "$tokens" \
+                  '{model:$m, messages:[{role:"user",content:$p}], response_format:{type:"json_object"}, max_tokens:$t}')
+              else
+                PAYLOAD=$(jq -n --arg m "$TUTOR_MODEL" --arg p "$PROMPT" --argjson t "$tokens" --argjson th "$thinking" \
+                  '{model:$m, messages:[{role:"user",content:$p}], response_format:{type:"json_object"}, max_tokens:$t, enable_thinking:$th}')
+              fi
+              local T0=$(date +%s)
+              curl -sS -m 180 -o /tmp/r.json -X POST \
+                -H "Authorization: Bearer $KEY" -H 'Content-Type: application/json' \
+                --data "$PAYLOAD" "$BASE_URL/chat/completions" || true
+              local T1=$(date +%s)
+              local RESULT=$(check_json /tmp/r.json) && STATUS="✓" || STATUS="✗"
+              local RT=$(jq -r '.usage.completion_tokens_details.reasoning_tokens // 0' /tmp/r.json)
+              local CT=$(jq -r '.usage.completion_tokens // 0' /tmp/r.json)
+              echo "  第${i}次 $STATUS 耗时$((T1-T0))s 思考token=$RT/总输出$CT"
+              echo "        $RESULT"
+              [ "$STATUS" = "✓" ] && OK=$((OK+1))
+            done
+            echo "  → 字段完整成功率：$OK/3"
+          }
+
+          run_case "A 原配置（复现上次的空JSON问题）" 400 null
+          run_case "B 加大token预算" 2000 null
+          run_case "C 关闭思考模式" 2000 false
 
       - name: 4. 视觉OCR（DeepSeek-OCR 读图）
         env:
