@@ -136,14 +136,24 @@ FN=$(echo "$F" | jq -r '.sectionTypes[0].n')
 check "按题型筛选生效" "$(au "$BASE/wrongbook?courseCode=13000&sectionType=$FIRST_TYPE" | jq -r '.total')" "$FN"
 
 echo "== 连续答对两次自动订正 =="
-QW=$(sql "SELECT question_id AS q FROM wrong_items ORDER BY id LIMIT 1;" | jq -r '.[0].results[0].q')
-TAG=$(sql "SELECT tag_id AS t FROM question_knowledge_points WHERE question_id='$QW' LIMIT 1;" | jq -r '.[0].results[0].t')
+# 挑"所属考点题目最少"的那道错题：专项练习按历史做过次数升序出题，做过的
+# 排在最后，考点下题一多就轮不到它——那测出来的是题库深度，不是订正规则。
+PICK=$(sql "SELECT w.question_id AS q, x.tag_id AS t,
+              (SELECT COUNT(*) FROM questions q2
+                 JOIN question_knowledge_points x2 ON x2.question_id = q2.question_id
+                WHERE x2.tag_id = x.tag_id AND q2.status = '已发布' AND q2.course_code = '13000') AS n
+            FROM wrong_items w
+            JOIN question_knowledge_points x ON x.question_id = w.question_id
+            WHERE w.corrected = 0
+            ORDER BY n ASC LIMIT 1;" | jq -r '.[0].results[0]')
+QW=$(echo "$PICK" | jq -r '.q'); TAG=$(echo "$PICK" | jq -r '.t')
+echo "     （选中的错题所属考点共 $(echo "$PICK" | jq -r '.n') 道题）"
 HIT=0
 for round in 1 2; do
   D=$(curl -s -X POST "$BASE/practice/drill" -H "Authorization: Bearer $STU" \
     -H 'Content-Type: application/json' -d "$(jq -n --arg c 13000 --arg t "$TAG" '{courseCode:$c,tagId:$t}')")
   DID=$(echo "$D" | jq -r '.attemptId')
-  for i in $(seq 1 40); do
+  for i in $(seq 1 60); do
     N=$(au "$BASE/practice/$DID/next")
     [ "$(echo "$N" | jq -r '.done // false')" = "true" ] && break
     QID=$(echo "$N" | jq -r '.question.questionId')

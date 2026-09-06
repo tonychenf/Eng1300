@@ -16,6 +16,8 @@ check() {
   else FAIL=$((FAIL+1)); echo "  FAIL $desc (期望 $want, 实际 $got)"; fi
 }
 
+sql() { npx wrangler d1 execute eng1300-mvp --local --json --command "$1" 2>/dev/null; }
+
 cleanup() {
   # wrangler dev 会派生 workerd 子进程，只杀 wrangler 本身杀不掉它，
   # 它会继续占着端口，下一轮测试就起不来（报 Address already in use，
@@ -118,15 +120,22 @@ for id in $(jq -r '.parsingNotes[].id' /tmp/exam.json); do
     -H 'Content-Type: application/json' -d '{"resolved":true}' >/dev/null
 done
 
-# 把一题标为存疑，验证它不会被发布
-curl -s -X PATCH "$BASE/admin/bank/questions/00015-2024-04-q1" -H "Authorization: Bearer $ADMIN" \
+# 种子里已经有一批被解析存疑记录点名的题，先数清楚再手动多标一道，
+# 期望值按实际算——写死 50/1 的话，存疑规则一变这条就误报。
+HELD_BEFORE=$(sql "SELECT COUNT(*) AS n FROM questions WHERE exam_id='00015-2024-04' AND status='存疑';" | jq -r '.[0].results[0].n')
+TOTAL_Q=$(sql "SELECT COUNT(*) AS n FROM questions WHERE exam_id='00015-2024-04';" | jq -r '.[0].results[0].n')
+MANUAL_Q=$(sql "SELECT question_id AS q FROM questions WHERE exam_id='00015-2024-04' AND status!='存疑' ORDER BY ord LIMIT 1;" | jq -r '.[0].results[0].q')
+curl -s -X PATCH "$BASE/admin/bank/questions/$MANUAL_Q" -H "Authorization: Bearer $ADMIN" \
   -H 'Content-Type: application/json' -d '{"status":"存疑"}' >/dev/null
+EXPECT_HELD=$((HELD_BEFORE + 1))
+EXPECT_PUB=$((TOTAL_Q - EXPECT_HELD))
+echo "     （本卷共 $TOTAL_Q 题，存疑 $EXPECT_HELD 题，应发布 $EXPECT_PUB 题）"
 
 CODE=$(curl -s -o /tmp/pub.json -w '%{http_code}' -X POST \
   "$BASE/admin/bank/exams/00015-2024-04/publish" -H "Authorization: Bearer $ADMIN")
 check "处理完存疑后可发布(200)" "$CODE" "200"
-check "发布50题" "$(jq -r '.published' /tmp/pub.json)" "50"
-check "存疑题保留未发布" "$(jq -r '.held' /tmp/pub.json)" "1"
+check "发布数量等于总题数减存疑数" "$(jq -r '.published' /tmp/pub.json)" "$EXPECT_PUB"
+check "存疑题全部保留未发布" "$(jq -r '.held' /tmp/pub.json)" "$EXPECT_HELD"
 
 echo "== 校对修改落库 =="
 curl -s -X PATCH "$BASE/admin/bank/questions/00015-2024-04-q2" -H "Authorization: Bearer $ADMIN" \
@@ -140,7 +149,7 @@ check "新考点标签自动创建" "$(jq -r '[.sections[].questions[] | select(
 echo "== 课程与已发布计数 =="
 curl -s "$BASE/courses" -H "Authorization: Bearer $STU" > /tmp/courses.json
 check "普通用户可读课程列表" "$(jq '.courses | length' /tmp/courses.json)" "1"
-check "合并后课程已发布题数为50" "$(jq -r '.courses[] | select(.course_code=="13000") | .published_questions' /tmp/courses.json)" "50"
+check "课程已发布题数与发布结果一致" "$(jq -r '.courses[] | select(.course_code=="13000") | .published_questions' /tmp/courses.json)" "$EXPECT_PUB"
 
 echo "== AI 配置 =="
 curl -s -X PUT "$BASE/admin/ai/settings/TUTORING" -H "Authorization: Bearer $ADMIN" \
@@ -214,8 +223,10 @@ npx wrangler d1 execute eng1300-mvp --local --file=sql/publish-all.sql >/dev/nul
 curl -s -o /tmp/stats2.json "$BASE/admin/bank/stats" -H "Authorization: Bearer $ADMIN"
 check "存疑记录已清零" "$(jq -r '.unresolvedNotes' /tmp/stats2.json)" "0"
 check "两套卷全部已发布" "$(jq -r '[.byCourse[].published_exams] | add' /tmp/stats2.json)" "2"
-# 之前手动标为存疑的那一题不参与发布，所以是 101 而不是 102
-check "非存疑题全部已发布" "$(jq -r '[.byType[].published] | add' /tmp/stats2.json)" "101"
+# 两套卷里所有非存疑题都应已发布。这里按"非存疑"计数，不是按"已发布"计数——
+# 后者会拿发布结果去对发布结果，永远相等，测不出漏发。
+EXPECT_ALL=$(sql "SELECT COUNT(*) AS n FROM questions WHERE status!='存疑';" | jq -r '.[0].results[0].n')
+check "非存疑题全部已发布" "$(jq -r '[.byType[].published] | add' /tmp/stats2.json)" "$EXPECT_ALL"
 
 echo
 echo "== 小结: $PASS 通过, $FAIL 失败 =="
