@@ -281,95 +281,20 @@ jobs:
           npx wrangler d1 execute "$D1_NAME" --remote --yes \
             --command "DELETE FROM login_attempts WHERE username = 'admin';"
 
-      # 临时诊断步骤：线上登录返回 500，但本地同样的代码和迁移跑得通。
-      # 用 wrangler tail 抓一次真实请求的 Worker 日志，看是代码异常还是超限。
+      # 临时诊断步骤：线上登录返回 500，抓一次真实请求的 Worker 日志。
       # 定位到原因后这一步就删掉。
       - name: Diagnose login 500
-        working-directory: worker
         continue-on-error: true
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
-        run: |
-          [ -n "$ADMIN_PASSWORD" ] || exit 0
-          npx wrangler tail --format json > /tmp/tail.json 2>/tmp/tail.err &
-          TAIL_PID=$!
-          sleep 12   # 等 tail 真正连上，否则抓不到这次请求
-          echo "--- 探一次登录 ---"
-          curl -sS -m 30 -o /tmp/probe.json -w 'HTTP %{http_code}\n' -X POST "$WORKER_URL/api/auth/login" \
-            -H 'Content-Type: application/json' \
-            --data "$(jq -n --arg p "$ADMIN_PASSWORD" '{username:"admin",password:$p}')" || true
-          cat /tmp/probe.json; echo
-          sleep 8
-          kill $TAIL_PID 2>/dev/null || true
-          echo "--- Worker 抛出的异常与日志 ---"
-          # 只挑关键字段：整条事件里 request.cf 有几百行，直接打印会把要看的挤掉
-          jq -c '{outcome, exceptions, logs: [.logs[]? | {level, message}]}' /tmp/tail.json 2>/dev/null \
-            || { echo '(jq 解析失败，原样输出前 3000 字节)'; head -c 3000 /tmp/tail.json; }
-          echo
-          echo "--- tail 自身的错误输出 ---"
-          head -c 800 /tmp/tail.err 2>/dev/null || true
+        run: bash scripts/ci/diagnose-login.sh
 
       - name: Get admin token
         env:
-          # 两个名字都认，按顺序试；密码错误只算一次尝试，不做无谓重试，
-          # 免得把连续 5 次失败的限流额度耗光反而把 admin 锁住。
           ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
           ADMIN_PASS: ${{ secrets.ADMIN_PASS }}
-        run: |
-          # 注意：这一步跑在 bash -e 下，`[ ... ] && cmd` 条件不成立会让整步退出，
-          # 所以这里一律写成 if。
-          CANDIDATES=()
-          LAST_CODE=""
-          if [ -n "$ADMIN_PASSWORD" ]; then CANDIDATES+=("ADMIN_PASSWORD"); fi
-          if [ -n "$ADMIN_PASS" ] && [ "$ADMIN_PASS" != "$ADMIN_PASSWORD" ]; then CANDIDATES+=("ADMIN_PASS"); fi
-          if [ ${#CANDIDATES[@]} -eq 0 ]; then
-            echo "::warning::未设置 ADMIN_PASSWORD 或 ADMIN_PASS，后续需要登录的步骤会跳过。"
-            exit 0
-          fi
-
-          # 整条流水线只登录这一次：既少几次触发登录限流的机会，
-          # 也让失败原因集中在一个地方看得见。
-          TOKEN=""
-          try_login() {
-            local name="$1" pwd="$2"
-            local code
-            code=$(curl -sS -m 30 -o /tmp/login.json -w '%{http_code}' -X POST "$WORKER_URL/api/auth/login" \
-              -H 'Content-Type: application/json' \
-              --data "$(jq -n --arg p "$pwd" '{username:"admin",password:$p}')" || echo 000)
-            TOKEN=$(jq -r '.token // empty' /tmp/login.json 2>/dev/null || echo '')
-            LAST_CODE="$code"
-            if [ -n "$TOKEN" ]; then
-              echo "用 $name 登录成功。"
-              return 0
-            fi
-            echo "用 $name 登录返回 HTTP $code：$(jq -c '.' /tmp/login.json 2>/dev/null || cat /tmp/login.json)"
-            return 1
-          }
-
-          for round in 1 2 3; do
-            for name in "${CANDIDATES[@]}"; do
-              try_login "$name" "${!name}" && break 2
-              # 429 是登录限流，锁定期 10 分钟，再试只会更糟
-              if [ "$LAST_CODE" = "429" ]; then
-                echo "::error::admin 被登录限流锁定。等待 10 分钟后重跑；本流水线会在登录前自动清一次锁定记录，所以重跑通常就能过。"
-                exit 1
-              fi
-            done
-            # 密码本身不对，重试也不会变对，只对网络/服务端错误重试
-            case "$LAST_CODE" in
-              401|403) break ;;
-            esac
-            sleep 10
-          done
-
-          if [ -z "$TOKEN" ]; then
-            echo "::error::管理员登录失败（最后一次 HTTP $LAST_CODE）。若是 401，说明 Secret 里的密码与线上 admin 的实际密码不一致。"
-            exit 1
-          fi
-          echo "::add-mask::$TOKEN"
-          echo "ADMIN_TOKEN=$TOKEN" >> "$GITHUB_ENV"
-          echo "管理员登录成功。"
+        run: bash scripts/ci/get-admin-token.sh
 
       - name: Bootstrap student accounts
         env:
