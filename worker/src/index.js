@@ -6,6 +6,7 @@ import { bankRouter } from './routes/admin-bank.js';
 import { aiRouter } from './routes/admin-ai.js';
 import { examRouter } from './routes/exam.js';
 import { practiceRouter } from './routes/practice.js';
+import { studyRouter } from './routes/study.js';
 
 const app = new Hono();
 app.use('/api/*', cors());
@@ -125,6 +126,7 @@ app.get('/api/courses', requireAuth, async (c) => {
 // ---- 用户端：模考与练习（鉴权在各自路由文件内按前缀挂） ----
 app.route('/api', examRouter);
 app.route('/api', practiceRouter);
+app.route('/api', studyRouter);
 
 // ---- 后台 ----
 const admin = new Hono();

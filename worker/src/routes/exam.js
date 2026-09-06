@@ -3,6 +3,7 @@ import { planPaper } from '../lib/paper.js';
 import { gradeQuestion } from '../lib/grade.js';
 import { requireAuth } from '../lib/auth.js';
 import { masteryWrites } from '../lib/mastery.js';
+import { wrongbookWrites } from '../lib/wrongbook.js';
 
 export const examRouter = new Hono();
 
@@ -175,6 +176,15 @@ async function submitAttempt(db, attempt, { auto = false }) {
       }))
       .filter((e) => e.tagIds.length && e.isCorrect !== null);
     writes.push(...(await masteryWrites(db, attempt.user_id, attempt.course_code, entries)));
+
+    // 错题本：判分时就落库，不等 AI（PRD §10.3 的主链路不依赖 AI）
+    const wbEntries = graded.map((r) => ({
+      questionId: r.question_id,
+      isCorrect: gradeQuestion(r, r.user_answer, r.score_per_question).isCorrect,
+    }));
+    writes.push(...(await wrongbookWrites(db, attempt.user_id, attempt.course_code, wbEntries, {
+      attemptId: attempt.attempt_id, source: 'EXAM',
+    })));
   }
 
   await db.batch(writes);

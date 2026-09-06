@@ -3,6 +3,7 @@ import { requireAuth } from '../lib/auth.js';
 import { gradeQuestion } from '../lib/grade.js';
 import { masteryTier, masteryWrites, tagsOfQuestion } from '../lib/mastery.js';
 import { nextQuestion, scopeTags, scopeQuestionCount } from '../lib/practice.js';
+import { wrongbookWrites } from '../lib/wrongbook.js';
 
 export const practiceRouter = new Hono();
 practiceRouter.use('/practice/*', requireAuth);
@@ -243,6 +244,8 @@ practiceRouter.post('/practice/:id/answer', async (c) => {
   if (isCorrect !== null) {
     writes.push(...(await masteryWrites(c.env.DB, a.user_id, a.course_code,
       [{ tagIds, isCorrect }])));
+    writes.push(...(await wrongbookWrites(c.env.DB, a.user_id, a.course_code,
+      [{ questionId, isCorrect }], { attemptId: a.attempt_id, source: 'PRACTICE' })));
   }
   await c.env.DB.batch(writes);
 
