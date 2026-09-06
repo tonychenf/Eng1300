@@ -335,9 +335,22 @@ jobs:
                 --argjson v "$VISION" '{baseUrl:$u,apiKey:$k,model:$m,protocol:"openai",visionCapable:$v}')")
             if [ "$CODE" = "200" ]; then
               echo "  $PURPOSE 配置已写入（$MODEL）"
-            else
-              echo "::error::写入 $PURPOSE 配置失败（HTTP $CODE）"; cat /tmp/ai.json; exit 1
+              return 0
             fi
+            # 额度用尽时写不进去。库里已经有这项配置的话，跳过就跳过——不该
+            # 因为一次改不了配置，就把后面的线上验证整步跳掉、看不到站点状态。
+            # 库里本来就没有（首次部署），那是真缺东西，照常报错。
+            if grep -q storage_quota_exceeded /tmp/ai.json 2>/dev/null; then
+              if [ "$(curl -sS -m 30 "$WORKER_URL/api/admin/ai/settings" \
+                        -H "Authorization: Bearer $TOKEN" \
+                        | jq -r --arg p "$PURPOSE" '.settings[$p].hasKey // false')" = "true" ]; then
+                echo "::warning::D1 今日写入额度已用尽，$PURPOSE 配置沿用库里已有的那份（世界时零点后重跑本流水线可刷新）。"
+                return 0
+              fi
+              echo "::error::D1 今日写入额度已用尽，且库里没有 $PURPOSE 配置，AI 功能不可用。请在世界时零点后重跑。"
+              exit 1
+            fi
+            echo "::error::写入 $PURPOSE 配置失败（HTTP $CODE）"; cat /tmp/ai.json; exit 1
           }
 
           put_cfg PARSING "${AI_PARSING_MODEL:-deepseek-ai/DeepSeek-OCR}" true
