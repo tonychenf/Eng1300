@@ -16,7 +16,9 @@ function inClause(values) {
 
 /** 本次范围内可用的考点及其题量。范围 = 课程 + 题型集合 (+ 可选的考点子集) */
 export async function scopeTags(db, { courseCode, sectionTypes, knowledgePoints }) {
-  const conds = ["q.course_code = ?", "q.status = '已发布'"];
+  // 排除写作：练习靠即时判对错驱动，而作文要 AI 批改才有结果，
+  // 出出来只会被当成答错，反而污染掌握度。等 M5 接上批改再放开。
+  const conds = ["q.course_code = ?", "q.status = '已发布'", "q.question_type != 'essay'"];
   const binds = [courseCode];
   if (sectionTypes?.length) {
     conds.push(`q.section_type IN (${inClause(sectionTypes)})`);
@@ -42,7 +44,9 @@ export async function scopeTags(db, { courseCode, sectionTypes, knowledgePoints 
 export async function scopeQuestionCount(db, scope) {
   const tags = await scopeTags(db, scope);
   if (!tags.length) return 0;
-  const conds = ["q.course_code = ?", "q.status = '已发布'"];
+  // 排除写作：练习靠即时判对错驱动，而作文要 AI 批改才有结果，
+  // 出出来只会被当成答错，反而污染掌握度。等 M5 接上批改再放开。
+  const conds = ["q.course_code = ?", "q.status = '已发布'", "q.question_type != 'essay'"];
   const binds = [scope.courseCode];
   if (scope.sectionTypes?.length) {
     conds.push(`q.section_type IN (${inClause(scope.sectionTypes)})`);
@@ -95,7 +99,7 @@ async function askedQuestions(db, attemptId) {
  * 先排除本次已出过的，再排除最近窗口内做过的；都排完了就退回"历史做得最少的"。
  */
 async function pickForTag(db, { userId, tagId, scope, excludeIds, recentIds }) {
-  const conds = ["q.course_code = ?", "q.status = '已发布'", 'x.tag_id = ?'];
+  const conds = ["q.course_code = ?", "q.status = '已发布'", "q.question_type != 'essay'", 'x.tag_id = ?'];
   const binds = [scope.courseCode, tagId];
   if (scope.sectionTypes?.length) {
     conds.push(`q.section_type IN (${inClause(scope.sectionTypes)})`);

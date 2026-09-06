@@ -58,7 +58,8 @@ practiceRouter.get('/practice/section-types', async (c) => {
   const courseCode = c.req.query('courseCode');
   const { results } = await c.env.DB.prepare(
     `SELECT section_type, COUNT(*) AS question_count
-       FROM questions WHERE course_code = ? AND status = '已发布'
+       FROM questions
+      WHERE course_code = ? AND status = '已发布' AND question_type != 'essay'
       GROUP BY section_type ORDER BY section_type`
   ).bind(courseCode).all();
   return c.json({ sectionTypes: results });
@@ -120,6 +121,29 @@ practiceRouter.post('/practice/drill', async (c) => {
   ).bind(attemptId, me.id, courseCode, tagId).run();
 
   return c.json({ attemptId, courseCode, stage: '单考点专项', questionCount: count }, 201);
+});
+
+// 会话概况。中断恢复时要靠它把阶段和已答计数取回来——
+// 这些数只存在于服务端，前端刷新或换设备后本地状态是空的。
+practiceRouter.get('/practice/:id', async (c) => {
+  const loaded = await loadPractice(c, c.req.param('id'));
+  if (loaded.error) return c.json({ error: loaded.error }, loaded.status);
+  const a = loaded.attempt;
+  const stat = await c.env.DB.prepare(
+    `SELECT COUNT(*) AS answered,
+            SUM(CASE WHEN is_correct = 1 THEN 1 ELSE 0 END) AS correct
+       FROM answer_records WHERE attempt_id = ? AND is_correct IS NOT NULL`
+  ).bind(a.attempt_id).first();
+  return c.json({
+    attempt: {
+      attemptId: a.attempt_id,
+      courseCode: a.course_code,
+      stage: a.practice_stage,
+      status: a.status,
+      startedAt: a.started_at,
+    },
+    stats: { answered: stat?.answered || 0, correct: stat?.correct || 0 },
+  });
 });
 
 // 取下一题。由服务端按算法决定，前端不参与选题。

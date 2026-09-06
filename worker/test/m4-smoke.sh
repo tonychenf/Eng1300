@@ -100,7 +100,14 @@ SCOPE=$(au "$BASE/practice/scope?courseCode=13000")
 check "范围内考点数大于 0" "$(echo "$SCOPE" | jq -r '.knowledgePoints | length > 0')" "true"
 check "范围内题目数大于 0" "$(echo "$SCOPE" | jq -r '.questionCount > 0')" "true"
 TYPES=$(au "$BASE/practice/section-types?courseCode=13000")
-check "题型列表含 7 类" "$(echo "$TYPES" | jq -r '.sectionTypes | length')" "7"
+# 写作要 AI 批改才判得了，练习里不出，所以题型只剩 6 类
+check "题型列表不含写作，共 6 类" "$(echo "$TYPES" | jq -r '.sectionTypes | length')" "6"
+check "题型列表里没有写作" "$(echo "$TYPES" | jq -r '[.sectionTypes[].section_type] | index("写作") // "none"')" "none"
+# 范围里的题数应当正好等于"有考点标签的非写作已发布题"，说明写作确实被排除了
+EXPECT_Q=$(sql "SELECT COUNT(DISTINCT q.question_id) AS n FROM questions q
+                JOIN question_knowledge_points x ON x.question_id=q.question_id
+                WHERE q.course_code='13000' AND q.status='已发布' AND q.question_type!='essay';" | jq -r '.[0].results[0].n')
+check "范围题数正好等于非写作可用题数" "$(au "$BASE/practice/scope?courseCode=13000" | jq -r '.questionCount')" "$EXPECT_Q"
 NARROW=$(au "$BASE/practice/scope?courseCode=13000&sectionTypes=%E9%98%85%E8%AF%BB%E5%88%A4%E6%96%AD")
 check "限定题型后题目数变少" \
   "$(( $(echo "$NARROW" | jq -r '.questionCount') < $(echo "$SCOPE" | jq -r '.questionCount') ))" "1"

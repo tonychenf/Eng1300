@@ -35,14 +35,14 @@ export default function UserHome() {
               <div className="row" style={{ marginTop: 12 }}>
                 <Link className="btn sm" to="/app/exam/new">模拟考试</Link>
                 <Link className="btn ghost sm" to="/app/history">历史记录</Link>
-                <button className="btn ghost sm" disabled title="学习模块将在下一阶段开放">专项学习</button>
+                <Link className="btn ghost sm" to="/app/practice/new">专项练习</Link>
               </div>
             </div>
           ))}
         </div>
       )}
       <p className="small muted" style={{ marginTop: 24 }}>
-模拟考试与客观题判分已经可用。作文需要 AI 批改，专项练习、错题本与能力评估还在开发中。
+模拟考试、客观题判分与专项练习已经可用。作文批改、错题本与能力评估还在开发中。
       </p>
     </>
   );
