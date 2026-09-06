@@ -12,7 +12,9 @@ UPDATE exam_parsing_notes
    SET resolved = 1, resolved_at = datetime('now')
  WHERE resolved = 0;
 
-UPDATE questions SET status = '已发布' WHERE status != '存疑';
+-- 加上状态判断：已经发布的不再重写，重复部署时这条是 0 行写入。
+-- D1 免费版每天 10 万行写入，整套题库重写一次约 5700 行，很快就会撞上。
+UPDATE questions SET status = '已发布' WHERE status NOT IN ('已发布', '存疑');
 
 UPDATE exams
    SET status = '已发布', published_at = datetime('now')
@@ -23,4 +25,5 @@ UPDATE exams
 -- 但该题所配的 Veganism 短文全文没有这个人也没有这段情节，题干无从作答。
 -- 标成"存疑"即可：抽题只认"已发布"，且整篇少一题就凑不满模板题量，
 -- 所配的整个阅读理解选择部分会一并落选，不会拆散原文。
-UPDATE questions SET status = '存疑' WHERE question_id = '13000-2026-04-q15';
+UPDATE questions SET status = '存疑'
+ WHERE question_id = '13000-2026-04-q15' AND status != '存疑';

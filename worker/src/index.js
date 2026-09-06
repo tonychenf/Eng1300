@@ -210,6 +210,15 @@ app.notFound((c) => c.json({ error: 'not_found' }, 404));
 
 app.onError((err, c) => {
   console.error(err);
+  // D1 免费版每天有写入行数上限，用尽后所有写操作都会失败（登录也要写最后登录时间）。
+  // 单独认出来，前端才能显示一句人能看懂的话，而不是"服务器内部错误"。
+  const msg = String(err?.message || '');
+  if (msg.includes('D1_ERROR') && /daily row (write|read) limit/i.test(msg)) {
+    return c.json({
+      error: 'storage_quota_exceeded',
+      message: '数据库今日写入额度已用尽，将在世界时零点（北京时间八点）恢复。',
+    }, 503);
+  }
   return c.json({ error: 'internal_error' }, 500);
 });
 

@@ -39,6 +39,11 @@ for _round in 1 2 3; do
       echo "::error::admin 被登录限流锁定。等待 10 分钟后重跑；本流水线会在登录前自动清一次锁定记录，所以重跑通常就能过。"
       exit 1
     fi
+    # D1 每日写入额度用尽，等到世界时零点才会恢复，重试没有意义
+    if grep -q 'storage_quota_exceeded' /tmp/login.json 2>/dev/null; then
+      echo "::error::D1 今日写入额度已用尽，要等世界时零点（北京时间早八点）才恢复。登录需要写入，所以现在过不去。"
+      exit 1
+    fi
   done
   # 密码本身不对，重试也不会变对，只对网络或服务端错误重试
   case "$LAST_CODE" in 401|403) break ;; esac

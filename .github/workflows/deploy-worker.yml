@@ -15,6 +15,11 @@ on:
       - 'scripts/**'
       - '.github/workflows/deploy-worker.yml'
   workflow_dispatch:
+    inputs:
+      force_seed:
+        description: '强制重新导入全部题库（平时不需要，会占用 D1 每日写入额度）'
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -169,16 +174,10 @@ jobs:
           done
 
       - name: Seed question bank
-        working-directory: worker
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: |
-          node ../scripts/build-seed-sql.mjs
-          # 每套试卷一个文件，内部先按 exam_id 删除再插入，重复执行不会产生脏数据
-          for f in seed/*.sql; do
-            echo "── 导入 $(basename "$f")"
-            npx wrangler d1 execute "$D1_NAME" --remote --yes --file="$f"
-          done
+          FORCE_SEED: ${{ inputs.force_seed && '1' || '0' }}
+        run: bash scripts/ci/seed-if-changed.sh
 
       - name: Publish the whole bank
         working-directory: worker
@@ -280,15 +279,6 @@ jobs:
           # 本身就会一并清掉锁定记录。
           npx wrangler d1 execute "$D1_NAME" --remote --yes \
             --command "DELETE FROM login_attempts WHERE username = 'admin';"
-
-      # 临时诊断步骤：线上登录返回 500，抓一次真实请求的 Worker 日志。
-      # 定位到原因后这一步就删掉。
-      - name: Diagnose login 500
-        continue-on-error: true
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
-        run: bash scripts/ci/diagnose-login.sh
 
       - name: Get admin token
         env:

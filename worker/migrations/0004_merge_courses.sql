@@ -3,7 +3,9 @@
 -- 统一归到 13000，组卷与练习从此面对一个完整题库。
 -- 顺序：先改引用，再删模板，最后删课程行，避免外键报错。
 
-UPDATE courses SET course_name = '英语(二)/英语(专升本)' WHERE course_code = '13000';
+-- 加上 course_name 判断：改过一次之后再跑就是 0 行写入，不占 D1 的每日写入额度
+UPDATE courses SET course_name = '英语(二)/英语(专升本)'
+ WHERE course_code = '13000' AND course_name != '英语(二)/英语(专升本)';
 
 UPDATE exams     SET course_code = '13000' WHERE course_code = '00015';
 UPDATE questions SET course_code = '13000' WHERE course_code = '00015';
