@@ -17,8 +17,11 @@ check() {
 }
 
 cleanup() {
-  [ -n "${SERVER_PID:-}" ] && kill "$SERVER_PID" 2>/dev/null
-  pkill -f "wrangler dev.*$PORT" 2>/dev/null
+  # wrangler dev 会派生 workerd 子进程，只杀 wrangler 本身杀不掉它，
+  # 它会继续占着端口，下一轮测试就起不来（报 Address already in use，
+  # 同时还会一直提示一个已被删掉的构建临时路径，很容易看岔）。
+  # 所以用 setsid 让它自成进程组，退出时整组一起杀。
+  if [ -n "${SERVER_PGID:-}" ]; then kill -9 -- "-$SERVER_PGID" 2>/dev/null || true; fi
   rm -rf "$ROOT_DIR/.wrangler"
 }
 trap cleanup EXIT
@@ -47,8 +50,14 @@ npx wrangler d1 execute eng1300-mvp --local --file=sql/publish-all.sql >/dev/nul
 
 echo "== 启动服务 =="
 DEV_LOG=/tmp/m3-dev.log
-npx wrangler dev --local --port $PORT > "$DEV_LOG" 2>&1 &
+# 等端口彻底释放再起，免得撞上上一轮残留的 workerd
+for i in $(seq 1 20); do
+  ss -ltn 2>/dev/null | grep -q ":$PORT " || break
+  sleep 1
+done
+setsid npx wrangler dev --local --port $PORT > "$DEV_LOG" 2>&1 &
 SERVER_PID=$!
+SERVER_PGID=$SERVER_PID
 # wrangler dev 启动时会去连几个 cloudflare.com 的地址，本环境的出站策略拒绝了它们，
 # 它要重试到超时才继续，因此启动可能要一分多钟。等不够久就会拿一个没起来的服务
 # 跑完整轮测试，出一堆看不懂的失败——所以这里等足，等不到就带日志报错退出。

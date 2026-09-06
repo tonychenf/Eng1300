@@ -16,7 +16,11 @@ check() {
 }
 
 cleanup() {
-  [ -n "${SERVER_PID:-}" ] && kill "$SERVER_PID" 2>/dev/null
+  # wrangler dev 会派生 workerd 子进程，只杀 wrangler 本身杀不掉它，
+  # 它会继续占着端口，下一轮测试就起不来（报 Address already in use，
+  # 同时还会一直提示一个已被删掉的构建临时路径，很容易看岔）。
+  # 所以用 setsid 让它自成进程组，退出时整组一起杀。
+  if [ -n "${SERVER_PGID:-}" ]; then kill -9 -- "-$SERVER_PGID" 2>/dev/null || true; fi
   rm -rf "$ROOT_DIR/.wrangler"
 }
 trap cleanup EXIT
@@ -52,8 +56,14 @@ npx wrangler d1 execute eng1300-mvp --local --file=sql/publish-all.sql >/dev/nul
 
 echo "== 启动服务 =="
 DEV_LOG=/tmp/m4-dev.log
-npx wrangler dev --local --port $PORT > "$DEV_LOG" 2>&1 &
+# 等端口彻底释放再起，免得撞上上一轮残留的 workerd
+for i in $(seq 1 20); do
+  ss -ltn 2>/dev/null | grep -q ":$PORT " || break
+  sleep 1
+done
+setsid npx wrangler dev --local --port $PORT > "$DEV_LOG" 2>&1 &
 SERVER_PID=$!
+SERVER_PGID=$SERVER_PID
 # wrangler dev 启动时会去连几个 cloudflare.com 的地址，本环境的出站策略拒绝了它们，
 # 它要重试到超时才继续，因此启动可能要一分多钟。等不够久就会拿一个没起来的服务
 # 跑完整轮测试，出一堆看不懂的失败——所以这里等足，等不到就带日志报错退出。
@@ -152,15 +162,25 @@ check "考点问完一轮后进入强化阶段" "$STAGE" "强化"
 check "会话阶段已落库" "$(sql "SELECT practice_stage AS s FROM attempts WHERE attempt_id='$P';" | jq -r '.[0].results[0].s')" "强化"
 
 echo "== 答错的考点会被优先重出 =="
-# 直接把对比拉开：其余考点全设成"连对三次"（权重 0.3），单独一个设成"最近答错"
-# （权重 5.0）。按 PRD §7.2 这时薄弱考点的中签率应该是 5/(5+20*0.3)≈45%，
-# 20 次抽题期望命中 9 次，远高于均分，不用靠运气就能判出来。
+# 对比拉到最大：其余考点全设成"连对三次"（权重 0.3），单独一个设成"最近答错"
+# （权重 5.0）。按 PRD §7.2，薄弱考点的中签率应为 5/(5+20*0.3)≈45%。
+#
+# 挑哪个考点当"薄弱"很关键：抽到某个考点后还要从它下面挑一道没做过的题，
+# 题目不够就抽不出、退回换别的考点。所以必须挑题量最多的考点，否则测的是
+# 题库深度而不是权重。（先前挑 tag_id 最小的那个，只有一两道题，无论权重
+# 多高都只能命中一两次。）
 USER_ID=$(sql "SELECT id AS i FROM users WHERE username='T001';" | jq -r '.[0].results[0].i')
-sql "UPDATE user_knowledge_mastery SET last_result='correct', consecutive_correct=3, correct_count=3
-     WHERE user_id=$USER_ID;" >/dev/null
-WEAK=$(sql "SELECT tag_id AS t FROM user_knowledge_mastery WHERE user_id=$USER_ID ORDER BY tag_id LIMIT 1;" | jq -r '.[0].results[0].t')
-sql "UPDATE user_knowledge_mastery SET last_result='wrong', consecutive_correct=0
-     WHERE user_id=$USER_ID AND tag_id='$WEAK';" >/dev/null
+WEAK=$(au "$BASE/practice/scope?courseCode=13000" | jq -r '.knowledgePoints | max_by(.question_count) | .tag_id')
+WEAK_NAME=$(au "$BASE/practice/scope?courseCode=13000" | jq -r '.knowledgePoints | max_by(.question_count) | .name')
+WEAK_POOL=$(au "$BASE/practice/scope?courseCode=13000" | jq -r '.knowledgePoints | max_by(.question_count) | .question_count')
+ASKED=$(sql "SELECT COUNT(DISTINCT aq.question_id) AS n FROM attempt_questions aq
+             JOIN question_knowledge_points x ON x.question_id = aq.question_id
+             WHERE aq.attempt_id='$P' AND x.tag_id='$WEAK';" | jq -r '.[0].results[0].n')
+echo "     （选作薄弱的考点：$WEAK_NAME，共 $WEAK_POOL 题，本次已出过 $ASKED 题）"
+
+sql "INSERT OR IGNORE INTO user_knowledge_mastery (user_id, course_code, tag_id) VALUES ($USER_ID, '13000', '$WEAK');
+     UPDATE user_knowledge_mastery SET last_result='correct', consecutive_correct=3, correct_count=3 WHERE user_id=$USER_ID;
+     UPDATE user_knowledge_mastery SET last_result='wrong', consecutive_correct=0 WHERE user_id=$USER_ID AND tag_id='$WEAK';" >/dev/null
 
 HITS=0; DRAWS=0
 for i in $(seq 1 20); do
@@ -171,7 +191,7 @@ for i in $(seq 1 20); do
   [ "$(has_tag "$QID" "$WEAK")" = "true" ] && HITS=$((HITS+1))
   curl -s -o /dev/null -X POST "$BASE/practice/$P/answer" -H "Authorization: Bearer $STU" \
     -H 'Content-Type: application/json' -d "$(jq -n --arg q "$QID" '{questionId:$q,answer:"故意答错"}')"
-  # 维持它的"最近答错"状态，其余考点保持连对三次。两条并成一次调用，少起一个进程。
+  # 维持"最近答错"，其余保持连对三次
   sql "UPDATE user_knowledge_mastery SET last_result='correct', consecutive_correct=3 WHERE user_id=$USER_ID;
        UPDATE user_knowledge_mastery SET last_result='wrong', consecutive_correct=0 WHERE user_id=$USER_ID AND tag_id='$WEAK';" >/dev/null
 done
