@@ -5,6 +5,7 @@ import { signToken, requireAuth, requireSuperAdmin } from './lib/auth.js';
 import { bankRouter } from './routes/admin-bank.js';
 import { aiRouter } from './routes/admin-ai.js';
 import { examRouter } from './routes/exam.js';
+import { practiceRouter } from './routes/practice.js';
 
 const app = new Hono();
 app.use('/api/*', cors());
@@ -121,8 +122,9 @@ app.get('/api/courses', requireAuth, async (c) => {
   return c.json({ courses: results });
 });
 
-// ---- 用户端：模考（鉴权在 exam.js 内按前缀挂） ----
+// ---- 用户端：模考与练习（鉴权在各自路由文件内按前缀挂） ----
 app.route('/api', examRouter);
+app.route('/api', practiceRouter);
 
 // ---- 后台 ----
 const admin = new Hono();

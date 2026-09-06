@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { planPaper } from '../lib/paper.js';
 import { gradeQuestion } from '../lib/grade.js';
 import { requireAuth } from '../lib/auth.js';
+import { masteryWrites } from '../lib/mastery.js';
 
 export const examRouter = new Hono();
 
@@ -153,26 +154,28 @@ async function submitAttempt(db, attempt, { auto = false }) {
     ).bind(objective, objective, JSON.stringify(sectionScores), pendingAi, attempt.attempt_id)
   );
 
-  // 掌握度：M4 的自适应出题要用，判分时顺手累计，只算客观题
-  writes.push(
-    db.prepare(
-      `INSERT INTO user_knowledge_mastery
-         (user_id, course_code, tag_id, correct_count, wrong_count, consecutive_correct,
-          last_result, last_practiced_at)
-       SELECT ?, ?, x.tag_id,
-              SUM(CASE WHEN r.is_correct = 1 THEN 1 ELSE 0 END),
-              SUM(CASE WHEN r.is_correct = 0 THEN 1 ELSE 0 END),
-              0, NULL, datetime('now')
-         FROM answer_records r
-         JOIN question_knowledge_points x ON x.question_id = r.question_id
-        WHERE r.attempt_id = ? AND r.is_correct IS NOT NULL
-        GROUP BY x.tag_id
-       ON CONFLICT(user_id, course_code, tag_id) DO UPDATE SET
-         correct_count = correct_count + excluded.correct_count,
-         wrong_count = wrong_count + excluded.wrong_count,
-         last_practiced_at = excluded.last_practiced_at`
-    ).bind(attempt.user_id, attempt.course_code, attempt.attempt_id)
-  );
+  // 掌握度与练习共用一套推进逻辑：按题号顺序逐题推进，连对次数才算得准。
+  // 原来那条聚合 SQL 只累计对错次数，连对次数一直留 0，M4 的加权抽题要用它。
+  const graded = rows.filter((r) => r.question_type !== 'essay');
+  if (graded.length) {
+    const holes = graded.map(() => '?').join(',');
+    const { results: tagRows } = await db.prepare(
+      `SELECT question_id, tag_id FROM question_knowledge_points
+        WHERE question_id IN (${holes})`
+    ).bind(...graded.map((r) => r.question_id)).all();
+    const byQuestion = new Map();
+    for (const t of tagRows) {
+      if (!byQuestion.has(t.question_id)) byQuestion.set(t.question_id, []);
+      byQuestion.get(t.question_id).push(t.tag_id);
+    }
+    const entries = graded
+      .map((r) => ({
+        tagIds: byQuestion.get(r.question_id) || [],
+        isCorrect: gradeQuestion(r, r.user_answer, r.score_per_question).isCorrect,
+      }))
+      .filter((e) => e.tagIds.length && e.isCorrect !== null);
+    writes.push(...(await masteryWrites(db, attempt.user_id, attempt.course_code, entries)));
+  }
 
   await db.batch(writes);
   return { objectiveScore: objective, sectionScores, pendingAi, unreviewed, auto };
