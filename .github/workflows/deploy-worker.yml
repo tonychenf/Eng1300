@@ -289,15 +289,17 @@ jobs:
       - name: Configure AI providers
         env:
           ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
-          AI_BASE_URL: ${{ secrets.AI_BASE_URL }}
-          AI_API_KEY: ${{ secrets.AI_API_KEY }}
-          AI_PARSING_MODEL: ${{ secrets.AI_PARSING_MODEL }}
-          AI_TUTORING_MODEL: ${{ secrets.AI_TUTORING_MODEL }}
+          # 复用 ai-smoke-test.yml 已经配好的那个 Secret
+          AI_API_KEY: ${{ secrets.SILICONFLOW_API_KEY }}
+          AI_BASE_URL: ${{ vars.AI_BASE_URL }}
+          AI_PARSING_MODEL: ${{ vars.AI_PARSING_MODEL }}
+          AI_TUTORING_MODEL: ${{ vars.AI_TUTORING_MODEL }}
         run: |
           if [ -z "$ADMIN_PASSWORD" ] || [ -z "$AI_API_KEY" ]; then
-            echo "::warning::缺少 ADMIN_PASSWORD 或 AI_API_KEY，跳过 AI 配置（可稍后在后台页面手工填写）。"
+            echo "::warning::缺少 ADMIN_PASSWORD 或 SILICONFLOW_API_KEY，跳过 AI 配置（可稍后在后台页面手工填写）。"
             exit 0
           fi
+          AI_BASE_URL="${AI_BASE_URL:-https://api.siliconflow.cn/v1}"
           TOKEN=$(curl -sS -m 30 -X POST "$WORKER_URL/api/auth/login" -H 'Content-Type: application/json' \
             --data "$(jq -n --arg p "$ADMIN_PASSWORD" '{username:"admin",password:$p}')" | jq -r '.token // empty')
           [ -n "$TOKEN" ] || { echo "::error::管理员登录失败，无法写入 AI 配置。"; exit 1; }

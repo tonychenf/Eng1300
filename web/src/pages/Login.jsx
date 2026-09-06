@@ -5,7 +5,7 @@ import { Alert } from '../components/ui.jsx';
 
 // admin=true 时为后台入口，只放行超级管理员
 export default function Login({ admin = false }) {
-  const { user, login } = useAuth();
+  const { user, login, logout } = useAuth();
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -24,6 +24,8 @@ export default function Login({ admin = false }) {
     try {
       const me = await login(username.trim(), password);
       if (admin && me.role !== 'SUPER_ADMIN') {
+        // 同一个事件里 login/logout 会被批处理，不会闪一下后台页面
+        logout();
         setError('该账号没有后台权限，请从学员入口登录');
         return;
       }
