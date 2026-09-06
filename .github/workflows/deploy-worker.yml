@@ -302,11 +302,13 @@ jobs:
           cat /tmp/probe.json; echo
           sleep 8
           kill $TAIL_PID 2>/dev/null || true
-          echo "--- Worker 日志 ---"
-          cat /tmp/tail.json 2>/dev/null | head -c 8000 || echo '(没抓到日志)'
+          echo "--- Worker 抛出的异常与日志 ---"
+          # 只挑关键字段：整条事件里 request.cf 有几百行，直接打印会把要看的挤掉
+          jq -c '{outcome, exceptions, logs: [.logs[]? | {level, message}]}' /tmp/tail.json 2>/dev/null \
+            || { echo '(jq 解析失败，原样输出前 3000 字节)'; head -c 3000 /tmp/tail.json; }
           echo
           echo "--- tail 自身的错误输出 ---"
-          head -c 1000 /tmp/tail.err 2>/dev/null || true
+          head -c 800 /tmp/tail.err 2>/dev/null || true
 
       - name: Get admin token
         env:
