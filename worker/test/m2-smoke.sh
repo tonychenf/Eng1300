@@ -36,12 +36,15 @@ JWT_SECRET=test-secret-m2
 SETUP_TOKEN=test-setup-m2
 ENCRYPTION_KEY=test-encryption-key-m2
 EOF
-for m in migrations/0001_init.sql migrations/0002_bank.sql migrations/0003_security.sql \
-         migrations/0004_merge_courses.sql; do
-  npx wrangler d1 execute eng1300-mvp --local --file="$m" >/dev/null 2>&1
+# 全部迁移都跑，和线上一致。原先只列到 0004，种子文件末尾那条写 seed_state
+# 的语句（表建在 0006）就没表可写，整个文件导入失败——而且失败被 2>&1 吞掉了。
+for m in migrations/*.sql; do
+  npx wrangler d1 execute eng1300-mvp --local --file="$m" >/dev/null 2>&1 \
+    || { echo "执行 $m 失败"; exit 1; }
 done
 # 只导入两套卷，够测流程且启动快
-npx wrangler d1 execute eng1300-mvp --local --file=seed/000-knowledge-points.sql >/dev/null 2>&1
+npx wrangler d1 execute eng1300-mvp --local --file=seed/000-knowledge-points.sql >/dev/null 2>&1 \
+  || { echo "导入 seed/000-knowledge-points.sql 失败"; exit 1; }
 for EXAM in 00015-2024-04 13000-2024-10; do
   F=$(ls seed/*"$EXAM".sql 2>/dev/null | head -1)
   if [ -z "$F" ]; then

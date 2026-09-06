@@ -173,20 +173,10 @@ jobs:
             npx wrangler d1 execute "$D1_NAME" --remote --yes --file="$f"
           done
 
-      - name: Seed question bank
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          FORCE_SEED: ${{ inputs.force_seed && '1' || '0' }}
-        run: bash scripts/ci/seed-if-changed.sh
-
-      - name: Publish the whole bank
-        working-directory: worker
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: |
-          # 必须排在导入之后：seed 按试卷先删后插，会把状态重置回草稿
-          npx wrangler d1 execute "$D1_NAME" --remote --yes --file=sql/publish-all.sql
-
+      # 部署排在题库导入之前。导入受 D1 每日写入额度限制，额度耗尽时会失败；
+      # 早先它排在前面，一失败后面的部署就整步跳过，连续八次运行的 Worker 代码
+      # 一行都没上线——数据装载的额度问题不该挡住代码发布。迁移仍排在最前，
+      # 因为新代码可能依赖新表。
       - name: Deploy worker
         working-directory: worker
         env:
@@ -220,6 +210,20 @@ jobs:
           echo "::add-mask::$TOKEN_VALUE"
           printf '%s' "$TOKEN_VALUE" | npx wrangler secret put SETUP_TOKEN
           echo "SETUP_TOKEN_VALUE=$TOKEN_VALUE" >> "$GITHUB_ENV"
+
+      - name: Seed question bank
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          FORCE_SEED: ${{ inputs.force_seed && '1' || '0' }}
+        run: bash scripts/ci/seed-if-changed.sh
+
+      - name: Publish the whole bank
+        working-directory: worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          # 必须排在导入之后：seed 按试卷先删后插，会把状态重置回草稿
+          npx wrangler d1 execute "$D1_NAME" --remote --yes --file=sql/publish-all.sql
 
       - name: Wait for the worker to respond
         run: |

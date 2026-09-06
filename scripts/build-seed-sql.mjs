@@ -6,6 +6,7 @@
 //   默认输出到 worker/seed/
 
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -50,7 +51,23 @@ const kpByName = new Map(kps.map((k) => [k.name, k.tagId]));
 const kpLines = kps.map(
   (k) => `INSERT OR IGNORE INTO knowledge_points (tag_id, name) VALUES (${q(k.tagId)}, ${q(k.name)});`
 );
-fs.writeFileSync(path.join(outDir, '000-knowledge-points.sql'), kpLines.join('\n') + '\n');
+// 把内容指纹作为最后一条语句写进种子文件本身。
+//
+// 起因：原先是"导入文件"和"记 seed_state 指纹"两次独立的 D1 调用。第一次
+// 成功、第二次因为写入额度耗尽而失败，结果是数据进去了、指纹没记上，下一次
+// 部署又原样重导一遍，再次在同一处失败——每跑一次白烧约 578 行额度，永远
+// 走不出来。写进同一个文件后，d1 execute --file 是一次导入，指纹和数据同生
+// 共死，导入成功就一定记上了。
+function writeSeedFile(dir, name, lines) {
+  const body = lines.join('\n') + '\n';
+  const sha = crypto.createHash('sha256').update(body).digest('hex');
+  const stamp =
+    `INSERT INTO seed_state (name, sha, applied_at) VALUES ('${name}', '${sha}', datetime('now'))\n` +
+    `  ON CONFLICT(name) DO UPDATE SET sha = excluded.sha, applied_at = excluded.applied_at;\n`;
+  fs.writeFileSync(path.join(dir, name), body + stamp);
+}
+
+writeSeedFile(outDir, '000-knowledge-points.sql', kpLines);
 
 // ---- 各套试卷 ----
 const files = fs.readdirSync(examDir).filter((f) => f.endsWith('.json')).sort();
@@ -114,7 +131,7 @@ for (const file of files) {
   }
 
   const outName = `${String(files.indexOf(file) + 1).padStart(3, '0')}-${d.examId}.sql`;
-  fs.writeFileSync(path.join(outDir, outName), lines.join('\n') + '\n');
+  writeSeedFile(outDir, outName, lines);
 }
 
 if (unknownTags.size) {
