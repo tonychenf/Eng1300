@@ -52,6 +52,11 @@ jobs:
           fi
 
       - name: Install dependencies
+        env:
+          # worker 的 devDependencies 里有 playwright（只给浏览器测试用）。
+          # 部署用不到浏览器，别让它的 postinstall 白下载几百兆。
+          # 不能改用 --omit=dev：wrangler 本身也在 devDependencies 里。
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
         run: |
           npm install --prefix worker --no-audit --no-fund
           npm install --prefix web --no-audit --no-fund
