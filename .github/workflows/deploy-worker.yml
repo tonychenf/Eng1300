@@ -376,16 +376,18 @@ jobs:
               check "00015 与 13000 已合并为一门课程" "$COURSES" "1"
               PUBLISHED_EXAMS=$(echo "$STATS" | jq -r '[.byCourse[].published_exams] | add // 0')
               check "20 套试卷全部已发布" "$PUBLISHED_EXAMS" "20"
-              # 1020 题里扣下缺原文的那一道，可抽题的是 1019
+              # 被解析存疑记录点名的题目不参与组卷，所以可抽题数少于总题数。
+              # 不写死具体数字：存疑记录一旦人工核对放行，这个数就会变。
               PUBLISHED_Q=$(echo "$STATS" | jq -r '[.byType[].published] | add // 0')
-              check "1019 道题可参与组卷（扣下 1 道缺原文的）" "$PUBLISHED_Q" "1019"
+              check "存疑题确实被排除在可抽题之外" "$(( PUBLISHED_Q > 0 && PUBLISHED_Q < QUESTIONS ))" "1"
+              echo "     （共 $QUESTIONS 题，其中 $PUBLISHED_Q 题可参与组卷）"
               check "解析存疑记录已清零" "$(echo "$STATS" | jq -r '.unresolvedNotes')" "0"
 
               # 缺原文的那道题按要求扣下，不参与组卷
               HELD=$(curl -sS -m 20 "$WORKER_URL/api/admin/bank/exams/13000-2026-04" \
                 -H "Authorization: Bearer $TOKEN" \
                 | jq -r '[.sections[].questions[] | select(.question_id=="13000-2026-04-q15")][0].status')
-              check "13000-2026-04 第15题已扣下" "$HELD" "存疑"
+              check "13000-2026-04 第15题已扣下（缺原文支撑）" "$HELD" "存疑"
             }
           fi
 

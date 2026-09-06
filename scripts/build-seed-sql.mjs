@@ -17,6 +17,22 @@ const examDir = path.join(root, 'data', 'exams');
 // 是同一门课的前后两个编号。JSON 里保留每份卷子印的原始代码，入库时统一归到 13000，
 // 这样组卷和练习抽题看到的是一个完整题库。
 const COURSE_ALIAS = { '00015': '13000' };
+
+// 解析存疑记录里点名的题号，这些题不参与组卷与练习。
+// 记录是整卷一条条自由文本，但基本都会写明"第N题"或"第N-M题"；把这些题
+// 标成"存疑"，抽题只认"已发布"，就自动跳过了。整篇少一题也凑不满模板题量，
+// 所配的整个部分会一并落选，不会把原文拆散。
+function flaggedOrders(exam) {
+  const flagged = new Set();
+  for (const note of exam.parsingNotes || []) {
+    for (const m of note.matchAll(/第\s*(\d+)\s*[-–—~至]\s*(\d+)\s*题/g)) {
+      const [a, b] = [Number(m[1]), Number(m[2])];
+      for (let i = Math.min(a, b); i <= Math.max(a, b); i++) flagged.add(i);
+    }
+    for (const m of note.matchAll(/第\s*(\d+)\s*题/g)) flagged.add(Number(m[1]));
+  }
+  return flagged;
+}
 const courseOf = (code) => COURSE_ALIAS[code] || code;
 
 // SQL 字符串字面量转义：单引号翻倍，NULL 单独处理
@@ -39,11 +55,13 @@ fs.writeFileSync(path.join(outDir, '000-knowledge-points.sql'), kpLines.join('\n
 // ---- 各套试卷 ----
 const files = fs.readdirSync(examDir).filter((f) => f.endsWith('.json')).sort();
 let totalQ = 0;
+let totalFlagged = 0;
 let unknownTags = new Set();
 
 for (const file of files) {
   const d = JSON.parse(fs.readFileSync(path.join(examDir, file), 'utf8'));
   const courseCode = courseOf(d.courseCode);
+  const flagged = flaggedOrders(d);
   const lines = [];
 
   // 幂等：重复导入时先清掉这套卷的旧数据，避免主键冲突或残留
@@ -71,13 +89,15 @@ for (const file of files) {
 
     for (const qu of s.questions) {
       totalQ++;
+      if (flagged.has(qu.order)) totalFlagged++;
       lines.push(
         `INSERT INTO questions (question_id, section_id, exam_id, course_code, section_type, ord, ` +
           `question_type, stem, options, answer, answer_explanation, difficulty_tag, status) VALUES (` +
           `${q(qu.questionId)}, ${q(s.sectionId)}, ${q(d.examId)}, ${q(courseCode)}, ${q(s.type)}, ` +
           `${n(qu.order)}, ${q(qu.questionType)}, ${q(qu.stem)}, ` +
           `${qu.options ? q(JSON.stringify(qu.options)) : 'NULL'}, ${q(qu.answer)}, ` +
-          `${q(qu.answerExplanation)}, ${q(qu.difficultyTag)}, '草稿');`
+          `${q(qu.answerExplanation)}, ${q(qu.difficultyTag)}, ` +
+          `${flagged.has(qu.order) ? "'存疑'" : "'草稿'"});`
       );
       for (const tag of qu.knowledgePoints || []) {
         const tagId = kpByName.get(tag);
@@ -103,3 +123,4 @@ if (unknownTags.size) {
 }
 
 console.log(`生成完成：${files.length} 套试卷，${totalQ} 道题，${kps.length} 个考点标签 -> ${outDir}`);
+console.log(`其中 ${totalFlagged} 道被解析存疑记录点名，标为"存疑"，不参与组卷与练习。`);

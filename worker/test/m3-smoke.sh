@@ -40,7 +40,9 @@ for m in migrations/*.sql; do
 done
 npx wrangler d1 execute eng1300-mvp --local --file=seed/000-knowledge-points.sql >/dev/null 2>&1
 # 三套卷：够凑出每个部分的多个候选篇章，也覆盖被扣下的那道题
-for EXAM in 00015-2024-04 13000-2024-10 13000-2026-04; do
+# 四套卷：前三套保证每个部分都有至少两篇未被存疑记录点名的完整篇章
+# （组卷要挑得出、还要能换篇），最后一套用来验证被扣下的第15题
+for EXAM in 00015-2015-04 00015-2016-04 00015-2019-10 13000-2026-04; do
   F=$(ls seed/*"$EXAM".sql 2>/dev/null | head -1)
   [ -n "$F" ] || { echo "找不到 $EXAM 的种子文件，请先运行 node scripts/build-seed-sql.mjs"; exit 1; }
   npx wrangler d1 execute eng1300-mvp --local --file="$F" >/dev/null 2>&1 \
@@ -89,7 +91,10 @@ STU=$(mk_student T001)
 STU2=$(mk_student T002)
 check "两个学员账号登录成功" "$([ -n "$STU" ] && [ -n "$STU2" ] && [ "$STU" != null ] && [ "$STU2" != null ] && echo yes)" "yes"
 
-echo "== 被扣下的存疑题 =="
+echo "== 被解析存疑记录点名的题目 =="
+HELD_N=$(sql "SELECT COUNT(*) AS n FROM questions WHERE status='存疑';" | jq -r '.[0].results[0].n')
+check "有多道题因存疑被扣下" "$(( HELD_N > 1 ))" "1"
+echo "     （本次导入的三套卷里共 $HELD_N 道被扣下）"
 HELD=$(curl -s "$BASE/admin/bank/exams/13000-2026-04" -H "Authorization: Bearer $ADMIN" \
   | jq -r '[.sections[].questions[] | select(.question_id=="13000-2026-04-q15")][0].status')
 check "13000-2026-04 第15题状态为存疑" "$HELD" "存疑"
@@ -116,6 +121,11 @@ for i in 1 2 3 4 5 6; do
   [ "$S" = "0" ] || BADSEC=$((BADSEC+1))
 done
 check "6 次组卷都没抽到那道存疑题" "$BAD" "0"
+# 更强的一条：任何一次组卷都不该出现任何存疑题
+ANYHELD=$(sql "SELECT COUNT(*) AS n FROM attempt_questions aq
+               JOIN questions q ON q.question_id=aq.question_id
+               WHERE q.status='存疑';" | jq -r '.[0].results[0].n')
+check "所有已组卷子里都没有存疑题" "$ANYHELD" "0"
 check "6 次组卷都没抽到它所在的整篇" "$BADSEC" "0"
 
 echo "== 断点恢复与增量保存 =="

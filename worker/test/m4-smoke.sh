@@ -49,7 +49,8 @@ for m in migrations/*.sql; do
   npx wrangler d1 execute eng1300-mvp --local --file="$m" >/dev/null 2>&1
 done
 npx wrangler d1 execute eng1300-mvp --local --file=seed/000-knowledge-points.sql >/dev/null 2>&1
-for EXAM in 00015-2024-04 13000-2024-10 13000-2026-04; do
+# 四套卷：保证每个部分都有足够的完整篇章可抽
+for EXAM in 00015-2015-04 00015-2016-04 00015-2019-10 13000-2026-04; do
   npx wrangler d1 execute eng1300-mvp --local --file="$(ls seed/*"$EXAM".sql | head -1)" >/dev/null 2>&1
 done
 npx wrangler d1 execute eng1300-mvp --local --file=sql/publish-all.sql >/dev/null 2>&1
@@ -133,12 +134,20 @@ for i in $(seq 1 12); do
   ANS=$(answer_of "$QID")
   R=$(curl -s -X POST "$BASE/practice/$P/answer" -H "Authorization: Bearer $STU" \
     -H 'Content-Type: application/json' -d "$(jq -n --arg q "$QID" --arg a "$ANS" '{questionId:$q,answer:$a}')")
-  echo "$R" | jq -r '.knowledgePoints[]?' >> /tmp/m4-tags
+  # 一行一题，行内是这道题的全部考点
+  echo "$R" | jq -r '[.knowledgePoints[]?] | join(",")' >> /tmp/m4-tags
   [ "$i" = "1" ] && FIRST="$R"
 done
 check "前 12 题都在摸底阶段" "$(echo "$STAGES" | tr ' ' '\n' | grep -c 摸底)" "12"
-check "摸底阶段考点不重复" \
-  "$(( $(sort -u /tmp/m4-tags | wc -l) == $(sort /tmp/m4-tags | wc -l) ))" "1"
+# 摸底保证的是"每道题都带来至少一个新考点"，不是"考点绝不重复"——
+# 一道题可以同时挂两个考点，为新考点 A 出的题顺带覆盖了已见过的 B 完全正常。
+NEW_EACH=$(awk -F, '{
+    fresh = 0
+    for (i = 1; i <= NF; i++) if (!($i in seen)) { fresh = 1 }
+    for (i = 1; i <= NF; i++) seen[$i] = 1
+    if (!fresh) bad++
+  } END { print bad + 0 }' /tmp/m4-tags)
+check "摸底阶段每道题都带来新考点" "$NEW_EACH" "0"
 check "答对即时反馈" "$(echo "$FIRST" | jq -r '.isCorrect')" "1"
 check "反馈里带正确答案" "$(echo "$FIRST" | jq -r '.correctAnswer | length > 0')" "true"
 check "反馈里带考点标签" "$(echo "$FIRST" | jq -r '.knowledgePoints | length > 0')" "true"
@@ -204,6 +213,13 @@ for i in $(seq 1 20); do
 done
 echo "     （$DRAWS 次抽题里薄弱考点命中 $HITS 次，理论期望约 45%）"
 check "薄弱考点的中签率远高于均分" "$(( HITS >= 5 ))" "1"
+
+echo "== 存疑题不参与练习 =="
+HELD_IN_PRACTICE=$(sql "SELECT COUNT(*) AS n FROM attempt_questions aq
+                        JOIN questions q ON q.question_id=aq.question_id
+                        JOIN attempts a ON a.attempt_id=aq.attempt_id
+                        WHERE a.mode='PRACTICE' AND q.status='存疑';" | jq -r '.[0].results[0].n')
+check "练习出过的题里没有存疑题" "$HELD_IN_PRACTICE" "0"
 
 echo "== 结束与总结 =="
 curl -s -o /dev/null -X POST "$BASE/practice/$P/end" -H "Authorization: Bearer $STU"
