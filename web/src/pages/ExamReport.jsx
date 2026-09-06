@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
-import { get } from '../api.js';
+import { get, post } from '../api.js';
 import { Alert, Loading, PageHead } from '../components/ui.jsx';
 import { Question, OptionBank, sharedOptionsOf } from '../components/questions.jsx';
 
@@ -17,10 +17,30 @@ export default function ExamReport() {
   const [rep, setRep] = useState(null);
   const [error, setError] = useState('');
   const [openSection, setOpenSection] = useState(null);
+  const [aiBusy, setAiBusy] = useState(false);
+  const [aiMsg, setAiMsg] = useState(null);
 
   useEffect(() => {
     get(`/attempts/${attemptId}/report`).then(setRep).catch((e) => setError(e.message));
   }, [attemptId]);
+
+  async function runAi() {
+    setAiBusy(true); setAiMsg(null);
+    try {
+      const r = await post(`/ai/attempts/${attemptId}/run`);
+      const parts = [];
+      if (r.essay?.status === 'graded') parts.push(`作文 ${r.essay.total} 分`);
+      else if (r.essay?.status === 'blank') parts.push('作文未作答，记 0 分');
+      else if (r.essay?.status === 'failed') parts.push('作文批改失败，可稍后重试');
+      if (r.wrongItems?.done) parts.push(`${r.wrongItems.done} 道错题已生成解析`);
+      if (r.wrongItems?.failed) parts.push(`${r.wrongItems.failed} 道错题解析失败`);
+      const ok = r.essay?.status !== 'failed' && !r.wrongItems?.failed;
+      setAiMsg({ kind: ok ? 'success' : 'error', text: parts.join('，') || '没有需要处理的内容' });
+      setRep(await get(`/attempts/${attemptId}/report`));
+    } catch (e) {
+      setAiMsg({ kind: 'error', text: `AI 暂时不可用：${e.message}。客观题成绩不受影响。` });
+    } finally { setAiBusy(false); }
+  }
 
   if (error) return <Alert>{error}</Alert>;
   if (!rep) return <Loading label="正在生成报告" />;
@@ -56,6 +76,16 @@ export default function ExamReport() {
             <span className="badge gray">作文 30 分待 AI 批改</span>
           ) : null}
         </div>
+        <div className="row" style={{ marginTop: 12 }}>
+          <button className="btn sm" onClick={runAi} disabled={aiBusy}>
+            {aiBusy ? 'AI 处理中…' : attempt.pendingAi > 0 ? '批改作文并生成错题解析' : '重新生成 AI 解析'}
+          </button>
+          <Link className="btn ghost sm" to="/app/wrongbook">错题本</Link>
+          <Link className="btn ghost sm" to="/app/assessment">能力评估</Link>
+        </div>
+        {aiMsg ? (
+          <div style={{ marginTop: 10 }}><Alert kind={aiMsg.kind}>{aiMsg.text}</Alert></div>
+        ) : null}
         {history.attempts > 1 ? (
           <p className="small muted" style={{ marginBottom: 0, marginTop: 12 }}>
             你已完成 {history.attempts} 次模考，客观题平均 {history.avgObjective?.toFixed(1)} 分。

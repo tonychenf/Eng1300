@@ -12,6 +12,8 @@ import History from './pages/History.jsx';
 import PracticeNew from './pages/PracticeNew.jsx';
 import PracticeRun from './pages/PracticeRun.jsx';
 import PracticeSummary from './pages/PracticeSummary.jsx';
+import WrongBook from './pages/WrongBook.jsx';
+import Assessment from './pages/Assessment.jsx';
 import Dashboard from './pages/admin/Dashboard.jsx';
 import BankList from './pages/admin/BankList.jsx';
 import BankReview from './pages/admin/BankReview.jsx';
@@ -32,6 +34,8 @@ const USER_NAV = [
   { to: '/app', label: '我的课程', end: true },
   { to: '/app/exam/new', label: '模拟考试' },
   { to: '/app/practice/new', label: '专项练习' },
+  { to: '/app/wrongbook', label: '错题本' },
+  { to: '/app/assessment', label: '能力评估' },
   { to: '/app/history', label: '历史记录' },
   { to: '/app/password', label: '修改密码' },
 ];
@@ -73,6 +77,8 @@ export default function App() {
               <Route path="exam/:attemptId/report" element={<ExamReport />} />
               <Route path="practice/new" element={<PracticeNew />} />
               <Route path="practice/:attemptId/summary" element={<PracticeSummary />} />
+              <Route path="wrongbook" element={<WrongBook />} />
+              <Route path="assessment" element={<Assessment />} />
               <Route path="history" element={<History />} />
               <Route path="password" element={<ChangePassword />} />
               <Route path="*" element={<Navigate to="/app" replace />} />
