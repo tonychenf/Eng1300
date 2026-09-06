@@ -415,9 +415,12 @@ jobs:
 
             TOKEN="$ADMIN_TOKEN"
             {
-              CODE=$(curl -sS -m 20 -o /dev/null -w '%{http_code}' "$WORKER_URL/api/admin/users" \
+              CODE=$(curl -sS -m 20 -o /tmp/users.json -w '%{http_code}' "$WORKER_URL/api/admin/users" \
                 -H "Authorization: Bearer $TOKEN" || echo 000)
               check "超级管理员可访问后台用户接口" "$CODE" "200"
+              # 只数 T001–T010 是否齐全，不比总数，免得以后手工新建账号把这条弄红
+              STUDENTS=$(jq -r '[.users[] | select(.username | test("^T0(0[1-9]|10)$"))] | length' /tmp/users.json 2>/dev/null || echo 0)
+              check "学员账号 T001–T010 已创建" "$STUDENTS" "10"
 
               STATS=$(curl -sS -m 20 "$WORKER_URL/api/admin/bank/stats" -H "Authorization: Bearer $TOKEN" || echo '{}')
               EXAMS=$(echo "$STATS" | jq -r '[.byCourse[].exam_count] | add // 0')
