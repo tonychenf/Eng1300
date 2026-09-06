@@ -15,7 +15,10 @@ export default function UserHome() {
 
   return (
     <>
-      <PageHead title={`你好，${user?.username}`} desc="选择课程开始练习" />
+      <PageHead
+        title={`你好，${user?.username}`}
+        desc={courses && courses.length > 1 ? '选择课程开始练习' : '从这里开始模考或专项练习'}
+      />
       {error ? <Alert>{error}</Alert> : null}
       {!courses ? <Loading /> : (
         <div className="grid-cards">

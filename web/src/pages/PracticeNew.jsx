@@ -83,16 +83,19 @@ export default function PracticeNew() {
       ) : null}
 
       <div className="card card-pad" style={{ marginBottom: 16 }}>
-        <div className="field">
-          <label htmlFor="course">课程</label>
-          <select id="course" className="input" value={courseCode}
-            onChange={(e) => setCourseCode(e.target.value)}>
-            <option value="">请选择</option>
-            {courses.map((c) => (
-              <option key={c.course_code} value={c.course_code}>{c.course_name}</option>
-            ))}
-          </select>
-        </div>
+        {/* 只有一门课时不摆下拉框——只有一个选项的选择器是白让人点一下 */}
+        {courses.length > 1 ? (
+          <div className="field">
+            <label htmlFor="course">课程</label>
+            <select id="course" className="input" value={courseCode}
+              onChange={(e) => setCourseCode(e.target.value)}>
+              <option value="">请选择</option>
+              {courses.map((c) => (
+                <option key={c.course_code} value={c.course_code}>{c.course_name}</option>
+              ))}
+            </select>
+          </div>
+        ) : null}
 
         <div className="field" style={{ marginBottom: 8 }}>
           <label>题型范围</label>

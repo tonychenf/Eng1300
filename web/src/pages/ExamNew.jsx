@@ -97,18 +97,29 @@ export default function ExamNew() {
       ) : (
         <>
           <div className="card card-pad" style={{ marginBottom: 16 }}>
-            <div className="field">
-              <label htmlFor="course">课程</label>
-              <select id="course" className="input" value={courseCode}
-                onChange={(e) => setCourseCode(e.target.value)}>
-                <option value="">请选择</option>
-                {courses.map((c) => (
-                  <option key={c.course_code} value={c.course_code}>
-                    {c.course_name}（可用 {c.published_questions} 题）
-                  </option>
-                ))}
-              </select>
-            </div>
+            {/* 只有一门课时不摆下拉框——只有一个选项的选择器是白让人点一下 */}
+            {courses.length > 1 ? (
+              <div className="field">
+                <label htmlFor="course">课程</label>
+                <select id="course" className="input" value={courseCode}
+                  onChange={(e) => setCourseCode(e.target.value)}>
+                  <option value="">请选择</option>
+                  {courses.map((c) => (
+                    <option key={c.course_code} value={c.course_code}>
+                      {c.course_name}（可用 {c.published_questions} 题）
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : course ? (
+              <div className="field">
+                <label>课程</label>
+                <p className="small" style={{ margin: 0 }}>
+                  {course.course_name}
+                  <span className="muted">（可用 {course.published_questions} 题）</span>
+                </p>
+              </div>
+            ) : null}
 
             <div className="field" style={{ marginBottom: 0 }}>
               <label>难度倾向</label>
