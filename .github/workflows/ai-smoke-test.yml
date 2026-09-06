@@ -2,6 +2,9 @@ name: AI API smoke test
 
 # 开发沙盒的出站网络策略禁止访问 api.siliconflow.cn，所以 AI 接口的连通性与
 # 能力检测放在 GitHub Actions 运行器上跑。这个流水线只做只读探测，不改任何数据。
+#
+# 验证的是题库解析的两段式设计：
+#   图片 --[DeepSeek-OCR]--> 纯文本 --[Qwen3-8B]--> 结构化JSON + 考点标签
 
 on:
   workflow_dispatch:
@@ -16,7 +19,8 @@ permissions:
 
 env:
   BASE_URL: https://api.siliconflow.cn/v1
-  CHAT_MODEL: Qwen/Qwen3.5-4B
+  TUTOR_MODEL: Qwen/Qwen3-8B
+  OCR_MODEL: deepseek-ai/DeepSeek-OCR
 
 jobs:
   probe:
@@ -31,7 +35,7 @@ jobs:
             exit 1
           fi
 
-      - name: 1. 连通性与模型列表
+      - name: 1. 连通性与两个目标模型是否可用
         env:
           KEY: ${{ secrets.SILICONFLOW_API_KEY }}
         run: |
@@ -43,106 +47,146 @@ jobs:
             head -c 500 /tmp/models.json || true
             exit 1
           fi
-          TOTAL=$(jq '.data | length' /tmp/models.json)
-          echo "账号可见模型数：$TOTAL"
-          echo ""
-          echo "--- 含 VL/Vision 字样的模型（可用于题库图片解析）---"
-          jq -r '.data[].id' /tmp/models.json | grep -iE 'vl|vision' || echo "（未发现视觉模型）"
-          echo ""
-          echo "--- 含 Qwen3.5 字样的模型 ---"
-          jq -r '.data[].id' /tmp/models.json | grep -i 'qwen3.5' || echo "（未发现 Qwen3.5 系列）"
-
-      - name: 2. 文本对话能力
-        env:
-          KEY: ${{ secrets.SILICONFLOW_API_KEY }}
-        run: |
-          PAYLOAD=$(jq -n --arg m "$CHAT_MODEL" '{
-            model: $m,
-            messages: [{role:"user", content:"用一句话回答：中国的首都是哪里？"}],
-            max_tokens: 64
-          }')
-          CODE=$(curl -sS -m 60 -o /tmp/chat.json -w '%{http_code}' -X POST \
-            -H "Authorization: Bearer $KEY" -H 'Content-Type: application/json' \
-            --data "$PAYLOAD" "$BASE_URL/chat/completions" || echo 000)
-          echo "POST /chat/completions -> HTTP $CODE"
-          if [ "$CODE" != "200" ]; then
-            echo "::error::模型 $CHAT_MODEL 调用失败，响应："
-            head -c 800 /tmp/chat.json || true
-            exit 1
-          fi
-          echo "回复内容：$(jq -r '.choices[0].message.content' /tmp/chat.json)"
-          echo "token用量：$(jq -c '.usage' /tmp/chat.json)"
-
-      - name: 3. 结构化 JSON 输出稳定性（连测3次）
-        env:
-          KEY: ${{ secrets.SILICONFLOW_API_KEY }}
-        run: |
-          PROMPT='请只输出JSON，不要任何其他文字。判断这道英语题的考点并给出解析，格式：{"knowledgePoint":"考点名","explanation":"一句话解析"}。题目：It is ___ (general) believed that watching TV can relax people. 括号内给出词根，需填正确形式。正确答案：generally'
-          OK=0
-          for i in 1 2 3; do
-            PAYLOAD=$(jq -n --arg m "$CHAT_MODEL" --arg p "$PROMPT" '{
-              model: $m,
-              messages: [{role:"user", content:$p}],
-              response_format: {type:"json_object"},
-              max_tokens: 256
-            }')
-            curl -sS -m 60 -o /tmp/json_$i.json -X POST \
-              -H "Authorization: Bearer $KEY" -H 'Content-Type: application/json' \
-              --data "$PAYLOAD" "$BASE_URL/chat/completions" || true
-            CONTENT=$(jq -r '.choices[0].message.content // empty' /tmp/json_$i.json)
-            if [ -n "$CONTENT" ] && echo "$CONTENT" | jq empty 2>/dev/null; then
-              echo "  第${i}次: 合法JSON  -> $(echo "$CONTENT" | jq -c .)"
-              OK=$((OK+1))
+          echo "账号可见模型数：$(jq '.data | length' /tmp/models.json)"
+          for M in "$TUTOR_MODEL" "$OCR_MODEL"; do
+            if jq -e --arg m "$M" '.data[] | select(.id==$m)' /tmp/models.json >/dev/null; then
+              echo "  ✓ $M 在可用列表中"
             else
-              echo "  第${i}次: 非法JSON  -> $(echo "$CONTENT" | head -c 200)"
+              echo "  ✗ $M 不在可用列表中（可能仍可调用，继续后续测试确认）"
             fi
           done
-          echo "JSON 输出成功率：$OK/3"
-          if [ "$OK" -lt 2 ]; then
-            echo "::warning::该模型结构化 JSON 输出不稳定，批改/分析类功能需要加容错重试或换更大的模型"
-          fi
 
-      - name: 4. 图片理解能力（题库解析的前置条件）
+      - name: 2. 教学AI 文本对话（Qwen3-8B）
         env:
           KEY: ${{ secrets.SILICONFLOW_API_KEY }}
         run: |
-          # 生成一张写有 "AB12" 的测试图片，问模型图上是什么字
-          sudo apt-get install -y imagemagick >/dev/null 2>&1 || true
-          if command -v convert >/dev/null; then
-            convert -size 200x80 xc:white -pointsize 48 -fill black -annotate +20+55 'AB12' /tmp/t.png
-          else
-            echo "imagemagick 不可用，改用最小内嵌图片"
-            printf '\x89PNG\r\n\x1a\n' > /tmp/t.png
-          fi
-          B64=$(base64 -w0 /tmp/t.png)
-          PAYLOAD=$(jq -n --arg m "$CHAT_MODEL" --arg b "data:image/png;base64,$B64" '{
+          PAYLOAD=$(jq -n --arg m "$TUTOR_MODEL" '{
             model: $m,
-            messages: [{role:"user", content:[
-              {type:"text", text:"图片上写的是什么字符？只回答字符本身。"},
-              {type:"image_url", image_url:{url:$b}}
-            ]}],
-            max_tokens: 64
+            messages: [{role:"user", content:"用一句话解释英语中 generally 和 general 的词性区别。"}],
+            max_tokens: 128
           }')
-          CODE=$(curl -sS -m 90 -o /tmp/vision.json -w '%{http_code}' -X POST \
+          CODE=$(curl -sS -m 90 -o /tmp/chat.json -w '%{http_code}' -X POST \
             -H "Authorization: Bearer $KEY" -H 'Content-Type: application/json' \
             --data "$PAYLOAD" "$BASE_URL/chat/completions" || echo 000)
-          echo "视觉调用 -> HTTP $CODE"
-          if [ "$CODE" = "200" ]; then
-            echo "模型回复：$(jq -r '.choices[0].message.content' /tmp/vision.json)"
-            echo "（若回复中包含 AB12，说明该模型可读图；若答非所问则不具备真实视觉能力）"
+          echo "-> HTTP $CODE"
+          if [ "$CODE" != "200" ]; then
+            echo "::error::$TUTOR_MODEL 调用失败：$(head -c 800 /tmp/chat.json)"
+            exit 1
+          fi
+          echo "回复：$(jq -r '.choices[0].message.content' /tmp/chat.json | head -c 400)"
+          echo "用量：$(jq -c '.usage' /tmp/chat.json)"
+
+      - name: 3. 教学AI 结构化JSON稳定性（连测3次）
+        env:
+          KEY: ${{ secrets.SILICONFLOW_API_KEY }}
+        run: |
+          PROMPT='只输出JSON，不要任何其他文字或解释。分析这道题并按格式输出：{"knowledgePoint":"考点名","errorReason":"错因分析","memoryPoint":"记忆要点"}。题目：It is ___ (general) believed that watching TV can relax people. 需填入general的正确形式。正确答案：generally。学生答错，填的是：general'
+          OK=0
+          for i in 1 2 3; do
+            PAYLOAD=$(jq -n --arg m "$TUTOR_MODEL" --arg p "$PROMPT" '{
+              model: $m, messages: [{role:"user", content:$p}],
+              response_format: {type:"json_object"}, max_tokens: 400
+            }')
+            curl -sS -m 90 -o /tmp/j$i.json -X POST \
+              -H "Authorization: Bearer $KEY" -H 'Content-Type: application/json' \
+              --data "$PAYLOAD" "$BASE_URL/chat/completions" || true
+            C=$(jq -r '.choices[0].message.content // empty' /tmp/j$i.json)
+            if [ -n "$C" ] && echo "$C" | jq empty 2>/dev/null; then
+              echo "  第${i}次 ✓ 合法JSON: $(echo "$C" | jq -c .)"
+              OK=$((OK+1))
+            else
+              echo "  第${i}次 ✗ 非法: $(echo "$C" | head -c 300)"
+            fi
+          done
+          echo "JSON 成功率：$OK/3"
+          [ "$OK" -ge 2 ] || echo "::warning::结构化输出不稳定，需要加重试与容错解析"
+
+      - name: 4. 视觉OCR（DeepSeek-OCR 读图）
+        env:
+          KEY: ${{ secrets.SILICONFLOW_API_KEY }}
+        run: |
+          sudo apt-get install -y imagemagick fonts-dejavu >/dev/null 2>&1 || true
+          # 造一张模仿真题版式的图片：短文 + 带选项的判断题
+          convert -size 900x420 xc:white -pointsize 22 -font DejaVu-Sans \
+            -fill black \
+            -annotate +40+50 'Red Nose Day' \
+            -annotate +40+95 'Red Nose Day (RND) is a well-known event in the UK.' \
+            -annotate +40+130 'The aim of the day is to raise money for Comic Relief.' \
+            -annotate +40+195 '1. Red Nose Day is a famous event in Britain.' \
+            -annotate +70+230 'A. True     B. False     C. Not Given' \
+            -annotate +40+280 '2. Comic Relief helps people all over the world.' \
+            -annotate +70+315 'A. True     B. False     C. Not Given' \
+            /tmp/exam.png
+          echo "测试图片已生成 ($(stat -c%s /tmp/exam.png) 字节)"
+          B64=$(base64 -w0 /tmp/exam.png)
+          PAYLOAD=$(jq -n --arg m "$OCR_MODEL" --arg b "data:image/png;base64,$B64" '{
+            model: $m,
+            messages: [{role:"user", content:[
+              {type:"image_url", image_url:{url:$b}},
+              {type:"text", text:"请完整识别这张图片中的所有文字，保持原有换行与结构。"}
+            ]}],
+            max_tokens: 1024
+          }')
+          CODE=$(curl -sS -m 120 -o /tmp/ocr.json -w '%{http_code}' -X POST \
+            -H "Authorization: Bearer $KEY" -H 'Content-Type: application/json' \
+            --data "$PAYLOAD" "$BASE_URL/chat/completions" || echo 000)
+          echo "-> HTTP $CODE"
+          if [ "$CODE" != "200" ]; then
+            echo "::error::$OCR_MODEL 调用失败：$(head -c 1000 /tmp/ocr.json)"
+            echo "::error::题库图片解析依赖该模型，需要改用其它视觉模型"
+            exit 1
+          fi
+          jq -r '.choices[0].message.content' /tmp/ocr.json > /tmp/ocr.txt
+          echo "--- OCR 识别结果 ---"
+          cat /tmp/ocr.txt
+          echo "--------------------"
+          # 用关键词命中率粗判识别质量
+          HIT=0
+          for W in "Red Nose Day" "Comic Relief" "Not Given" "Britain"; do
+            grep -qi "$W" /tmp/ocr.txt && HIT=$((HIT+1)) && echo "  ✓ 命中: $W" || echo "  ✗ 未命中: $W"
+          done
+          echo "关键词命中：$HIT/4"
+          [ "$HIT" -ge 3 ] || echo "::warning::OCR 识别质量可能不足以支撑真题解析，需人工评估"
+
+      - name: 5. 端到端：OCR文本 → 结构化JSON（两段式流水线验证）
+        env:
+          KEY: ${{ secrets.SILICONFLOW_API_KEY }}
+        run: |
+          OCR_TEXT=$(cat /tmp/ocr.txt)
+          PROMPT=$(printf '%s\n\n%s' \
+            '下面是从一张英语真题图片OCR识别出的文字。请把它整理成JSON，只输出JSON不要其他文字。格式：{"passageTitle":"短文标题","passageText":"短文正文","questions":[{"order":题号数字,"stem":"题干","options":["A. ...","B. ...","C. ..."]}]}' \
+            "$OCR_TEXT")
+          PAYLOAD=$(jq -n --arg m "$TUTOR_MODEL" --arg p "$PROMPT" '{
+            model: $m, messages: [{role:"user", content:$p}],
+            response_format: {type:"json_object"}, max_tokens: 1024
+          }')
+          CODE=$(curl -sS -m 120 -o /tmp/struct.json -w '%{http_code}' -X POST \
+            -H "Authorization: Bearer $KEY" -H 'Content-Type: application/json' \
+            --data "$PAYLOAD" "$BASE_URL/chat/completions" || echo 000)
+          echo "-> HTTP $CODE"
+          C=$(jq -r '.choices[0].message.content // empty' /tmp/struct.json)
+          if echo "$C" | jq empty 2>/dev/null; then
+            echo "结构化成功，产出："
+            echo "$C" | jq .
+            QN=$(echo "$C" | jq '.questions | length')
+            echo "识别出题目数：$QN（图片中实际为 2 道）"
           else
-            echo "错误响应：$(head -c 600 /tmp/vision.json)"
-            echo "::warning::模型 $CHAT_MODEL 不支持图片输入 —— 题库 PDF 解析需要改用视觉模型（见步骤1列出的 VL 模型）"
+            echo "::warning::结构化失败：$(echo "$C" | head -c 400)"
           fi
 
       - name: 小结
+        if: always()
         run: |
           {
             echo "## AI 接口探测结果"
             echo ""
-            echo "- 服务商：硅基流动（OpenAI 兼容协议）"
-            echo "- Base URL: \`$BASE_URL\`"
-            echo "- 测试模型: \`$CHAT_MODEL\`"
+            echo "| 项 | 配置 |"
+            echo "|---|---|"
+            echo "| 服务商 | 硅基流动（OpenAI 兼容协议） |"
+            echo "| Base URL | \`$BASE_URL\` |"
+            echo "| 教学 AI | \`$TUTOR_MODEL\` |"
+            echo "| 题库解析 OCR | \`$OCR_MODEL\` |"
             echo ""
-            echo "详见各步骤日志：模型列表、文本对话、JSON 稳定性、图片理解。"
+            echo "题库解析采用两段式：图片 → DeepSeek-OCR 取文字 → Qwen3-8B 结构化+打考点标签。"
+            echo "各步骤详情见运行日志。"
           } >> "$GITHUB_STEP_SUMMARY"
