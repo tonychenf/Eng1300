@@ -180,6 +180,14 @@ jobs:
             npx wrangler d1 execute "$D1_NAME" --remote --yes --file="$f"
           done
 
+      - name: Publish the whole bank
+        working-directory: worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          # 必须排在导入之后：seed 按试卷先删后插，会把状态重置回草稿
+          npx wrangler d1 execute "$D1_NAME" --remote --yes --file=sql/publish-all.sql
+
       - name: Deploy worker
         working-directory: worker
         env:
@@ -356,6 +364,14 @@ jobs:
               check "题库已导入 20 套真题" "$EXAMS" "20"
               QUESTIONS=$(echo "$STATS" | jq -r '[.byType[].total] | add // 0')
               check "题库已导入 1020 道题" "$QUESTIONS" "1020"
+
+              COURSES=$(echo "$STATS" | jq -r '.byCourse | length')
+              check "00015 与 13000 已合并为一门课程" "$COURSES" "1"
+              PUBLISHED_EXAMS=$(echo "$STATS" | jq -r '[.byCourse[].published_exams] | add // 0')
+              check "20 套试卷全部已发布" "$PUBLISHED_EXAMS" "20"
+              PUBLISHED_Q=$(echo "$STATS" | jq -r '[.byType[].published] | add // 0')
+              check "1020 道题全部已发布" "$PUBLISHED_Q" "1020"
+              check "解析存疑记录已清零" "$(echo "$STATS" | jq -r '.unresolvedNotes')" "0"
             fi
           fi
 

@@ -13,6 +13,12 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const outDir = process.argv[2] || path.join(root, 'worker', 'seed');
 const examDir = path.join(root, 'data', 'exams');
 
+// 课程合并：00015《英语(二)》在 2024 年 10 月起改用新代码 13000《英语(专升本)》，
+// 是同一门课的前后两个编号。JSON 里保留每份卷子印的原始代码，入库时统一归到 13000，
+// 这样组卷和练习抽题看到的是一个完整题库。
+const COURSE_ALIAS = { '00015': '13000' };
+const courseOf = (code) => COURSE_ALIAS[code] || code;
+
 // SQL 字符串字面量转义：单引号翻倍，NULL 单独处理
 const q = (v) => (v === null || v === undefined ? 'NULL' : `'${String(v).replace(/'/g, "''")}'`);
 const n = (v) => (v === null || v === undefined ? 'NULL' : Number(v));
@@ -37,6 +43,7 @@ let unknownTags = new Set();
 
 for (const file of files) {
   const d = JSON.parse(fs.readFileSync(path.join(examDir, file), 'utf8'));
+  const courseCode = courseOf(d.courseCode);
   const lines = [];
 
   // 幂等：重复导入时先清掉这套卷的旧数据，避免主键冲突或残留
@@ -50,7 +57,7 @@ for (const file of files) {
 
   lines.push(
     `INSERT INTO exams (exam_id, course_code, title, year, month, source_file, status) VALUES (` +
-      `${q(d.examId)}, ${q(d.courseCode)}, ${q(d.title)}, ${n(d.year)}, ${n(d.month)}, ` +
+      `${q(d.examId)}, ${q(courseCode)}, ${q(d.title)}, ${n(d.year)}, ${n(d.month)}, ` +
       `${q(d.sourceFile)}, ${q(d.status || '待校对')});`
   );
 
@@ -67,7 +74,7 @@ for (const file of files) {
       lines.push(
         `INSERT INTO questions (question_id, section_id, exam_id, course_code, section_type, ord, ` +
           `question_type, stem, options, answer, answer_explanation, difficulty_tag, status) VALUES (` +
-          `${q(qu.questionId)}, ${q(s.sectionId)}, ${q(d.examId)}, ${q(d.courseCode)}, ${q(s.type)}, ` +
+          `${q(qu.questionId)}, ${q(s.sectionId)}, ${q(d.examId)}, ${q(courseCode)}, ${q(s.type)}, ` +
           `${n(qu.order)}, ${q(qu.questionType)}, ${q(qu.stem)}, ` +
           `${qu.options ? q(JSON.stringify(qu.options)) : 'NULL'}, ${q(qu.answer)}, ` +
           `${q(qu.answerExplanation)}, ${q(qu.difficultyTag)}, '草稿');`

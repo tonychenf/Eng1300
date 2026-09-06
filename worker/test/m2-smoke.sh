@@ -31,7 +31,8 @@ JWT_SECRET=test-secret-m2
 SETUP_TOKEN=test-setup-m2
 ENCRYPTION_KEY=test-encryption-key-m2
 EOF
-for m in migrations/0001_init.sql migrations/0002_bank.sql migrations/0003_security.sql; do
+for m in migrations/0001_init.sql migrations/0002_bank.sql migrations/0003_security.sql \
+         migrations/0004_merge_courses.sql; do
   npx wrangler d1 execute eng1300-mvp --local --file="$m" >/dev/null 2>&1
 done
 # 只导入两套卷，够测流程且启动快
@@ -68,7 +69,9 @@ STU=$(curl -s -X POST "$BASE/auth/login" -H 'Content-Type: application/json' \
 echo "== 题库接口 =="
 CODE=$(curl -s -o /tmp/stats.json -w '%{http_code}' "$BASE/admin/bank/stats" -H "Authorization: Bearer $ADMIN")
 check "题库统计返回200" "$CODE" "200"
-check "统计含两门课程" "$(jq '.byCourse | length' /tmp/stats.json)" "2"
+# 00015 与 13000 已合并为一门课，两套卷都挂在 13000 下
+check "统计只剩合并后的一门课程" "$(jq '.byCourse | length' /tmp/stats.json)" "1"
+check "两套卷都归到 13000" "$(jq -r '.byCourse[0].exam_count' /tmp/stats.json)" "2"
 
 CODE=$(curl -s -o /dev/null -w '%{http_code}' "$BASE/admin/bank/stats" -H "Authorization: Bearer $STU")
 check "普通用户访问题库统计被拒(403)" "$CODE" "403"
@@ -117,8 +120,8 @@ check "新考点标签自动创建" "$(jq -r '[.sections[].questions[] | select(
 
 echo "== 课程与已发布计数 =="
 curl -s "$BASE/courses" -H "Authorization: Bearer $STU" > /tmp/courses.json
-check "普通用户可读课程列表" "$(jq '.courses | length' /tmp/courses.json)" "2"
-check "00015已发布题数为50" "$(jq -r '.courses[] | select(.course_code=="00015") | .published_questions' /tmp/courses.json)" "50"
+check "普通用户可读课程列表" "$(jq '.courses | length' /tmp/courses.json)" "1"
+check "合并后课程已发布题数为50" "$(jq -r '.courses[] | select(.course_code=="13000") | .published_questions' /tmp/courses.json)" "50"
 
 echo "== AI 配置 =="
 curl -s -X PUT "$BASE/admin/ai/settings/TUTORING" -H "Authorization: Bearer $ADMIN" \
@@ -185,6 +188,15 @@ CODE=$(curl -s -o /dev/null -w '%{http_code}' "$ORIGIN/admin/bank")
 check "未知前端路由回落到 index.html(200)" "$CODE" "200"
 BODY=$(curl -s "$ORIGIN/api/does-not-exist")
 case "$BODY" in *not_found*) check "未知接口返回 JSON 404" "ok" "ok" ;; *) check "未知接口返回 JSON 404" "$BODY" "not_found" ;; esac
+
+echo "== 一次性放行脚本 =="
+npx wrangler d1 execute eng1300-mvp --local --file=sql/publish-all.sql >/dev/null 2>&1 \
+  || { echo "  FAIL publish-all.sql 执行失败"; FAIL=$((FAIL+1)); }
+curl -s -o /tmp/stats2.json "$BASE/admin/bank/stats" -H "Authorization: Bearer $ADMIN"
+check "存疑记录已清零" "$(jq -r '.unresolvedNotes' /tmp/stats2.json)" "0"
+check "两套卷全部已发布" "$(jq -r '[.byCourse[].published_exams] | add' /tmp/stats2.json)" "2"
+# 之前手动标为存疑的那一题不参与发布，所以是 101 而不是 102
+check "非存疑题全部已发布" "$(jq -r '[.byType[].published] | add' /tmp/stats2.json)" "101"
 
 echo
 echo "== 小结: $PASS 通过, $FAIL 失败 =="
