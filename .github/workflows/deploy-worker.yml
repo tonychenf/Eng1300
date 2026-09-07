@@ -388,6 +388,30 @@ jobs:
               STUDENTS=$(jq -r '[.users[] | select(.username | test("^T0(0[1-9]|10)$"))] | length' /tmp/users.json 2>/dev/null || echo 0)
               check "学员账号 T001–T010 已创建" "$STUDENTS" "10"
 
+              # 真有一条写入落库了吗？
+              #
+              # 这条不是凑数：D1 免费版写入额度用尽时，读接口全都正常，只有写会失败，
+              # 所以上面那些检查全绿也说明不了站点能用。原先"取管理员令牌"那步能当哨兵
+              # （登录要写最后登录时间），但登录已经改成额度用尽也放行，哨兵没了。
+              #
+              # AI 配置那步每次部署都会重写一次，额度用尽时它会回退成沿用旧值并打
+              # warning。所以看 updated_at 离现在多久：刚写的就是几秒，回退了就是上一次
+              # 成功部署的时间。10 分钟的窗口足够覆盖一次部署的耗时。
+              AI_UPDATED=$(curl -sS -m 20 "$WORKER_URL/api/admin/ai/settings" \
+                -H "Authorization: Bearer $TOKEN" | jq -r '.settings.TUTORING.updatedAt // ""')
+              if [ -z "$AI_UPDATED" ]; then
+                check "写入已恢复（AI 配置刚落库）" "读不到 updatedAt" "10 分钟内"
+              else
+                # updated_at 由 SQLite datetime('now') 生成，是世界时
+                AGE=$(( $(date -u +%s) - $(date -u -d "${AI_UPDATED}Z" +%s 2>/dev/null || echo 0) ))
+                if [ "$AGE" -ge 0 ] && [ "$AGE" -le 600 ]; then
+                  echo "  OK   写入已恢复（AI 配置 ${AGE} 秒前刚落库）"
+                else
+                  echo "  FAIL 写入未恢复：AI 配置停在 $AI_UPDATED（${AGE} 秒前），说明这次没写进去"
+                  FAIL=1
+                fi
+              fi
+
               STATS=$(curl -sS -m 20 "$WORKER_URL/api/admin/bank/stats" -H "Authorization: Bearer $TOKEN" || echo '{}')
               EXAMS=$(echo "$STATS" | jq -r '[.byCourse[].exam_count] | add // 0')
               check "题库已导入 20 套真题" "$EXAMS" "20"
