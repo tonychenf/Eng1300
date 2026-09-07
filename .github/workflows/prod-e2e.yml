@@ -1,0 +1,40 @@
+name: 线上端到端实测
+
+# 拿探针账号在真实线上环境走完整条链路：组卷 → 逐题作答 → 交卷判分 →
+# 调真实 AI 服务商批改作文与分析错题 → 错题本 → 能力评估。
+#
+# 为什么单独一个流水线、且只能手动触发：
+#
+# 一、这条链路会真的调用硅基流动，花的是真钱。不该每次推代码都跑一遍。
+# 二、它会往库里写一次完整的模考记录，占 D1 每日写入额度。
+# 三、开发沙箱的出站策略同时拒绝 workers.dev 和 api.siliconflow.cn，本地
+#     两头都够不着；AI 部分本地只能用替身，而替身返回什么形状是我们自己
+#     写的，证明不了真实模型的输出扛不扛得住解析。这个流水线是唯一能验证
+#     "真实模型 + 我们的提示词 + 我们的解析"这一整段的地方。
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: prod-e2e
+  cancel-in-progress: false
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    env:
+      WORKER_URL: https://eng1300-mvp.eng1300-79fe2787.workers.dev
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get admin token
+        env:
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+          ADMIN_PASS: ${{ secrets.ADMIN_PASS }}
+        run: bash scripts/ci/get-admin-token.sh
+
+      - name: Run end-to-end test
+        run: bash scripts/ci/prod-e2e.sh
