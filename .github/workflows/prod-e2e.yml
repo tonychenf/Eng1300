@@ -13,6 +13,15 @@ name: 线上端到端实测
 #     "真实模型 + 我们的提示词 + 我们的解析"这一整段的地方。
 
 on:
+  # 只手动触发的流水线在非默认分支上注册不了：GitHub 要它至少跑过一次才认得，
+  # 而没注册就没法手动触发，成了死结。所以给一个只盯自己这两个文件的 push
+  # 触发——改测试本身时跑一次正好，平时推别的代码不会触发。
+  push:
+    branches:
+      - claude/english-exam-question-bank-a8nbiu
+    paths:
+      - '.github/workflows/prod-e2e.yml'
+      - 'scripts/ci/prod-e2e.sh'
   workflow_dispatch:
 
 permissions:
