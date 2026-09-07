@@ -2,6 +2,11 @@ import { Hono } from 'hono';
 import { requireAuth } from '../lib/auth.js';
 import { masteryTier } from '../lib/mastery.js';
 import { gradeEssay, analyzeWrong, assessAbility } from '../lib/tutor.js';
+import { mapLimit } from '../lib/ai.js';
+
+// 错题分析的并发上限。20 条分四批约 15 秒，既压住总时长，
+// 也不至于把供应商的速率限制打爆。
+const WRONG_ANALYZE_CONCURRENCY = 5;
 
 export const studyRouter = new Hono();
 studyRouter.use('/wrongbook/*', requireAuth);
@@ -170,7 +175,9 @@ studyRouter.post('/ai/attempts/:id/run', async (c) => {
       LIMIT 20`
   ).bind(attemptId, me.id, attemptId).all();
 
-  for (const w of pending) {
+  // 并发跑，不要串行。真实服务商一次调用 3-4 秒，20 条串下来 80 秒以上，
+  // 客户端早就超时了——线上实测就是这么失败的，而本地替身瞬间返回，看不出来。
+  await mapLimit(pending, WRONG_ANALYZE_CONCURRENCY, async (w) => {
     try {
       const out = await analyzeWrong(c.env, {
         stem: w.stem,
@@ -191,7 +198,7 @@ studyRouter.post('/ai/attempts/:id/run', async (c) => {
       ).bind(w.id).run();
       result.wrongItems.failed++;
     }
-  }
+  });
 
   // 作文批改完要把总分补上
   await c.env.DB.prepare(

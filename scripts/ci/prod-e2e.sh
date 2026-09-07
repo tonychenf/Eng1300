@@ -81,15 +81,23 @@ check "报告按部分给出得分" \
   "$([ "$(echo "$REP" | jq '.sectionScores | length')" -gt 0 ] && echo yes)" "yes"
 
 echo "== AI 链路（真实服务商） =="
-AI=$(api -X POST "$WORKER_URL/api/ai/attempts/$ATT/run" "${S[@]}")
+# 这一步会真的调服务商，慢，超时给宽一点；但别无限等——线上实测过一次 60 秒
+# 拿不到返回，那是真问题，不该靠加超时糊过去。
+AI=$(curl -sS -m 180 -X POST "$WORKER_URL/api/ai/attempts/$ATT/run" "${S[@]}")
 echo "     原始返回：$(echo "$AI" | head -c 500)"
-ESSAY_STATUS=$(echo "$AI" | jq -r '.essay.status // "none"')
+if [ -z "$AI" ]; then
+  bad "AI 接口没有任何返回（很可能超时）"
+fi
+ESSAY_STATUS=$(echo "$AI" | jq -r '.essay.status // "none"' 2>/dev/null || echo none)
 case "$ESSAY_STATUS" in
   graded|already) ok "作文批改完成（$ESSAY_STATUS）" ;;
   blank)          bad "作文被判为未作答——本次明明写了正文" ;;
   *)              bad "作文批改未完成（status=$ESSAY_STATUS）" ;;
 esac
-WD=$(echo "$AI" | jq -r '.wrongItems.done // 0'); WF=$(echo "$AI" | jq -r '.wrongItems.failed // 0')
+# 空返回时 jq 什么都不输出，直接拿去比大小会报 integer expression expected，
+# 把真正的失败原因埋在一堆 shell 报错里。给个兜底的 0。
+WD=$(echo "$AI" | jq -r '.wrongItems.done // 0' 2>/dev/null || echo 0); WD=${WD:-0}
+WF=$(echo "$AI" | jq -r '.wrongItems.failed // 0' 2>/dev/null || echo 0); WF=${WF:-0}
 echo "     （错题分析成功 $WD 条，失败 $WF 条）"
 if [ "$WD" -gt 0 ] && [ "$WF" -eq 0 ]; then ok "错题分析全部成功"
 elif [ "$WD" -gt 0 ]; then bad "错题分析有 $WF 条失败"

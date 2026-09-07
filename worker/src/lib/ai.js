@@ -154,3 +154,25 @@ export async function ocrImage(env, { imageDataUrl, prompt, settings }) {
     ],
   });
 }
+
+// 有并发上限地并行跑一批任务。
+//
+// 起因：交卷后那次 AI 处理要批改作文再逐条分析错题，原本是串行的。本地替身
+// 瞬间返回，看不出问题；接到真实服务商上，一次调用 3-4 秒、错题最多 20 条，
+// 整个请求就要 80 秒以上——线上实测客户端 60 秒超时拿不到任何返回，而服务端
+// 那边已经默默分析了十几条。学员在成绩报告页点一下按钮，等到的就是这个。
+//
+// 上限取 5：20 条分四批约 15 秒，既压住总时长，也不至于把供应商的速率限制打爆。
+export async function mapLimit(items, limit, fn) {
+  const out = new Array(items.length);
+  let next = 0;
+  const worker = async () => {
+    while (true) {
+      const i = next++;
+      if (i >= items.length) return;
+      out[i] = await fn(items[i], i);
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
+  return out;
+}

@@ -2,7 +2,7 @@
 # 单课程界面检查的启动脚本：备库 → 起服务 → 建学员 → 跑浏览器用例 → 收摊。
 set -uo pipefail
 cd "$(dirname "$0")/.."
-PORT=8794
+PORT=8798
 BASE="http://127.0.0.1:$PORT/api"
 
 cleanup() {
