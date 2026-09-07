@@ -46,7 +46,7 @@ export default function Login({ admin = false }) {
             按真题结构组卷、限时作答、错题解析与能力评估，帮你把每一分都拿稳。
           </p>
         </div>
-        <p className="tiny" style={{ opacity: .55 }}>英语（一）00015 · 英语（二）13000</p>
+        <p className="tiny" style={{ opacity: .55 }}>英语(二)/英语(专升本) · 课程代码 13000</p>
       </div>
 
       <div className="auth-panel">
