@@ -89,10 +89,18 @@ if [ -z "$AI" ]; then
   bad "AI 接口没有任何返回（很可能超时）"
 fi
 ESSAY_STATUS=$(echo "$AI" | jq -r '.essay.status // "none"' 2>/dev/null || echo none)
+ESSAY_TOTAL=$(echo "$AI" | jq -r '.essay.total // "null"' 2>/dev/null || echo null)
 case "$ESSAY_STATUS" in
-  graded|already) ok "作文批改完成（$ESSAY_STATUS）" ;;
-  blank)          bad "作文被判为未作答——本次明明写了正文" ;;
-  *)              bad "作文批改未完成（status=$ESSAY_STATUS）" ;;
+  graded|already)
+    # 只看 status 不够：曾经出现过"批改成功但得 0 分"，实为没读懂模型的回复。
+    # 这段作文是通顺的英文，正常不该是 0 分。
+    if [ "$ESSAY_TOTAL" = "0" ]; then
+      bad "作文批改返回 0 分——这段是通顺英文，八成是没读懂模型的回复"
+    else
+      ok "作文批改完成（$ESSAY_STATUS，$ESSAY_TOTAL 分 / 30）"
+    fi ;;
+  blank)   bad "作文被判为未作答——本次明明写了正文" ;;
+  *)       bad "作文批改未完成（status=$ESSAY_STATUS）：$(echo "$AI" | jq -r '.essay.detail // ""' 2>/dev/null)" ;;
 esac
 # 空返回时 jq 什么都不输出，直接拿去比大小会报 integer expression expected，
 # 把真正的失败原因埋在一堆 shell 报错里。给个兜底的 0。

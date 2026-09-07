@@ -156,7 +156,13 @@ studyRouter.post('/ai/attempts/:id/run', async (c) => {
       ).bind(graded.total, graded.total, JSON.stringify(graded), attemptId, e.question_id).run();
       result.essay = { status: 'graded', total: graded.total };
     } catch (err) {
-      result.essay = { status: 'failed', error: err.code || String(err) };
+      // 带上错误原文：ai_bad_shape 的信息里有模型实际返回的顶层键，
+      // 是把"没读懂模型回复"这类问题查清楚的唯一线索。
+      result.essay = {
+        status: 'failed',
+        error: err.code || String(err),
+        detail: String(err.message || err).slice(0, 300),
+      };
     }
   }
 

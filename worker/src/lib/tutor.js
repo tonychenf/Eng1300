@@ -39,17 +39,34 @@ ${essay}
     ],
   });
 
-  const dim = (k) => {
-    const v = Number(data[k]);
-    return Number.isFinite(v) ? Math.max(0, Math.min(6, v)) : 0;
+  // 取维度分要宽容一点，但读不到必须报错，不能悄悄记 0 分。
+  //
+  // 线上实测踩到过：真实模型返回的 JSON 合法，键名却不是我们要的那套，五个维度
+  // 全都取不到，dim() 一律回落 0，于是作文被判 0 分、状态还是"批改成功"。
+  // 学生看到的是一个理直气壮的零分，没人知道其实是没读懂模型的回复。替身按我们
+  // 要的形状返回，所以本地永远发现不了。
+  //
+  // 现在：顶层没有就往 scores / result 这类常见嵌套里找；数字写成 "5.5" 或
+  // "5.5分" 也认。一个维度都取不到就抛 ai_bad_shape，按失败处理、可重试。
+  const nested = [data, data.scores, data.score, data.result, data.dimensions]
+    .filter((o) => o && typeof o === 'object');
+  const readDim = (k) => {
+    for (const obj of nested) {
+      const raw = obj[k];
+      if (raw === undefined || raw === null) continue;
+      const v = typeof raw === 'number' ? raw : Number(String(raw).match(/-?\d+(\.\d+)?/)?.[0]);
+      if (Number.isFinite(v)) return Math.max(0, Math.min(6, v));
+    }
+    return null;
   };
-  const scores = {
-    content: dim('content'),
-    language: dim('language'),
-    vocabulary: dim('vocabulary'),
-    coherence: dim('coherence'),
-    length: dim('length'),
-  };
+  const KEYS = ['content', 'language', 'vocabulary', 'coherence', 'length'];
+  const found = Object.fromEntries(KEYS.map((k) => [k, readDim(k)]));
+  if (KEYS.every((k) => found[k] === null)) {
+    const err = new Error(`ai_bad_shape: 模型返回里找不到任何维度分，顶层键为 ${Object.keys(data).join(',') || '（空）'}`);
+    err.code = 'ai_bad_shape';
+    throw err;
+  }
+  const scores = Object.fromEntries(KEYS.map((k) => [k, found[k] ?? 0]));
   // 权重来自 PRD §7.4，六分制按权重合成到 30 分
   const weighted =
     scores.content * 0.30 + scores.language * 0.25 + scores.vocabulary * 0.15 +
