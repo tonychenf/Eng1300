@@ -1,0 +1,656 @@
+{
+  "examId": "00015-2018-10",
+  "title": "2018年10月高等教育自学考试英语(二)试题",
+  "year": 2018,
+  "month": 10,
+  "courseCode": "00015",
+  "courseName": "英语(二)",
+  "sourceFile": "d00af0b3-2018_10____________.pdf",
+  "totalScore": 100,
+  "timeLimitMinutes": 150,
+  "status": "待校对",
+  "sections": [
+    {
+      "sectionId": "00015-2018-10-s1",
+      "type": "阅读判断",
+      "order": 1,
+      "passageTitle": "The British Summer",
+      "passageText": "Britain is well known for its rainy climate. People joke that even in the summer time the country never gets any sun and that the skies stay disappointingly grey even during the months of July and August.\n\nLast summer though, it was so hot that people could hardly believe it. British people weren't used to such high temperatures, so every day on the news there were stories about people struggling to work in such unusual weather conditions. Radio and television programmes also reminded everyone to drink more water and not to stay too long in the sun.\n\nWhen the sun comes out, British people tend to spend time in their garden if they have one. It's common to invite friends and neighbours around for a barbecue, where everyone sits outside and eats food like grilled meat(烤肉) and salads. There's always a back-up plan in case of rain though, and the meal sometimes has to be cooked in the kitchen and eaten indoors.\n\nPeople also spend a lot of time in parks during the summer, having picnics or playing sports. In every green area, there's always at least one ice cream van, a kind of car that plays children's music and sells ice creams.\n\nTowns like Blackpool and Brighton are popular for their beaches and amusement arcades(游乐场). People go there to swim, sunbathe and eat fish and chips. The water can be quite cold, though, and that's why quite a lot of people prefer to go abroad for their summer holiday instead. Popular destinations include Spain, Germany and France: all countries that promise a lot of sunshine!",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2018-10-q1",
+          "order": 1,
+          "questionType": "single_choice",
+          "stem": "There is little sunshine in Britain in summer.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "第一段第二句：People joke that even in the summertime the country never gets any sun. 与题干为同意叙述，所以选A。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q2",
+          "order": 2,
+          "questionType": "single_choice",
+          "stem": "British people like to tell jokes about each other.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "此处为描述人们开玩笑称英国的天气如何，但并没有提到British people like to tell jokes about each other，答案选C。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q3",
+          "order": 3,
+          "questionType": "single_choice",
+          "stem": "It was unusually hot last summer in Britain.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "第二段：Last summer though, it was so hot that people could hardly believe it. 与题干为同意表达，选A。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q4",
+          "order": 4,
+          "questionType": "single_choice",
+          "stem": "British people enjoyed the high temperatures of last summer.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "British people weren't used to such high temperatures, so every day on the news there were stories about people struggling to work. \"weren't used to\"和\"struggling to work\"体现了British people并不适应这种炎热天气，选B。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q5",
+          "order": 5,
+          "questionType": "single_choice",
+          "stem": "The media advised people to enjoy the sunshine.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "第二段：Radio and television programmes also reminded everyone to drink more water and not to stay too long in the sun. 媒体提醒人们多喝水并且不要在太阳下呆太长时间，而不是让大家享受阳光，选B。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q6",
+          "order": 6,
+          "questionType": "single_choice",
+          "stem": "Most British people have a garden of their own.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "原文出现garden一词的句子只有：When the sun comes out, British people tend to spend time in their garden if they have one. 并没有提到每一家都有自己的garden，答案选C。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q7",
+          "order": 7,
+          "questionType": "single_choice",
+          "stem": "People having a barbecue often have a plan against the rain.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "第三段：There's always a back-up plan in case of rain though. 与题干为同意表达，选A。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q8",
+          "order": 8,
+          "questionType": "single_choice",
+          "stem": "Children like the music from the ice cream vans.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "In every green area, there's always at least one ice cream van, a kind of car that plays children's music and sells ice creams. 此处只是描述ice cream van的存在和内容，但并没有提到孩子们是否喜欢，选C。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q9",
+          "order": 9,
+          "questionType": "single_choice",
+          "stem": "Blackpool and Brighton are known for their beaches.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "Towns like Blackpool and Brighton are popular for their beaches and amusement arcades(游乐场). 第五段第一句话和题干为同意表达，选A。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q10",
+          "order": 10,
+          "questionType": "single_choice",
+          "stem": "People go to Spain in summer to enjoy the cooler sea water.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "Popular destinations include Spain, Germany and France: all countries that promise a lot of sunshine! 说明人们enjoy的是sunshine，而不是题干中提到的cooler sea water，选B。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2018-10-s2",
+      "type": "阅读理解选择",
+      "order": 2,
+      "passageTitle": "Horse Talk",
+      "passageText": "Do you know horses talk? You can learn to understand \"horse talk\" if you pay close attention to them.\n\nWhen horses live in the wild, other animals try to eat them, so a lot of horse talk is about staying alive. Even now, when most horses live on farms, they watch for danger. For this reason, never walk behind a horse. If you surprise it, the horse might mistake you for a lion or wolf and give a dangerous kick.\n\nBy watching the ears, you can get clues to what the horse is hearing. A horse can turn each ear in a different direction. For a wild horse, this skill is important for survival. The horse can hear something creeping up behind it while also checking out a threatening noise in front. When a horse lets its ears down, it's feeling safe and relaxed. Though these actions may be natural responses and not deliberate communications, they help you know what the horse is thinking.\n\nSometimes horses can send definite messages. For example, they know they are safer when they're with other horses. If they become isolated, they \"whinny(嘶鸣)\" calling for company. They're saying, \"Where are you? I'm over here!\" Domestic horses use the same sounds to stay in touch with other horses.\n\nIf a horse snorts(打响鼻儿), it's not communicating anything. It's just clearing dust or grass seed out of its nose. But if it snorts while holding its head high and staring at something, it's saying, \"That looks dangerous. Get ready to run!\" When two horses meet, they put their noses together and smell each other's breath. It's their way of asking, \"Are you a friend?\" Horses also \"blow,\" breathing out the air loudly through the nose, when they meet something strange. They are asking \"Is this safe?\"\n\nHorses have a language of their own. Now you know a bit of what they might be saying!",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2018-10-q11",
+          "order": 11,
+          "questionType": "single_choice",
+          "stem": "Horses in the wild \"talk\" mainly to ___.",
+          "options": ["A. stay alive", "B. make friends", "C. find food", "D. keep awake"],
+          "answer": "A",
+          "answerExplanation": "第二段第一句：When horses live in the wild, other animals try to eat them, so a lot of horse talk is about staying alive. 答案选A。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q12",
+          "order": 12,
+          "questionType": "single_choice",
+          "stem": "It is dangerous to ___.",
+          "options": ["A. touch a horse's ears", "B. ride a horse on farms", "C. surprise a horse from behind", "D. stare at a horse from front"],
+          "answer": "C",
+          "answerExplanation": "never walk behind a horse. If you surprise it, the horse might mistake you for a lion or wolf and give a dangerous kick. 根据原文对比选项，选C。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q13",
+          "order": 13,
+          "questionType": "single_choice",
+          "stem": "A horse's ears are special because they can ___.",
+          "options": ["A. send messages", "B. turn to different directions", "C. sense temperatures", "D. clear out the dust"],
+          "answer": "B",
+          "answerExplanation": "第三段：a horse can turn each ear in a different direction. 与B选项为同义表达，选B。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q14",
+          "order": 14,
+          "questionType": "single_choice",
+          "stem": "When a horse's ears are down, we know that it is ___.",
+          "options": ["A. isolated", "B. relaxed", "C. angry", "D. anxious"],
+          "answer": "B",
+          "answerExplanation": "When a horse lets its ears down, it's feeling safe and relaxed. 原文中relaxed与B选项一致，选B。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q15",
+          "order": 15,
+          "questionType": "single_choice",
+          "stem": "From the text, we know that horses ___.",
+          "options": ["A. are dangerous animals", "B. can hardly survive in the wild", "C. prefer to stay in groups", "D. have different language systems"],
+          "answer": "C",
+          "answerExplanation": "第四段：For example, they know they are safer when they're with other horses. If they become isolated, they \"whinny\" calling for company. 可见马更喜欢群体生活，答案选C。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2018-10-s3",
+      "type": "段落大意与句子补全",
+      "order": 3,
+      "passageTitle": "Hawaii, the Aloha State",
+      "passageText": "Hawaii is sometimes called \"the Aloha State.\" Aloha is a word in the Hawaiian language meaning love and peace. It is often used as a way to say \"hello\" or \"goodbye.\" Hawaii is like the word aloha, because it is a state that has two viewpoints: it remembers its history and looks toward the future.\n\nHawaii is a U.S. state made up of a group of islands in the Pacific Ocean. It is made up of eight large islands and over 100 other smaller islands. It is the only state that is not in North America. The islands were formed by volcanoes that erupted(爆发) and rose above the ocean. There are still active volcanoes in Hawaii.\n\nBecause of its location, Hawaii has a tropical climate. It is warm, but usually not hot, all year long. Rarely does the temperature drop below 60 degrees Fahrenheit(华氏温度), although it may occasionally snow at the top of some of the mountains.\n\nOnce called the Sandwich Islands by Europeans, Hawaii is thought to have been settled by ancient sailors from other islands in the Pacific. The British explorer Captain Cook was thought to be the first European to find the islands in 1778. Because of its location, Hawaii became a frequent stop for European traders and ships. Hawaii was an independent country before it became part of the United States in 1893. It was governed by either a king or a queen. It is one of the only four U.S. states to have been a country before statehood. It was admitted into the Union in 1959 as the 50th state.\n\nToday Hawaii is important as a vacation destination. Each year over 6 million people visit Hawaii to enjoy the beaches, the beautiful ocean, and the historical Hawaiian culture. Come and visit Hawaii. You are sure to love it!",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2018-10-q16",
+          "order": 16,
+          "questionType": "single_choice",
+          "stem": "Paragraph ①",
+          "options": ["A. Mild climate", "B. Local customs", "C. Tourist attraction", "D. Long history", "E. Meaning of Aloha", "F. Geographic features"],
+          "answer": "E",
+          "answerExplanation": "Hawaii is sometimes called \"the Aloha State.\" Aloha is a word in the Hawaiian language meaning love and peace. 根据段首句和段落内容，可见第一段主要阐述Aloha的含义，答案选E。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q17",
+          "order": 17,
+          "questionType": "single_choice",
+          "stem": "Paragraph ②",
+          "options": ["A. Mild climate", "B. Local customs", "C. Tourist attraction", "D. Long history", "E. Meaning of Aloha", "F. Geographic features"],
+          "answer": "F",
+          "answerExplanation": "Hawaii is a U.S. state made up of a group of islands in the Pacific Ocean. 第二段主要描述夏威夷的地理特点，选F。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q18",
+          "order": 18,
+          "questionType": "single_choice",
+          "stem": "Paragraph ③",
+          "options": ["A. Mild climate", "B. Local customs", "C. Tourist attraction", "D. Long history", "E. Meaning of Aloha", "F. Geographic features"],
+          "answer": "A",
+          "answerExplanation": "Because of its location, Hawaii has a tropical climate. 后面继续论述climate相关的内容，答案选A。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q19",
+          "order": 19,
+          "questionType": "single_choice",
+          "stem": "Paragraph ④",
+          "options": ["A. Mild climate", "B. Local customs", "C. Tourist attraction", "D. Long history", "E. Meaning of Aloha", "F. Geographic features"],
+          "answer": "D",
+          "answerExplanation": "Once called the Sandwich Islands by Europeans, Hawaii is thought to have been settled by ancient sailors from other islands in the Pacific. 本段主要论述了夏威夷原住民及后来殖民的历史，答案选D。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q20",
+          "order": 20,
+          "questionType": "single_choice",
+          "stem": "Paragraph ⑤",
+          "options": ["A. Mild climate", "B. Local customs", "C. Tourist attraction", "D. Long history", "E. Meaning of Aloha", "F. Geographic features"],
+          "answer": "C",
+          "answerExplanation": "Today Hawaii is important as a vacation destination. 段首点出本段主旨为介绍夏威夷旅游。Vacation和tourist attraction均与旅游相关，答案选C。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q21",
+          "order": 21,
+          "questionType": "single_choice",
+          "stem": "Aloha is often used as ___.",
+          "options": ["A. European explorers", "B. mountain peaks", "C. its scenery and culture", "D. volcanic eruptions", "E. a way of greeting", "F. a king or a queen"],
+          "answer": "E",
+          "answerExplanation": "It is often used as a way to say \"hello\" or \"goodbye.\" 与题干中greeting问候为同义表达，答案选E。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q22",
+          "order": 22,
+          "questionType": "single_choice",
+          "stem": "Hawaii islands are formed by ___.",
+          "options": ["A. European explorers", "B. mountain peaks", "C. its scenery and culture", "D. volcanic eruptions", "E. a way of greeting", "F. a king or a queen"],
+          "answer": "D",
+          "answerExplanation": "第二段倒数第二句：The islands were formed by volcanoes that erupted and rose above the ocean. 与D选项一致，答案选D。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q23",
+          "order": 23,
+          "questionType": "single_choice",
+          "stem": "Visitors can see snow on ___.",
+          "options": ["A. European explorers", "B. mountain peaks", "C. its scenery and culture", "D. volcanic eruptions", "E. a way of greeting", "F. a king or a queen"],
+          "answer": "B",
+          "answerExplanation": "第三段最后一句：although it may occasionally snow at the top of some of the mountains. 文中the top of the mountains和mountain peaks为同义表达，答案选B。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q24",
+          "order": 24,
+          "questionType": "single_choice",
+          "stem": "Hawaii used to be ruled by ___.",
+          "options": ["A. European explorers", "B. mountain peaks", "C. its scenery and culture", "D. volcanic eruptions", "E. a way of greeting", "F. a king or a queen"],
+          "answer": "F",
+          "answerExplanation": "第四段：It was governed by either a king or a queen. 对照选项，答案为F。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q25",
+          "order": 25,
+          "questionType": "single_choice",
+          "stem": "People visit Hawaii for ___.",
+          "options": ["A. European explorers", "B. mountain peaks", "C. its scenery and culture", "D. volcanic eruptions", "E. a way of greeting", "F. a king or a queen"],
+          "answer": "C",
+          "answerExplanation": "第五段第二句：Each year over 6 million people visit Hawaii to enjoy the beaches, the beautiful ocean, and the historical Hawaiian culture. scenery即为风景之意，与beaches和oceans对应，答案选C。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2018-10-s4",
+      "type": "填句补文",
+      "order": 4,
+      "passageTitle": "George Washington Carver",
+      "passageText": "George Washington Carver was born in Missouri between 1861 and 1864. He was born into slavery. It was not until the end of the Civil War that George became free. As he grew up, George loved to read and learn. Black children were not allowed to go to the same schools as white children. ___(26)___ Every early morning, he left home to go to the school. There he studied very hard.\n\nAfter he finished high school, George wanted to go to college. At that time, few black students could afford the college tuition(学费). He worked for a time until he could borrow money to go to college. In 1890 he went to Simpson College in Iowa. ___(27)___ His drawings of plants were so good that his teacher suggested he study botany, which is the science of plants. George went to an agricultural college in Iowa in 1891, where he not only graduated but also taught students.\n\nGeorge continued to study plants. ___(28)___ In 1896, he was invited to teach at the Tuskegee Institute in Alabama. He worked there as a professor for 47 years. He also became an important research scientist. He discovered new ways to use plants. ___(29)___ These include dyes, plastics, paint, and make-up. He also taught farmers how to grow crops to help the soil, and new ways to farm.\n\nIn 1943 George Washington Carver died. ___(30)___ There is a national monument to him in Missouri where he grew up. He has had a ship named after him. In 1990 he was admitted to the National Inventors Hall of Fame. The boy who wanted to learn became a great inventor and scientist.",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2018-10-q26",
+          "order": 26,
+          "questionType": "single_choice",
+          "stem": "Black children were not allowed to go to the same schools as white children. ___(26)___ Every early morning, he left home to go to the school.",
+          "options": ["A. There he studied art and music", "B. He found about 100 new ways to use peanuts", "C. He has been honored all over the world for his achievements", "D. He became very famous for his work", "E. After graduation, George began working for a law firm", "F. The schools for black children were far from where George lived"],
+          "answer": "F",
+          "answerExplanation": "空的前一句和后一句都在叙述school相关的事情，可推测空的内容也是与school相关，选项中只有F提到了school，答案选F。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q27",
+          "order": 27,
+          "questionType": "single_choice",
+          "stem": "In 1890 he went to Simpson College in Iowa. ___(27)___ His drawings of plants were so good that his teacher suggested he study botany.",
+          "options": ["A. There he studied art and music", "B. He found about 100 new ways to use peanuts", "C. He has been honored all over the world for his achievements", "D. He became very famous for his work", "E. After graduation, George began working for a law firm", "F. The schools for black children were far from where George lived"],
+          "answer": "A",
+          "answerExplanation": "空的前一句In 1890 he went to Simpson College in Iowa，后一句提到His drawings of plants，可以判断空中提到的是在校学习生活，A选项承接了上一句，开启了下一句，答案选A。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q28",
+          "order": 28,
+          "questionType": "single_choice",
+          "stem": "George continued to study plants. ___(28)___ In 1896, he was invited to teach at the Tuskegee Institute in Alabama.",
+          "options": ["A. There he studied art and music", "B. He found about 100 new ways to use peanuts", "C. He has been honored all over the world for his achievements", "D. He became very famous for his work", "E. After graduation, George began working for a law firm", "F. The schools for black children were far from where George lived"],
+          "answer": "D",
+          "answerExplanation": "空的后一句1896, he was invited to teach at the Tuskegee Institute 说明George已取得了一些成绩，才会被高校录用，答案选D。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q29",
+          "order": 29,
+          "questionType": "single_choice",
+          "stem": "He discovered new ways to use plants. ___(29)___ These include dyes, plastics, paint, and make-up.",
+          "options": ["A. There he studied art and music", "B. He found about 100 new ways to use peanuts", "C. He has been honored all over the world for his achievements", "D. He became very famous for his work", "E. After graduation, George began working for a law firm", "F. The schools for black children were far from where George lived"],
+          "answer": "B",
+          "answerExplanation": "空的前一句He discovered new ways to use plants，空的后一句These include dyes, plastics, paint, and make-up，两句话都是在讲use plants，B选项use peanuts符合题意，答案选B。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q30",
+          "order": 30,
+          "questionType": "single_choice",
+          "stem": "In 1943 George Washington Carver died. ___(30)___ There is a national monument to him in Missouri where he grew up.",
+          "options": ["A. There he studied art and music", "B. He found about 100 new ways to use peanuts", "C. He has been honored all over the world for his achievements", "D. He became very famous for his work", "E. After graduation, George began working for a law firm", "F. The schools for black children were far from where George lived"],
+          "answer": "C",
+          "answerExplanation": "空的后一句There is a national monument to him in Missouri，说明他受到了人们的尊敬，C选项符合题意，答案选C。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2018-10-s5",
+      "type": "填词补文",
+      "order": 5,
+      "passageTitle": "Warmth at Midnight",
+      "passageText": "Canberra winters are extremely cold, and 2014 brought some of our coldest days. One weekday night I walked to the ___(31)___ supermarket before it closed at midnight.\n\nAs I approached, I noticed a group of six or seven people ___(32)___ by the supermarket entrance. Aware of the ___(33)___ of late-night walking, I made sure I paid attention. The scene ahead looked unusual.\n\nAnd unusual it was. Expecting to see a group of ___(34)___ troublemakers, I found a weak, well-dressed old man distributing items of food to a group of homeless people. Rather than just feeding them, he was also engaging them in a ___(35)___ of warm discussion.\n\nThe homeless people were rough-looking and ___(36)___ dressed. But they listened to the man ___(37)___, not just with gratitude for the food they had been ___(38)___. With no charity vehicle in sight, this old man was only representing himself.\n\nAfter I finished shopping, the group was still there, food ___(39)___, but all laughing. If a weak old man can give to others in the ___(40)___ cold at midnight, what excuse do we have?",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "00015-2018-10-q31",
+          "order": 31,
+          "questionType": "single_choice",
+          "stem": "I walked to the ___(31)___ supermarket before it closed at midnight.",
+          "options": ["A. dangers", "B. local", "C. happy", "D. reading", "E. freezing", "F. attentively", "G. potential", "H. sitting", "I. poorly", "J. given", "K. consumed", "L. circle"],
+          "answer": "B",
+          "answerExplanation": "形容词修饰名词，local supermarket（当地超市），答案选B。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q32",
+          "order": 32,
+          "questionType": "single_choice",
+          "stem": "I noticed a group of six or seven people ___(32)___ by the supermarket entrance.",
+          "options": ["A. dangers", "B. local", "C. happy", "D. reading", "E. freezing", "F. attentively", "G. potential", "H. sitting", "I. poorly", "J. given", "K. consumed", "L. circle"],
+          "answer": "H",
+          "answerExplanation": "感官动词notice + ving表示动作正在进行，原文应为发现人们正坐在超市出口旁，答案选H。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q33",
+          "order": 33,
+          "questionType": "single_choice",
+          "stem": "Aware of the ___(33)___ of late-night walking, I made sure I paid attention.",
+          "options": ["A. dangers", "B. local", "C. happy", "D. reading", "E. freezing", "F. attentively", "G. potential", "H. sitting", "I. poorly", "J. given", "K. consumed", "L. circle"],
+          "answer": "A",
+          "answerExplanation": "定冠词the后加名词，根据文意应为意识到走夜路的危险，我非常小心，答案选A。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q34",
+          "order": 34,
+          "questionType": "single_choice",
+          "stem": "Expecting to see a group of ___(34)___ troublemakers, I found a weak, well-dressed old man distributing food.",
+          "options": ["A. dangers", "B. local", "C. happy", "D. reading", "E. freezing", "F. attentively", "G. potential", "H. sitting", "I. poorly", "J. given", "K. consumed", "L. circle"],
+          "answer": "G",
+          "answerExplanation": "形容词修饰名词，potential troublemakers（潜在的麻烦制造者），因为作者走夜路所以小心翼翼，看到门口坐着的人害怕他们可能是麻烦制造者，potential符合题意，答案选G。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q35",
+          "order": 35,
+          "questionType": "single_choice",
+          "stem": "He was also engaging them in a ___(35)___ of warm discussion.",
+          "options": ["A. dangers", "B. local", "C. happy", "D. reading", "E. freezing", "F. attentively", "G. potential", "H. sitting", "I. poorly", "J. given", "K. consumed", "L. circle"],
+          "answer": "L",
+          "answerExplanation": "不定冠词a后加可数名词单数，in a circle of warm discussion（围成一圈热烈讨论），答案选L。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q36",
+          "order": 36,
+          "questionType": "single_choice",
+          "stem": "The homeless people were rough-looking and ___(36)___ dressed.",
+          "options": ["A. dangers", "B. local", "C. happy", "D. reading", "E. freezing", "F. attentively", "G. potential", "H. sitting", "I. poorly", "J. given", "K. consumed", "L. circle"],
+          "answer": "I",
+          "answerExplanation": "dressed为形容词，副词修饰形容词，无家可归者外表粗糙，衣着可推测也较破旧，poorly符合文意和词性要求，答案选I。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q37",
+          "order": 37,
+          "questionType": "single_choice",
+          "stem": "They listened to the man ___(37)___, not just with gratitude for the food they had been given.",
+          "options": ["A. dangers", "B. local", "C. happy", "D. reading", "E. freezing", "F. attentively", "G. potential", "H. sitting", "I. poorly", "J. given", "K. consumed", "L. circle"],
+          "answer": "F",
+          "answerExplanation": "listen为动词，副词修饰动词，选项中只剩attentively一个副词，listen to sb attentively（聚精会神地听某人说话），答案选F。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q38",
+          "order": 38,
+          "questionType": "single_choice",
+          "stem": "Not just with gratitude for the food they had been ___(38)___.",
+          "options": ["A. dangers", "B. local", "C. happy", "D. reading", "E. freezing", "F. attentively", "G. potential", "H. sitting", "I. poorly", "J. given", "K. consumed", "L. circle"],
+          "answer": "J",
+          "answerExplanation": "give food to sb（给某人食物），在文中为被动语态，the food they had been given，答案选J。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q39",
+          "order": 39,
+          "questionType": "single_choice",
+          "stem": "After I finished shopping, the group was still there, food ___(39)___, but all laughing.",
+          "options": ["A. dangers", "B. local", "C. happy", "D. reading", "E. freezing", "F. attentively", "G. potential", "H. sitting", "I. poorly", "J. given", "K. consumed", "L. circle"],
+          "answer": "K",
+          "answerExplanation": "consume food（吃食物），在这里是独立主格结构的被动分词作状语，food consumed即食物被吃完了，答案选K。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q40",
+          "order": 40,
+          "questionType": "single_choice",
+          "stem": "If a weak old man can give to others in the ___(40)___ cold at midnight, what excuse do we have?",
+          "options": ["A. dangers", "B. local", "C. happy", "D. reading", "E. freezing", "F. attentively", "G. potential", "H. sitting", "I. poorly", "J. given", "K. consumed", "L. circle"],
+          "answer": "E",
+          "answerExplanation": "固定搭配in the freezing cold（在严寒中），答案选E。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2018-10-s6",
+      "type": "完形填空",
+      "order": 6,
+      "passageTitle": "Keeping Friendship Alive",
+      "passageText": "It's so easy to take good friends (friend) for granted. Like a ___(41)___(comfort) pair of gloves, old friends wear well. But friendships that suffer from busyness and ___(42)___(familiar) can't afford to be neglected too long. They need to be ___(43)___(renew). If you want and need to keep true friendship alive and ___(44)___(health), please consider and think over a list of the most important qualities. ___(45)___(Probable) it will help you to understand why you and your best friend haven't ___(46)___(call) up for ages, why you're getting embarrassed while ___(47)___(be) asked \"Whom are you ___(48)___(go) to have fun with this weekend?\" You may neglect your intimate friends from time to time, but if you fail to cultivate these ___(49)___(virtue)—loyalty, forgiveness, dedication(奉献), and ___(50)___(honest)—you can't expect to keep true friends.",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "00015-2018-10-q41",
+          "order": 41,
+          "questionType": "fill_blank_transform",
+          "stem": "comfort",
+          "options": [],
+          "answer": "comfortable",
+          "answerExplanation": "官方仅给出答案，无详细解析。comfort（名词）需转换为形容词comfortable修饰pair of gloves。",
+          "knowledgePoints": ["形容词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q42",
+          "order": 42,
+          "questionType": "fill_blank_transform",
+          "stem": "familiar",
+          "options": [],
+          "answer": "familiarity",
+          "answerExplanation": "官方仅给出答案，无详细解析。and并列连接busyness，此处应为名词familiarity。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q43",
+          "order": 43,
+          "questionType": "fill_blank_transform",
+          "stem": "renew",
+          "options": [],
+          "answer": "renewed",
+          "answerExplanation": "官方仅给出答案，无详细解析。need to be + 过去分词，被动语态，故填renewed。",
+          "knowledgePoints": ["被动语态"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q44",
+          "order": 44,
+          "questionType": "fill_blank_transform",
+          "stem": "health",
+          "options": [],
+          "answer": "healthy",
+          "answerExplanation": "官方仅给出答案，无详细解析。and并列连接alive，此处应为形容词healthy。",
+          "knowledgePoints": ["形容词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q45",
+          "order": 45,
+          "questionType": "fill_blank_transform",
+          "stem": "Probable",
+          "options": [],
+          "answer": "Probably",
+          "answerExplanation": "官方仅给出答案，无详细解析。修饰整句，应为副词Probably。",
+          "knowledgePoints": ["副词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q46",
+          "order": 46,
+          "questionType": "fill_blank_transform",
+          "stem": "call",
+          "options": [],
+          "answer": "called",
+          "answerExplanation": "官方仅给出答案，无详细解析。haven't + 过去分词，现在完成时，故填called。",
+          "knowledgePoints": ["动词时态"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q47",
+          "order": 47,
+          "questionType": "fill_blank_transform",
+          "stem": "be",
+          "options": [],
+          "answer": "being",
+          "answerExplanation": "官方仅给出答案，无详细解析。while + being + 过去分词，为被动语态的现在分词形式，故填being。",
+          "knowledgePoints": ["被动语态"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q48",
+          "order": 48,
+          "questionType": "fill_blank_transform",
+          "stem": "go",
+          "options": [],
+          "answer": "going",
+          "answerExplanation": "官方仅给出答案，无详细解析。be going to结构，将来时，故填going。",
+          "knowledgePoints": ["动词时态"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q49",
+          "order": 49,
+          "questionType": "fill_blank_transform",
+          "stem": "virtue",
+          "options": [],
+          "answer": "virtues",
+          "answerExplanation": "官方仅给出答案，无详细解析。these后接可数名词复数，故填virtues。",
+          "knowledgePoints": ["名词单复数"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-10-q50",
+          "order": 50,
+          "questionType": "fill_blank_transform",
+          "stem": "honest",
+          "options": [],
+          "answer": "honesty",
+          "answerExplanation": "官方仅给出答案，无详细解析。and并列连接loyalty、forgiveness、dedication等名词，此处应为名词honesty。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2018-10-s7",
+      "type": "写作",
+      "order": 7,
+      "writingPrompt": "某英文报社正在举办题为\"Let's Save Water\"的征文活动。请就以下要点写一篇英文短文应征。\n●为什么要节约用水\n●我们应如何节约用水",
+      "scorePerQuestion": 30,
+      "totalScore": 30,
+      "questions": [
+        {
+          "questionId": "00015-2018-10-q51",
+          "order": 51,
+          "questionType": "essay",
+          "stem": "请根据所提供材料中的要求完成一篇100词左右的英文写作任务。",
+          "options": [],
+          "answer": "",
+          "answerExplanation": "官方参考范文：\nWater is so important for all living things. Without water there can be no life on earth. All animals and plants need water, including human beings.\nHowever, nowadays there are many people who waste a lot of precious water. There are many places in the world still running out of water. So we should try our best to save water on earth. There are many things we can do. First, make sure that the kitchen sink tap is not running when you help wash the dishes. Second, we can collect water while we are washing our hands to reuse it later. Third, we can paste a note on the wall of the washing room to remind people of turning off the tap after using it.\nAll in all, everyone should participate in the action of saving water, which will make our planet healthier and more sustainable.\n官方未给出额外的评分说明，仅提供参考范文。",
+          "knowledgePoints": ["写作-说明类"],
+          "difficultyTag": null
+        }
+      ]
+    }
+  ],
+  "parsingNotes": [
+    "第51题官方参考范文原图中\"the action f saving water\"一处印刷/扫描不清，疑似缺失字母\"o\"（即\"the action of saving water\"），已按语义最可能的\"of\"转录，建议人工核对原图确认。",
+    "第41-50题（完形填空词形变换）官方答案页只列出了单词答案，没有逐题解析，answerExplanation中已如实注明\"官方仅给出答案，无详细解析\"，knowledgePoints为解析者根据语法点自行判断标注，建议人工复核每题的语法点归类是否准确。",
+    "原文第16-20题题干中的段落编号在原卷中为带圈数字①②③④⑤，此处按序转录为\"Paragraph ①\"等，与阅读判断段落文本本身的分段一一对应，未改变原意。"
+  ]
+}

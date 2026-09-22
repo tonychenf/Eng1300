@@ -1,0 +1,659 @@
+{
+  "examId": "00015-2019-04",
+  "title": "2019年4月高等教育自学考试全国统一命题考试英语（二）试题",
+  "year": 2019,
+  "month": 4,
+  "courseCode": "00015",
+  "courseName": "英语(二)",
+  "sourceFile": "ee504d9c-2019_04____________.pdf",
+  "totalScore": 100,
+  "timeLimitMinutes": 150,
+  "status": "待校对",
+  "sections": [
+    {
+      "sectionId": "00015-2019-04-s1",
+      "type": "阅读判断",
+      "order": 1,
+      "passageTitle": "My Brother",
+      "passageText": "My brother is off at college, and at age 14, I miss him terribly. My brother is a rare kind of guy. He's smart and kind. And my friends say he's lovely. But it's how he handles things and how he treats his friends and his family that make me feel more proud.\n\nHe applied to 14 colleges. He was accepted by all but one, the one he wanted, Brown University. So he took his second choice, and off he went to a first year. When he came home for summer vacation, he said he'd move to Rhode Island near Brown, find a job, and do whatever he could to become known in the area. He'd work his heart out and do his best at everything. Someone, he was sure, would notice. This was a big deal for my parents as it meant agreeing to a year without college. But they trusted him and encouraged him to do whatever he thought it would take to realize his dream.\n\nIt wasn't long before he was hired as an amateur（业余的）play director at Brown. Now was his chance to shine, and shine he did. He put every bit of himself into the job. He met teachers and school officials, talked to everyone about his dream and never hesitated to tell them what he was after.\n\nAnd, sure enough, at the end of the year, when he reapplied to Brown, he was accepted.\n\nWe were all happy, but for me the happiness went very deep. I had learned an important lesson--a lesson no one could have taught me with words. If I work hard for what I want, and if I keep trying after I've been turned down, my dreams can also come true. This is a gift I still hold in my heart.",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2019-04-q1",
+          "order": 1,
+          "questionType": "single_choice",
+          "stem": "My brother had many good qualities.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "根据首段He's smart and kind. And my friends say he's lovely. But it's how he handles things and how he treats his friends and his family that make me feel more proud. 可知我哥哥有许多优秀的品质，故选A。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q2",
+          "order": 2,
+          "questionType": "single_choice",
+          "stem": "Only one university accepted my brother.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "根据第二段He applied to 14 colleges. He was accepted by all but one, the one he wanted, Brown University. 可知除了他最想去的Brown University，其余大学都录取了他，'只有一所大学录取'说法错误，故选B。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q3",
+          "order": 3,
+          "questionType": "single_choice",
+          "stem": "My brother's first year at college was terrible.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "原文只提到他去读了第二志愿大学的第一年，并未提及这一年过得如何，原文没有提及，故选C。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q4",
+          "order": 4,
+          "questionType": "single_choice",
+          "stem": "My brother would like to find a job in Rhode Island.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "根据第二段When he came home for summer vacation, he said he'd move to Rhode Island near Brown, find a job... 可知正确，选A。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q5",
+          "order": 5,
+          "questionType": "single_choice",
+          "stem": "My parents disagreed with my brother's plan.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "根据第二段...But they trusted him and encouraged him to do whatever he thought it would take to realize his dream. 可知父母是支持而非反对，故选B。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q6",
+          "order": 6,
+          "questionType": "single_choice",
+          "stem": "My brother took every opportunity to promote himself.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "根据第三段He put every bit of himself into the job. He met teachers and school officials, talked to everyone about his dream... 可知他把握每一次自我推销的机会，故选A。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q7",
+          "order": 7,
+          "questionType": "single_choice",
+          "stem": "My brother never told anyone what he was after.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "根据第三段...never hesitated to tell them what he was after. 可知他从不犹豫告诉别人自己的追求，与题干相反，故选B。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q8",
+          "order": 8,
+          "questionType": "single_choice",
+          "stem": "My brother applied to Brown University three times.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "根据第四段And, sure enough, at the end of the year, when he reapplied to Brown, he was accepted. 可知他只申请了两次，并非三次，故选B。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q9",
+          "order": 9,
+          "questionType": "single_choice",
+          "stem": "My brother set a good example for me.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "根据尾段I had learned an important lesson...If I work hard for what I want...my dreams can also come true. 可知哥哥为我树立了好榜样，故选A。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q10",
+          "order": 10,
+          "questionType": "single_choice",
+          "stem": "I wanted to go to college, too.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "原文没有提及作者本人是否想上大学，无法得知，故选C。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2019-04-s2",
+      "type": "阅读理解选择",
+      "order": 2,
+      "passageTitle": "Garlic（大蒜）",
+      "passageText": "Garlic has a long history of human use of over 7,000 years. It was originally grown in Asia. It finally made its way to Europe and South and North Americas in the 16th century. It rapidly spread to the world because it was easy to grow and could stay alive in poor conditions.\n\nGarlic has also long been used in medicine. Egyptians fed garlic to the slaves to keep up their strength and to defend against diseases. The Romans believed that garlic cured many diseases and helped heal wounds. Greeks gave garlic to athletes during the Olympic Games in order to increase their strength.\n\nMore recently, garlic has been mentioned as being used as a treatment for battle wounds in both World Wars. In fact, even today people eat garlic for its supposed benefits. For example, many people eat garlic to help fight colds and coughs. Some even claim that garlic can help prevent high blood pressure and cancer.\n\nA different use for garlic in the past was to keep away bad spirits. In some countries, people believed that if they wore garlic around their necks, bad things would not enter their bodies. And if they hung garlic outside the doors of their homes, bad things would go away.\n\nGarlic is now grown everywhere in the world. China is the largest producer of garlic, followed by India, South Korea, Egypt and Russia. The popularity of garlic has increased over the years. It is now widely used in all types of cooking. Chinese dishes use garlic. Italian dishes include a lot of garlic, too. Garlic is now highly valued for its taste throughout the world.",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2019-04-q11",
+          "order": 11,
+          "questionType": "single_choice",
+          "stem": "Garlic was first grown in ___",
+          "options": ["A. North America.", "B. South America", "C. Europe", "D. Asia"],
+          "answer": "D",
+          "answerExplanation": "根据首段It was originally grown in Asia. 可知大蒜最初种植于亚洲，选D。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q12",
+          "order": 12,
+          "questionType": "single_choice",
+          "stem": "Garlic was quickly accepted by people everywhere because it was ___",
+          "options": ["A. simple to cook", "B. easy to grow", "C. good for health", "D. taste in many dishes"],
+          "answer": "B",
+          "answerExplanation": "根据首段It rapidly spread to the world because it was easy to grow and could stay alive in poor conditions. 可知原因在于易于生长，选B。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q13",
+          "order": 13,
+          "questionType": "single_choice",
+          "stem": "Ancient Greeks believed that garlic can help ___",
+          "options": ["A. cure many diseases", "B. heal battle wounds", "C. increase body strength", "D. keep people health"],
+          "answer": "C",
+          "answerExplanation": "根据第二段Greeks gave garlic to athletes during the Olympic Games in order to increase their strength. 可知希腊人认为大蒜可以增强体力，选C。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q14",
+          "order": 14,
+          "questionType": "single_choice",
+          "stem": "Some ancient people hung garlic outside their doors to ___",
+          "options": ["A. frighten bad spirits", "B. decorate their houses", "C. keep away insects", "D. show their wishes"],
+          "answer": "A",
+          "answerExplanation": "根据第四段首句A different use for garlic in the past was to keep away bad spirits. 可知室外悬挂大蒜是为了驱邪，选A。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q15",
+          "order": 15,
+          "questionType": "single_choice",
+          "stem": "The largest garlic grower in the world now is ___",
+          "options": ["A. Egypt", "B. Korea", "C. China", "D. Russia"],
+          "answer": "C",
+          "answerExplanation": "根据尾段China is the largest producer of garlic. 可知中国是世界上最大的大蒜种植国，选C。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2019-04-s3",
+      "type": "段落大意与句子补全",
+      "order": 3,
+      "passageTitle": "Easy Ways to Green up Your Life",
+      "passageText": "①Eating meat produces greenhouse gas emissions（排放）. If you can't give up meat completely, you can reduce your consumption or give up beef. Don't eat out-of-season farm products. They are grown in greenhouses. A lot of energy goes into heating the greenhouses. And shipping such out-of-season farm products by air from remote places consumes huge amount of energy, too. Just look for local and in-season foods.\n\n②Spend less time behind the wheel, cycle and walk more, and use public transport more. If you have to drive, the first thing is to choose a car that uses comparatively less fuel. Besides, stick to the speed limit, keep your tires properly filled with air, empty your trunk of heavy items, and accelerate and brake gently.\n\n③Want to take a vacation trip by plane? Don't hurry. Think again. Air travel has a big impact on the environment compared with most other forms of travel. You have better choices. Consider having a vacation within driving distance. Of course, taking the train is the best choice.\n\n④Think about how much \"stuff\" you own. A big part of emissions are linked to our consumption. To reduce it we need a change in consumption culture. Do we really need all the things we buy? And do we always need the newest one? Getting fewer things and making the ones you own last longer will reduce energy use.\n\n⑤Your choices about heating and cooling your home are some of the most important things you can do in terms of cutting you greenhouse gas emissions. Keeping the temperature a little lower in the winter and higher in the summer can make a big difference.",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2019-04-q16",
+          "order": 16,
+          "questionType": "single_choice",
+          "stem": "Paragraph ①",
+          "options": ["A. Change your shopping habit", "B. Drive less if possible", "C. Take fewer air trips", "D. Use air-conditioning moderately", "E. Take fewer vacations", "F. Eat less meat and more in-season foods"],
+          "answer": "F",
+          "answerExplanation": "根据①段首尾句Eating meat produces greenhouse gas emissions...Just look for local and in-season foods. 可知该段讲少吃肉多吃应季食物，选F。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q17",
+          "order": 17,
+          "questionType": "single_choice",
+          "stem": "Paragraph ②",
+          "options": ["A. Change your shopping habit", "B. Drive less if possible", "C. Take fewer air trips", "D. Use air-conditioning moderately", "E. Take fewer vacations", "F. Eat less meat and more in-season foods"],
+          "answer": "B",
+          "answerExplanation": "根据②段首句Spend less time behind the wheel, cycle and walk more, and use public transport more. 可知该段讲少自驾多步行、骑行或乘公共交通，选B。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q18",
+          "order": 18,
+          "questionType": "single_choice",
+          "stem": "Paragraph ③",
+          "options": ["A. Change your shopping habit", "B. Drive less if possible", "C. Take fewer air trips", "D. Use air-conditioning moderately", "E. Take fewer vacations", "F. Eat less meat and more in-season foods"],
+          "answer": "C",
+          "answerExplanation": "根据③段Air travel has a big impact on the environment compared with most other forms of travel. 可知该段讲少乘飞机出行，选C。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q19",
+          "order": 19,
+          "questionType": "single_choice",
+          "stem": "Paragraph ④",
+          "options": ["A. Change your shopping habit", "B. Drive less if possible", "C. Take fewer air trips", "D. Use air-conditioning moderately", "E. Take fewer vacations", "F. Eat less meat and more in-season foods"],
+          "answer": "A",
+          "answerExplanation": "根据④段A big part of emissions are linked to our consumption. To reduce it we need a change in consumption culture. 可知该段讲改变消费习惯，选A。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q20",
+          "order": 20,
+          "questionType": "single_choice",
+          "stem": "Paragraph ⑤",
+          "options": ["A. Change your shopping habit", "B. Drive less if possible", "C. Take fewer air trips", "D. Use air-conditioning moderately", "E. Take fewer vacations", "F. Eat less meat and more in-season foods"],
+          "answer": "D",
+          "answerExplanation": "根据⑤段Your choices about heating and cooling your home are some of the most important things you can do in terms of cutting you greenhouse gas emissions. 可知该段讲合理使用空调/冷暖设备，选D。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q21",
+          "order": 21,
+          "questionType": "single_choice",
+          "stem": "Eating beef can ___",
+          "options": ["A. from his car trunk", "B. your room temperature", "C. for a vacation trip", "D. increase greenhouse gas production", "E. reduce energy use", "F. your water consumption"],
+          "answer": "D",
+          "answerExplanation": "根据①段Eating meat produces greenhouse gas emissions. 可知吃牛肉会增加温室气体排放，选D。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q22",
+          "order": 22,
+          "questionType": "single_choice",
+          "stem": "One is advised to remove heavy things ___",
+          "options": ["A. from his car trunk", "B. your room temperature", "C. for a vacation trip", "D. increase greenhouse gas production", "E. reduce energy use", "F. your water consumption"],
+          "answer": "A",
+          "answerExplanation": "根据②段empty your trunk of heavy items. 可知建议清空车后备箱中的重物，选A。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q23",
+          "order": 23,
+          "questionType": "single_choice",
+          "stem": "One had better take a train ___",
+          "options": ["A. from his car trunk", "B. your room temperature", "C. for a vacation trip", "D. increase greenhouse gas production", "E. reduce energy use", "F. your water consumption"],
+          "answer": "C",
+          "answerExplanation": "根据③段尾句Of course, taking the train is the best choice（结合本段谈的是vacation trip by plane），选C。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q24",
+          "order": 24,
+          "questionType": "single_choice",
+          "stem": "Buying less is one way to ___",
+          "options": ["A. from his car trunk", "B. your room temperature", "C. for a vacation trip", "D. increase greenhouse gas production", "E. reduce energy use", "F. your water consumption"],
+          "answer": "E",
+          "answerExplanation": "根据④段Getting fewer things and making the ones you own last longer will reduce energy use. 可知少买东西可以减少能源消耗，选E。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q25",
+          "order": 25,
+          "questionType": "single_choice",
+          "stem": "To save energy, properly control ___",
+          "options": ["A. from his car trunk", "B. your room temperature", "C. for a vacation trip", "D. increase greenhouse gas production", "E. reduce energy use", "F. your water consumption"],
+          "answer": "B",
+          "answerExplanation": "根据⑤段Keeping the temperature a little lower in the winter and higher in the summer can make a big difference. 可知是控制室内温度，选B。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2019-04-s4",
+      "type": "填句补文",
+      "order": 4,
+      "passageTitle": "A Lucky Pen",
+      "passageText": "\"Mommy, I've got something for you!\" George ran through the door after school one day. He waved something above his head. \"See, it's a lucky pen!\" ___(26)___ I looked at the pen in my hand. There was nothing special about it. But I didn't realize how special it was at that moment.\n\nI had made the decision to pursue a career in writing. ___(27)___ I had dreamed about it for a long time but I was afraid to take a chance. I was scared of rejection.\n\nThe night before, I had voiced those fears to my husband when I thought George wasn't listening. But George must have overheard us. Now he stood in front of me, watching me examine the pen. \"You don't have to be scared now,\" he said. \"This pen will make your stories great and everyone will love you.\" Tears filled my eyes. ___(28)___ Rejection didn't seem like such a big deal any more. Even if I never sold the first story, I had everything I could ever need. George in my life!\n\nI found out later how lucky I was when I heard what he did to get the pen. During lunch break at school that day, George heard a boy talking about a lucky pen he had. ___(29)___ The boy was a tough negotiator but George didn't give up. In the end, he traded his lunch, his favorite cartoon book, and his new football, his most prized possession for that pen. Just to make me feel better.\n\n___(30)___ It never fails to remind me just how lucky I am! I am the luckiest mother in the world now and forever.",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2019-04-q26",
+          "order": 26,
+          "questionType": "single_choice",
+          "stem": "为短文第26空选择最恰当的句子",
+          "options": ["A. He got it as a birthday gift.", "B. It was a decision full of fear and anxiety for me.", "C. He wanted to get it for me.", "D. He handed me the pen happily and proudly.", "E. I grabbed him and pulled him tight against me.", "F. I still have that pen, though it's long out of ink."],
+          "answer": "D",
+          "answerExplanation": "根据上下文，乔治把笔给了'我'，随后'我'看着手中的笔，中间应补充他递笔的动作，选D'他高兴而自豪地把笔递给了我'。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q27",
+          "order": 27,
+          "questionType": "single_choice",
+          "stem": "为短文第27空选择最恰当的句子",
+          "options": ["A. He got it as a birthday gift.", "B. It was a decision full of fear and anxiety for me.", "C. He wanted to get it for me.", "D. He handed me the pen happily and proudly.", "E. I grabbed him and pulled him tight against me.", "F. I still have that pen, though it's long out of ink."],
+          "answer": "B",
+          "answerExplanation": "上句提到'我'做出了追求写作事业的决定，下句说'我一直渴望却害怕尝试'，中间应说明这个决定'充满恐惧和焦虑'，选B。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q28",
+          "order": 28,
+          "questionType": "single_choice",
+          "stem": "为短文第28空选择最恰当的句子",
+          "options": ["A. He got it as a birthday gift.", "B. It was a decision full of fear and anxiety for me.", "C. He wanted to get it for me.", "D. He handed me the pen happily and proudly.", "E. I grabbed him and pulled him tight against me.", "F. I still have that pen, though it's long out of ink."],
+          "answer": "E",
+          "answerExplanation": "上文乔治的话让'我'热泪盈眶，下文说拒绝不再是大事，中间应是'我'感动地抱住儿子的动作，选E。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q29",
+          "order": 29,
+          "questionType": "single_choice",
+          "stem": "为短文第29空选择最恰当的句子",
+          "options": ["A. He got it as a birthday gift.", "B. It was a decision full of fear and anxiety for me.", "C. He wanted to get it for me.", "D. He handed me the pen happily and proudly.", "E. I grabbed him and pulled him tight against me.", "F. I still have that pen, though it's long out of ink."],
+          "answer": "C",
+          "answerExplanation": "上文提到乔治听说一个男孩有支幸运笔，下文说这个男孩是个难对付的谈判者，中间应交代乔治的动机——他想为'我'得到这支笔，选C。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q30",
+          "order": 30,
+          "questionType": "single_choice",
+          "stem": "为短文第30空选择最恰当的句子",
+          "options": ["A. He got it as a birthday gift.", "B. It was a decision full of fear and anxiety for me.", "C. He wanted to get it for me.", "D. He handed me the pen happily and proudly.", "E. I grabbed him and pulled him tight against me.", "F. I still have that pen, though it's long out of ink."],
+          "answer": "F",
+          "answerExplanation": "末段讲述这支笔如今仍时时提醒'我'有多幸运，段首应先说明这支笔至今仍留在身边，选F'我依然留着那支笔，尽管它早已没墨了'。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2019-04-s5",
+      "type": "填词补文",
+      "order": 5,
+      "passageTitle": "Young Readers, Tomorrow's Leaders?",
+      "passageText": "A new study has good news for kids with strong reading skills. Such kids will have high intelligence as they get ___(31)___. They will have a bright future.\n\nThe study included 1,890 twins who did reading tests at ___(32)___ 7 and 12, and an intelligence test at 16. The twins had the same genes（基因）and home environment. Therefore, the ___(33)___ between them had to be due to factors that they did not ___(34)___. For example, one had a better teacher than the other. Some kids did better on the reading ___(35)___ than their twin brother or sister. They ___(36)___ did better on the intelligence test. The reading skills ___(37)___ to enhanced intelligence were evident by age 7. This shows that reading skills can ___(38)___ a child's intellectual development.\n\nThe study also helps to ___(39)___ the differences among kids in the same family. They share genes, ___(40)___ conditions and parents. But they can be different in intelligence.",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "00015-2019-04-q31",
+          "order": 31,
+          "questionType": "single_choice",
+          "stem": "为短文第31空选择最恰当的词",
+          "options": ["A. also", "B. differences", "C. only", "D. explain", "E. tests", "F. affect", "G. ages", "H. living", "I. share", "J. older", "K. related", "L. interested"],
+          "answer": "J",
+          "answerExplanation": "根据文意及固定搭配，get older表示'变得年长'，选J。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q32",
+          "order": 32,
+          "questionType": "single_choice",
+          "stem": "为短文第32空选择最恰当的词",
+          "options": ["A. also", "B. differences", "C. only", "D. explain", "E. tests", "F. affect", "G. ages", "H. living", "I. share", "J. older", "K. related", "L. interested"],
+          "answer": "G",
+          "answerExplanation": "此处7和12为具体年龄，故填ages（年龄），选G。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q33",
+          "order": 33,
+          "questionType": "single_choice",
+          "stem": "为短文第33空选择最恰当的词",
+          "options": ["A. also", "B. differences", "C. only", "D. explain", "E. tests", "F. affect", "G. ages", "H. living", "I. share", "J. older", "K. related", "L. interested"],
+          "answer": "B",
+          "answerExplanation": "定冠词the后需接名词，结合语境（双胞胎间的'差异'），选B differences。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q34",
+          "order": 34,
+          "questionType": "single_choice",
+          "stem": "为短文第34空选择最恰当的词",
+          "options": ["A. also", "B. differences", "C. only", "D. explain", "E. tests", "F. affect", "G. ages", "H. living", "I. share", "J. older", "K. related", "L. interested"],
+          "answer": "I",
+          "answerExplanation": "此处需填动词原形，语境为双胞胎'没有共同经历'的因素，选I share（分享/共有）。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q35",
+          "order": 35,
+          "questionType": "single_choice",
+          "stem": "为短文第35空选择最恰当的词",
+          "options": ["A. also", "B. differences", "C. only", "D. explain", "E. tests", "F. affect", "G. ages", "H. living", "I. share", "J. older", "K. related", "L. interested"],
+          "answer": "E",
+          "answerExplanation": "此处需填名词，与reading搭配构成reading tests（阅读测试），选E。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q36",
+          "order": 36,
+          "questionType": "single_choice",
+          "stem": "为短文第36空选择最恰当的词",
+          "options": ["A. also", "B. differences", "C. only", "D. explain", "E. tests", "F. affect", "G. ages", "H. living", "I. share", "J. older", "K. related", "L. interested"],
+          "answer": "A",
+          "answerExplanation": "语境为阅读测试表现更好的孩子在智力测试上'也'表现更好，选A also。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q37",
+          "order": 37,
+          "questionType": "single_choice",
+          "stem": "为短文第37空选择最恰当的词",
+          "options": ["A. also", "B. differences", "C. only", "D. explain", "E. tests", "F. affect", "G. ages", "H. living", "I. share", "J. older", "K. related", "L. interested"],
+          "answer": "K",
+          "answerExplanation": "be related to为固定搭配，意为'与……有关'，此处作后置定语修饰reading skills，选K。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q38",
+          "order": 38,
+          "questionType": "single_choice",
+          "stem": "为短文第38空选择最恰当的词",
+          "options": ["A. also", "B. differences", "C. only", "D. explain", "E. tests", "F. affect", "G. ages", "H. living", "I. share", "J. older", "K. related", "L. interested"],
+          "answer": "F",
+          "answerExplanation": "此处需填动词原形，affect意为'影响'，符合语境（reading skills can affect...development），选F。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q39",
+          "order": 39,
+          "questionType": "single_choice",
+          "stem": "为短文第39空选择最恰当的词",
+          "options": ["A. also", "B. differences", "C. only", "D. explain", "E. tests", "F. affect", "G. ages", "H. living", "I. share", "J. older", "K. related", "L. interested"],
+          "answer": "D",
+          "answerExplanation": "此处需填动词原形，explain意为'解释'，符合语境（helps to explain the differences），选D。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q40",
+          "order": 40,
+          "questionType": "single_choice",
+          "stem": "为短文第40空选择最恰当的词",
+          "options": ["A. also", "B. differences", "C. only", "D. explain", "E. tests", "F. affect", "G. ages", "H. living", "I. share", "J. older", "K. related", "L. interested"],
+          "answer": "H",
+          "answerExplanation": "living conditions为固定搭配，意为'生活条件'，选H。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2019-04-s6",
+      "type": "完形填空",
+      "order": 6,
+      "passageTitle": "Student Loans",
+      "passageText": "Federal Student Aid is an office providing (provide) student loans for higher education. The US. government knows the ___(41)___ (important) of higher education in positively ___(42)___ (impact) the nation. It makes sure that each ___(43)___ (qualify) student in America is able to get ___(44)___ (finance) help for higher education.\n\nThough parents can choose private funding through ___(45)___ (bank), the interest rates can be ___(46)___ (excessive) high. On the other hand, the interest rates of federally funded student loans are much less in ___(47)___ (compare). It is, therefore, very important that parents take all steps ___(48)___ (require) to apply for student loans through the government.\n\nFederal Student Aid is involved in ___(49)___ (educate) students and their families on the exact procedures to get student loans. Once the applications are ___(50)___ (receive), it processes them before the start of each school year.",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "00015-2019-04-q41",
+          "order": 41,
+          "questionType": "fill_blank_transform",
+          "stem": "important",
+          "options": [],
+          "answer": "importance",
+          "answerExplanation": "此处需填名词作knows的宾语，important的名词形式为importance（重要性）。官方仅给出答案，无详细解析。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q42",
+          "order": 42,
+          "questionType": "fill_blank_transform",
+          "stem": "impact",
+          "options": [],
+          "answer": "impacting",
+          "answerExplanation": "此处positively后需接动名词作介词in的宾语（in positively impacting the nation），impact用作动词'影响'的现在分词/动名词形式。官方仅给出答案，无详细解析。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q43",
+          "order": 43,
+          "questionType": "fill_blank_transform",
+          "stem": "qualify",
+          "options": [],
+          "answer": "qualified",
+          "answerExplanation": "此处修饰student，需用过去分词作形容词，qualified意为'符合资格的'。官方仅给出答案，无详细解析。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q44",
+          "order": 44,
+          "questionType": "fill_blank_transform",
+          "stem": "finance",
+          "options": [],
+          "answer": "financial",
+          "answerExplanation": "此处修饰help，需用形容词形式financial（金融的/财务的）。官方仅给出答案，无详细解析。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q45",
+          "order": 45,
+          "questionType": "fill_blank_transform",
+          "stem": "bank",
+          "options": [],
+          "answer": "banks",
+          "answerExplanation": "此处bank为可数名词，泛指'银行'，用复数形式banks。官方仅给出答案，无详细解析。",
+          "knowledgePoints": ["名词单复数"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q46",
+          "order": 46,
+          "questionType": "fill_blank_transform",
+          "stem": "excessive",
+          "options": [],
+          "answer": "excessively",
+          "answerExplanation": "此处修饰形容词high，需用副词形式excessively（过度地）。官方仅给出答案，无详细解析。",
+          "knowledgePoints": ["副词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q47",
+          "order": 47,
+          "questionType": "fill_blank_transform",
+          "stem": "compare",
+          "options": [],
+          "answer": "comparison",
+          "answerExplanation": "此处介词in后需接名词，in comparison意为'相比之下'，用名词形式comparison。官方仅给出答案，无详细解析。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q48",
+          "order": 48,
+          "questionType": "fill_blank_transform",
+          "stem": "require",
+          "options": [],
+          "answer": "required",
+          "answerExplanation": "此处修饰steps，需用过去分词作后置定语，required steps意为'所需的步骤'。官方仅给出答案，无详细解析。",
+          "knowledgePoints": ["被动语态"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q49",
+          "order": 49,
+          "questionType": "fill_blank_transform",
+          "stem": "educate",
+          "options": [],
+          "answer": "educating",
+          "answerExplanation": "此处介词in后需接动名词作宾语，in educating意为'在教育……方面'。官方仅给出答案，无详细解析。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2019-04-q50",
+          "order": 50,
+          "questionType": "fill_blank_transform",
+          "stem": "receive",
+          "options": [],
+          "answer": "received",
+          "answerExplanation": "此处applications与receive为被动关系（申请被收到），用过去分词received，构成被动语态are received。官方仅给出答案，无详细解析。",
+          "knowledgePoints": ["被动语态"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2019-04-s7",
+      "type": "写作",
+      "order": 7,
+      "passageTitle": null,
+      "passageText": null,
+      "writingPrompt": "某英文报社正在举办题为\"Live a Healthy Life\"的征文活动。请就此题目写一篇英文短文应征，内容包括：\n●什么是健康的生活方式\n●你是怎么做的\n（请根据要求撰写一篇100词左右的英语短文）",
+      "scorePerQuestion": 30,
+      "totalScore": 30,
+      "questions": [
+        {
+          "questionId": "00015-2019-04-q51",
+          "order": 51,
+          "questionType": "essay",
+          "stem": "请根据要求撰写一篇100词左右的英语短文，题目为\"Live a Healthy Life\"，内容包括：什么是健康的生活方式；你是怎么做的。",
+          "options": [],
+          "answer": "",
+          "answerExplanation": "官方参考范文：There has been a common concern that living a healthy life is indispensable, considering negative effects of bad habits on people's normal life.\n\nWhat is a healthy lifestyle? As to this topic, it is generally acknowledged that regular work and rest, proper diet, more exercises and a good mood are necessary for us to lead a fit life. In my spare time, I would like to be exposed to anything that may make my life meaningful, and I am eager to live an energetic life.\n\nThere is no doubt that being healthy is crucial to our whole life. And it is wise for us to try our best to live a fit life.\n（此为官方提供的参考范文，作文题无唯一标准答案，实际评分需按评分标准对内容、语言、结构等综合打分。）",
+          "knowledgePoints": ["写作-说明类"],
+          "difficultyTag": null
+        }
+      ]
+    }
+  ],
+  "parsingNotes": [
+    "第5部分（填词补文）词库选项在原始扫描中E选项区域文字排布拥挤（原文显示为'E tests share'紧挨着，与I选项'share'重复），已结合第34题官方解析'34.I 填动词原形，选share'分享''和第35题官方解析'35.E 填名词，选E'测试''，判定E选项应为'tests'、I选项为'share'，与词库应有12个不同单词的要求一致。建议人工核对原图该处版式，确认E选项的确切排版内容。",
+    "第5部分（填词补文）短文第40空之后的结尾句'But they can be different in intelligence.'位于原扫描页（第4张图片）的最底部，其后紧接下一页即为词库选项框，无法确认该句是否在原试卷中还有后续内容（如'...in intelligence levels.'等）被裁切在页面边缘之外。建议人工核对原始试卷确认该句是否完整。",
+    "第6部分（完形填空-词形变换）第41-50题，官方答案页只给出了正确的单词形式，没有附带任何文字解析（原文标注'官方仅给出答案，无详细解析'），因此这10题的answerExplanation和knowledgePoints（词性转换/被动语态/副词构词/名词单复数）均为解析者根据语法功能自行归类，并非官方标注的语法点，建议人工校对时重点核查这些标签是否准确。",
+    "第51题（写作）官方答案页提供的是一篇完整的参考范文，而非分项评分标准（如内容/语言/结构各占多少分的细则），故writingPrompt对应的官方答案仅作为范文参考记录在answerExplanation中，实际人工阅卷评分标准需另行核实。"
+  ]
+}

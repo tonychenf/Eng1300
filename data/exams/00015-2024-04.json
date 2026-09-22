@@ -1,0 +1,763 @@
+{
+  "examId": "00015-2024-04",
+  "title": "2024年4月高等教育自学考试英语(二)试题",
+  "year": 2024,
+  "month": 4,
+  "courseCode": "00015",
+  "courseName": "英语(二)",
+  "sourceFile": "22b71645-2024_04__________.pdf",
+  "totalScore": 100,
+  "timeLimitMinutes": 150,
+  "status": "待校对",
+  "sections": [
+    {
+      "sectionId": "00015-2024-04-s1",
+      "type": "阅读判断",
+      "order": 1,
+      "passageTitle": "Do You Love Your Dog More Than Humans?",
+      "passageText": "Elizabeth Anderson once had a dog named Grace. She and her husband cared for Grace and tried to keep her out of trouble. They took her on vacations and enjoyed her company around the house. When Grace died at age 14, they were deeply upset. Because Grace was a dog, \"I was unable to talk to anyone about this great grief,\" says Anderson.\n\n\"But it's common to feel that way after the loss of a dog,\" says Stanley Coren, a professor of psychology. \"Our relationship with dogs is simple. Some might call it true love.\"\n\nThe bond between people and their dogs is a lot like love. In one recent study, when the dogs and their owners just looked at each other, they both had a higher level of the hormone (荷尔蒙) associated with love. \"It is very natural to form a bond between dogs and humans,\" says Takefumi Kikusui, author of the study. \"But we found the same can't be said for humans and wolves.\"\n\n\"Dogs are man's best friend,\" says Coren. \"We've trained them to be that way. We invented the dog to fit in our lives. For 14,000 years, we've been creating an animal which understands our communications and we understand its communications. They have a bond with us.\" For example, if a person points to something in a distance, a dog will look in the direction of the finger, just like a human. But what about a wolf? \"It would simply look at the finger,\" Coren says.\n\nFor Anderson, dogs are more lovable than humans. She says, \"They try their best to please us. They want to do whatever we want to do. Their love is not limited. They are good at all the things we enjoy in a relationship.\"",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2024-04-q1",
+          "order": 1,
+          "questionType": "single_choice",
+          "stem": "Grace became a member of Anderson's family at 14.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "原文说Grace在14岁时去世（died at age 14），并非在14岁时成为家庭一员，故为False。官方答案：B。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q2",
+          "order": 2,
+          "questionType": "single_choice",
+          "stem": "Anderson enjoyed her time with Grace.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "原文提到\"They took her on vacations and enjoyed her company around the house\"，与题干一致，为True。官方答案：A。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q3",
+          "order": 3,
+          "questionType": "single_choice",
+          "stem": "Grace died in an accident.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "原文只提到Grace在14岁时去世，没有说明死因是否为意外，信息文中未提及。官方答案：C。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q4",
+          "order": 4,
+          "questionType": "single_choice",
+          "stem": "Coren does not understand people's grief over the loss of their dogs.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "Coren说\"it's common to feel that way after the loss of a dog\"，说明他理解这种悲伤，故为False。官方答案：B。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q5",
+          "order": 5,
+          "questionType": "single_choice",
+          "stem": "The bond between humans and dogs can be compared to love.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "原文\"The bond between people and their dogs is a lot like love\"，与题干一致，为True。官方答案：A。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q6",
+          "order": 6,
+          "questionType": "single_choice",
+          "stem": "Dogs have the hormone associated with love.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "原文提到狗和主人对视时都产生了与爱有关的荷尔蒙水平升高，为True。官方答案：A。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q7",
+          "order": 7,
+          "questionType": "single_choice",
+          "stem": "Kikusui knows why wolves are different from dogs.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "原文只说Kikusui发现狼和人之间无法产生同样的荷尔蒙反应，但并未说明他知道原因，信息文中未提及。官方答案：C。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q8",
+          "order": 8,
+          "questionType": "single_choice",
+          "stem": "Man started to train dogs 14,000 years ago.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "原文\"For 14,000 years, we've been creating an animal...\"，与题干一致，为True。官方答案：A。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q9",
+          "order": 9,
+          "questionType": "single_choice",
+          "stem": "A wolf understands human communications.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "原文说狼只会看着手指本身（\"It would simply look at the finger\"），并不能理解人类的指示，故为False。官方答案：B。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q10",
+          "order": 10,
+          "questionType": "single_choice",
+          "stem": "Anderson finds humans more lovable than dogs.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "原文说\"For Anderson, dogs are more lovable than humans\"，与题干相反，为False。官方答案：B。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2024-04-s2",
+      "type": "阅读理解选择",
+      "order": 2,
+      "passageTitle": "Marta Garcia: Inspired by Technology",
+      "passageText": "Marta Garcia is a high school senior. In the past years she has been working on a variety of projects. The projects are part of her work with Techbridge, a nonprofit organization. Techbridge was set up in 2000 to increase the number of women in science, technology, engineering and math (STEM). It offers a range of after-school activities for students.\n\nTechbridge focuses on learning by doing. It attracts Marta's interest. \"When I was a kid,\" says Marta, \"I wasn't into English. I was really into technology and math. My older sister was in Techbridge. She encouraged me to join. It was something for me to do after school. I found it pretty fun.\"\n\nMarta has created a complex music-making machine. Her latest project is a digital piano, which shows how far her STEM skills have advanced. Marta's instructors have been following her progress closely. \"I've seen her master STEM skills,\" says Techbridge CEO Linda Kekelis. \"She's very confident to face challenges. She isn't afraid of temporary setbacks.\"\n\nMarta plans to attend Smith College this fall. She is still drawn to math and technology. But she does not want to be limited to one particular course of study.\n\n\"I'm not sure what I want to do after college graduation,\" says Marta. \"I know a STEM career is an option.\" The future will be filled with jobs that require STEM skills. So her love of technology and her experience with Techbridge will serve her well.",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2024-04-q11",
+          "order": 11,
+          "questionType": "single_choice",
+          "stem": "Techbridge was set up to ___.",
+          "options": ["A. train women teachers", "B. offer jobs for students", "C. teach STEM at school", "D. help girls learn STEM"],
+          "answer": "D",
+          "answerExplanation": "原文\"Techbridge was set up in 2000 to increase the number of women in science, technology, engineering and math (STEM)\"，即帮助女性/女孩学习STEM。官方答案：D。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q12",
+          "order": 12,
+          "questionType": "single_choice",
+          "stem": "Marta Garcia works with Techbridge to ___.",
+          "options": ["A. develop her interest", "B. finish her education", "C. improve her English", "D. please her older sister"],
+          "answer": "A",
+          "answerExplanation": "原文提到Marta从小就对科技和数学感兴趣，加入Techbridge是发展自己的兴趣。官方答案：A。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q13",
+          "order": 13,
+          "questionType": "single_choice",
+          "stem": "Linda Kekelis is impressed by Marta Garcia's ___.",
+          "options": ["A. knowledge", "B. interests", "C. confidence", "D. instructions"],
+          "answer": "C",
+          "answerExplanation": "原文Kekelis说\"She's very confident to face challenges. She isn't afraid of temporary setbacks.\"，强调的是自信。官方答案：C。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q14",
+          "order": 14,
+          "questionType": "single_choice",
+          "stem": "The word \"setbacks\" (Para. 3) most probably means \"___.\"",
+          "options": ["A. advances", "B. difficulties", "C. activities", "D. projects"],
+          "answer": "B",
+          "answerExplanation": "结合语境\"She's very confident... isn't afraid of temporary setbacks\"，setbacks指暂时的挫折/困难。官方答案：B。",
+          "knowledgePoints": ["词义猜测"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q15",
+          "order": 15,
+          "questionType": "single_choice",
+          "stem": "Marta Garcia's experience with Techbridge will ___.",
+          "options": ["A. help her finish university", "B. benefit her in the future", "C. limit her to a STEM job", "D. let her take fewer courses"],
+          "answer": "B",
+          "answerExplanation": "原文结尾\"So her love of technology and her experience with Techbridge will serve her well\"，即对她未来有益。官方答案：B。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2024-04-s3",
+      "type": "段落大意与句子补全",
+      "order": 3,
+      "passageTitle": "How to Create a Five-Year Career Plan",
+      "passageText": "① More and more people choose to make a five-year career plan. They think that the plan can help them to learn where they would like to go in the future. In fact, with a five-year plan, you can document the progress you have already made in your chosen career. You can also learn where you are likely to be heading in the future.\n\n② The initial step is to think about an end goal. This can help you to gain focus on your career. When you are setting your end goal, make sure that you do not choose a job purely based on its salary. Though salaries for the job may be high now, demand often changes over time.\n\n③ The next step is to get an adviser. An adviser is generally a person who has achieved success in the career that you wish to take. Ideally, an adviser can give you sound career advice. Make sure that you choose your adviser carefully as they may provide you with great insight.\n\n④ Next, you will need to think about the abilities that you will need to fulfill your career plan. Assess your current work experience and past education; figure out any specific skills or knowledge you already have; identify any gaps that you will need to fill in order to meet your end goal; and list any opportunities that you can take to improve the skills or knowledge that you have identified.\n\n⑤ Finally, you will need to identify the jobs that you would like to take. If you feel that you already have the required skills and knowledge, apply for them. Even if you fail to get one, you will gain some invaluable knowledge from the interview.",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2024-04-q16",
+          "order": 16,
+          "questionType": "single_choice",
+          "stem": "Task 1: Paragraph ①",
+          "options": [
+            "A. The first step to make a career plan",
+            "B. The reason for changing a career plan",
+            "C. The right time to apply for desired jobs",
+            "D. The necessity to get some career advice",
+            "E. The importance of having a career plan",
+            "F. The abilities to fulfill a career plan"
+          ],
+          "answer": "E",
+          "answerExplanation": "第①段说明越来越多的人制定五年职业规划及其意义（帮助明确方向、记录进展），概括为职业规划的重要性。官方答案：E。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q17",
+          "order": 17,
+          "questionType": "single_choice",
+          "stem": "Task 1: Paragraph ②",
+          "options": [
+            "A. The first step to make a career plan",
+            "B. The reason for changing a career plan",
+            "C. The right time to apply for desired jobs",
+            "D. The necessity to get some career advice",
+            "E. The importance of having a career plan",
+            "F. The abilities to fulfill a career plan"
+          ],
+          "answer": "A",
+          "answerExplanation": "第②段开头\"The initial step is to think about an end goal\"，讲的是制定职业规划的第一步。官方答案：A。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q18",
+          "order": 18,
+          "questionType": "single_choice",
+          "stem": "Task 1: Paragraph ③",
+          "options": [
+            "A. The first step to make a career plan",
+            "B. The reason for changing a career plan",
+            "C. The right time to apply for desired jobs",
+            "D. The necessity to get some career advice",
+            "E. The importance of having a career plan",
+            "F. The abilities to fulfill a career plan"
+          ],
+          "answer": "D",
+          "answerExplanation": "第③段讲述寻找导师（adviser）获取职业建议的必要性。官方答案：D。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q19",
+          "order": 19,
+          "questionType": "single_choice",
+          "stem": "Task 1: Paragraph ④",
+          "options": [
+            "A. The first step to make a career plan",
+            "B. The reason for changing a career plan",
+            "C. The right time to apply for desired jobs",
+            "D. The necessity to get some career advice",
+            "E. The importance of having a career plan",
+            "F. The abilities to fulfill a career plan"
+          ],
+          "answer": "F",
+          "answerExplanation": "第④段讲述需要思考实现职业规划所需的能力（abilities）。官方答案：F。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q20",
+          "order": 20,
+          "questionType": "single_choice",
+          "stem": "Task 1: Paragraph ⑤",
+          "options": [
+            "A. The first step to make a career plan",
+            "B. The reason for changing a career plan",
+            "C. The right time to apply for desired jobs",
+            "D. The necessity to get some career advice",
+            "E. The importance of having a career plan",
+            "F. The abilities to fulfill a career plan"
+          ],
+          "answer": "C",
+          "answerExplanation": "第⑤段讲述确定并申请想要的工作。官方答案：C（此选项措辞与段落内容对应关系较为宽泛，按官方答案记录）。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q21",
+          "order": 21,
+          "questionType": "single_choice",
+          "stem": "Task 2: A career plan can give you ___.",
+          "options": [
+            "A. the salary alone",
+            "B. to write it well",
+            "C. get well prepared",
+            "D. to find an adviser",
+            "E. offer some useful knowledge",
+            "F. a clear future direction"
+          ],
+          "answer": "F",
+          "answerExplanation": "第①段提到职业规划可以帮助人们明确未来方向，对应\"a clear future direction\"。官方答案：F。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q22",
+          "order": 22,
+          "questionType": "single_choice",
+          "stem": "Task 2: When you choose a job, you should not focus on ___.",
+          "options": [
+            "A. the salary alone",
+            "B. to write it well",
+            "C. get well prepared",
+            "D. to find an adviser",
+            "E. offer some useful knowledge",
+            "F. a clear future direction"
+          ],
+          "answer": "A",
+          "answerExplanation": "第②段提到设定目标时不要只根据薪水（purely based on its salary）来选择工作。官方答案：A。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q23",
+          "order": 23,
+          "questionType": "single_choice",
+          "stem": "Task 2: To gain career guidance, you should try ___.",
+          "options": [
+            "A. the salary alone",
+            "B. to write it well",
+            "C. get well prepared",
+            "D. to find an adviser",
+            "E. offer some useful knowledge",
+            "F. a clear future direction"
+          ],
+          "answer": "D",
+          "answerExplanation": "第③段建议寻找导师（adviser）以获得职业建议。官方答案：D。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q24",
+          "order": 24,
+          "questionType": "single_choice",
+          "stem": "Task 2: To fulfill a career plan, you should ___.",
+          "options": [
+            "A. the salary alone",
+            "B. to write it well",
+            "C. get well prepared",
+            "D. to find an adviser",
+            "E. offer some useful knowledge",
+            "F. a clear future direction"
+          ],
+          "answer": "C",
+          "answerExplanation": "第④段讲述评估现有能力、弥补差距、寻找提升机会，对应\"get well prepared\"。官方答案：C。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q25",
+          "order": 25,
+          "questionType": "single_choice",
+          "stem": "Task 2: A job interview can ___.",
+          "options": [
+            "A. the salary alone",
+            "B. to write it well",
+            "C. get well prepared",
+            "D. to find an adviser",
+            "E. offer some useful knowledge",
+            "F. a clear future direction"
+          ],
+          "answer": "E",
+          "answerExplanation": "第⑤段提到即使求职面试失败，也能\"gain some invaluable knowledge from the interview\"。官方答案：E。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2024-04-s4",
+      "type": "填句补文",
+      "order": 4,
+      "passageTitle": "What Does Happiness Mean?",
+      "passageText": "Happiness in life differs for all of us. ___(26)___ Very often we are happy, but we just don't realize it. If you think about what actually makes you happy, you might find you have those things already around you.\n\nYour happiness depends entirely on you. ___(27)___ It is something inside you that you have to find and work towards. You can take positive action and make changes to your life or yourself in order to achieve happiness.\n\n___(28)___ The first step for you to do so is to look at your feelings and ask yourself questions such as \"if I could be enjoying something in my life, what would it be?\" and \"what makes me feel satisfied in my life right now?\" Once you understand what your idea of happiness is, you can build on what you have now or focus on changing your life to what you would like it to be.\n\nThe important thing to do is to examine your feelings by way of the answers you give to your questions. ___(29)___ You should also focus on the good or bad feelings you get from your questions and answers.\n\nHappiness is something that is already right there inside you. You just have to realize what it is and bring it out to start enjoying life. It can be found in family life, work, relationships, nature or a pet, to name just a few. ___(30)___ The point is where to look. You should look in the right direction, that is, your inner self.",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2024-04-q26",
+          "order": 26,
+          "questionType": "single_choice",
+          "stem": "___(26)___",
+          "options": [
+            "A. No one else can give it to you.",
+            "B. You should examine them honestly.",
+            "C. Happiness is easy to define.",
+            "D. You should understand what happiness means to you.",
+            "E. Actually, it can be found in anything and any situation.",
+            "F. What makes one person happy may not bring happiness to another."
+          ],
+          "answer": "F",
+          "answerExplanation": "承接\"Happiness in life differs for all of us\"，说明每个人的幸福感不同，对某人是幸福的事对另一人未必如此。官方答案：F。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q27",
+          "order": 27,
+          "questionType": "single_choice",
+          "stem": "___(27)___",
+          "options": [
+            "A. No one else can give it to you.",
+            "B. You should examine them honestly.",
+            "C. Happiness is easy to define.",
+            "D. You should understand what happiness means to you.",
+            "E. Actually, it can be found in anything and any situation.",
+            "F. What makes one person happy may not bring happiness to another."
+          ],
+          "answer": "A",
+          "answerExplanation": "承接\"Your happiness depends entirely on you\"，说明幸福是别人给不了的。官方答案：A。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q28",
+          "order": 28,
+          "questionType": "single_choice",
+          "stem": "___(28)___",
+          "options": [
+            "A. No one else can give it to you.",
+            "B. You should examine them honestly.",
+            "C. Happiness is easy to define.",
+            "D. You should understand what happiness means to you.",
+            "E. Actually, it can be found in anything and any situation.",
+            "F. What makes one person happy may not bring happiness to another."
+          ],
+          "answer": "D",
+          "answerExplanation": "后文\"The first step for you to do so is to look at your feelings...\"中的\"so\"指代前一句提出的做法，即理解幸福对自己的含义。官方答案：D。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q29",
+          "order": 29,
+          "questionType": "single_choice",
+          "stem": "___(29)___",
+          "options": [
+            "A. No one else can give it to you.",
+            "B. You should examine them honestly.",
+            "C. Happiness is easy to define.",
+            "D. You should understand what happiness means to you.",
+            "E. Actually, it can be found in anything and any situation.",
+            "F. What makes one person happy may not bring happiness to another."
+          ],
+          "answer": "B",
+          "answerExplanation": "承接\"examine your feelings by way of the answers\"，进一步说明要诚实地审视这些答案。官方答案：B。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q30",
+          "order": 30,
+          "questionType": "single_choice",
+          "stem": "___(30)___",
+          "options": [
+            "A. No one else can give it to you.",
+            "B. You should examine them honestly.",
+            "C. Happiness is easy to define.",
+            "D. You should understand what happiness means to you.",
+            "E. Actually, it can be found in anything and any situation.",
+            "F. What makes one person happy may not bring happiness to another."
+          ],
+          "answer": "E",
+          "answerExplanation": "承接前文列举幸福可以在家庭、工作等多种情境中找到，呼应\"it can be found in anything and any situation\"。官方答案：E。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2024-04-s5",
+      "type": "填词补文",
+      "order": 5,
+      "passageTitle": "Tips for Improving Your Body Image",
+      "passageText": "Some people think that they need to change how they look or act to feel good about themselves. But actually all you need to ___(31)___ is change the way you see your body and how you think about yourself.\n\nThe first thing to do is ___(32)___ that your body is your own. If you're very worried about your weight or size, ___(33)___ with your doctor to verify that things are OK. But it's no one's business but your own what your body is like. Ultimately, you have to be happy with yourself.\n\n___(34)___, identify which aspects of your appearance you can ___(35)___ change and which you can't. Everyone has things about themselves that they can't change and need to accept, like their height, for example, or their shoe size.\n\nIf there are ___(36)___ about yourself that you want to change and can change (such as how fit you are), do this by setting ___(37)___ for yourself. For example, if you want to get fit, ___(38)___ make a plan to exercise every day and eat ___(39)___ foods. Then keep track of your ___(40)___ until you reach your goal. Meeting a challenge you set for yourself is a great way to boost self-esteem!",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "00015-2024-04-q31",
+          "order": 31,
+          "questionType": "single_choice",
+          "stem": "___(31)___",
+          "options": ["A. check", "B. things", "C. Instead", "D. goals", "E. Next", "F. do", "G. just", "H. healthy", "I. recognize", "J. method", "K. progress", "L. realistically"],
+          "answer": "F",
+          "answerExplanation": "\"all you need to do is change...\"，need to do为固定搭配。官方答案：F。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q32",
+          "order": 32,
+          "questionType": "single_choice",
+          "stem": "___(32)___",
+          "options": ["A. check", "B. things", "C. Instead", "D. goals", "E. Next", "F. do", "G. just", "H. healthy", "I. recognize", "J. method", "K. progress", "L. realistically"],
+          "answer": "I",
+          "answerExplanation": "\"The first thing to do is recognize that your body is your own\"，recognize意为“认识到”，符合语境。官方答案：I。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q33",
+          "order": 33,
+          "questionType": "single_choice",
+          "stem": "___(33)___",
+          "options": ["A. check", "B. things", "C. Instead", "D. goals", "E. Next", "F. do", "G. just", "H. healthy", "I. recognize", "J. method", "K. progress", "L. realistically"],
+          "answer": "A",
+          "answerExplanation": "\"check with your doctor\"为固定搭配，意为“向医生核实”。官方答案：A。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q34",
+          "order": 34,
+          "questionType": "single_choice",
+          "stem": "___(34)___",
+          "options": ["A. check", "B. things", "C. Instead", "D. goals", "E. Next", "F. do", "G. just", "H. healthy", "I. recognize", "J. method", "K. progress", "L. realistically"],
+          "answer": "E",
+          "answerExplanation": "\"Next, identify which aspects...\"，Next表示步骤顺承，引出下一步。官方答案：E。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q35",
+          "order": 35,
+          "questionType": "single_choice",
+          "stem": "___(35)___",
+          "options": ["A. check", "B. things", "C. Instead", "D. goals", "E. Next", "F. do", "G. just", "H. healthy", "I. recognize", "J. method", "K. progress", "L. realistically"],
+          "answer": "L",
+          "answerExplanation": "\"which aspects of your appearance you can realistically change\"，realistically（现实地）修饰change，符合语境。官方答案：L。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q36",
+          "order": 36,
+          "questionType": "single_choice",
+          "stem": "___(36)___",
+          "options": ["A. check", "B. things", "C. Instead", "D. goals", "E. Next", "F. do", "G. just", "H. healthy", "I. recognize", "J. method", "K. progress", "L. realistically"],
+          "answer": "B",
+          "answerExplanation": "\"If there are things about yourself that you want to change...\"，things泛指“事情/方面”。官方答案：B。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q37",
+          "order": 37,
+          "questionType": "single_choice",
+          "stem": "___(37)___",
+          "options": ["A. check", "B. things", "C. Instead", "D. goals", "E. Next", "F. do", "G. just", "H. healthy", "I. recognize", "J. method", "K. progress", "L. realistically"],
+          "answer": "D",
+          "answerExplanation": "\"setting goals for yourself\"为固定搭配，意为“为自己设定目标”。官方答案：D。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q38",
+          "order": 38,
+          "questionType": "single_choice",
+          "stem": "___(38)___",
+          "options": ["A. check", "B. things", "C. Instead", "D. goals", "E. Next", "F. do", "G. just", "H. healthy", "I. recognize", "J. method", "K. progress", "L. realistically"],
+          "answer": "G",
+          "answerExplanation": "\"just make a plan to exercise every day\"，just在此起强调/简单直接之意。官方答案：G。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q39",
+          "order": 39,
+          "questionType": "single_choice",
+          "stem": "___(39)___",
+          "options": ["A. check", "B. things", "C. Instead", "D. goals", "E. Next", "F. do", "G. just", "H. healthy", "I. recognize", "J. method", "K. progress", "L. realistically"],
+          "answer": "H",
+          "answerExplanation": "\"eat healthy foods\"为固定搭配，意为“吃健康食物”。官方答案：H。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q40",
+          "order": 40,
+          "questionType": "single_choice",
+          "stem": "___(40)___",
+          "options": ["A. check", "B. things", "C. Instead", "D. goals", "E. Next", "F. do", "G. just", "H. healthy", "I. recognize", "J. method", "K. progress", "L. realistically"],
+          "answer": "K",
+          "answerExplanation": "\"keep track of your progress\"为固定搭配，意为“跟踪你的进展”。官方答案：K。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2024-04-s6",
+      "type": "完形填空",
+      "order": 6,
+      "passageTitle": "Does Watching TV Relieve Stress?",
+      "passageText": "After a tough day, you may possibly (possible) turn on the TV. Getting ___(41)___ (lose) in your favorite show seems like an ___(42)___ (effect) way to relax. But it may make things worse.\n\nIt is ___(43)___ (general) believed that watching TV can ___(44)___ (able) people to relax. It provides a temporary escape from stresses. However, the same can't be ___(45)___ (say) for those who are busy and ___(46)___ (tire). Those people can feel guilty about ___(47)___ (spend) so much time in front of the TV. They tend to see it as a form of procrastination (拖延). In other ___(48)___ (word), they are avoiding other important things out of ___(49)___ (lazy). They feel they are giving in to TV. That feeling ___(50)___ (keep) them from relaxing.",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "00015-2024-04-q41",
+          "order": 41,
+          "questionType": "fill_blank_transform",
+          "stem": "lose",
+          "options": [],
+          "answer": "lost",
+          "answerExplanation": "\"Getting lost in your favorite show\"，lose的过去分词形式作宾语补足语/形容词短语，表示“沉浸其中”。评分参考：本部分无0.5分和1分的计分，语法错误或拼写错误均不给分；英、美拼写均可接受；大小写错误不扣分。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q42",
+          "order": 42,
+          "questionType": "fill_blank_transform",
+          "stem": "effect",
+          "options": [],
+          "answer": "effective",
+          "answerExplanation": "\"an effective way to relax\"，effect（名词）需转换为形容词effective修饰way。评分参考：本部分无0.5分和1分的计分，语法错误或拼写错误均不给分；英、美拼写均可接受；大小写错误不扣分。",
+          "knowledgePoints": ["词性转换", "形容词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q43",
+          "order": 43,
+          "questionType": "fill_blank_transform",
+          "stem": "general",
+          "options": [],
+          "answer": "generally",
+          "answerExplanation": "\"It is generally believed that...\"，general（形容词）需转换为副词generally修饰believed。评分参考：本部分无0.5分和1分的计分，语法错误或拼写错误均不给分；英、美拼写均可接受；大小写错误不扣分。",
+          "knowledgePoints": ["副词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q44",
+          "order": 44,
+          "questionType": "fill_blank_transform",
+          "stem": "able",
+          "options": [],
+          "answer": "enable",
+          "answerExplanation": "\"watching TV can enable people to relax\"，able（形容词）需转换为动词enable，意为“使能够”。评分参考：本部分无0.5分和1分的计分，语法错误或拼写错误均不给分；英、美拼写均可接受；大小写错误不扣分。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q45",
+          "order": 45,
+          "questionType": "fill_blank_transform",
+          "stem": "say",
+          "options": [],
+          "answer": "said",
+          "answerExplanation": "\"the same can't be said for those who...\"，被动语态can't be done结构，say需变为过去分词said。评分参考：本部分无0.5分和1分的计分，语法错误或拼写错误均不给分；英、美拼写均可接受；大小写错误不扣分。",
+          "knowledgePoints": ["被动语态"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q46",
+          "order": 46,
+          "questionType": "fill_blank_transform",
+          "stem": "tire",
+          "options": [],
+          "answer": "tired",
+          "answerExplanation": "\"those who are busy and tired\"，tire需转换为形容词tired，与busy并列作表语。评分参考：本部分无0.5分和1分的计分，语法错误或拼写错误均不给分；英、美拼写均可接受；大小写错误不扣分。",
+          "knowledgePoints": ["形容词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q47",
+          "order": 47,
+          "questionType": "fill_blank_transform",
+          "stem": "spend",
+          "options": [],
+          "answer": "spending",
+          "answerExplanation": "\"feel guilty about spending so much time\"，介词about后接动词需用动名词形式spending。评分参考：本部分无0.5分和1分的计分，语法错误或拼写错误均不给分；英、美拼写均可接受；大小写错误不扣分。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q48",
+          "order": 48,
+          "questionType": "fill_blank_transform",
+          "stem": "word",
+          "options": [],
+          "answer": "words",
+          "answerExplanation": "\"In other words\"为固定短语，意为“换句话说”，word需用复数形式words。评分参考：本部分无0.5分和1分的计分，语法错误或拼写错误均不给分；英、美拼写均可接受；大小写错误不扣分。",
+          "knowledgePoints": ["名词单复数"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q49",
+          "order": 49,
+          "questionType": "fill_blank_transform",
+          "stem": "lazy",
+          "options": [],
+          "answer": "laziness",
+          "answerExplanation": "\"out of laziness\"，介词out of后接名词，lazy（形容词）需转换为名词laziness。评分参考：本部分无0.5分和1分的计分，语法错误或拼写错误均不给分；英、美拼写均可接受；大小写错误不扣分。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2024-04-q50",
+          "order": 50,
+          "questionType": "fill_blank_transform",
+          "stem": "keep",
+          "options": [],
+          "answer": "keeps",
+          "answerExplanation": "\"That feeling keeps them from relaxing\"，主语That feeling为第三人称单数，谓语动词keep需用第三人称单数形式keeps。评分参考：本部分无0.5分和1分的计分，语法错误或拼写错误均不给分；英、美拼写均可接受；大小写错误不扣分。",
+          "knowledgePoints": ["动词时态"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2024-04-s7",
+      "type": "写作",
+      "order": 7,
+      "passageTitle": null,
+      "passageText": null,
+      "writingPrompt": "某英文报社正在举办题为\"Online Shopping\"的征文活动。请你根据下述写作要点提交一篇英文短文应征。\n● 你所了解的网上购物情况\n● 你对网上购物的看法\n（请根据所提供材料中的要求完成一篇100词左右的英文写作任务。）",
+      "scorePerQuestion": 30,
+      "totalScore": 30,
+      "questions": [
+        {
+          "questionId": "00015-2024-04-q51",
+          "order": 51,
+          "questionType": "essay",
+          "stem": "请根据写作要点，以\"Online Shopping\"为题，写一篇100词左右的英文短文，内容包括：(1) 你所了解的网上购物情况；(2) 你对网上购物的看法。",
+          "options": [],
+          "answer": "",
+          "answerExplanation": "官方答案页该部分仅标注\"参考范文:略\"，未提供任何范文或评分细则，官方未提供范文，无法据此给出解析或评分标准。",
+          "knowledgePoints": ["写作-观点类"],
+          "difficultyTag": null
+        }
+      ]
+    }
+  ],
+  "parsingNotes": [
+    "第六部分完形补文（第41-50题）官方评分参考特别说明：本部分无0.5分和1分的计分，语法错误或拼写错误均不给分；英、美拼写均可接受；大小写错误不扣分。此说明已同步记录在第41-50题各题的answerExplanation中。",
+    "第七部分短文写作（第51题）官方答案页仅标注\"参考范文:略\"，未提供任何参考范文或具体评分标准，故该题answerExplanation中如实注明官方未提供范文，人工校对/组卷时如需评分细则需另行编写或由阅卷经验补充。",
+    "全卷9页图片均清晰可辨，未发现字迹模糊或版式混乱导致无法确定题目、选项、原文对应关系的情况，答案页与试题页逐题核对一致，未发现需要额外人工核对的图像不清问题。"
+  ]
+}

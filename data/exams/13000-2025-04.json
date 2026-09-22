@@ -1,0 +1,658 @@
+{
+  "examId": "13000-2025-04",
+  "title": "2025年4月高等教育自学考试全国统一命题考试英语(专升本)真题",
+  "year": 2025,
+  "month": 4,
+  "courseCode": "13000",
+  "courseName": "英语(专升本)",
+  "sourceFile": "90d3a635-2025_04______________.pdf",
+  "totalScore": 100,
+  "timeLimitMinutes": 150,
+  "status": "待校对",
+  "sections": [
+    {
+      "sectionId": "13000-2025-04-s1",
+      "type": "阅读判断",
+      "order": 1,
+      "passageTitle": "The History of Coffee Houses",
+      "passageText": "Today,the idea of a coffee house usually brings to mind a cozy(惬意的)place that serves delicious coffee.So how did the coffee house get started?\n\nThe first record of a public place serving coffee dates back to 1475.Kiva Han was the first coffee shop,located in Istanbul,Türkiye.Coffee was a very important item during that period.It was even legal in Türkiye for a woman to divorce her husband if he could not supply her with enough coffee.\n\nThe idea of adding cream and sugar to coffee came into fashion in Europe around 1529,when the first coffee house in Europe was established.Vienna was invaded by the Turkish army.They left many bags of coffee beans behind when they fled the city.An Austrian who had lived in Türkiye was the only person who recognized the value in the beans.He opened a coffee house and introduced the idea of filtering(过滤)coffee,as well as softening coffee with milk and sugar.\n\nCoffee establishments continued to spread,with the first one opening up in Britain in 1652.And it was in an English coffee house that the word \"tips\" was first used.A jar with a sign reading \"To Insure Prompt Service\" sat on the counter.You put a coin in the jar to be served quickly.\n\nThe British called their coffee houses \"penny universities,\" because that was the price for the coffee and the social upper-class of businessmen were found there.From there,the idea spread further through Europe and eventually to America.The role of the American coffee houses was the same as that in England:hotspots for the business community.\n\nAnd who could forget the most popular coffee house chain of all,Starbucks?They opened their first store in 1971,in Seattle,and have taken the world by storm with over 8,000 locations.",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "13000-2025-04-q1",
+          "order": 1,
+          "questionType": "single_choice",
+          "stem": "Kiva Han was the world's oldest coffee house.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "根据第二段首句 \"The first record of a public place serving coffee dates back to 1475. Kiva Han was the first coffee shop...\" 可知，Kiva Han 是有记录的世界上最早的咖啡馆，与题干一致。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q2",
+          "order": 2,
+          "questionType": "single_choice",
+          "stem": "Turkish men often bought coffee as a gift for the marriage proposal.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "第二段提到若丈夫无法为妻子提供足够咖啡，妻子可合法离婚，但未提及土耳其男性以咖啡作为求婚礼物，原文未提及。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q3",
+          "order": 3,
+          "questionType": "single_choice",
+          "stem": "It was in Europe that people started to add cream to coffee.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "第三段明确指出 \"The idea of adding cream and sugar to coffee came into fashion in Europe around 1529\"，与题干一致。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q4",
+          "order": 4,
+          "questionType": "single_choice",
+          "stem": "The Turkish people enjoyed having their coffee black.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "短文仅提到土耳其人开设了最早的咖啡馆，未涉及土耳其人是否喜欢喝黑咖啡，原文未提及。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q5",
+          "order": 5,
+          "questionType": "single_choice",
+          "stem": "Coffee beans were first brought to Europe as a gift from Türkiye.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "第三段提到维也纳被土耳其军队入侵后，士兵逃离时留下了咖啡豆，并非作为礼物主动赠送，与题干矛盾。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q6",
+          "order": 6,
+          "questionType": "single_choice",
+          "stem": "Before 1529,there were many coffee houses in Europe.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "第三段首句指出1529年欧洲第一家咖啡馆才成立，说明1529年之前欧洲没有咖啡馆，与题干 \"many coffee houses\" 矛盾。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q7",
+          "order": 7,
+          "questionType": "single_choice",
+          "stem": "The British started tipping in order to get served more quickly.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "第四段提到罐子上写着 \"To Insure Prompt Service\"，顾客投币可加快服务，与题干一致。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q8",
+          "order": 8,
+          "questionType": "single_choice",
+          "stem": "Many coffee houses were opened in British universities.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "第五段提到英国咖啡馆被称为 \"penny universities\"（因一便士的价格），但未提及咖啡馆开在大学内，原文未提及。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q9",
+          "order": 9,
+          "questionType": "single_choice",
+          "stem": "American businessmen often met at coffee houses.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "第五段明确说明美国咖啡馆的角色与英国相同，是商业群体的聚集地（hotspots for the business community），与题干一致。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q10",
+          "order": 10,
+          "questionType": "single_choice",
+          "stem": "Starbucks opened its first coffee house in 1652.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "最后一段提到星巴克首家门店于1971年在西雅图开业，而1652年是英国首家咖啡馆开设的时间，题干时间错误。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "13000-2025-04-s2",
+      "type": "阅读理解选择",
+      "order": 2,
+      "passageTitle": "The Spread of Cats",
+      "passageText": "Today's house cats all come from a single type of wildcat.Researchers believe that it was originally from the Near East,in a region from modern-day Türkiye down to Lebanon. Around 10,000 years ago,farmers began storing grain.The grain attracted mice.Cats could help out with that.\n\nThe same type of cats also ruled in Ancient Egypt.They left their traces in statues and paintings.Researchers wondered how these two separate lines led to today's worldwide success of cats.Unlike other archaeologists(考古学家),Eva-Maria Geigl studied DNA instead of bones.\n\nCombining the genetic information with other records,the researchers figured out the cats' paths.After cats befriended(亲近)the Near East farmers,they began to appear on farms in other places.One example is a 9,500-year-old cat buried in a human grave on the island of Cyprus.There were no wild cats on the island.They must have come from somewhere else. Humans must have brought them on a boat.\n\nA second wave of cats began living with humans in Egypt 2,500 years ago.The new study shows that during Roman times,these Egyptian cats also began expanding through the Mediterranean(地中海).They mixed with the Near East cats and then went farther.They went through Europe and into Southwest Asia.\n\nWhen the Viking age began,the expansion of Egyptian cat families exploded.It was likely due to the popularity of using ship cats to kill rats.\"Rats on ships not only eat and spoil the food,they also destroy the ropes,so rats could be a disaster for sailors,\"says Geigl.\"Cats prevent these types of disasters.\"",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "13000-2025-04-q11",
+          "order": 11,
+          "questionType": "single_choice",
+          "stem": "The first cats were believed to come from ________.",
+          "options": ["A. Egypt", "B. the Far East", "C. the Near East", "D. East Asia"],
+          "answer": "C",
+          "answerExplanation": "文中明确提到研究人员认为家猫最初来自近东地区（the Near East），范围从现代土耳其到黎巴嫩一带。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q12",
+          "order": 12,
+          "questionType": "single_choice",
+          "stem": "How does Geigl study the spread of cats?",
+          "options": ["A. By following their traces.", "B. By analyzing their statues.", "C. By examining their bones", "D. By testing their DNA"],
+          "answer": "D",
+          "answerExplanation": "文中明确提到 \"Unlike other archaeologists, Eva-Maria Geigl studied DNA instead of bones.\"，说明她的研究方法是分析DNA。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q13",
+          "order": 13,
+          "questionType": "single_choice",
+          "stem": "The cat found in the Cyprus grave was probably________.",
+          "options": ["A. born on the island", "B. brought to the island", "C. the world's first wild cat", "D. the world's first pet cat"],
+          "answer": "B",
+          "answerExplanation": "原文提到塞浦路斯岛上没有野猫，研究人员推测该猫一定是被人类用船带到岛上的（Humans must have brought them on a boat）。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q14",
+          "order": 14,
+          "questionType": "single_choice",
+          "stem": "The cats in Southwest Asia were originally from________.",
+          "options": ["A. Egypt", "B. Cyprus", "C. Europe", "D. the Mediterranean"],
+          "answer": "A",
+          "answerExplanation": "第四段说明第二波源自埃及的猫在罗马时代通过地中海向外扩散，与近东猫种混合后穿越欧洲进入西南亚，因此西南亚的猫可追溯到埃及这一支。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q15",
+          "order": 15,
+          "questionType": "single_choice",
+          "stem": "Who contributed most to the spread of cats during the Viking age?",
+          "options": ["A. Researchers.", "B. Painters.", "C. Farmers.", "D. Sailors."],
+          "answer": "D",
+          "answerExplanation": "文中明确提到维京时代猫的扩散规模急剧扩大，很可能是由于水手在船上养猫灭鼠的做法流行开来，故选水手（Sailors）。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "13000-2025-04-s3",
+      "type": "段落大意与句子补全",
+      "order": 3,
+      "passageTitle": "The Pony(小马) Express",
+      "passageText": "① In 1848,gold was found in California.Thousands of people rushed there.But the train line to California wasn't finished until 1869.It took a long time to ride a horse from California to Missouri.What would you do if you wanted to send a message?Well,you could use the Pony Express.\n\n② In 1860 and 1861,the Pony Express was the fastest way to get news to and from the West.The road was around 2,000 miles long.It took most people weeks or months to ride that far.The Pony Express could make it in just 10 days.Those speeds were unheard of then.How did they do it?Well,they had a good system.\n\n③ The Pony Express had 184 stations along the road.The stations were about 10 miles apart.This is about how far a horse could run before tired.The rider would switch to a new horse at each station.Every 75-100 miles,the rider would get to a home station,where riders would rest.Before resting,he would give his mail bag to a new rider.The mail never stopped moving,while the horses and riders rested.\n\n④ It was tough to ride for the Pony Express.Each rider had to weigh less than 125 pounds.Speed was the key.Most riders were teenage boys.They rode up to 100 miles a day.The ride could be dangerous.Attacks by local people were common.But in its running time,the Pony Express lost only one mail bag.\n\n⑤ The Pony Express filled an important role for a time,but it did not last.The Civil War started in 1861.Things got worse when the first telegraph line to California was finished later that year.People could send messages by telegraph instantly.Soon the Pony Express closed. But the story of the brave riders lives on.",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "13000-2025-04-q16",
+          "order": 16,
+          "questionType": "single_choice",
+          "stem": "Paragraph ①:",
+          "options": ["A. The end of riders' business", "B. The fastest message service", "C. The comfortable home station", "D. The effective system to send mail", "E. Safe delivery despite the tough ride", "F. Need of message exchange in the gold rush"],
+          "answer": "F",
+          "answerExplanation": "第一段讲加州淘金热中消息传递的需求，对应 \"Need of message exchange in the gold rush\"。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q17",
+          "order": 17,
+          "questionType": "single_choice",
+          "stem": "Paragraph ②:",
+          "options": ["A. The end of riders' business", "B. The fastest message service", "C. The comfortable home station", "D. The effective system to send mail", "E. Safe delivery despite the tough ride", "F. Need of message exchange in the gold rush"],
+          "answer": "B",
+          "answerExplanation": "第二段强调Pony Express是最快的通信方式，对应 \"The fastest message service\"。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q18",
+          "order": 18,
+          "questionType": "single_choice",
+          "stem": "Paragraph ③:",
+          "options": ["A. The end of riders' business", "B. The fastest message service", "C. The comfortable home station", "D. The effective system to send mail", "E. Safe delivery despite the tough ride", "F. Need of message exchange in the gold rush"],
+          "answer": "D",
+          "answerExplanation": "第三段介绍驿站和换马系统，对应 \"The effective system to send mail\"。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q19",
+          "order": 19,
+          "questionType": "single_choice",
+          "stem": "Paragraph ④:",
+          "options": ["A. The end of riders' business", "B. The fastest message service", "C. The comfortable home station", "D. The effective system to send mail", "E. Safe delivery despite the tough ride", "F. Need of message exchange in the gold rush"],
+          "answer": "E",
+          "answerExplanation": "第四段讲骑手的艰辛但邮件安全送达，对应 \"Safe delivery despite the tough ride\"。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q20",
+          "order": 20,
+          "questionType": "single_choice",
+          "stem": "Paragraph ⑤:",
+          "options": ["A. The end of riders' business", "B. The fastest message service", "C. The comfortable home station", "D. The effective system to send mail", "E. Safe delivery despite the tough ride", "F. Need of message exchange in the gold rush"],
+          "answer": "A",
+          "answerExplanation": "第五段讲Pony Express因电报出现而终结，对应 \"The end of riders' business\"。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q21",
+          "order": 21,
+          "questionType": "single_choice",
+          "stem": "People rushed to California________.",
+          "options": ["A. only ten days", "B. for a better life", "C. a couple of months", "D. be young and brave", "E. switch horses and riders", "F. after the outbreak of the Civil War"],
+          "answer": "B",
+          "answerExplanation": "人们涌入加州是为了淘金、追求更好的生活，对应 \"for a better life\"。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q22",
+          "order": 22,
+          "questionType": "single_choice",
+          "stem": "To ride 2,000 miles took the Pony Express________.",
+          "options": ["A. only ten days", "B. for a better life", "C. a couple of months", "D. be young and brave", "E. switch horses and riders", "F. after the outbreak of the Civil War"],
+          "answer": "A",
+          "answerExplanation": "Pony Express骑行2000英里仅需 \"only ten days\"（10天）。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q23",
+          "order": 23,
+          "questionType": "single_choice",
+          "stem": "There were adequate stations to________.",
+          "options": ["A. only ten days", "B. for a better life", "C. a couple of months", "D. be young and brave", "E. switch horses and riders", "F. after the outbreak of the Civil War"],
+          "answer": "E",
+          "answerExplanation": "充足的驿站用于换马和换骑手，对应 \"switch horses and riders\"。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q24",
+          "order": 24,
+          "questionType": "single_choice",
+          "stem": "Most riders had to________.",
+          "options": ["A. only ten days", "B. for a better life", "C. a couple of months", "D. be young and brave", "E. switch horses and riders", "F. after the outbreak of the Civil War"],
+          "answer": "D",
+          "answerExplanation": "大多数骑手需年轻且勇敢（体重限制、危险骑行），对应 \"be young and brave\"。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q25",
+          "order": 25,
+          "questionType": "single_choice",
+          "stem": "The telegraph appeared________.",
+          "options": ["A. only ten days", "B. for a better life", "C. a couple of months", "D. be young and brave", "E. switch horses and riders", "F. after the outbreak of the Civil War"],
+          "answer": "F",
+          "answerExplanation": "电报线路是在1861年内战爆发后建成的，对应 \"after the outbreak of the Civil War\"。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "13000-2025-04-s4",
+      "type": "填句补文",
+      "order": 4,
+      "passageTitle": "Work is a Blessing",
+      "passageText": "I grew up in Lakeland,LA,one of 12 children.We all lived on my parents' farm.We grew cotton,corn and had a large garden,but it didn't bring in much cash.___(26)___ We milked 65 cows at 5 in the morning and again at 2 in the afternoon,seven days a week.\n\nOne Saturday before daylight,I remember complaining to my father and grandfather about having to milk those cows.My father said,\"You know,boy,to work is a blessing.\"___(27)___ However,it took many years before it sank in.\n\nGoing to college was a rare privilege for a kid from Lakeland.___(28)___ So I joined the ROTC program to help pay for college.And what started out as an obligation to the Army became a way of life that I stayed committed to for 37 years,three months and three days.\n\nIn the late 1980s,during a visit to Bangladesh,I saw a woman with a baby on her back,breaking bricks with a hammer.I asked a Bangladesh military officer why they weren't using a machine,which would have been a lot easier.___(29)___ Breaking those bricks meant she could earn enough money to feed herself and her baby that day.And as bad as that woman's job was,it was enough to keep a small family alive.___(30)___",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "13000-2025-04-q26",
+          "order": 26,
+          "questionType": "single_choice",
+          "stem": "___(26)___",
+          "options": ["A. I don't think I will ever quit working", "B. However, I still wanted to go to college.", "C. He told me a machine would put that lady out of work.", "D. I had a feeling I had been told something really important.", "E. It reminded me of my father's words: To work is a blessing", "F. So when I was 12, I got a part-time job helping to milk cows."],
+          "answer": "F",
+          "answerExplanation": "前句提到农场收入少，后句讲挤牛奶，中间用 \"12岁时找兼职挤牛奶\" 衔接，对应F。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q27",
+          "order": 27,
+          "questionType": "single_choice",
+          "stem": "___(27)___",
+          "options": ["A. I don't think I will ever quit working", "B. However, I still wanted to go to college.", "C. He told me a machine would put that lady out of work.", "D. I had a feeling I had been told something really important.", "E. It reminded me of my father's words: To work is a blessing", "F. So when I was 12, I got a part-time job helping to milk cows."],
+          "answer": "D",
+          "answerExplanation": "父亲说\"工作是福分\"，\"我\"意识到这是重要的话，对应 \"I had a feeling I had been told something really important\"。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q28",
+          "order": 28,
+          "questionType": "single_choice",
+          "stem": "___(28)___",
+          "options": ["A. I don't think I will ever quit working", "B. However, I still wanted to go to college.", "C. He told me a machine would put that lady out of work.", "D. I had a feeling I had been told something really important.", "E. It reminded me of my father's words: To work is a blessing", "F. So when I was 12, I got a part-time job helping to milk cows."],
+          "answer": "B",
+          "answerExplanation": "尽管上大学难得，但\"我仍想上大学\"，引出后文加入ROTC项目筹措学费，对应B。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q29",
+          "order": 29,
+          "questionType": "single_choice",
+          "stem": "___(29)___",
+          "options": ["A. I don't think I will ever quit working", "B. However, I still wanted to go to college.", "C. He told me a machine would put that lady out of work.", "D. I had a feeling I had been told something really important.", "E. It reminded me of my father's words: To work is a blessing", "F. So when I was 12, I got a part-time job helping to milk cows."],
+          "answer": "C",
+          "answerExplanation": "军官回答\"机器会让妇女失业\"，解释了为何不用机器，对应C。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q30",
+          "order": 30,
+          "questionType": "single_choice",
+          "stem": "___(30)___",
+          "options": ["A. I don't think I will ever quit working", "B. However, I still wanted to go to college.", "C. He told me a machine would put that lady out of work.", "D. I had a feeling I had been told something really important.", "E. It reminded me of my father's words: To work is a blessing", "F. So when I was 12, I got a part-time job helping to milk cows."],
+          "answer": "E",
+          "answerExplanation": "妇女辛苦却坚持工作的经历让\"我\"想起父亲的话，呼应主题\"Work is a Blessing\"，对应E。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "13000-2025-04-s5",
+      "type": "填词补文",
+      "order": 5,
+      "passageTitle": "The Impact of Artificial Intelligence(人工智能) on Jobs",
+      "passageText": "As you grew up,there's a good chance you heard the saying\"go to a good school,get a good job,and make lots of money.\"On the surface,that seems like ___(31)___ advice.After all,college graduates,on ___(32)___,earn almost $1 million more in their lifetime than those with ___(33)___ a high school education.\n\nPerhaps you were encouraged to earn a professional degree to ___(34)___ a high-paying job like a doctor,dentist,lawyer or something ___(35)___.This also seems like great advice.A professional degree holder ___(36)___ earns more than $2 million more in their lifetime than the average college graduate.But that was then,not now.\n\nThanks to rapid ___(37)___ in artificial intelligence,jobs are falling to machines.And it's not just blue-collar jobs that are being taken ___(38)___ by automation(自动化).It's white-collar professions as well.\n\nThe safe,high paying jobs of the past are starting to look much less secure.If you're currently in one of the professions of finance,___(39)___ or law,or going to school to get into these fields,you should ___(40)___ twice before continuing.",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "13000-2025-04-q31",
+          "order": 31,
+          "questionType": "single_choice",
+          "stem": "___(31)___",
+          "options": ["A. get", "B. called", "C. similar", "D. think", "E. medicine", "F. over", "G. average", "H. valuable", "I. only", "J. use", "K. usually", "L. development"],
+          "answer": "H",
+          "answerExplanation": "修饰\"advice\"需用形容词，\"valuable\"表示\"有价值的\"，符合\"表面看是有价值的建议\"语境。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q32",
+          "order": 32,
+          "questionType": "single_choice",
+          "stem": "___(32)___",
+          "options": ["A. get", "B. called", "C. similar", "D. think", "E. medicine", "F. over", "G. average", "H. valuable", "I. only", "J. use", "K. usually", "L. development"],
+          "answer": "G",
+          "answerExplanation": "\"on average\"为固定搭配，意为\"平均\"，表示大学毕业生平均比高中生多赚近百万美元。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q33",
+          "order": 33,
+          "questionType": "single_choice",
+          "stem": "___(33)___",
+          "options": ["A. get", "B. called", "C. similar", "D. think", "E. medicine", "F. over", "G. average", "H. valuable", "I. only", "J. use", "K. usually", "L. development"],
+          "answer": "I",
+          "answerExplanation": "与前句对比，强调\"仅有高中学历\"，用\"only\"突出学历差异。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q34",
+          "order": 34,
+          "questionType": "single_choice",
+          "stem": "___(34)___",
+          "options": ["A. get", "B. called", "C. similar", "D. think", "E. medicine", "F. over", "G. average", "H. valuable", "I. only", "J. use", "K. usually", "L. development"],
+          "answer": "A",
+          "answerExplanation": "\"to get a high-paying job\"表示\"获得高薪工作\"，动词\"get\"符合语义。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q35",
+          "order": 35,
+          "questionType": "single_choice",
+          "stem": "___(35)___",
+          "options": ["A. get", "B. called", "C. similar", "D. think", "E. medicine", "F. over", "G. average", "H. valuable", "I. only", "J. use", "K. usually", "L. development"],
+          "answer": "C",
+          "answerExplanation": "\"something similar\"意为\"类似的职业\"，衔接前文列举的医生、牙医等，表示\"诸如此类\"。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q36",
+          "order": 36,
+          "questionType": "single_choice",
+          "stem": "___(36)___",
+          "options": ["A. get", "B. called", "C. similar", "D. think", "E. medicine", "F. over", "G. average", "H. valuable", "I. only", "J. use", "K. usually", "L. development"],
+          "answer": "K",
+          "answerExplanation": "修饰动词\"earns\"，\"usually\"表示\"通常\"，说明专业学位持有者通常比普通毕业生赚得多。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q37",
+          "order": 37,
+          "questionType": "single_choice",
+          "stem": "___(37)___",
+          "options": ["A. get", "B. called", "C. similar", "D. think", "E. medicine", "F. over", "G. average", "H. valuable", "I. only", "J. use", "K. usually", "L. development"],
+          "answer": "L",
+          "answerExplanation": "\"rapid development\"为固定搭配，意为\"快速发展\"，描述人工智能的进步。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q38",
+          "order": 38,
+          "questionType": "single_choice",
+          "stem": "___(38)___",
+          "options": ["A. get", "B. called", "C. similar", "D. think", "E. medicine", "F. over", "G. average", "H. valuable", "I. only", "J. use", "K. usually", "L. development"],
+          "answer": "F",
+          "answerExplanation": "\"take over\"为固定短语，意为\"取代\"，\"are being taken over by automation\"表示\"被自动化取代\"。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q39",
+          "order": 39,
+          "questionType": "single_choice",
+          "stem": "___(39)___",
+          "options": ["A. get", "B. called", "C. similar", "D. think", "E. medicine", "F. over", "G. average", "H. valuable", "I. only", "J. use", "K. usually", "L. development"],
+          "answer": "E",
+          "answerExplanation": "与\"finance（金融）\"\"law（法律）\"并列，\"medicine（医疗）\"为常见白领职业，符合语境。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q40",
+          "order": 40,
+          "questionType": "single_choice",
+          "stem": "___(40)___",
+          "options": ["A. get", "B. called", "C. similar", "D. think", "E. medicine", "F. over", "G. average", "H. valuable", "I. only", "J. use", "K. usually", "L. development"],
+          "answer": "D",
+          "answerExplanation": "\"think twice\"为固定短语，意为\"三思\"，劝诫进入金融、医疗、法律领域前谨慎考虑。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "13000-2025-04-s6",
+      "type": "完形填空",
+      "order": 6,
+      "passageTitle": "Dutch King's Secret Life",
+      "passageText": "Next time you fly,the pilot might(may)be a king.Dutch King Willem-Alexander has ___(41)___(secret)been flying planes twice a month for twenty-one ___(42)___(year).His passengers were ___(43)___(aware)of this.The 50-year-old king ___(44)___(get)his military pilot's license with the Dutch Air Force in his twenties.He loved flying and ___(45)___(become)a commercial pilot.The king is now ___(46)___(train)to fly Boeing 737 because he wants to upgrade his skills.\n\nThe king said flying could relieve his pressure.He explained:\"You can't take your problems from the ground into the skies.You can leave them aside ___(47)___(complete)and concentrate on something else.That is the most ___(48)___(relax)part of flying.\"He said it was easy to keep his secret.Few people ___(49)___(know)he was their pilot.He always welcomed passengers on behalf of the captain and the crew.So far he has never ___(50)___(tell)passengers his name.",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "13000-2025-04-q41",
+          "order": 41,
+          "questionType": "fill_blank_transform",
+          "stem": "secret",
+          "options": [],
+          "answer": "secretly",
+          "answerExplanation": "修饰动词\"been flying\"需用副词，故填\"secretly\"（秘密地）。",
+          "knowledgePoints": ["副词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q42",
+          "order": 42,
+          "questionType": "fill_blank_transform",
+          "stem": "year",
+          "options": [],
+          "answer": "years",
+          "answerExplanation": "\"twenty-one\"后接名词复数，故填\"years\"。",
+          "knowledgePoints": ["名词单复数"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q43",
+          "order": 43,
+          "questionType": "fill_blank_transform",
+          "stem": "aware",
+          "options": [],
+          "answer": "unaware",
+          "answerExplanation": "根据语境，乘客\"不知道\"国王身份，用否定形容词\"unaware\"。",
+          "knowledgePoints": ["形容词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q44",
+          "order": 44,
+          "questionType": "fill_blank_transform",
+          "stem": "get",
+          "options": [],
+          "answer": "got",
+          "answerExplanation": "讲述过去获得驾照，用一般过去时\"got\"。",
+          "knowledgePoints": ["动词时态"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q45",
+          "order": 45,
+          "questionType": "fill_blank_transform",
+          "stem": "become",
+          "options": [],
+          "answer": "became",
+          "answerExplanation": "与\"loved\"并列，用一般过去时\"became\"（成为商业飞行员）。",
+          "knowledgePoints": ["动词时态"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q46",
+          "order": 46,
+          "questionType": "fill_blank_transform",
+          "stem": "train",
+          "options": [],
+          "answer": "trained",
+          "answerExplanation": "被动语态\"is now trained\"表示\"正在接受培训\"。",
+          "knowledgePoints": ["被动语态"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q47",
+          "order": 47,
+          "questionType": "fill_blank_transform",
+          "stem": "complete",
+          "options": [],
+          "answer": "completely",
+          "answerExplanation": "修饰动词\"leave aside\"用副词\"completely\"（完全地）。",
+          "knowledgePoints": ["副词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q48",
+          "order": 48,
+          "questionType": "fill_blank_transform",
+          "stem": "relax",
+          "options": [],
+          "answer": "relaxing",
+          "answerExplanation": "修饰\"part of flying\"用-ing形容词\"relaxing\"（令人放松的）。",
+          "knowledgePoints": ["形容词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q49",
+          "order": 49,
+          "questionType": "fill_blank_transform",
+          "stem": "know",
+          "options": [],
+          "answer": "knew",
+          "answerExplanation": "讲述过去人们不知道他的身份，用一般过去时\"knew\"。",
+          "knowledgePoints": ["动词时态"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2025-04-q50",
+          "order": 50,
+          "questionType": "fill_blank_transform",
+          "stem": "tell",
+          "options": [],
+          "answer": "told",
+          "answerExplanation": "\"So far\"提示现在完成时，用过去分词\"told\"。",
+          "knowledgePoints": ["动词时态"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "13000-2025-04-s7",
+      "type": "写作",
+      "order": 7,
+      "passageTitle": null,
+      "passageText": null,
+      "writingPrompt": "某英文报社正在举办题为\"No Smoking in Public Places\"的征文活动。请你根据下述写作要点提交一篇英文短文应征（100词左右）。\n●公共场所吸烟有什么危害\n●你能为公共场所禁烟做些什么",
+      "scorePerQuestion": 30,
+      "totalScore": 30,
+      "questions": [
+        {
+          "questionId": "13000-2025-04-q51",
+          "order": 51,
+          "questionType": "essay",
+          "stem": "请根据所提供材料中的要求完成一篇100词左右的英文写作任务：No Smoking in Public Places（公共场所吸烟有什么危害；你能为公共场所禁烟做些什么）。",
+          "options": [],
+          "answer": "",
+          "answerExplanation": "官方范文：No Smoking in Public Places\n\nSmoking in public places poses severe threats to both individual health and public order. First, secondhand smoke contains over 7,000 harmful chemicals, including carcinogens like benzene and formaldehyde. Non-smokers exposed to it are at higher risk of developing lung cancer, heart disease, and respiratory infections, especially children and the elderly. Second, cigarette butts are a major source of environmental pollution, as they take years to decompose and contaminate soil and water. Additionally, smoking in enclosed spaces like offices or transit systems violates others' right to clean air and may trigger conflicts.\n\nTo combat this issue, individuals can take proactive steps. We should politely dissuade smokers from lighting up in public by citing relevant regulations, such as China's national smoking ban in indoor public areas. Supporting anti-smoking campaigns and volunteering to distribute educational materials can also raise awareness. For instance, participating in \"No Smoking Day\" activities helps spread the message of health and respect for public spaces. Ultimately, everyone's effort is crucial to creating 100% smoke-free environments where everyone can breathe freely.",
+          "knowledgePoints": ["写作-观点类"],
+          "difficultyTag": null
+        }
+      ]
+    }
+  ],
+  "parsingNotes": [
+    "该课程(13000英语专升本)本套试卷的结构与00015《英语(二)》历年结构完全一致：共7个部分、51题、100分，各部分题型、题量、分值(阅读判断10题10分、阅读理解选择5题10分、段落大意与句子补全10题10分、填句补文5题10分、填词补文10题15分、完形填空词形变换10题15分、写作1题30分)均与PARSING_GUIDE.md第2节给出的00015典型结构相同，未发现结构性差异。",
+    "原始PDF扫描件中存在若干处明显的印刷/排版空格缺失或字符粘连问题（如第2页 \"thejar\"、\"coffe house\"，第3页 \"moden-day\"，第4页 \"injust\"、\"ifyou\"，第5页 \"flled\"、\"bu t\"、\"at2\"，第6页段落5末尾 \"closed But\" 缺句号），解析时已按明显可推断的正确拼写/断句方式归一化处理（如 the jar、coffee house、modern-day、in just、if you、filled、but、at 2、closed. But），未改变原文语义。这些点均为排版层面的瑕疵而非内容不确定，但建议人工核对原图确认这些具体拼写是否与印刷原文完全一致。",
+    "第51题写作为主观题，官方答案页提供的是完整范文而非评分细则，answerExplanation字段中记录的是官方范文全文，供人工判分参考；未发现官方评分标准(如分档赋分说明)，如需按档评分需另行人工补充。"
+  ]
+}

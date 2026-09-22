@@ -1,0 +1,1077 @@
+{
+  "examId": "00015-2017-04",
+  "title": "2017年4月高等教育自学考试英语(二)试题",
+  "year": 2017,
+  "month": 4,
+  "courseCode": "00015",
+  "courseName": "英语(二)",
+  "sourceFile": "3017ada7-2017_04____________.pdf",
+  "totalScore": 100,
+  "timeLimitMinutes": 150,
+  "status": "待校对",
+  "sections": [
+    {
+      "sectionId": "00015-2017-04-s1",
+      "type": "阅读判断",
+      "order": 1,
+      "passageTitle": "The Thinking Habit That Changed My Life",
+      "passageText": "The Thinking Habit That Changed My Life\n\nI remember one evening three years ago, when my life was very different. I was overweight. I was deeply in debt. I was a smoker. I felt hopeless and helpless. I couldn't change anything.\n\nThen I looked up at the sky and thought what a miracle life is. And I resolved to list the good things in my life. I had a wonderful wife. I had five amazing children. I could see and appreciate the beauty of the world around me. The list went on, but you get the idea. Even when things seemed terrible for me, actually I was OK.\n\nThat night I resolved to be grateful for what I had, and for the people in my life. I started the habit of gratitude. Now many people consider it unimportant. I'm here to tell you that it's very important. It changes lives.\n\nNow I appreciate my wife Eva more. I feel good about having her in my life. And we have deepened our relationship. I also appreciate my kids more. Instead of criticizing them, I tend to notice their loveliness, curiosity and humor. I'm kinder to others around me, at work and everywhere else, because instead of seeing the faults in everyone, I see the good, and am grateful for them. I need less, because instead of thinking about what I don't have, I am grateful for what I do have. Each and every moment becomes cause for gratitude, and life becomes easier.\n\nWithout the habit of gratitude, we tend to complain and see the bad in people and things. We can't change that at once, but you can do something. For example, you can start with a small action. Really feel the happiness that something or someone with in your life, or take a moment to make a list of the things in your life that you're thankful for.",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2017-04-q1",
+          "order": 1,
+          "questionType": "single_choice",
+          "stem": "I was unhappy with my life three years ago.",
+          "options": [
+            "A. True",
+            "B. False",
+            "C. Not Given"
+          ],
+          "answer": "A",
+          "answerExplanation": "从定位词时间 three years ago 定位到第一段：I was overweight. I was deeply in debt. I was a smoker. I felt hopeless and helpless. 这些细节证明作者当时生活很不快乐，所以答案是A。",
+          "knowledgePoints": [
+            "阅读细节定位"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q2",
+          "order": 2,
+          "questionType": "single_choice",
+          "stem": "I drank every day and couldn't stop it.",
+          "options": [
+            "A. True",
+            "B. False",
+            "C. Not Given"
+          ],
+          "answer": "C",
+          "answerExplanation": "原文第一、二段均未提到 drink（喝酒）的问题，文中没有提及，所以答案是C。",
+          "knowledgePoints": [
+            "阅读细节定位"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q3",
+          "order": 3,
+          "questionType": "single_choice",
+          "stem": "I was unable to support my family.",
+          "options": [
+            "A. True",
+            "B. False",
+            "C. Not Given"
+          ],
+          "answer": "C",
+          "answerExplanation": "原文第二段提到 wife 和 children，但没有提到作者是否有能力养家的问题，所以答案是C。",
+          "knowledgePoints": [
+            "阅读细节定位"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q4",
+          "order": 4,
+          "questionType": "single_choice",
+          "stem": "One evening I came to a new understanding of my life.",
+          "options": [
+            "A. True",
+            "B. False",
+            "C. Not Given"
+          ],
+          "answer": "A",
+          "answerExplanation": "从 one evening 定位到第三段第一句 That night I resolved to be grateful for what I had, and for the people in my life，说明那天晚上作者对人生有了新的理解，所以答案是A。",
+          "knowledgePoints": [
+            "阅读细节定位"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q5",
+          "order": 5,
+          "questionType": "single_choice",
+          "stem": "Many people value the habit of gratitude nowadays.",
+          "options": [
+            "A. True",
+            "B. False",
+            "C. Not Given"
+          ],
+          "answer": "B",
+          "answerExplanation": "从第三段 I started the habit of gratitude. Now many people consider it unimportant 可知，如今很多人认为感恩并不重要，与题目相反，所以答案是B。",
+          "knowledgePoints": [
+            "阅读细节定位",
+            "阅读推理判断"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q6",
+          "order": 6,
+          "questionType": "single_choice",
+          "stem": "Now I have a closer relationship with my wife.",
+          "options": [
+            "A. True",
+            "B. False",
+            "C. Not Given"
+          ],
+          "answer": "A",
+          "answerExplanation": "从 relationship 定位到第四段 Now I appreciate my wife Eva more...we have deepened our relationship，deepen（加深）与题目 closer（更近）同义，所以答案是A。",
+          "knowledgePoints": [
+            "阅读细节定位"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q7",
+          "order": 7,
+          "questionType": "single_choice",
+          "stem": "I am now more strict with my kids.",
+          "options": [
+            "A. True",
+            "B. False",
+            "C. Not Given"
+          ],
+          "answer": "B",
+          "answerExplanation": "第四段 I also appreciate my kids more. Instead of criticizing them I tend to notice their loveliness, curiosity and humor，说明作者对孩子更温和而非更严厉，所以答案是B。",
+          "knowledgePoints": [
+            "阅读细节定位"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q8",
+          "order": 8,
+          "questionType": "single_choice",
+          "stem": "I like making friends with people around me.",
+          "options": [
+            "A. True",
+            "B. False",
+            "C. Not Given"
+          ],
+          "answer": "C",
+          "answerExplanation": "原文只提到 I am kinder to others around me, at work and everywhere else，说明作者对身边人更友善，但并未提及喜欢交朋友，所以答案是C。",
+          "knowledgePoints": [
+            "阅读细节定位"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q9",
+          "order": 9,
+          "questionType": "single_choice",
+          "stem": "I now try to see the good in others.",
+          "options": [
+            "A. True",
+            "B. False",
+            "C. Not Given"
+          ],
+          "answer": "A",
+          "answerExplanation": "第四段 I see the good, and am grateful for them，说明作者能看到别人身上好的一面，所以答案是A。",
+          "knowledgePoints": [
+            "阅读细节定位"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q10",
+          "order": 10,
+          "questionType": "single_choice",
+          "stem": "A small action doesn't work to change one's bad habit.",
+          "options": [
+            "A. True",
+            "B. False",
+            "C. Not Given"
+          ],
+          "answer": "B",
+          "answerExplanation": "最后一段 we can't change that at once, but you can do something. For example, you can start with a small action，说明小的行为虽不能立即改变坏习惯，但确实起作用，与题目相反，所以答案是B。",
+          "knowledgePoints": [
+            "阅读细节定位"
+          ],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2017-04-s2",
+      "type": "阅读理解选择",
+      "order": 2,
+      "passageTitle": "Dog Training",
+      "passageText": "Dog Training\n\nDog training is a must for all dogs. It is more than just telling your dog to stop doing what he's doing, it is the process of teaching a dog to exhibit certain desired behaviors in specific circumstances. Proper dog training is not a \"quick fix\" — it is an ongoing process.\n\nDog training also involves teaching the owner. Going through dog training is something that every dog owner should do. It is like going to school over again. It is all about communication, and you need to learn to communicate with your dog.\n\nTraining your dog to \"sit\" is probably the first thing you will train your dog to do. When you want your dog to sit, hold a treat above his head and say \"sit\". As the dog sits, say \"sit\" again and then immediately give him the treat. Your dog should drop into a \"sit\" position in order to reach the food.\n\nTeaching your dog to fetch promotes bonding. To do this, first throw a ball, and give the command \"fetch\". As he starts to run towards it, yell \"fetch\" again. Instead of a ball, you may use the object your dog loves most. Do not play fetch with heavy items or sticks, however, as this can damage the dog's teeth or injure the dog.\n\nA well-trained dog should remain where his owner commands, so \"stay\" is an important command in dog training as well. Since it is more involved, which will be the subject of another article.\n\nDog training is a very physical activity, so be prepared to be tired. And dog training is never without risk of injury, especially with more aggressive dogs. One major mistake many dog owners make is to think that the dog training is over. Training your dog continues throughout your dog's life.",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2017-04-q11",
+          "order": 11,
+          "questionType": "single_choice",
+          "stem": "What does the author say about dog training?",
+          "options": [
+            "A. It requires professional guidance.",
+            "B. It is necessary for every dog.",
+            "C. It gives dogs good exercise.",
+            "D. It is an easy job for trainers."
+          ],
+          "answer": "B",
+          "answerExplanation": "从原文第一句 Dog training is a must for all dogs 能看出作者认为所有的狗都必须接受训练，所以答案是B。",
+          "knowledgePoints": [
+            "阅读细节定位"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q12",
+          "order": 12,
+          "questionType": "single_choice",
+          "stem": "What is the most important thing for dog trainers to do?",
+          "options": [
+            "A. Learn to communicate with dogs.",
+            "B. Give dogs timely encouragement.",
+            "C. Create right circumstances for dogs.",
+            "D. Teach dogs desired behaviors."
+          ],
+          "answer": "A",
+          "answerExplanation": "从原文第二段最后一句 It is all about communication, and you need to learn to communicate with your dog 说明狗训练者要学会与狗交流沟通，答案是A。",
+          "knowledgePoints": [
+            "阅读细节定位"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q13",
+          "order": 13,
+          "questionType": "single_choice",
+          "stem": "Dog trainers usually train their dogs first to ( ).",
+          "options": [
+            "A. jump",
+            "B. stay",
+            "C. fetch",
+            "D. sit"
+          ],
+          "answer": "D",
+          "answerExplanation": "从原文第三段第一句 Training your dog to \"sit\" is probably the first thing you will train your dog to do 说明狗训练第一步是让狗学会坐下，所以答案是D。",
+          "knowledgePoints": [
+            "阅读细节定位"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q14",
+          "order": 14,
+          "questionType": "single_choice",
+          "stem": "To train dogs to fetch, trainers often start with a ( ).",
+          "options": [
+            "A. stick",
+            "B. ball",
+            "C. treat",
+            "D. trick"
+          ],
+          "answer": "B",
+          "answerExplanation": "从原文第四段第一句 Teaching your dog to fetch promotes bonding. To do this, first throw a ball 说明训练狗捡东西是从扔球开始的，答案是B。",
+          "knowledgePoints": [
+            "阅读细节定位"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q15",
+          "order": 15,
+          "questionType": "single_choice",
+          "stem": "Many dog owners tend to think that dog training ( ).",
+          "options": [
+            "A. can be dangerous",
+            "B. costs much money",
+            "C. takes a short time",
+            "D. can be very tiring"
+          ],
+          "answer": "C",
+          "answerExplanation": "从原文最后一句 One major mistake many dog owners make is to think that the dog training is over. Training your dog continues throughout your dog's life 说明许多狗主人误以为训练很快就能结束，其实训练贯穿狗的一生，所以答案是C。",
+          "knowledgePoints": [
+            "阅读细节定位"
+          ],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2017-04-s3",
+      "type": "段落大意与句子补全",
+      "order": 3,
+      "passageTitle": "Ancient Greek values",
+      "passageText": "Ancient Greek values\n\n① Ancient Greek civilization has greatly helped the building of today's society. Many countries now still base their laws and ethics (伦理) on the teachings and doings of ancient Greeks. In everyday life, ancient Greeks valued loyalty, glory, intelligence and hospitality (好客). These may seem simple values but they did effectively shape ancient Greece into a most referenced culture in history.\n\n② During ancient Greece, men were required to go to school and learn. Boys were taught at home until they were 6 years old and then sent off to school. Ancient Greek schools featured a structure that had boys in school from the age of six until fourteen and then an optional additional four years. The boys were trained in arts and in citizen training. Citizen training prepared Greek boys for two aspects of adult life, which were peace and war.\n\n③ Glory for young men in ancient Greece was the same as fame to young people today. Stories of war glories and battles were handed down to young men so that they desired to make their names along with the victory of a battle.\n\n④ Helping your fellow man was an important aspect of life in ancient Greece. Ancient Greeks were kind and generous. They offered food, shelter and protection to travelers without question. They believed that helping others was their brotherly duty.\n\n⑤ Loyalty is perhaps the most important value of ancient Greek civilization. It was stressed in everything the Greeks did. They believed in loyalty to the family, the community and, most importantly, to the gods. The gods of ancient Greece often sent tests to citizens. Keeping faith through the tests was a sign of loyalty and belief.",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2017-04-q16",
+          "order": 16,
+          "questionType": "single_choice",
+          "stem": "Paragraph ①",
+          "options": [
+            "A. Education in ancient Greece",
+            "B. Friendliness of ancient Greeks",
+            "C. Wars in ancient Greece",
+            "D. Impact of ancient Greek values",
+            "E. Top value of ancient Greeks",
+            "F. Sense of honor of ancient Greeks"
+          ],
+          "answer": "D",
+          "answerExplanation": "第一段第一、二句说明古希腊文明对当今社会的形成有很大帮助，很多国家的法律与伦理都受古希腊价值观影响，所以答案是D（古希腊价值观的影响）。",
+          "knowledgePoints": [
+            "段落大意概括"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q17",
+          "order": 17,
+          "questionType": "single_choice",
+          "stem": "Paragraph ②",
+          "options": [
+            "A. Education in ancient Greece",
+            "B. Friendliness of ancient Greeks",
+            "C. Wars in ancient Greece",
+            "D. Impact of ancient Greek values",
+            "E. Top value of ancient Greeks",
+            "F. Sense of honor of ancient Greeks"
+          ],
+          "answer": "A",
+          "answerExplanation": "第二段中反复提到 school、learn、teach、training 等字眼，说明讲的是古希腊的教育，答案是A。",
+          "knowledgePoints": [
+            "段落大意概括"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q18",
+          "order": 18,
+          "questionType": "single_choice",
+          "stem": "Paragraph ③",
+          "options": [
+            "A. Education in ancient Greece",
+            "B. Friendliness of ancient Greeks",
+            "C. Wars in ancient Greece",
+            "D. Impact of ancient Greek values",
+            "E. Top value of ancient Greeks",
+            "F. Sense of honor of ancient Greeks"
+          ],
+          "answer": "F",
+          "answerExplanation": "本段主要讲述古希腊人很看重荣誉，就像今天的年轻人看重名声一样，与选项F（古希腊人的荣誉感）对应，故选F。",
+          "knowledgePoints": [
+            "段落大意概括"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q19",
+          "order": 19,
+          "questionType": "single_choice",
+          "stem": "Paragraph ④",
+          "options": [
+            "A. Education in ancient Greece",
+            "B. Friendliness of ancient Greeks",
+            "C. Wars in ancient Greece",
+            "D. Impact of ancient Greek values",
+            "E. Top value of ancient Greeks",
+            "F. Sense of honor of ancient Greeks"
+          ],
+          "answer": "B",
+          "answerExplanation": "第四段开头说帮助别人是古希腊人生活的重要组成部分，讲的是古希腊人的友好，答案是B。",
+          "knowledgePoints": [
+            "段落大意概括"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q20",
+          "order": 20,
+          "questionType": "single_choice",
+          "stem": "Paragraph ⑤",
+          "options": [
+            "A. Education in ancient Greece",
+            "B. Friendliness of ancient Greeks",
+            "C. Wars in ancient Greece",
+            "D. Impact of ancient Greek values",
+            "E. Top value of ancient Greeks",
+            "F. Sense of honor of ancient Greeks"
+          ],
+          "answer": "E",
+          "answerExplanation": "第五段第一句 Loyalty is perhaps the most important value of ancient Greek civilization，说明忠诚是古希腊文明中最重要的价值观，答案是E。",
+          "knowledgePoints": [
+            "段落大意概括"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q21",
+          "order": 21,
+          "questionType": "single_choice",
+          "stem": "Ancient Greek values are held ____.",
+          "options": [
+            "A. to go to school",
+            "B. in many countries",
+            "C. to achieve honor",
+            "D. in whatever they did",
+            "E. to study law",
+            "F. to help others"
+          ],
+          "answer": "B",
+          "answerExplanation": "从第一段第二句 Many countries now still base their laws and ethics on the teachings and doings of ancient Greeks 可知，很多国家仍沿用古希腊文明的价值观，答案是B。",
+          "knowledgePoints": [
+            "逻辑关系判断"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q22",
+          "order": 22,
+          "questionType": "single_choice",
+          "stem": "Young men in ancient Greece were required ____.",
+          "options": [
+            "A. to go to school",
+            "B. in many countries",
+            "C. to achieve honor",
+            "D. in whatever they did",
+            "E. to study law",
+            "F. to help others"
+          ],
+          "answer": "A",
+          "answerExplanation": "从第二段第一句 During ancient Greece, men were required to go to school and learn 可知，古希腊时期的男子需要去上学，答案是A。",
+          "knowledgePoints": [
+            "逻辑关系判断"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q23",
+          "order": 23,
+          "questionType": "single_choice",
+          "stem": "Young Greeks had a strong desire ____.",
+          "options": [
+            "A. to go to school",
+            "B. in many countries",
+            "C. to achieve honor",
+            "D. in whatever they did",
+            "E. to study law",
+            "F. to help others"
+          ],
+          "answer": "C",
+          "answerExplanation": "从第三段最后一句可知，年轻人渴望自己的名字随着战争的胜利被传颂，即渴望获得荣誉，答案是C。",
+          "knowledgePoints": [
+            "逻辑关系判断"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q24",
+          "order": 24,
+          "questionType": "single_choice",
+          "stem": "Ancient Greeks saw it as a duty ____.",
+          "options": [
+            "A. to go to school",
+            "B. in many countries",
+            "C. to achieve honor",
+            "D. in whatever they did",
+            "E. to study law",
+            "F. to help others"
+          ],
+          "answer": "F",
+          "answerExplanation": "从第四段最后一句 They believed that helping others was their brotherly duty 可知，古希腊人把帮助别人当作自己的责任，答案是F。",
+          "knowledgePoints": [
+            "逻辑关系判断"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q25",
+          "order": 25,
+          "questionType": "single_choice",
+          "stem": "Ancient Greeks stressed loyalty ____.",
+          "options": [
+            "A. to go to school",
+            "B. in many countries",
+            "C. to achieve honor",
+            "D. in whatever they did",
+            "E. to study law",
+            "F. to help others"
+          ],
+          "answer": "D",
+          "answerExplanation": "从第五段第二句 It was stressed in everything the Greeks did 可知，古希腊人在生活的每一方面都强调忠诚，答案是D。",
+          "knowledgePoints": [
+            "逻辑关系判断"
+          ],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2017-04-s4",
+      "type": "填句补文",
+      "order": 4,
+      "passageTitle": "The Power of Positive Thinking",
+      "passageText": "The Power of Positive Thinking\n\nHuman emotion is one of those factors that cannot be defined exactly. The reason is that it is quite uncertain. We cannot change the feelings that are roused when we experience different things. ___(26)___\n\nSome people forget that they are in control. They make their choices based on their emotions. They experience failure and loss and let their emotions rule their decisions. They are trapped in their sadness and thus experience more failure.\n\nSome people say they need a lucky break to recover from their failures. ___(27)___ They need to get over their failures on their own. But how do they do that? The answer is: positive thinking.\n\nPeople often fail to realize the power of positive thinking. ___(28)___ They fail to realize that they only need to overcome their fears in order to truly succeed in life. They just have too much pride and are blinded of their own shortcomings.\n\nThe power of positive thinking lies in belief. ___(29)___ You make the decisions that affect your life. You may not be able to change your environment, but you are able to change the way you react to it.\n\nThe power of positive thinking lies beyond false courage. You need to take another look at the world around you. ___(30)___ You can't rest on your success, or foolish pride will cause you to make wrong decisions.",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2017-04-q26",
+          "order": 26,
+          "questionType": "single_choice",
+          "stem": "选择最适合填入原文第(26)处空白的句子",
+          "options": [
+            "A. They fail to realize that their worst enemy lies within themselves.",
+            "B. However, we must always remember that we can control our reactions.",
+            "C. You can't just take a look at your failures, or you will lose hope.",
+            "D. We can benefit a lot from positive thinking.",
+            "E. However, life rarely gives people a break.",
+            "F. You need to believe that you are in control."
+          ],
+          "answer": "B",
+          "answerExplanation": "空格前一句说我们不能改变情绪，后一句表达转折关系：然而，我们必须学会控制自己的反应，答案是B。",
+          "knowledgePoints": [
+            "连贯性衔接",
+            "逻辑关系判断"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q27",
+          "order": 27,
+          "questionType": "single_choice",
+          "stem": "选择最适合填入原文第(27)处空白的句子",
+          "options": [
+            "A. They fail to realize that their worst enemy lies within themselves.",
+            "B. However, we must always remember that we can control our reactions.",
+            "C. You can't just take a look at your failures, or you will lose hope.",
+            "D. We can benefit a lot from positive thinking.",
+            "E. However, life rarely gives people a break.",
+            "F. You need to believe that you are in control."
+          ],
+          "answer": "E",
+          "answerExplanation": "空格前一句说有些人认为他们需要机会才能从失败中恢复，后一句表达转折关系：然而，生活很少给人们这样的机会，答案是E。",
+          "knowledgePoints": [
+            "连贯性衔接",
+            "逻辑关系判断"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q28",
+          "order": 28,
+          "questionType": "single_choice",
+          "stem": "选择最适合填入原文第(28)处空白的句子",
+          "options": [
+            "A. They fail to realize that their worst enemy lies within themselves.",
+            "B. However, we must always remember that we can control our reactions.",
+            "C. You can't just take a look at your failures, or you will lose hope.",
+            "D. We can benefit a lot from positive thinking.",
+            "E. However, life rarely gives people a break.",
+            "F. You need to believe that you are in control."
+          ],
+          "answer": "A",
+          "answerExplanation": "空格后紧接 They fail to realize，与选项A句式一致，构成排比结构，答案是A。",
+          "knowledgePoints": [
+            "连贯性衔接",
+            "逻辑关系判断"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q29",
+          "order": 29,
+          "questionType": "single_choice",
+          "stem": "选择最适合填入原文第(29)处空白的句子",
+          "options": [
+            "A. They fail to realize that their worst enemy lies within themselves.",
+            "B. However, we must always remember that we can control our reactions.",
+            "C. You can't just take a look at your failures, or you will lose hope.",
+            "D. We can benefit a lot from positive thinking.",
+            "E. However, life rarely gives people a break.",
+            "F. You need to believe that you are in control."
+          ],
+          "answer": "F",
+          "answerExplanation": "空格前一句意为“积极思考的力量在于信念”，选项F意为“你需要相信你能掌控一切”，与上下文衔接最紧密，故选F。",
+          "knowledgePoints": [
+            "连贯性衔接",
+            "逻辑关系判断"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q30",
+          "order": 30,
+          "questionType": "single_choice",
+          "stem": "选择最适合填入原文第(30)处空白的句子",
+          "options": [
+            "A. They fail to realize that their worst enemy lies within themselves.",
+            "B. However, we must always remember that we can control our reactions.",
+            "C. You can't just take a look at your failures, or you will lose hope.",
+            "D. We can benefit a lot from positive thinking.",
+            "E. However, life rarely gives people a break.",
+            "F. You need to believe that you are in control."
+          ],
+          "answer": "C",
+          "answerExplanation": "空格前一句意为“你需要重新审视周围的世界”，空格后一句意为“你不能只满足于成功，否则愚蠢的骄傲会使你做出错误的决定”，选项C意为“你不能只看到自己的失败，否则会失去希望”，与上下文衔接最紧密，故选C。",
+          "knowledgePoints": [
+            "连贯性衔接",
+            "逻辑关系判断"
+          ],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2017-04-s5",
+      "type": "填词补文",
+      "order": 5,
+      "passageTitle": "Meet Famous People in London",
+      "passageText": "Meet Famous People in London\n\nMany people like to see famous people. But famous people don't ___(31)___ like to be looked at. At least, they don't like to be looked at all day every day! However there is one ___(32)___ in England where you can look at lots of famous people every day. That is Madame Tussaud's, the most popular ___(33)___ attraction in London.\n\nOn most days of the year, ___(34)___ of visitors can be seen outside Madame Tussaud's. They want to ___(35)___ in and see some of the most famous people in the world. If you like, you can ___(36)___ to those film stars, sports stars or politicians in Madame Tussaud's, but they won't ___(37)___ anything to you, because they can't! Madame Tussaud's is a waxworks (蜡像馆), and the \"famous people\" in the building are made out of wax. But this doesn't ___(38)___ to be a problem. Ordinary people like looking at ___(39)___ people, even if they are only ___(40)___. It's better than nothing!",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "00015-2017-04-q31",
+          "order": 31,
+          "questionType": "single_choice",
+          "stem": "选择最适合填入原文第(31)处空白的词",
+          "options": [
+            "A. seem",
+            "B. give",
+            "C. place",
+            "D. talk",
+            "E. statues",
+            "F. tourist",
+            "G. extraordinary",
+            "H. lines",
+            "I. get",
+            "J. rarely",
+            "K. say",
+            "L. usually"
+          ],
+          "answer": "L",
+          "answerExplanation": "该句结构完整，空格处需填一个副词，根据句意表示“但名人通常不喜欢被观看”，故选L（usually）。",
+          "knowledgePoints": [
+            "词汇辨析",
+            "固定搭配"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q32",
+          "order": 32,
+          "questionType": "single_choice",
+          "stem": "选择最适合填入原文第(32)处空白的词",
+          "options": [
+            "A. seem",
+            "B. give",
+            "C. place",
+            "D. talk",
+            "E. statues",
+            "F. tourist",
+            "G. extraordinary",
+            "H. lines",
+            "I. get",
+            "J. rarely",
+            "K. say",
+            "L. usually"
+          ],
+          "answer": "C",
+          "answerExplanation": "由空格前的名词 one 及空格后 where 引导的定语从句可知，空格处需填一个表示地点的名词，place 意为“地方”，故选C。",
+          "knowledgePoints": [
+            "词汇辨析",
+            "固定搭配"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q33",
+          "order": 33,
+          "questionType": "single_choice",
+          "stem": "选择最适合填入原文第(33)处空白的词",
+          "options": [
+            "A. seem",
+            "B. give",
+            "C. place",
+            "D. talk",
+            "E. statues",
+            "F. tourist",
+            "G. extraordinary",
+            "H. lines",
+            "I. get",
+            "J. rarely",
+            "K. say",
+            "L. usually"
+          ],
+          "answer": "F",
+          "answerExplanation": "由空格前的形容词 popular 及空格后的名词 attraction 可知，空格处所填词应与 attraction 构成名词词组，tourist attraction 意为“旅游胜地”，符合句意，故选F。",
+          "knowledgePoints": [
+            "词汇辨析",
+            "固定搭配"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q34",
+          "order": 34,
+          "questionType": "single_choice",
+          "stem": "选择最适合填入原文第(34)处空白的词",
+          "options": [
+            "A. seem",
+            "B. give",
+            "C. place",
+            "D. talk",
+            "E. statues",
+            "F. tourist",
+            "G. extraordinary",
+            "H. lines",
+            "I. get",
+            "J. rarely",
+            "K. say",
+            "L. usually"
+          ],
+          "answer": "H",
+          "answerExplanation": "根据句意，此处表示“杜莎夫人蜡像馆外能看到很多参观者”，lines of 意为“一排排、一系列”，符合句意，故选H。",
+          "knowledgePoints": [
+            "词汇辨析",
+            "固定搭配"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q35",
+          "order": 35,
+          "questionType": "single_choice",
+          "stem": "选择最适合填入原文第(35)处空白的词",
+          "options": [
+            "A. seem",
+            "B. give",
+            "C. place",
+            "D. talk",
+            "E. statues",
+            "F. tourist",
+            "G. extraordinary",
+            "H. lines",
+            "I. get",
+            "J. rarely",
+            "K. say",
+            "L. usually"
+          ],
+          "answer": "I",
+          "answerExplanation": "由空格前的不定式符号 to 和空格后的介词 in 可知，空格处需填一个能与 in 搭配的动词，get in 意为“进入”，故选I。",
+          "knowledgePoints": [
+            "词汇辨析",
+            "固定搭配"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q36",
+          "order": 36,
+          "questionType": "single_choice",
+          "stem": "选择最适合填入原文第(36)处空白的词",
+          "options": [
+            "A. seem",
+            "B. give",
+            "C. place",
+            "D. talk",
+            "E. statues",
+            "F. tourist",
+            "G. extraordinary",
+            "H. lines",
+            "I. get",
+            "J. rarely",
+            "K. say",
+            "L. usually"
+          ],
+          "answer": "D",
+          "answerExplanation": "由空格前的情态动词 can 和空格后的介词 to 可知，空格处需填一个能与 to 搭配的动词，talk to 意为“与……交谈”，符合句意，故选D。",
+          "knowledgePoints": [
+            "词汇辨析",
+            "固定搭配"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q37",
+          "order": 37,
+          "questionType": "single_choice",
+          "stem": "选择最适合填入原文第(37)处空白的词",
+          "options": [
+            "A. seem",
+            "B. give",
+            "C. place",
+            "D. talk",
+            "E. statues",
+            "F. tourist",
+            "G. extraordinary",
+            "H. lines",
+            "I. get",
+            "J. rarely",
+            "K. say",
+            "L. usually"
+          ],
+          "answer": "K",
+          "answerExplanation": "由空格前的 won't 及空格后的 anything 可知，空格处需填一个动词，表示“但他们不会跟你说任何话”，故选K（say）。",
+          "knowledgePoints": [
+            "词汇辨析",
+            "固定搭配"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q38",
+          "order": 38,
+          "questionType": "single_choice",
+          "stem": "选择最适合填入原文第(38)处空白的词",
+          "options": [
+            "A. seem",
+            "B. give",
+            "C. place",
+            "D. talk",
+            "E. statues",
+            "F. tourist",
+            "G. extraordinary",
+            "H. lines",
+            "I. get",
+            "J. rarely",
+            "K. say",
+            "L. usually"
+          ],
+          "answer": "A",
+          "answerExplanation": "根据句意，此处表示“但这看起来不像是一个问题”，seem to 意为“看起来”，符合句意，故选A。",
+          "knowledgePoints": [
+            "词汇辨析",
+            "固定搭配"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q39",
+          "order": 39,
+          "questionType": "single_choice",
+          "stem": "选择最适合填入原文第(39)处空白的词",
+          "options": [
+            "A. seem",
+            "B. give",
+            "C. place",
+            "D. talk",
+            "E. statues",
+            "F. tourist",
+            "G. extraordinary",
+            "H. lines",
+            "I. get",
+            "J. rarely",
+            "K. say",
+            "L. usually"
+          ],
+          "answer": "G",
+          "answerExplanation": "由空格前的 looking at 及空格后的 people 可知，空格处需填一个形容词，表示“普通人喜欢看不平凡的人”，extraordinary 意为“不平凡的”，故选G。",
+          "knowledgePoints": [
+            "词汇辨析",
+            "固定搭配"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q40",
+          "order": 40,
+          "questionType": "single_choice",
+          "stem": "选择最适合填入原文第(40)处空白的词",
+          "options": [
+            "A. seem",
+            "B. give",
+            "C. place",
+            "D. talk",
+            "E. statues",
+            "F. tourist",
+            "G. extraordinary",
+            "H. lines",
+            "I. get",
+            "J. rarely",
+            "K. say",
+            "L. usually"
+          ],
+          "answer": "E",
+          "answerExplanation": "由空格前的系动词 are 可知，空格处应填一个名词，表示“普通人喜欢看不平凡的人，即使他们只是雕像”，statue 意为“雕像”，故选E。",
+          "knowledgePoints": [
+            "词汇辨析",
+            "固定搭配"
+          ],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2017-04-s6",
+      "type": "完形填空",
+      "order": 6,
+      "passageTitle": "Don't Be Afraid of Making Mistakes",
+      "passageText": "Don't Be Afraid of Making Mistakes\n\nLots of people don't dare to make mistakes (mistake). They fear that they will be ridiculed or ___(41)___ (blame) by others. They fear that they will lose their money and belongings or be under a lot of stress. But risks are ___(42)___ (actual) unavoidable and they do pave the way towards success. Have you ever ___(43)___ (hear) of someone who achieves success without making any mistakes before?\n\nSo it is ___(44)___ (nature) that making mistakes in your effort to reach your dreams is ___(45)___ (consider) a must, and you shouldn't worry about that as you may get a lot of ___(46)___ (advantage) out of your mistakes. By making mistakes you then can distinguish between the correct and the ___(47)___ (correct) portions of what you did. Anthony D'Angelo said: \"In order to succeed, you must fail, so that you know what to do the next time.\" And Robert Louis Stevenson even ___(48)___ (go) to the extreme as to say: \"Our business in life is not to succeed, but to continue to fail in good ___(49)___ (spirit).\"\n\nYou needn't worry about anything as long as you keep on going by ___(50)___ (wise) learning from your mistakes and trying even harder.",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "00015-2017-04-q41",
+          "order": 41,
+          "questionType": "fill_blank_transform",
+          "stem": "blame",
+          "options": [],
+          "answer": "blamed",
+          "answerExplanation": "空格所给词是动词 blame，前面是 or，表并列，需与前面的过去分词 ridiculed 保持一致，结合 will be 表达一般将来时的被动语态，所以答案是 blamed。",
+          "knowledgePoints": [
+            "被动语态"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q42",
+          "order": 42,
+          "questionType": "fill_blank_transform",
+          "stem": "actual",
+          "options": [],
+          "answer": "actually",
+          "answerExplanation": "空格前是系动词 are，后面是形容词 unavoidable，构成主系表结构，中间需要一个副词修饰形容词，所以答案是 actually。",
+          "knowledgePoints": [
+            "副词构词"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q43",
+          "order": 43,
+          "questionType": "fill_blank_transform",
+          "stem": "hear",
+          "options": [],
+          "answer": "heard",
+          "answerExplanation": "空格为动词原形 hear，前面有 have，需改成过去分词 heard，have heard 表达现在完成时。",
+          "knowledgePoints": [
+            "动词时态"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q44",
+          "order": 44,
+          "questionType": "fill_blank_transform",
+          "stem": "nature",
+          "options": [],
+          "answer": "natural",
+          "answerExplanation": "空格前是 it is，后面是 that 从句，需要一个形容词构成主系表结构，所以答案是 natural。",
+          "knowledgePoints": [
+            "词性转换",
+            "形容词构词"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q45",
+          "order": 45,
+          "questionType": "fill_blank_transform",
+          "stem": "consider",
+          "options": [],
+          "answer": "considered",
+          "answerExplanation": "空格前是动词 is，所给词也是动词 consider，需改为 considered 与 is 构成一般现在时的被动语态，表示“犯错误被认为是一种必经过程”，所以答案是 considered。",
+          "knowledgePoints": [
+            "被动语态"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q46",
+          "order": 46,
+          "questionType": "fill_blank_transform",
+          "stem": "advantage",
+          "options": [],
+          "answer": "advantages",
+          "answerExplanation": "a lot of 后可加可数名词复数，根据句意表示能从错误中获得很多好处，所以答案是 advantages。",
+          "knowledgePoints": [
+            "名词单复数"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q47",
+          "order": 47,
+          "questionType": "fill_blank_transform",
+          "stem": "correct",
+          "options": [],
+          "answer": "incorrect",
+          "answerExplanation": "and 前面是 correct，此处表示可以区分自己行为中正确和不正确的部分，所以答案是 correct 的反义词 incorrect。",
+          "knowledgePoints": [
+            "词性转换",
+            "形容词构词"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q48",
+          "order": 48,
+          "questionType": "fill_blank_transform",
+          "stem": "go",
+          "options": [],
+          "answer": "went",
+          "answerExplanation": "分析句子结构，空格所在句叙述的是过去发生的事，需填动词的过去式，go 的过去式为 went，所以答案是 went。",
+          "knowledgePoints": [
+            "动词时态"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q49",
+          "order": 49,
+          "questionType": "fill_blank_transform",
+          "stem": "spirit",
+          "options": [],
+          "answer": "spirits",
+          "answerExplanation": "空格前是形容词 good，形容词修饰名词，spirit 本身是名词，根据句意需改为复数 spirits 表达“精神”，所以答案是 spirits。",
+          "knowledgePoints": [
+            "名词单复数"
+          ],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2017-04-q50",
+          "order": 50,
+          "questionType": "fill_blank_transform",
+          "stem": "wise",
+          "options": [],
+          "answer": "wisely",
+          "answerExplanation": "空格后是动名词 learning，需要一个副词修饰动词，所以将 wise 改为 wisely，所以答案是 wisely。",
+          "knowledgePoints": [
+            "副词构词"
+          ],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2017-04-s7",
+      "type": "写作",
+      "order": 7,
+      "passageTitle": null,
+      "writingPrompt": "假设你暑假参加了你所在社区组织的义工（volunteer）活动。请给你的美国朋友 Tom 写一封英文电子邮件，与他分享你的感想，内容包括：\n1. 你做了什么义工工作；\n2. 你认为做义工的意义是什么。\n请以 Li Ke 署名。（词数：100 词左右）",
+      "scorePerQuestion": 30,
+      "totalScore": 30,
+      "questions": [
+        {
+          "questionId": "00015-2017-04-q51",
+          "order": 51,
+          "questionType": "essay",
+          "stem": "根据所提供材料中的要求完成一篇100词左右的英文写作任务。",
+          "options": [],
+          "answer": "",
+          "answerExplanation": "官方参考范文（答案页示例作文）：\nDear Tom:\nI have been a volunteer in 2010 Shanghai EXPO, it was really an unforgettable experience. Although volunteer's work was hard and tired I still feel very happy cause it offers me a good opportunity to help visitors from foreign counties thus can practice my oral English. I also enhance my sense of reason ability during volunteer work. I worked with other volunteers as a team, together we solved different problems, we also became good friends after EXPO. I was proud of myself and surely I will treasure this experience.\nYours\nLi Ke\n2017.04.20",
+          "knowledgePoints": [
+            "写作-记叙类"
+          ],
+          "difficultyTag": null
+        }
+      ]
+    }
+  ],
+  "parsingNotes": [
+    "第47题（完形填空词形变换）给出的词根是形容词 correct，官方答案为其反义词 incorrect（加前缀 in-），与 PARSING_GUIDE.md 第5节列出的“完形填空”标签体系（动词时态/名词单复数/词性转换/比较级最高级/被动语态/副词构词/形容词构词）不完全对应，暂归类为“词性转换/形容词构词”，建议人工复核标签是否需要新增“反义词缀”一类。",
+    "第51题写作部分，官方答案页给出的是一篇学生示例作文（并非标准范文，行文中有个别语法/用词瑕疵，如 'I have been a volunteer...it was really' 的逗号连接、'foreign counties' 疑似 'countries' 的拼写误差、'sense of reason ability' 表达不够地道），该示例作文已原样记录在 answerExplanation 中供参考，不代表标准答案，评分仍应以写作任务要求本身为准。",
+    "第13题选项B原文印刷为 'slay'（应为常见狗训练指令，疑似 'stay' 的印刷/OCR误差，但官方答案页未特别说明，故按原图印刷内容 'slay' 保留，未擅自更正，请人工核对原图确认该选项拼写）。"
+  ]
+}

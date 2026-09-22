@@ -1,0 +1,783 @@
+{
+  "examId": "00015-2018-04",
+  "title": "2018年4月高等教育自学考试英语(二)试题",
+  "year": 2018,
+  "month": 4,
+  "courseCode": "00015",
+  "courseName": "英语(二)",
+  "sourceFile": "f30ce49a-2018_04____________.pdf",
+  "totalScore": 100,
+  "timeLimitMinutes": 150,
+  "status": "待校对",
+  "sections": [
+    {
+      "sectionId": "00015-2018-04-s1",
+      "type": "阅读判断",
+      "order": 1,
+      "passageTitle": "Life on the Farm",
+      "passageText": "Life on a farm is always changing. New technologies and a rising interest in healthier and organic eating have had a huge impact on how farms do business. At the same time, a growing population has put more demands on farmers. They need to find ways to increase their production levels. The small family farms that used to produce most of the products have been largely replaced by factory farms. Small family farms that are still operating are struggling to keep up.\n\nTechnology has made most aspects of farm life easier than it has ever been before.\n\nBigger and more efficient equipment makes work such as plowing up fields and sowing the seeds easier. Such tasks used to take two or three times as long. These advances have allowed farmers to work faster and more efficiently than ever before.\n\nIn addition to newer technology, factory farms produce more products for less money than traditional farming, would require.\n\nModern farm life, despite the introduction of new technologies, has not changed much from what it has always been. Farmers still wake up early, and spend their days doing hard work. There are still animals to feed, cows to be milked, and fields to be plowed. Farm life still requires a lot of hard work and sacrifice.\n\nThe main change in modern farm life is in the way farms are run. It is common for even small farms to have several hired workers and even an animal manager. Family-run farms are becoming rarer. Factory farms, with other larger farm corporations, are becoming the norm. Although there are still many traditional family farms, they are quickly dying as modern practices change farm life forever.",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2018-04-q1",
+          "order": 1,
+          "questionType": "single_choice",
+          "stem": "Factory farms now produce most of the products.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "第一段第4-5句：The small family farms that used to produce most of the products have been largely replaced by factory farms. 说明工厂化农场已取代小型农场生产大多数产品，与题干一致。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q2",
+          "order": 2,
+          "questionType": "single_choice",
+          "stem": "Farmers prefer to grow healthy and organic food.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "第一段第2句只提到健康有机饮食的兴趣对农场经营方式产生了影响，并未提及农民是否更偏好种植有机食物，文中未提及，故选Not Given。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q3",
+          "order": 3,
+          "questionType": "single_choice",
+          "stem": "Small family farms find it hard to survive.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "第一段最后一句：Small family farms that are still operating are struggling to keep up. 与题干意思一致。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q4",
+          "order": 4,
+          "questionType": "single_choice",
+          "stem": "Plowing and sowing by machines are advances in modern farming.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "第二段：Bigger and more efficient equipment makes work such as plowing up fields and sowing the seeds easier...These advances have allowed farmers to work faster and more efficiently than ever before. 明确称之为advances，与题干一致。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q5",
+          "order": 5,
+          "questionType": "single_choice",
+          "stem": "Modern farm products cost more than those from traditional farming.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "第三段：factory farms produce more products for less money than traditional farming would require. 工厂化农场花费更少产量更高，与题干（花费更多）相反，故选False。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q6",
+          "order": 6,
+          "questionType": "single_choice",
+          "stem": "Most farmers cannot afford new machines.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "全文并未提到农民能否承担购买新机器的费用，文中未提及。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q7",
+          "order": 7,
+          "questionType": "single_choice",
+          "stem": "Modern farmers do not have to work hard.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "第四段：Farmers still wake up early, and spend their days doing hard work...Farm life still requires a lot of hard work and sacrifice. 与题干相反，故选False。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q8",
+          "order": 8,
+          "questionType": "single_choice",
+          "stem": "New technologies have not changed farm management.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "第五段第一句：The main change in modern farm life is in the way farms are run. \"the way farms are run\"与\"farm management\"同义，说明农场管理方式确实发生了变化，与题干相反，故选False。",
+          "knowledgePoints": ["阅读细节定位", "词义猜测"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q9",
+          "order": 9,
+          "questionType": "single_choice",
+          "stem": "There are fewer and fewer family-run farms now.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "第五段：Family-run farms are becoming rarer...they are quickly dying as modern practices change farm life forever. 与题干一致。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q10",
+          "order": 10,
+          "questionType": "single_choice",
+          "stem": "Modern farms are hiring workers from cities.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "第五段提到小农场也雇佣工人和动物管理员，但并未提到这些雇工来自城市还是农村，文中未提及。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2018-04-s2",
+      "type": "阅读理解选择",
+      "order": 2,
+      "passageTitle": "Christmas Gift",
+      "passageText": "Mary didn't know what to send to her grandparents for Christmas. It was always hard to choose a good Christmas present for them. They didn't need much, and it was hard for her to be creative every year.\n\nOne year, she sent them a big wooden elephant. It sat on the counter for a year, but then it disappeared, probably into a closet somewhere. Another year, she made handmade soaps with nice smells, but they probably weren't any better than store-bought soaps. Last year, she sent lots of nice pictures of herself in frames, but grandparents' house was small, and they couldn't hang up very many.\n\nThis year, she decided on fruit. She lived where it was warm and there was lots of nice fruit. Her grandparents lived up north, where it was colder and they couldn't get fresh fruit all year, or at least not oranges and grapefruit. Fresh fruit was healthy for her grandparents, too.\n\nMary went to a fruit store and sampled the red oranges. She really liked them and bought a kilogram. Then she tried three kinds of grapefruit. The white ones were sour. The star grapefruit were interesting, but the dark red grapefruit were great. So she got a kilogram.\n\nMary carefully packed the fruit in a box to keep them safe and dry in case one got smashed and its juice got everywhere. Then she wrote the address on the box and mailed it from the store. She felt happy with what she bought.\n\nA few days later, Mary got a phone call from her grandparents, thanking her for the lovely fruit. They said it was a healthy, tasty, and very thoughtful gift. Mary had never felt so good before.",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2018-04-q11",
+          "order": 11,
+          "questionType": "single_choice",
+          "stem": "Mary was troubled because she________",
+          "options": [
+            "A. had no idea for a holiday gift",
+            "B. was not creative in her work",
+            "C. could not afford Christmas gifts",
+            "D. found her grandma hard to please"
+          ],
+          "answer": "A",
+          "answerExplanation": "第一段：Mary didn't know what to send to her grandparents for Christmas...it was hard for her to be creative every year. \"didn't know\"与\"had no idea\"同义，故选A。",
+          "knowledgePoints": ["阅读细节定位", "词义猜测"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q12",
+          "order": 12,
+          "questionType": "single_choice",
+          "stem": "What did Mary send her grandparents last year?",
+          "options": [
+            "A. A wooden elephant.",
+            "B. Handmade soaps.",
+            "C. Her own pictures.",
+            "D. A store-bought closet."
+          ],
+          "answer": "C",
+          "answerExplanation": "第二段最后一句：Last year, she sent lots of nice pictures of herself in frames. 与题干中的\"last year\"对应，故选C。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q13",
+          "order": 13,
+          "questionType": "single_choice",
+          "stem": "In selecting the gifts, Mary was________",
+          "options": ["A. excited", "B. impatient", "C. exhausted", "D. thoughtful"],
+          "answer": "D",
+          "answerExplanation": "第三、四段描述玛丽根据祖父母所在地区的气候、喜好等细致挑选水果和口味，体现她考虑周到、体贴，故选D。",
+          "knowledgePoints": ["阅读推理判断", "观点态度理解"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q14",
+          "order": 14,
+          "questionType": "single_choice",
+          "stem": "Which of the following did Mary buy for her grandparents this year?",
+          "options": [
+            "A. Yellow oranges.",
+            "B. Dark red grapefruit.",
+            "C. White grapefruit.",
+            "D. Star grapefruit."
+          ],
+          "answer": "B",
+          "answerExplanation": "第四段：The white ones were sour. The star grapefruit were interesting, but the dark red grapefruit were great. So she got a kilogram. 她最终买的是她认为最好的dark red grapefruit，故选B。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q15",
+          "order": 15,
+          "questionType": "single_choice",
+          "stem": "Mary's grandparents ________",
+          "options": [
+            "A. loved her gift",
+            "B. sent her a card",
+            "C. wrote her a letter",
+            "D. put her gift away"
+          ],
+          "answer": "A",
+          "answerExplanation": "最后一段：Mary got a phone call from her grandparents, thanking her for the lovely fruit. They said it was a healthy, tasty, and very thoughtful gift. 说明祖父母很喜欢这份礼物，故选A。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2018-04-s3",
+      "type": "段落大意与句子补全",
+      "order": 3,
+      "passageTitle": "Team Work in Sports",
+      "passageText": "① Teams that win in team sports are often those that work well together. Learning to cooperate with others towards a common goal in sports is what builds character, friendship and important life skills for players.\n\n② Working towards a common goal will keep the team firmly together. Entering into a new season in sports, you might only know a few of the players on your team. Some of the players may be people you do not like. But when your team decides to be the winner of the season, personal differences are often set aside for the common good of the team. By the end of the season, players who have fought through the whole season may become good friends, much like brothers.\n\n③ For kids and young adults, team sports offer a way for them to get out and meet with friends. This can help them avoid spending too much time at home watching television and playing video games. Team work teaches people how to help each other and encourage each other. It can also give players a greater respect for one another and can build friendships that last a lifetime.\n\n④ Team work in sports offers a way for people to compete for something together. It is important to know that winning is not everything in sports and healthy competition can be good for people. Working towards a goal can teach people the value of hard work, commitment and devotion. Team sports are a great way to learn these values.\n\n⑤ Team work in sports can help young people develop stronger communication skills. As every member must work for the same goal, they learn how to work with one another successfully.",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2018-04-q16",
+          "order": 16,
+          "questionType": "single_choice",
+          "stem": "Paragraph ①",
+          "options": [
+            "A. The common goal",
+            "B. Healthy competition",
+            "C. Team cooperation",
+            "D. Exercising and friendship",
+            "E. Problems between team members",
+            "F. Building communication skills"
+          ],
+          "answer": "C",
+          "answerExplanation": "段首主题句：Teams that win in team sports are often those that work well together. 强调团队协作，\"work well together\"与\"Team cooperation\"同义，故选C。",
+          "knowledgePoints": ["段落主旨理解"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q17",
+          "order": 17,
+          "questionType": "single_choice",
+          "stem": "Paragraph ②",
+          "options": [
+            "A. The common goal",
+            "B. Healthy competition",
+            "C. Team cooperation",
+            "D. Exercising and friendship",
+            "E. Problems between team members",
+            "F. Building communication skills"
+          ],
+          "answer": "A",
+          "answerExplanation": "段首主题句：Working towards a common goal will keep the team firmly together. 关键词\"a common goal\"，故选A。",
+          "knowledgePoints": ["段落主旨理解"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q18",
+          "order": 18,
+          "questionType": "single_choice",
+          "stem": "Paragraph ③",
+          "options": [
+            "A. The common goal",
+            "B. Healthy competition",
+            "C. Team cooperation",
+            "D. Exercising and friendship",
+            "E. Problems between team members",
+            "F. Building communication skills"
+          ],
+          "answer": "D",
+          "answerExplanation": "段首主题句：For kids and young adults, team sports offer a way for them to get out and meet with friends. 强调走出家门、结交朋友，与\"Exercising and friendship\"对应，故选D。",
+          "knowledgePoints": ["段落主旨理解"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q19",
+          "order": 19,
+          "questionType": "single_choice",
+          "stem": "Paragraph ④",
+          "options": [
+            "A. The common goal",
+            "B. Healthy competition",
+            "C. Team cooperation",
+            "D. Exercising and friendship",
+            "E. Problems between team members",
+            "F. Building communication skills"
+          ],
+          "answer": "B",
+          "answerExplanation": "段首主题句：Team work in sports offers a way for people to compete for something together...healthy competition can be good for people. 关键词\"compete\"对应\"competition\"，故选B。",
+          "knowledgePoints": ["段落主旨理解"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q20",
+          "order": 20,
+          "questionType": "single_choice",
+          "stem": "Paragraph ⑤",
+          "options": [
+            "A. The common goal",
+            "B. Healthy competition",
+            "C. Team cooperation",
+            "D. Exercising and friendship",
+            "E. Problems between team members",
+            "F. Building communication skills"
+          ],
+          "answer": "F",
+          "answerExplanation": "段首主题句：Team work in sports can help young people develop stronger communication skills. 关键词\"communication skills\"，故选F。",
+          "knowledgePoints": ["段落主旨理解"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q21",
+          "order": 21,
+          "questionType": "single_choice",
+          "stem": "Cooperation in team sports helps build ________.",
+          "options": [
+            "A. set a goal",
+            "B. character",
+            "C. help each other",
+            "D. in team sports",
+            "E. your personal differences",
+            "F. hard work and devotion"
+          ],
+          "answer": "B",
+          "answerExplanation": "第一段第一句：Learning to cooperate with others towards a common goal in sports is what builds character, friendship and important life skills for players. 故选B。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q22",
+          "order": 22,
+          "questionType": "single_choice",
+          "stem": "When your team decides to win the season, you set aside ________.",
+          "options": [
+            "A. set a goal",
+            "B. character",
+            "C. help each other",
+            "D. in team sports",
+            "E. your personal differences",
+            "F. hard work and devotion"
+          ],
+          "answer": "E",
+          "answerExplanation": "第二段第三句：But when your team decides to be the winner of the season, personal differences are often set aside for the common good of the team. 故选E。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q23",
+          "order": 23,
+          "questionType": "single_choice",
+          "stem": "In team sports, kids learn to ________.",
+          "options": [
+            "A. set a goal",
+            "B. character",
+            "C. help each other",
+            "D. in team sports",
+            "E. your personal differences",
+            "F. hard work and devotion"
+          ],
+          "answer": "C",
+          "answerExplanation": "第三段第三句：Team work teaches people how to help each other and encourage each other. 故选C。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q24",
+          "order": 24,
+          "questionType": "single_choice",
+          "stem": "In team sports, people learn the value of ________.",
+          "options": [
+            "A. set a goal",
+            "B. character",
+            "C. help each other",
+            "D. in team sports",
+            "E. your personal differences",
+            "F. hard work and devotion"
+          ],
+          "answer": "F",
+          "answerExplanation": "第四段第三句：Working towards a goal can teach people the value of hard work, commitment and devotion. 故选F。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q25",
+          "order": 25,
+          "questionType": "single_choice",
+          "stem": "A long-lasting friendship can be built ________.",
+          "options": [
+            "A. set a goal",
+            "B. character",
+            "C. help each other",
+            "D. in team sports",
+            "E. your personal differences",
+            "F. hard work and devotion"
+          ],
+          "answer": "D",
+          "answerExplanation": "第三段：Team work teaches people how to help each other and encourage each other. It can also give players a greater respect for one another and can build friendships that last a lifetime. 此处it指代team work，与team sports同义，故选D。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2018-04-s4",
+      "type": "填句补文",
+      "order": 4,
+      "passageTitle": "Homeschooling vs School",
+      "passageText": "Many kids find it hard to concentrate in school. Classmates, bells, and even cheerful decorations in school can make it hard for some children to concentrate. ___(26)___\n\nIn some schools, conditions are bad for children's safety and health. ___(27)___ Homeschooling parents can control their children's environment to make sure it is safe and healthy.\n\nWhen students sit in a classroom surrounded by classmates, under the tight control of adults, they find it very hard to function in a normal way. Homeschooling children don't have to stay in the school. ___(28)___ They can interact with people in familiar situations, and they feel they can interact with people as adults.\n\nSchool bullying (以强欺弱) is a serious problem. ___(29)___ Although schools are starting to deal with this problem, many kids are still afraid of going to school. Homeschooling kids can choose who they associate with and walk away from an uncomfortable situation.\n\nSchools are cutting field trips. ___(30)___ On the contrary, homeschooling can move outdoors, to the beach or the zoo. For homeschooling families, the whole world is a classroom. Learning takes place everywhere and it never ends.",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2018-04-q26",
+          "order": 26,
+          "questionType": "single_choice",
+          "stem": "Many kids find it hard to concentrate in school...can make it hard for some children to concentrate. ___(26)___",
+          "options": [
+            "A. Instead, they are out in the community",
+            "B. In this case, homeschooling offers fewer interruptions",
+            "C. Children usually sit at desks or around the kitchen tables",
+            "D. Some children do not treat their classmates appropriately",
+            "E. Many students go to class in old or poorly-designed buildings",
+            "F. Even a short trip to the countryside is controversial in some places"
+          ],
+          "answer": "B",
+          "answerExplanation": "全文对比Homeschooling和School教育方式的优劣。第一段描述在学校很多事物导致孩子难以集中精力，与之相对家庭教育干扰更少，故选B。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q27",
+          "order": 27,
+          "questionType": "single_choice",
+          "stem": "In some schools, conditions are bad for children's safety and health. ___(27)___ Homeschooling parents can control their children's environment to make sure it is safe and healthy.",
+          "options": [
+            "A. Instead, they are out in the community",
+            "B. In this case, homeschooling offers fewer interruptions",
+            "C. Children usually sit at desks or around the kitchen tables",
+            "D. Some children do not treat their classmates appropriately",
+            "E. Many students go to class in old or poorly-designed buildings",
+            "F. Even a short trip to the countryside is controversial in some places"
+          ],
+          "answer": "E",
+          "answerExplanation": "空前一句提到在学校条件对孩子的健康安全不利，空后一句说到家庭教育能否为孩子提供安全健康的环境。只有E选项\"old or poorly-designed buildings\"（老旧、设计较差的建筑）涉及学校学习条件，故选E。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q28",
+          "order": 28,
+          "questionType": "single_choice",
+          "stem": "Homeschooling children don't have to stay in the school. ___(28)___ They can interact with people in familiar situations, and they feel they can interact with people as adults.",
+          "options": [
+            "A. Instead, they are out in the community",
+            "B. In this case, homeschooling offers fewer interruptions",
+            "C. Children usually sit at desks or around the kitchen tables",
+            "D. Some children do not treat their classmates appropriately",
+            "E. Many students go to class in old or poorly-designed buildings",
+            "F. Even a short trip to the countryside is controversial in some places"
+          ],
+          "answer": "A",
+          "answerExplanation": "空前一句说明家庭教育孩子不必待在学校，空后一句说到孩子可以在熟悉的环境下与人交往。A选项\"In the community\"提供了家庭教育孩子活动的具体地点，故选A。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q29",
+          "order": 29,
+          "questionType": "single_choice",
+          "stem": "School bullying (以强欺弱) is a serious problem. ___(29)___ Although schools are starting to deal with this problem, many kids are still afraid of going to school.",
+          "options": [
+            "A. Instead, they are out in the community",
+            "B. In this case, homeschooling offers fewer interruptions",
+            "C. Children usually sit at desks or around the kitchen tables",
+            "D. Some children do not treat their classmates appropriately",
+            "E. Many students go to class in old or poorly-designed buildings",
+            "F. Even a short trip to the countryside is controversial in some places"
+          ],
+          "answer": "D",
+          "answerExplanation": "段首提到学校霸凌问题，D选项\"Some children do not treat their classmates appropriately\"正是对学校霸凌问题的具体解释，故选D。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q30",
+          "order": 30,
+          "questionType": "single_choice",
+          "stem": "Schools are cutting field trips. ___(30)___ On the contrary, homeschooling can move outdoors, to the beach or the zoo.",
+          "options": [
+            "A. Instead, they are out in the community",
+            "B. In this case, homeschooling offers fewer interruptions",
+            "C. Children usually sit at desks or around the kitchen tables",
+            "D. Some children do not treat their classmates appropriately",
+            "E. Many students go to class in old or poorly-designed buildings",
+            "F. Even a short trip to the countryside is controversial in some places"
+          ],
+          "answer": "F",
+          "answerExplanation": "空前一句提到学校减少校外参观旅行，空后一句则相反，说家庭教育可以去户外。只有F选项出现了\"trip\"（出行），与语境呼应，故选F。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2018-04-s5",
+      "type": "填词补文",
+      "order": 5,
+      "passageTitle": "Planting Potatoes",
+      "passageText": "When I was a boy we had several gardens around our old house. The largest one of all was used just for growing potatoes.\n\nI can still remember those potato planting days. All the family ___(31)___ helped. After my Dad had ___(32)___ the soil, my Mom, brothers, and I went to work. It was my ___(33)___ to drop the little seed potatoes in the ___(34)___ while my Mom dropped handfuls of fertilizer beside them. My brothers then covered them all with the ___(35)___ turned earth.\n\nFor months ___(36)___ I would glance over at the garden while I played outside and wonder what was going on underneath the ___(37)___. When the harvest time came I was amazed at the huge size of the potatoes my Dad ___(38)___ out of the soil. Those little seed potatoes had grown into big potatoes. They would be turned into meal after meal of ___(39)___ food. They would keep the ___(40)___ family well fed throughout the whole year. It truly was a miracle.",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "00015-2018-04-q31",
+          "order": 31,
+          "questionType": "single_choice",
+          "stem": "All the family ___(31)___ helped.",
+          "options": ["A. true", "B. ground", "C. members", "D. job", "E. delicious", "F. prepared", "G. rows", "H. afterward", "I. freshly", "J. entire", "K. tools", "L. pulled"],
+          "answer": "C",
+          "answerExplanation": "固定词组 family members（家庭成员），\"All the family members helped\"意为全家人都来帮忙，故选C。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q32",
+          "order": 32,
+          "questionType": "single_choice",
+          "stem": "After my Dad had ___(32)___ the soil, my Mom, brothers, and I went to work.",
+          "options": ["A. true", "B. ground", "C. members", "D. job", "E. delicious", "F. prepared", "G. rows", "H. afterward", "I. freshly", "J. entire", "K. tools", "L. pulled"],
+          "answer": "F",
+          "answerExplanation": "prepare the soil for seed，意为整理土地准备播种，与过去完成时态\"had prepared\"搭配，故选F。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q33",
+          "order": 33,
+          "questionType": "single_choice",
+          "stem": "It was my ___(33)___ to drop the little seed potatoes in the ___(34)___ while my Mom dropped handfuls of fertilizer beside them.",
+          "options": ["A. true", "B. ground", "C. members", "D. job", "E. delicious", "F. prepared", "G. rows", "H. afterward", "I. freshly", "J. entire", "K. tools", "L. pulled"],
+          "answer": "D",
+          "answerExplanation": "my后接名词，it was my job to do sth. 意为\"我的工作是……\"，故选D。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q34",
+          "order": 34,
+          "questionType": "single_choice",
+          "stem": "It was my ___(33)___ to drop the little seed potatoes in the ___(34)___ while my Mom dropped handfuls of fertilizer beside them.",
+          "options": ["A. true", "B. ground", "C. members", "D. job", "E. delicious", "F. prepared", "G. rows", "H. afterward", "I. freshly", "J. entire", "K. tools", "L. pulled"],
+          "answer": "G",
+          "answerExplanation": "drop the little seed potatoes in the rows 意为将种薯播入田地的行列中，故选G。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q35",
+          "order": 35,
+          "questionType": "single_choice",
+          "stem": "My brothers then covered them all with the ___(35)___ turned earth.",
+          "options": ["A. true", "B. ground", "C. members", "D. job", "E. delicious", "F. prepared", "G. rows", "H. afterward", "I. freshly", "J. entire", "K. tools", "L. pulled"],
+          "answer": "I",
+          "answerExplanation": "the freshly turned earth 意为刚刚翻耕过的土地，freshly为副词修饰过去分词turned，故选I。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q36",
+          "order": 36,
+          "questionType": "single_choice",
+          "stem": "For months ___(36)___ I would glance over at the garden while I played outside and wonder what was going on underneath the ___(37)___.",
+          "options": ["A. true", "B. ground", "C. members", "D. job", "E. delicious", "F. prepared", "G. rows", "H. afterward", "I. freshly", "J. entire", "K. tools", "L. pulled"],
+          "answer": "H",
+          "answerExplanation": "months afterward 意为几个月后，故选H。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q37",
+          "order": 37,
+          "questionType": "single_choice",
+          "stem": "For months ___(36)___ I would glance over at the garden while I played outside and wonder what was going on underneath the ___(37)___.",
+          "options": ["A. true", "B. ground", "C. members", "D. job", "E. delicious", "F. prepared", "G. rows", "H. afterward", "I. freshly", "J. entire", "K. tools", "L. pulled"],
+          "answer": "B",
+          "answerExplanation": "underneath the ground 意为在土地下面，故选B。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q38",
+          "order": 38,
+          "questionType": "single_choice",
+          "stem": "When the harvest time came I was amazed at the huge size of the potatoes my Dad ___(38)___ out of the soil.",
+          "options": ["A. true", "B. ground", "C. members", "D. job", "E. delicious", "F. prepared", "G. rows", "H. afterward", "I. freshly", "J. entire", "K. tools", "L. pulled"],
+          "answer": "L",
+          "answerExplanation": "pull out of the soil 意为从土里拔/拽出来，故选L。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q39",
+          "order": 39,
+          "questionType": "single_choice",
+          "stem": "They would be turned into meal after meal of ___(39)___ food.",
+          "options": ["A. true", "B. ground", "C. members", "D. job", "E. delicious", "F. prepared", "G. rows", "H. afterward", "I. freshly", "J. entire", "K. tools", "L. pulled"],
+          "answer": "E",
+          "answerExplanation": "形容词修饰名词food，delicious food 意为美味佳肴，故选E。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q40",
+          "order": 40,
+          "questionType": "single_choice",
+          "stem": "They would keep the ___(40)___ family well fed throughout the whole year.",
+          "options": ["A. true", "B. ground", "C. members", "D. job", "E. delicious", "F. prepared", "G. rows", "H. afterward", "I. freshly", "J. entire", "K. tools", "L. pulled"],
+          "answer": "J",
+          "answerExplanation": "the entire family 意为整个家庭，故选J。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2018-04-s6",
+      "type": "完形填空",
+      "order": 6,
+      "passageTitle": "Workplace English Learning",
+      "passageText": "English plays (play) an important role in the workplace. When ___(41)___ (use) correctly and appropriately, it will be ___(42)___ (help) in developing a career or a business. Some may need or want to study business English before they start their ___(43)___ (career). Those who are already ___(44)___ (work) have the opportunity to see what they can and cannot do ___(45)___ (effective) with English in their current job.\n\nA ___(46)___ (value) skill to have in business is how to negotiate. You need to know what you want, as well as how to bargain and make concessions (让步). Being able to deal with a conflict and ___(47)___ (know) how to end negotiations can make a big ___(48)___ (different) to the outcome.\n\nWorkplace English learning will encourage ___(49)___ (profession) and efficient communication. It can better serve customers, business partners and ___(50)___ (supplier), and it will be a positive push for any business.",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "00015-2018-04-q41",
+          "order": 41,
+          "questionType": "fill_blank_transform",
+          "stem": "use",
+          "options": [],
+          "answer": "used",
+          "answerExplanation": "When + 动词过去分词作状语，表示\"当被正确恰当地使用时\"，故填 used。",
+          "knowledgePoints": ["被动语态"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q42",
+          "order": 42,
+          "questionType": "fill_blank_transform",
+          "stem": "help",
+          "options": [],
+          "answer": "helpful",
+          "answerExplanation": "be helpful in doing 意为\"有助于……\"，此处需要形容词，故填 helpful。",
+          "knowledgePoints": ["形容词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q43",
+          "order": 43,
+          "questionType": "fill_blank_transform",
+          "stem": "career",
+          "options": [],
+          "answer": "careers",
+          "answerExplanation": "career 为可数名词，此处泛指多人的职业生涯，需用复数形式，故填 careers。",
+          "knowledgePoints": ["名词单复数"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q44",
+          "order": 44,
+          "questionType": "fill_blank_transform",
+          "stem": "work",
+          "options": [],
+          "answer": "working",
+          "answerExplanation": "be+doing 表示现在进行时态，表示动作正在进行，故填 working（already working表示已经在职）。",
+          "knowledgePoints": ["动词时态"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q45",
+          "order": 45,
+          "questionType": "fill_blank_transform",
+          "stem": "effective",
+          "options": [],
+          "answer": "effectively",
+          "answerExplanation": "此处修饰动词do，需用副词effectively，故填 effectively。",
+          "knowledgePoints": ["副词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q46",
+          "order": 46,
+          "questionType": "fill_blank_transform",
+          "stem": "value",
+          "options": [],
+          "answer": "valuable",
+          "answerExplanation": "a valuable skill 意为\"一项宝贵的技能\"，此处修饰名词skill，需用形容词，故填 valuable。",
+          "knowledgePoints": ["形容词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q47",
+          "order": 47,
+          "questionType": "fill_blank_transform",
+          "stem": "know",
+          "options": [],
+          "answer": "knowing",
+          "answerExplanation": "and前后词性一致，being able to为动名词结构，故此处应填入know的动名词形式 knowing。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q48",
+          "order": 48,
+          "questionType": "fill_blank_transform",
+          "stem": "different",
+          "options": [],
+          "answer": "difference",
+          "answerExplanation": "固定搭配 make a big difference（有很大影响），此处需要名词，故填 difference。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q49",
+          "order": 49,
+          "questionType": "fill_blank_transform",
+          "stem": "profession",
+          "options": [],
+          "answer": "professional",
+          "answerExplanation": "形容词修饰名词communication，且and前后词性一致（efficient为形容词），故此处填入形容词 professional。",
+          "knowledgePoints": ["形容词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2018-04-q50",
+          "order": 50,
+          "questionType": "fill_blank_transform",
+          "stem": "supplier",
+          "options": [],
+          "answer": "suppliers",
+          "answerExplanation": "可数名词出现时须以复数形式或\"冠词+单数\"形式出现，此处根据上下文（并列customers, business partners）应为复数，故填 suppliers。官方答案页此处印刷为\"suppllers\"，明显为印刷/排版错误，解析文字中写明\"填suppliers\"，据此判定正确答案为suppliers，建议人工核对原图确认。",
+          "knowledgePoints": ["名词单复数"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2018-04-s7",
+      "type": "写作",
+      "order": 7,
+      "writingPrompt": "假设你将举办一次周末小聚会，准备邀请你的英国朋友Tom参加，请给他写一封英文电子邮件，内容包括：\n1. 活动主题：为Lucy举办生日晚会，时间、地点；\n2. 询问Tom能否参加；\n3. 请以Li Ke署名。",
+      "scorePerQuestion": 30,
+      "totalScore": 30,
+      "questions": [
+        {
+          "questionId": "00015-2018-04-q51",
+          "order": 51,
+          "questionType": "essay",
+          "stem": "请根据所提供材料中的要求完成一篇100词左右的英文写作任务。",
+          "options": [],
+          "answer": "",
+          "answerExplanation": "官方参考范文：\nDear Tom,\nHow have you been recently?\nI have an exciting message for you. Lucy's birthday dinner party is going to be held this Sunday, I am glad to invite you to attend the party. Jane, Ellen and Amy will also be invited. It is sure that we will have a good time. The party will be held from 7:00 pm to 10:00pm in Lucy's house. First we will have a hearty meal which will be prepared by Lucy's parents. Then we will dance. Cakes and drinks will be served as well. I sincerely expect you can come and hope to see you then.\nI am looking forward to your reply.\nYours sincerely,\nLi Ke\n官方评分说明：应用文写作，重点在于格式正确，语言合情合理。开头问候和结尾期待回信为惯用语，需要记忆。中间内容部分按照题目要求将事情说清楚，注意语法和词汇拼写。",
+          "knowledgePoints": ["写作-综合"],
+          "difficultyTag": null
+        }
+      ]
+    }
+  ],
+  "parsingNotes": [
+    "timeLimitMinutes（150分钟）在本试卷提供的图片中未见明确印刷的考试时长说明，按00015《英语(二)》课程历年惯例填写为150分钟，建议人工核对原始试卷封面或考试通知确认。",
+    "第50题官方答案及评分参考页原文印刷为\"suppllers\"，明显为印刷/排版错误；结合该题解析文字\"填 suppliers\"及上下文语义（与customers, business partners并列的复数名词），判定正确答案为\"suppliers\"，建议人工核对原图确认。",
+    "第一部分短文第三段末句\"In addition to newer technology, factory farms produce more products for less money than traditional farming, would require.\"该句原文语序/标点在扫描件中显得不太符合常规英语语法（如\"would require\"前有逗号），已按原文逐字转录，未做改写，建议人工核对原图确认是否为原版印刷问题。",
+    "第三部分（段落大意）短文首句原文扫描图像中\"Teams\"一词字形略模糊，疑似印刷为\"Teamns\"，按上下文判断应为\"Teams\"，已按正确拼写录入，建议人工核对原图确认该词的准确印刷字形。",
+    "第51题写作为主观题，answer字段留空，answerExplanation中记录的是官方给出的参考范文和评分说明，实际学生作文需按写作评分标准由人工或专门的作文评分模型评判，不能仅凭与参考范文的字面匹配来自动判分。"
+  ]
+}

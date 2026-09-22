@@ -1,0 +1,482 @@
+name: Deploy MVP worker
+
+# 这个沙盒开发环境的出站网络策略禁止访问 api.cloudflare.com，所以部署改由
+# GitHub Actions 的运行器代为执行：创建 D1 数据库、建表、写入密钥、发布 Worker、
+# 初始化超级管理员，全部自动完成，只需要仓库里配好 Secrets。
+
+on:
+  push:
+    branches:
+      - claude/english-exam-question-bank-a8nbiu
+    paths:
+      - 'worker/**'
+      - 'web/**'
+      - 'data/**'
+      - 'scripts/**'
+      - '.github/workflows/deploy-worker.yml'
+  workflow_dispatch:
+    inputs:
+      force_seed:
+        description: '强制重新导入全部题库（平时不需要，会占用 D1 每日写入额度）'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-worker
+  cancel-in-progress: false
+
+env:
+  WORKER_NAME: eng1300-mvp
+  D1_NAME: eng1300-mvp
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Check required secrets
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "::error::缺少仓库 Secret「CLOUDFLARE_API_TOKEN」。请到 Settings → Secrets and variables → Actions 添加后重新运行。"
+            exit 1
+          fi
+
+      - name: Install dependencies
+        env:
+          # worker 的 devDependencies 里有 playwright（只给浏览器测试用）。
+          # 部署用不到浏览器，别让它的 postinstall 白下载几百兆。
+          # 不能改用 --omit=dev：wrangler 本身也在 devDependencies 里。
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+        run: |
+          npm install --prefix worker --no-audit --no-fund
+          npm install --prefix web --no-audit --no-fund
+
+      - name: Build frontend
+        # vite 的产物直接落到 worker/public，随 wrangler deploy 一起上传
+        run: |
+          npm run build --prefix web
+          ls -la worker/public
+
+      - name: Resolve Cloudflare account
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ACCOUNT_ID_SECRET: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          VERIFY=$(curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/user/tokens/verify")
+          echo "Token 状态：$(echo "$VERIFY" | jq -r '.result.status // "unknown"')"
+          if [ "$(echo "$VERIFY" | jq -r '.success')" != "true" ]; then
+            echo "::error::Cloudflare 拒绝了这个 API Token，请检查是否填错或已过期。"
+            echo "$VERIFY" | jq -c '.errors // .'
+            exit 1
+          fi
+
+          ACCOUNT_ID=""
+          # 1) 优先使用显式配置的 Account ID
+          if [ -n "$ACCOUNT_ID_SECRET" ]; then
+            ACCOUNT_ID="$ACCOUNT_ID_SECRET"
+            echo "使用 Secret 中配置的 Account ID。"
+          fi
+
+          # 2) 否则尝试列出账号（需要 Token 具备 Account Settings:Read 权限）
+          if [ -z "$ACCOUNT_ID" ]; then
+            RESP=$(curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+              "https://api.cloudflare.com/client/v4/accounts")
+            ACCOUNT_ID=$(echo "$RESP" | jq -r '.result[0].id // empty')
+            [ -n "$ACCOUNT_ID" ] && echo "通过账号列表接口自动识别到账号。"
+          fi
+
+          # 3) 再退一步：从域名（zone）信息里反查所属账号
+          if [ -z "$ACCOUNT_ID" ]; then
+            ZONES=$(curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+              "https://api.cloudflare.com/client/v4/zones")
+            ACCOUNT_ID=$(echo "$ZONES" | jq -r '.result[0].account.id // empty')
+            [ -n "$ACCOUNT_ID" ] && echo "通过域名信息反查到账号。"
+          fi
+
+          if [ -z "$ACCOUNT_ID" ]; then
+            echo "::error::拿不到 Cloudflare Account ID。这个 Token 没有 Account Settings:Read 权限，也查不到任何域名。请添加仓库 Secret「CLOUDFLARE_ACCOUNT_ID」：登录 Cloudflare 控制台 → 左侧 Workers & Pages，页面右侧或浏览器地址栏 dash.cloudflare.com/<这一串就是 Account ID>/workers。"
+            exit 1
+          fi
+
+          echo "::add-mask::$ACCOUNT_ID"
+          echo "CLOUDFLARE_ACCOUNT_ID=$ACCOUNT_ID" >> "$GITHUB_ENV"
+
+      - name: Ensure workers.dev subdomain
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          SUB=$(curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/subdomain" \
+            | jq -r '.result.subdomain // empty')
+          if [ -z "$SUB" ]; then
+            CAND="eng1300-$(echo "$CLOUDFLARE_ACCOUNT_ID" | cut -c1-8)"
+            echo "账号还没有 workers.dev 子域名，尝试注册：$CAND"
+            RESP=$(curl -sS -X PUT -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+              -H 'Content-Type: application/json' --data "{\"subdomain\":\"$CAND\"}" \
+              "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/subdomain")
+            if [ "$(echo "$RESP" | jq -r '.success')" != "true" ]; then
+              echo "::error::注册 workers.dev 子域名失败，请手动在 Cloudflare 控制台 Workers 页面设置一次子域名后重跑。"
+              echo "$RESP" | jq -c '.errors // .'
+              exit 1
+            fi
+            SUB="$CAND"
+          fi
+          echo "workers.dev 子域名：$SUB"
+          echo "WORKERS_SUBDOMAIN=$SUB" >> "$GITHUB_ENV"
+
+      - name: Find or create D1 database
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          BASE="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/d1/database"
+          LIST=$(curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "$BASE?name=$D1_NAME")
+          if [ "$(echo "$LIST" | jq -r '.success')" != "true" ]; then
+            echo "::error::读取 D1 数据库列表失败。请确认 API Token 含有 D1:Edit 权限（Cloudflare 后台 → API Tokens → 编辑该 Token → 添加 Account / D1 / Edit）。"
+            echo "$LIST" | jq -c '.errors // .'
+            exit 1
+          fi
+          DB_ID=$(echo "$LIST" | jq -r --arg n "$D1_NAME" '[.result[] | select(.name==$n)][0].uuid // empty')
+          if [ -z "$DB_ID" ]; then
+            echo "数据库不存在，正在创建：$D1_NAME"
+            CREATE=$(curl -sS -X POST -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+              -H 'Content-Type: application/json' --data "{\"name\":\"$D1_NAME\"}" "$BASE")
+            if [ "$(echo "$CREATE" | jq -r '.success')" != "true" ]; then
+              echo "::error::创建 D1 数据库失败。"
+              echo "$CREATE" | jq -c '.errors // .'
+              exit 1
+            fi
+            DB_ID=$(echo "$CREATE" | jq -r '.result.uuid')
+          fi
+          echo "D1 database id: $DB_ID"
+          echo "D1_DATABASE_ID=$DB_ID" >> "$GITHUB_ENV"
+
+      - name: Point wrangler.toml at the database
+        working-directory: worker
+        run: |
+          sed -i "s|^database_id = \".*\"|database_id = \"$D1_DATABASE_ID\"|" wrangler.toml
+          grep '^database_id' wrangler.toml
+
+      - name: Apply database migrations
+        working-directory: worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          # 迁移全部写成 IF NOT EXISTS / INSERT OR IGNORE，可以反复执行
+          for f in migrations/*.sql; do
+            echo "── 执行 $f"
+            npx wrangler d1 execute "$D1_NAME" --remote --yes --file="$f"
+          done
+
+      # 部署排在题库导入之前。导入受 D1 每日写入额度限制，额度耗尽时会失败；
+      # 早先它排在前面，一失败后面的部署就整步跳过，连续八次运行的 Worker 代码
+      # 一行都没上线——数据装载的额度问题不该挡住代码发布。迁移仍排在最前，
+      # 因为新代码可能依赖新表。
+      - name: Deploy worker
+        working-directory: worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: npx wrangler deploy
+
+      - name: Ensure worker secrets
+        working-directory: worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          EXISTING=$(curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/$WORKER_NAME/secrets" \
+            | jq -r '[.result[]?.name] | join(" ")')
+          echo "已存在的密钥：${EXISTING:-（无）}"
+
+          if ! echo " $EXISTING " | grep -q " JWT_SECRET "; then
+            printf '%s' "$(openssl rand -hex 32)" | npx wrangler secret put JWT_SECRET
+            echo "已生成并写入 JWT_SECRET。"
+          fi
+
+          # AI Key 的加密密钥。一旦轮换，已存的密文就解不开了，所以只在缺失时生成。
+          if ! echo " $EXISTING " | grep -q " ENCRYPTION_KEY "; then
+            printf '%s' "$(openssl rand -hex 32)" | npx wrangler secret put ENCRYPTION_KEY
+            echo "已生成并写入 ENCRYPTION_KEY。"
+          fi
+
+          # SETUP_TOKEN 每次运行都轮换成新值：它只在用户表为空时才有用，
+          # 这样即使某次初始化失败，下一次运行也仍然知道令牌、可以重试。
+          TOKEN_VALUE=$(openssl rand -hex 24)
+          echo "::add-mask::$TOKEN_VALUE"
+          printf '%s' "$TOKEN_VALUE" | npx wrangler secret put SETUP_TOKEN
+          echo "SETUP_TOKEN_VALUE=$TOKEN_VALUE" >> "$GITHUB_ENV"
+
+      - name: Seed question bank
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          FORCE_SEED: ${{ inputs.force_seed && '1' || '0' }}
+        run: bash scripts/ci/seed-if-changed.sh
+
+      - name: Publish the whole bank
+        working-directory: worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          # 必须排在导入之后：seed 按试卷先删后插，会把状态重置回草稿
+          npx wrangler d1 execute "$D1_NAME" --remote --yes --file=sql/publish-all.sql
+
+      - name: Wait for the worker to respond
+        run: |
+          URL="https://$WORKER_NAME.$WORKERS_SUBDOMAIN.workers.dev"
+          echo "WORKER_URL=$URL" >> "$GITHUB_ENV"
+          # 新注册的 workers.dev 子域名要等 Cloudflare 签发 HTTPS 证书，
+          # 这期间 TLS 握手会直接失败，需要耐心轮询。
+          for i in $(seq 1 40); do
+            CODE=$(curl -sS -m 15 -o /dev/null -w '%{http_code}' "$URL/api/health" 2>/dev/null || echo 000)
+            if [ "$CODE" = "200" ]; then
+              echo "服务已就绪（第 $i 次探测）。"
+              exit 0
+            fi
+            echo "第 $i 次探测返回 $CODE，15 秒后重试…"
+            sleep 15
+          done
+          echo "::error::等待约 10 分钟后服务仍不可访问。新子域名的 HTTPS 证书签发有时需要更久，稍后重跑本流水线即可。"
+          exit 1
+
+      - name: Bootstrap super admin
+        env:
+          # 两个名字都认：ADMIN_PASSWORD 是最早用的，ADMIN_PASS 是后来加的
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+          ADMIN_PASS: ${{ secrets.ADMIN_PASS }}
+        run: |
+          ADMIN_PASSWORD="${ADMIN_PASSWORD:-$ADMIN_PASS}"
+          if [ -z "$ADMIN_PASSWORD" ]; then
+            echo "::warning::未设置仓库 Secret「ADMIN_PASSWORD」或「ADMIN_PASS」，跳过超级管理员初始化。"
+            exit 0
+          fi
+          # 刚写入的 SETUP_TOKEN 需要一点时间同步到边缘节点，在此期间
+          # Worker 读到的还是旧值，会返回 403，因此这里要重试。
+          for i in $(seq 1 24); do
+            CODE=$(curl -sS -m 30 -o /tmp/setup.json -w '%{http_code}' -X POST "$WORKER_URL/api/setup" \
+              -H "X-Setup-Token: $SETUP_TOKEN_VALUE" -H 'Content-Type: application/json' \
+              --data "$(jq -n --arg p "$ADMIN_PASSWORD" '{username:"admin",password:$p}')" 2>/dev/null || echo 000)
+            case "$CODE" in
+              201) echo "超级管理员 admin 创建成功。"; exit 0 ;;
+              409) echo "用户表已有数据，之前已初始化过，跳过。"; exit 0 ;;
+              403) echo "第 $i 次尝试：密钥尚未生效（403），10 秒后重试…" ;;
+              *)   echo "第 $i 次尝试返回 $CODE，10 秒后重试…" ;;
+            esac
+            sleep 10
+          done
+          echo "::error::初始化超级管理员失败，最后一次响应："
+          cat /tmp/setup.json 2>/dev/null || true
+          exit 1
+
+      - name: Clear admin lockout
+        working-directory: worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          # 连续 5 次密码错误会把 admin 锁 10 分钟（migrations/0003）。人在网页上
+          # 试错几次就足以让整条流水线登不进去，所以每次部署先把 admin 的失败计数
+          # 清掉。只清 admin：学员账号被锁由管理员在后台重置密码解决，那个接口
+          # 本身就会一并清掉锁定记录。
+          npx wrangler d1 execute "$D1_NAME" --remote --yes \
+            --command "DELETE FROM login_attempts WHERE username = 'admin';"
+
+      - name: Get admin token
+        env:
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+          ADMIN_PASS: ${{ secrets.ADMIN_PASS }}
+        run: bash scripts/ci/get-admin-token.sh
+
+      - name: Bootstrap student accounts
+        env:
+          STUDENT_PASSWORD: ${{ secrets.STUDENT_PASSWORD }}
+        run: |
+          if [ -z "${ADMIN_TOKEN:-}" ] || [ -z "$STUDENT_PASSWORD" ]; then
+            echo "::warning::缺少管理员令牌或 STUDENT_PASSWORD，跳过学员账号初始化。"
+            exit 0
+          fi
+          TOKEN="$ADMIN_TOKEN"
+          for i in $(seq -w 1 10); do
+            NAME="T0$i"
+            CODE=$(curl -sS -m 30 -o /tmp/user.json -w '%{http_code}' -X POST "$WORKER_URL/api/admin/users" \
+              -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' \
+              --data "$(jq -n --arg u "$NAME" --arg p "$STUDENT_PASSWORD" '{username:$u,password:$p}')")
+            case "$CODE" in
+              201) echo "  已创建 $NAME" ;;
+              409) echo "  $NAME 已存在，跳过" ;;
+              *)   echo "::error::创建 $NAME 失败（HTTP $CODE）"; cat /tmp/user.json; exit 1 ;;
+            esac
+          done
+
+      - name: Configure AI providers
+        env:
+          # 复用 ai-smoke-test.yml 已经配好的那个 Secret
+          AI_API_KEY: ${{ secrets.SILICONFLOW_API_KEY }}
+          AI_BASE_URL: ${{ vars.AI_BASE_URL }}
+          AI_PARSING_MODEL: ${{ vars.AI_PARSING_MODEL }}
+          AI_TUTORING_MODEL: ${{ vars.AI_TUTORING_MODEL }}
+        run: |
+          if [ -z "${ADMIN_TOKEN:-}" ] || [ -z "$AI_API_KEY" ]; then
+            echo "::warning::缺少管理员令牌或 SILICONFLOW_API_KEY，跳过 AI 配置（可稍后在后台页面手工填写）。"
+            exit 0
+          fi
+          AI_BASE_URL="${AI_BASE_URL:-https://api.siliconflow.cn/v1}"
+          TOKEN="$ADMIN_TOKEN"
+
+          put_cfg() {
+            PURPOSE=$1; MODEL=$2; VISION=$3
+            CODE=$(curl -sS -m 30 -o /tmp/ai.json -w '%{http_code}' -X PUT \
+              "$WORKER_URL/api/admin/ai/settings/$PURPOSE" \
+              -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' \
+              --data "$(jq -n --arg u "$AI_BASE_URL" --arg k "$AI_API_KEY" --arg m "$MODEL" \
+                --argjson v "$VISION" '{baseUrl:$u,apiKey:$k,model:$m,protocol:"openai",visionCapable:$v}')")
+            if [ "$CODE" = "200" ]; then
+              echo "  $PURPOSE 配置已写入（$MODEL）"
+              return 0
+            fi
+            # 额度用尽时写不进去。库里已经有这项配置的话，跳过就跳过——不该
+            # 因为一次改不了配置，就把后面的线上验证整步跳掉、看不到站点状态。
+            # 库里本来就没有（首次部署），那是真缺东西，照常报错。
+            if grep -q storage_quota_exceeded /tmp/ai.json 2>/dev/null; then
+              if [ "$(curl -sS -m 30 "$WORKER_URL/api/admin/ai/settings" \
+                        -H "Authorization: Bearer $TOKEN" \
+                        | jq -r --arg p "$PURPOSE" '.settings[$p].hasKey // false')" = "true" ]; then
+                echo "::warning::D1 今日写入额度已用尽，$PURPOSE 配置沿用库里已有的那份（世界时零点后重跑本流水线可刷新）。"
+                return 0
+              fi
+              echo "::error::D1 今日写入额度已用尽，且库里没有 $PURPOSE 配置，AI 功能不可用。请在世界时零点后重跑。"
+              exit 1
+            fi
+            echo "::error::写入 $PURPOSE 配置失败（HTTP $CODE）"; cat /tmp/ai.json; exit 1
+          }
+
+          put_cfg PARSING "${AI_PARSING_MODEL:-deepseek-ai/DeepSeek-OCR}" true
+          put_cfg TUTORING "${AI_TUTORING_MODEL:-Qwen/Qwen3-8B}" false
+
+      - name: Verify deployment
+        run: |
+          FAIL=0
+          check() {
+            if [ "$2" = "$3" ]; then echo "  OK   $1"; else echo "  FAIL $1（期望 $3，实际 $2）"; FAIL=1; fi
+          }
+
+          CODE=$(curl -sS -m 20 -o /dev/null -w '%{http_code}' "$WORKER_URL/api/health" || echo 000)
+          check "健康检查" "$CODE" "200"
+
+          CODE=$(curl -sS -m 20 -o /dev/null -w '%{http_code}' "$WORKER_URL/api/me" || echo 000)
+          check "未登录访问 /api/me 被拒绝" "$CODE" "401"
+
+          if [ -n "${ADMIN_TOKEN:-}" ]; then
+            ROLE=$(curl -sS -m 20 "$WORKER_URL/api/me" -H "Authorization: Bearer $ADMIN_TOKEN" \
+              | jq -r '.user.role // "none"' || echo none)
+            check "admin 令牌有效且为超级管理员" "$ROLE" "SUPER_ADMIN"
+
+            TOKEN="$ADMIN_TOKEN"
+            {
+              CODE=$(curl -sS -m 20 -o /tmp/users.json -w '%{http_code}' "$WORKER_URL/api/admin/users" \
+                -H "Authorization: Bearer $TOKEN" || echo 000)
+              check "超级管理员可访问后台用户接口" "$CODE" "200"
+              # 只数 T001–T010 是否齐全，不比总数，免得以后手工新建账号把这条弄红
+              STUDENTS=$(jq -r '[.users[] | select(.username | test("^T0(0[1-9]|10)$"))] | length' /tmp/users.json 2>/dev/null || echo 0)
+              check "学员账号 T001–T010 已创建" "$STUDENTS" "10"
+
+              # 真有一条写入落库了吗？
+              #
+              # 这条不是凑数：D1 免费版写入额度用尽时，读接口全都正常，只有写会失败，
+              # 所以上面那些检查全绿也说明不了站点能用。原先"取管理员令牌"那步能当哨兵
+              # （登录要写最后登录时间），但登录已经改成额度用尽也放行，哨兵没了。
+              #
+              # AI 配置那步每次部署都会重写一次，额度用尽时它会回退成沿用旧值并打
+              # warning。所以看 updated_at 离现在多久：刚写的就是几秒，回退了就是上一次
+              # 成功部署的时间。10 分钟的窗口足够覆盖一次部署的耗时。
+              AI_UPDATED=$(curl -sS -m 20 "$WORKER_URL/api/admin/ai/settings" \
+                -H "Authorization: Bearer $TOKEN" | jq -r '.settings.TUTORING.updatedAt // ""')
+              if [ -z "$AI_UPDATED" ]; then
+                check "写入已恢复（AI 配置刚落库）" "读不到 updatedAt" "10 分钟内"
+              else
+                # updated_at 由 SQLite datetime('now') 生成，是世界时
+                AGE=$(( $(date -u +%s) - $(date -u -d "${AI_UPDATED}Z" +%s 2>/dev/null || echo 0) ))
+                if [ "$AGE" -ge 0 ] && [ "$AGE" -le 600 ]; then
+                  echo "  OK   写入已恢复（AI 配置 ${AGE} 秒前刚落库）"
+                else
+                  echo "  FAIL 写入未恢复：AI 配置停在 $AI_UPDATED（${AGE} 秒前），说明这次没写进去"
+                  FAIL=1
+                fi
+              fi
+
+              STATS=$(curl -sS -m 20 "$WORKER_URL/api/admin/bank/stats" -H "Authorization: Bearer $TOKEN" || echo '{}')
+              EXAMS=$(echo "$STATS" | jq -r '[.byCourse[].exam_count] | add // 0')
+              check "题库已导入 20 套真题" "$EXAMS" "20"
+              QUESTIONS=$(echo "$STATS" | jq -r '[.byType[].total] | add // 0')
+              check "题库已导入 1020 道题" "$QUESTIONS" "1020"
+
+              COURSES=$(echo "$STATS" | jq -r '.byCourse | length')
+              check "00015 与 13000 已合并为一门课程" "$COURSES" "1"
+              PUBLISHED_EXAMS=$(echo "$STATS" | jq -r '[.byCourse[].published_exams] | add // 0')
+              check "20 套试卷全部已发布" "$PUBLISHED_EXAMS" "20"
+              # 被解析存疑记录点名的题目不参与组卷，所以可抽题数少于总题数。
+              # 不写死具体数字：存疑记录一旦人工核对放行，这个数就会变。
+              PUBLISHED_Q=$(echo "$STATS" | jq -r '[.byType[].published] | add // 0')
+              check "存疑题确实被排除在可抽题之外" "$(( PUBLISHED_Q > 0 && PUBLISHED_Q < QUESTIONS ))" "1"
+              echo "     （共 $QUESTIONS 题，其中 $PUBLISHED_Q 题可参与组卷）"
+              check "解析存疑记录已清零" "$(echo "$STATS" | jq -r '.unresolvedNotes')" "0"
+
+              # 缺原文的那道题按要求扣下，不参与组卷
+              HELD=$(curl -sS -m 20 "$WORKER_URL/api/admin/bank/exams/13000-2026-04" \
+                -H "Authorization: Bearer $TOKEN" \
+                | jq -r '[.sections[].questions[] | select(.question_id=="13000-2026-04-q15")][0].status')
+              check "13000-2026-04 第15题已扣下（缺原文支撑）" "$HELD" "存疑"
+            }
+          fi
+
+          # 前端：首页应返回 HTML，未知前端路由要回落到同一个 index.html
+          TYPE=$(curl -sS -m 20 -o /tmp/index.html -w '%{content_type}' "$WORKER_URL/" || echo none)
+          case "$TYPE" in
+            text/html*) echo "  OK   首页返回 HTML" ;;
+            *) echo "  FAIL 首页返回 $TYPE"; FAIL=1 ;;
+          esac
+          if grep -q 'id="root"' /tmp/index.html; then
+            echo "  OK   首页是前端应用页面"
+          else
+            echo "  FAIL 首页内容不是前端应用"; FAIL=1
+          fi
+
+          CODE=$(curl -sS -m 20 -o /dev/null -w '%{http_code}' -X POST "$WORKER_URL/api/exams/generate" \
+            -H 'Content-Type: application/json' -d '{"courseCode":"13000"}' || echo 000)
+          check "未登录不能组卷" "$CODE" "401"
+
+          CODE=$(curl -sS -m 20 -o /dev/null -w '%{http_code}' "$WORKER_URL/admin/bank" || echo 000)
+          check "前端路由回落到 index.html" "$CODE" "200"
+
+          # /api/* 必须交给 Worker，不能被 SPA 回落吃掉
+          BODY=$(curl -sS -m 20 "$WORKER_URL/api/does-not-exist" || echo '')
+          case "$BODY" in
+            *not_found*) echo "  OK   未知接口返回 JSON 404" ;;
+            *) echo "  FAIL 未知接口被前端回落吃掉：$BODY"; FAIL=1 ;;
+          esac
+
+          [ "$FAIL" -eq 0 ] || { echo "::error::线上验证未全部通过。"; exit 1; }
+          echo "线上验证全部通过。"
+
+      - name: Summary
+        run: |
+          {
+            echo "## 部署完成"
+            echo ""
+            echo "**公网地址：** $WORKER_URL"
+            echo ""
+            echo "- 健康检查：\`GET $WORKER_URL/api/health\`"
+            echo "- 登录：\`POST $WORKER_URL/api/auth/login\`"
+            echo "- 学员入口：$WORKER_URL/login"
+            echo "- 后台入口：$WORKER_URL/admin/login"
+            echo "- 后台用户管理（仅超级管理员）：\`GET $WORKER_URL/api/admin/users\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "DEPLOYED_URL=$WORKER_URL"

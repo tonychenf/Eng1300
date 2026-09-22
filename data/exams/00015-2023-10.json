@@ -1,0 +1,757 @@
+{
+  "examId": "00015-2023-10",
+  "title": "2023年10月高等教育自学考试英语(二)试题",
+  "year": 2023,
+  "month": 10,
+  "courseCode": "00015",
+  "courseName": "英语(二)",
+  "sourceFile": "57d47f08-2023_10____________.pdf",
+  "totalScore": 100,
+  "timeLimitMinutes": 150,
+  "status": "待校对",
+  "sections": [
+    {
+      "sectionId": "00015-2023-10-s1",
+      "type": "阅读判断",
+      "order": 1,
+      "passageTitle": "The Kid That Saved His Dad",
+      "passageText": "On a sunny day last April, Bode, then nine, and his father, John Taylor, 54, were snowmobiling around the remote country of Lake Tahoe. As they were driving on the snow, a little dry branch jammed in the brake of John's vehicle. Unable to slow down, John rushed toward a pine tree. He moved to jump off the vehicle before it crashed, but his pantleg (裤腿) caught underneath it. John felt his leg broken. As he sank six inches into the powdery snow, he could tell his arms and shoulder were injured too. Bode rushed to dig out his father, but John stopped him. They had no water, little food, and no cell phone service. \"Get on your snowmobile,\" John told Bode. \"Follow the road, and try to find help.\"\n\nAfter a 20-minute ride, Bode spotted a tour group and asked the guide to radio for help. The rescuers quickly appeared on the scene. And Bode led them through the white wilderness to his dad, who was pale and in pain.\n\nWhile they were waiting for a plane to send John to the nearest hospital, the rescuers quickly stabilized his leg. An hour later, he received surgery for the broken leg and internal bleeding.\n\nToday, John's leg has healed enough for him to take Bode out on dirt bikes. Father and son now carry extra devices on their trips, including a two-way radio with an emergency button. \"I'm still a little afraid to go out on a snowmobile,\" says Bode. \"But I'm starting to feel better about it.\"\n\nTisha Shaw, Bode's mother, says her son's courage and quick thinking have led her to treat him as more of an adult. She lets him stay up later at night because \"I trust his judgment,\" she says.",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2023-10-q1",
+          "order": 1,
+          "questionType": "single_choice",
+          "stem": "Bode and his father went snowmobiling last April.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "根据原文第一段，Bode和他的父亲去年4月去Lake Tahoe玩雪地摩托，故为True。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q2",
+          "order": 2,
+          "questionType": "single_choice",
+          "stem": "Bode's snowmobile broke down on the way.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "原文说的是一根干树枝卡在了John雪地摩托的刹车上，而不是Bode的雪地摩托坏了，故为False。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q3",
+          "order": 3,
+          "questionType": "single_choice",
+          "stem": "John had an accident and injured himself.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "根据原文第一段，John在雪地摩托事故中受伤（腿、手臂、肩膀），故为True。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q4",
+          "order": 4,
+          "questionType": "single_choice",
+          "stem": "John told his son to make a call for help.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "原文中他们没有手机信号，John是让Bode骑上雪地摩托沿路去找帮助，而不是打电话求助，故为False。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q5",
+          "order": 5,
+          "questionType": "single_choice",
+          "stem": "A tour guide helped Bode to contact the rescuers.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "根据原文\"Bode spotted a tour group and asked the guide to radio for help\"，导游用无线电帮Bode联系了救援人员，故为True。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q6",
+          "order": 6,
+          "questionType": "single_choice",
+          "stem": "The rescuers stabilized John's leg on the plane.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "根据原文，救援人员是在等待飞机时（而不是在飞机上）就稳定了John的腿伤，故为False。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q7",
+          "order": 7,
+          "questionType": "single_choice",
+          "stem": "John's surgery lasted for a long time.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "原文只提到John接受了手术，未提及手术持续了多长时间，故为Not Given。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q8",
+          "order": 8,
+          "questionType": "single_choice",
+          "stem": "Bode and his father are better equipped for their trips now.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "根据原文\"Father and son now carry extra devices on their trips, including a two-way radio with an emergency button\"，故为True。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q9",
+          "order": 9,
+          "questionType": "single_choice",
+          "stem": "Bode learned to use the two-way radio quickly.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "文中没有提到Bode学会使用双向无线电的速度，故为Not Given。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q10",
+          "order": 10,
+          "questionType": "single_choice",
+          "stem": "Tisha Shaw has great praise for her son.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "根据原文\"Tisha Shaw...says her son's courage and quick thinking have led her to treat him as more of an adult\"，可推断出她对儿子评价很高，故为True。",
+          "knowledgePoints": ["观点态度理解"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2023-10-s2",
+      "type": "阅读理解选择",
+      "order": 2,
+      "passageTitle": "Exercise at Home",
+      "passageText": "Home exercise is the new phenomenon in fitness. It's easy to see why more and more people are taking interest in home exercise.\n\nAll it takes to get results at home is an exercise mat, and some free weights. Even if you don't have these tools, there are several kinds of exercise you can do around the house. You can always try the exercise that uses your own body weight. The secret to success is to exercise the right way without hurting yourself.\n\nAt home, you can train at your own time. You are not affected by the timings of your gym or your trainer. This is an excellent solution for stay-at-home moms, and those individuals who work from home or have an irregular work schedule. With the number of tools available today, it is simple to set up a gym atmosphere in the comfort of your own home.\n\nTo get results at home, you need self-motivation and discipline, since you're going to be on your own. It's not as hard as you think and can be enjoyable and beneficial. When you are committed mentally to pursuing a leaner, energized and dynamic fitness level, changes happen much faster.\n\nThere're some other advantages home exercise has over a health club. After all, a club is a social institution. If one gets there to socialize more, he will exercise less. A club could also be crowded. Many people may wait in line for the equipment. With home exercise, there's no waiting period. So, many individuals are now exercising at home. In fact, as a recent study says, exercising at home is just as beneficial as working out at a health club. It also found that people who trained at home were more likely to stick with their program than those who exercised at a club.",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2023-10-q11",
+          "order": 11,
+          "questionType": "single_choice",
+          "stem": "A good aspect about home exercise is that it ________.",
+          "options": ["A. causes no injury", "B. yields quick results", "C. requires few tools", "D. takes little hard work"],
+          "answer": "C",
+          "answerExplanation": "在家锻炼的好处之一是需要的工具很少，只需要一张锻炼垫和一些哑铃即可，对应原文第二段。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q12",
+          "order": 12,
+          "questionType": "single_choice",
+          "stem": "Home exercise best fits ________.",
+          "options": ["A. housewives", "B. policewomen", "C. office workers", "D. school children"],
+          "answer": "A",
+          "answerExplanation": "文章提到家庭锻炼对于全职在家的妈妈们（stay-at-home moms）和工作时间不规律的人来说是极好的选择，最贴近housewives。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q13",
+          "order": 13,
+          "questionType": "single_choice",
+          "stem": "To achieve the desired results from home exercise, you need to ________.",
+          "options": ["A. enjoy yourself", "B. know its benefits", "C. discipline yourself", "D. record your changes"],
+          "answer": "C",
+          "answerExplanation": "文章第四段提到，要想从家庭锻炼中获得预期效果，需要自我激励和自律（self-motivation and discipline）。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q14",
+          "order": 14,
+          "questionType": "single_choice",
+          "stem": "People who go to health clubs are likely to ________.",
+          "options": ["A. stick with their favorite programs", "B. make better use of gym equipment", "C. reap more gains from the training", "D. spend much time making friends"],
+          "answer": "D",
+          "answerExplanation": "文章提到俱乐部是社交场所，如果人们去俱乐部社交更多，锻炼就会更少，因此健身俱乐部的人更可能花很多时间交朋友。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q15",
+          "order": 15,
+          "questionType": "single_choice",
+          "stem": "This passage mainly talks about ________.",
+          "options": ["A. types of home exercise", "B. advantages of home exercise", "C. ways to do home exercise", "D. people fit for home exercise"],
+          "answer": "B",
+          "answerExplanation": "文章主要讲述了在家锻炼相对于在健身俱乐部锻炼的优势，故主旨为B。",
+          "knowledgePoints": ["段落主旨理解"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2023-10-s3",
+      "type": "段落大意与句子补全",
+      "order": 3,
+      "passageTitle": "Secrets About Professional Chocolate Tasters",
+      "passageText": "❶ People's faces light up when I say I taste chocolate for a living, but it's not always delicious. I also have to taste bad chocolate. I'm usually in a small room and sit in front of a computer to record information. Sometimes the room has red lighting. So I can evaluate chocolate only by taste, not appearance.\n\n❷ I can sample as many as 30 chocolates per day. To taste them professionally, I spit the sweets back out. That's another not-so-sweet part of the job. Between samples, I wait 30 seconds to let my senses rest, and I chew half an unsalted biscuit and drink plain warm water.\n\n❸ First I smell the chocolate and record it. I also listen: Old chocolate doesn't make a clear and sharp sound when broken. Then I put a tiny piece in my mouth and leave it there for a few seconds. I let it melt and record the four basic tastes—sweet, sour, bitter and salty.\n\n❹ I love chocolate. The bottom part of my refrigerator is filled with chocolate from different parts of the world. My favorite types are very high in cocoa (可可粉). Before I started tasting chocolate professionally, I ate a lot. But now I don't eat so much.\n\n❺ Many people don't know how to appreciate the taste of chocolate. As a taster, I want to help others do what I do. To retrain your taste buds to enjoy better quality chocolate, try simple kinds that aren't filled with ingredients like nuts. Look at food with curiosity and love. Notice its color, smell and taste. Then you'll know good quality.",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2023-10-q16",
+          "order": 16,
+          "questionType": "single_choice",
+          "stem": "Task 1 (第16-20题为第❶-❺段选择最合适的段落大意，共用同一组候选项)：Paragraph ❶",
+          "options": [
+            "A. How I keep a good sense of taste.",
+            "B. You can taste chocolate like a professional.",
+            "C. Tasting chocolate requires skills.",
+            "D. Tasting chocolate is not as sweet as you think.",
+            "E. Tasting chocolate is the best job ever.",
+            "F. I'm still a chocolate lover."
+          ],
+          "answer": "D",
+          "answerExplanation": "第一段提到品尝巧克力的工作并不总是那么美味，还需要品尝不好的巧克力，因此本段大意是D。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q17",
+          "order": 17,
+          "questionType": "single_choice",
+          "stem": "Paragraph ❷",
+          "options": [
+            "A. How I keep a good sense of taste.",
+            "B. You can taste chocolate like a professional.",
+            "C. Tasting chocolate requires skills.",
+            "D. Tasting chocolate is not as sweet as you think.",
+            "E. Tasting chocolate is the best job ever.",
+            "F. I'm still a chocolate lover."
+          ],
+          "answer": "A",
+          "answerExplanation": "第二段提到作者在品尝之间通过咀嚼无盐饼干、喝温水让感官休息，主要讲述如何保持好的味觉，对应A。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q18",
+          "order": 18,
+          "questionType": "single_choice",
+          "stem": "Paragraph ❸",
+          "options": [
+            "A. How I keep a good sense of taste.",
+            "B. You can taste chocolate like a professional.",
+            "C. Tasting chocolate requires skills.",
+            "D. Tasting chocolate is not as sweet as you think.",
+            "E. Tasting chocolate is the best job ever.",
+            "F. I'm still a chocolate lover."
+          ],
+          "answer": "C",
+          "answerExplanation": "第三段详细描述了闻、听、尝的专业品尝流程，说明品尝巧克力需要技巧，对应C。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q19",
+          "order": 19,
+          "questionType": "single_choice",
+          "stem": "Paragraph ❹",
+          "options": [
+            "A. How I keep a good sense of taste.",
+            "B. You can taste chocolate like a professional.",
+            "C. Tasting chocolate requires skills.",
+            "D. Tasting chocolate is not as sweet as you think.",
+            "E. Tasting chocolate is the best job ever.",
+            "F. I'm still a chocolate lover."
+          ],
+          "answer": "F",
+          "answerExplanation": "第四段明确提到作者依然热爱巧克力，冰箱里存满了各地的巧克力，对应F。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q20",
+          "order": 20,
+          "questionType": "single_choice",
+          "stem": "Paragraph ❺",
+          "options": [
+            "A. How I keep a good sense of taste.",
+            "B. You can taste chocolate like a professional.",
+            "C. Tasting chocolate requires skills.",
+            "D. Tasting chocolate is not as sweet as you think.",
+            "E. Tasting chocolate is the best job ever.",
+            "F. I'm still a chocolate lover."
+          ],
+          "answer": "B",
+          "answerExplanation": "最后一段作者想帮助其他人学会像专业人士一样品尝巧克力，对应B。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q21",
+          "order": 21,
+          "questionType": "single_choice",
+          "stem": "Task 2 (第21-25题为下列句子选择最合适的补全内容，共用同一组候选项)：Red lights are used to disguise ________.",
+          "options": [
+            "A. is old or fresh",
+            "B. is made of cocoa",
+            "C. your tasting",
+            "D. after I taste each sample",
+            "E. before I became a taster",
+            "F. the appearance of chocolate"
+          ],
+          "answer": "F",
+          "answerExplanation": "第一段提到房间有时会用红灯，使人只能通过味道评估巧克力而看不到外观，即红灯用来掩饰巧克力的外观。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q22",
+          "order": 22,
+          "questionType": "single_choice",
+          "stem": "I let my senses rest ________.",
+          "options": [
+            "A. is old or fresh",
+            "B. is made of cocoa",
+            "C. your tasting",
+            "D. after I taste each sample",
+            "E. before I became a taster",
+            "F. the appearance of chocolate"
+          ],
+          "answer": "D",
+          "answerExplanation": "第二段提到品尝样本之间需要等待30秒让感官休息，即在品尝每个样本之后。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q23",
+          "order": 23,
+          "questionType": "single_choice",
+          "stem": "I listen to tell whether a sample ________.",
+          "options": [
+            "A. is old or fresh",
+            "B. is made of cocoa",
+            "C. your tasting",
+            "D. after I taste each sample",
+            "E. before I became a taster",
+            "F. the appearance of chocolate"
+          ],
+          "answer": "A",
+          "answerExplanation": "第三段提到通过听巧克力被折断的声音来判断其是否新鲜（老旧），对应A。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q24",
+          "order": 24,
+          "questionType": "single_choice",
+          "stem": "I ate a lot of chocolate ________.",
+          "options": [
+            "A. is old or fresh",
+            "B. is made of cocoa",
+            "C. your tasting",
+            "D. after I taste each sample",
+            "E. before I became a taster",
+            "F. the appearance of chocolate"
+          ],
+          "answer": "E",
+          "answerExplanation": "第四段提到\"在我开始专业品尝巧克力之前，我吃得很多\"，对应E。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q25",
+          "order": 25,
+          "questionType": "single_choice",
+          "stem": "Ingredients like nuts may affect ________.",
+          "options": [
+            "A. is old or fresh",
+            "B. is made of cocoa",
+            "C. your tasting",
+            "D. after I taste each sample",
+            "E. before I became a taster",
+            "F. the appearance of chocolate"
+          ],
+          "answer": "C",
+          "answerExplanation": "最后一段建议尝试不含坚果等成分的简单巧克力以重新训练味蕾，说明这些成分会影响你的品尝体验，对应C。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2023-10-s4",
+      "type": "填句补文",
+      "order": 4,
+      "passageTitle": "How to Shoot a Movie",
+      "passageText": "A movie is a series of pictures. Each image is a still picture, just like a picture you take with a regular camera. But the pictures flash by so fast in a movie. As a result, you see horses run, people talk, and other kinds of motion. ___(26)___ Movies are also called films because they are filmed.\n\nLots of work has to be done before the filming begins. The producer and the director plan how and when they will film each scene.\n\nA movie is filmed scene by scene. ___(27)___ The scenes are not usually filmed in the order you see in the movie. Sometimes the weather is bad and an outdoor scene cannot be filmed. Big fancy sets take a long time to build. Scenes using these sets are often shot later. However, you may see them at the beginning of the film.\n\nSometimes a movie needs special effects. They include small models of huge scenes and cleverly designed sets. ___(28)___ Moviemakers use these to film scenes and places that do not exist. They might use a small model of a large building to film the building falling down.\n\nFilms can be turned into computer files. ___(29)___ They can use computers to make new images. For example, dinosaurs (恐龙) made by computer looked like they were flying in some films.\n\n___(30)___ Many images in Titanic, including crowds of people on the ship, were actually made by computer. In some other films, computers were used to make the actors look as if they were fighting while floating in the air.",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2023-10-q26",
+          "order": 26,
+          "questionType": "single_choice",
+          "stem": "为短文空白处(26)选择最恰当的句子（第26-30题共用同一组候选项，其中1项为干扰项）。",
+          "options": [
+            "A. And a scene is filmed shot by shot.",
+            "B. Computers can even make images of actors.",
+            "C. Moviemaking includes several different stages.",
+            "D. They also include computer-made images.",
+            "E. That's why movies are sometimes called motion pictures.",
+            "F. Moviemakers can then change the images any way they want."
+          ],
+          "answer": "E",
+          "answerExplanation": "上下文提到电影是由一系列快速闪过的图片组成，所以电影有时被称为动态图像（motion pictures），对应E。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q27",
+          "order": 27,
+          "questionType": "single_choice",
+          "stem": "为短文空白处(27)选择最恰当的句子。",
+          "options": [
+            "A. And a scene is filmed shot by shot.",
+            "B. Computers can even make images of actors.",
+            "C. Moviemaking includes several different stages.",
+            "D. They also include computer-made images.",
+            "E. That's why movies are sometimes called motion pictures.",
+            "F. Moviemakers can then change the images any way they want."
+          ],
+          "answer": "A",
+          "answerExplanation": "上下文提到电影场景不是按照最终呈现的顺序拍摄的，说明每个场景是逐镜头拍摄的，对应A。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q28",
+          "order": 28,
+          "questionType": "single_choice",
+          "stem": "为短文空白处(28)选择最恰当的句子。",
+          "options": [
+            "A. And a scene is filmed shot by shot.",
+            "B. Computers can even make images of actors.",
+            "C. Moviemaking includes several different stages.",
+            "D. They also include computer-made images.",
+            "E. That's why movies are sometimes called motion pictures.",
+            "F. Moviemakers can then change the images any way they want."
+          ],
+          "answer": "D",
+          "answerExplanation": "上下文提到特效包括小模型和精心设计的布景，还包括计算机生成的图像，对应D。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q29",
+          "order": 29,
+          "questionType": "single_choice",
+          "stem": "为短文空白处(29)选择最恰当的句子。",
+          "options": [
+            "A. And a scene is filmed shot by shot.",
+            "B. Computers can even make images of actors.",
+            "C. Moviemaking includes several different stages.",
+            "D. They also include computer-made images.",
+            "E. That's why movies are sometimes called motion pictures.",
+            "F. Moviemakers can then change the images any way they want."
+          ],
+          "answer": "F",
+          "answerExplanation": "上下文提到电影可以转换成计算机文件，制作人员可以随意改变图像，对应F。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q30",
+          "order": 30,
+          "questionType": "single_choice",
+          "stem": "为短文空白处(30)选择最恰当的句子。",
+          "options": [
+            "A. And a scene is filmed shot by shot.",
+            "B. Computers can even make images of actors.",
+            "C. Moviemaking includes several different stages.",
+            "D. They also include computer-made images.",
+            "E. That's why movies are sometimes called motion pictures.",
+            "F. Moviemakers can then change the images any way they want."
+          ],
+          "answer": "B",
+          "answerExplanation": "下文提到《泰坦尼克号》中很多演员相关的图像也是电脑制作的，说明计算机甚至可以制作演员的图像，对应B。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2023-10-s5",
+      "type": "填词补文",
+      "order": 5,
+      "passageTitle": "Friendship and Loyalty",
+      "passageText": "Loyalty found in a friend is similar to making a deposit in a bank account. More often than not, your deposits ___(31)___ interest, an interest in your well-being and welfare. A loyal friend attracts another loyal friend. In essence, water does seek its own level.\n\nIf you were a best loyal friend, ___(32)___ I'm sure you understand the principle of loyalty in a friend. You should never ___(33)___ your best loyal friend to gain more friends or make yourself seem more ___(34)___ to others. These are not the traits of a best loyal friend.\n\nA best loyal friend doesn't care who is invited to your party. They will ___(35)___ your party and celebrate you, just in the way a best loyal friend should do.\n\nReconnecting with a best loyal friend is ___(36)___ to do on the Internet. A virtual friend, ___(37)___, doesn't assure you of his loyalty. My ___(38)___ to you is that you'd better pay ___(39)___ to the smiling faces on the Internet. In the 1980s we were warned of smiling faces in a song, which contained these lyrics (歌词), \"A smile is just a frown turned upside down, my friend.\" Now, that is the ___(40)___ for my generation.",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "00015-2023-10-q31",
+          "order": 31,
+          "questionType": "single_choice",
+          "stem": "为短文空白处(31)选择最恰当的单词（第31-40题共用同一组候选词，其中2个为干扰项）。",
+          "options": ["A. truth", "B. attend", "C. attention", "D. then", "E. important", "F. caution", "G. impatient", "H. gain", "I. however", "J. know", "K. exploit", "L. easier"],
+          "answer": "H",
+          "answerExplanation": "句意：朋友的忠诚就像在银行存款，通常你的存款会获得利息(gain interest)，这种利息与你的幸福相关。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q32",
+          "order": 32,
+          "questionType": "single_choice",
+          "stem": "为短文空白处(32)选择最恰当的单词。",
+          "options": ["A. truth", "B. attend", "C. attention", "D. then", "E. important", "F. caution", "G. impatient", "H. gain", "I. however", "J. know", "K. exploit", "L. easier"],
+          "answer": "D",
+          "answerExplanation": "句意：如果你是一个最忠诚的朋友，那么(then)我相信你理解朋友间忠诚的原则。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q33",
+          "order": 33,
+          "questionType": "single_choice",
+          "stem": "为短文空白处(33)选择最恰当的单词。",
+          "options": ["A. truth", "B. attend", "C. attention", "D. then", "E. important", "F. caution", "G. impatient", "H. gain", "I. however", "J. know", "K. exploit", "L. easier"],
+          "answer": "K",
+          "answerExplanation": "句意：你永远不应该利用(exploit)你最忠实的朋友来获得更多朋友。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q34",
+          "order": 34,
+          "questionType": "single_choice",
+          "stem": "为短文空白处(34)选择最恰当的单词。",
+          "options": ["A. truth", "B. attend", "C. attention", "D. then", "E. important", "F. caution", "G. impatient", "H. gain", "I. however", "J. know", "K. exploit", "L. easier"],
+          "answer": "E",
+          "answerExplanation": "句意：或让自己在别人面前显得更重要(important)。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q35",
+          "order": 35,
+          "questionType": "single_choice",
+          "stem": "为短文空白处(35)选择最恰当的单词。",
+          "options": ["A. truth", "B. attend", "C. attention", "D. then", "E. important", "F. caution", "G. impatient", "H. gain", "I. however", "J. know", "K. exploit", "L. easier"],
+          "answer": "B",
+          "answerExplanation": "句意：他们会参加(attend)你的聚会并庆祝你。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q36",
+          "order": 36,
+          "questionType": "single_choice",
+          "stem": "为短文空白处(36)选择最恰当的单词。",
+          "options": ["A. truth", "B. attend", "C. attention", "D. then", "E. important", "F. caution", "G. impatient", "H. gain", "I. however", "J. know", "K. exploit", "L. easier"],
+          "answer": "L",
+          "answerExplanation": "句意：在网上与最忠诚的朋友重新联系变得更容易(easier)。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q37",
+          "order": 37,
+          "questionType": "single_choice",
+          "stem": "为短文空白处(37)选择最恰当的单词。",
+          "options": ["A. truth", "B. attend", "C. attention", "D. then", "E. important", "F. caution", "G. impatient", "H. gain", "I. however", "J. know", "K. exploit", "L. easier"],
+          "answer": "I",
+          "answerExplanation": "句意：然而(however)，虚拟的朋友并不能保证他的忠诚。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q38",
+          "order": 38,
+          "questionType": "single_choice",
+          "stem": "为短文空白处(38)选择最恰当的单词。",
+          "options": ["A. truth", "B. attend", "C. attention", "D. then", "E. important", "F. caution", "G. impatient", "H. gain", "I. however", "J. know", "K. exploit", "L. easier"],
+          "answer": "F",
+          "answerExplanation": "句意：我对你的忠告(caution)是，你最好对网上的笑脸多加小心。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q39",
+          "order": 39,
+          "questionType": "single_choice",
+          "stem": "为短文空白处(39)选择最恰当的单词。",
+          "options": ["A. truth", "B. attend", "C. attention", "D. then", "E. important", "F. caution", "G. impatient", "H. gain", "I. however", "J. know", "K. exploit", "L. easier"],
+          "answer": "C",
+          "answerExplanation": "固定搭配pay attention to（注意）。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q40",
+          "order": 40,
+          "questionType": "single_choice",
+          "stem": "为短文空白处(40)选择最恰当的单词。",
+          "options": ["A. truth", "B. attend", "C. attention", "D. then", "E. important", "F. caution", "G. impatient", "H. gain", "I. however", "J. know", "K. exploit", "L. easier"],
+          "answer": "A",
+          "answerExplanation": "句意：这句歌词提到笑脸的真相(truth)，现在这对我这代人来说仍是真理。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2023-10-s6",
+      "type": "完形填空",
+      "order": 6,
+      "passageTitle": "Ambition Can Lead to Success",
+      "passageText": "Since his early years Reid had been thinking (think) of changing the world. As he grew ___(41)___ (old) he became interested in the Internet and the tech industry. At first, he started a social network. But ___(42)___ (fortunately) he faced big problems that forced him to stop.\n\nOne day Reid got an idea. It was to provide a ___(43)___ (solve) for people to pay online. They could use their emails instead of credit ___(44)___ (card). Reid called his idea PayPal. PayPal faced tough competition from large credit card companies. It was hardly ___(45)___ (profit), but after a long struggle, it became ___(46)___ (success).\n\nReid was not ___(47)___ (satisfy). He kept searching for the next big thing that can help him improve people's lives. One day he ___(48)___ (find) that people spend a lot of time ___(49)___ (look) for jobs online. So he decided to create a website that connects employers with job seekers and ___(50)___ (name) it LinkedIn.",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "00015-2023-10-q41",
+          "order": 41,
+          "questionType": "fill_blank_transform",
+          "stem": "old",
+          "options": [],
+          "answer": "older",
+          "answerExplanation": "句意：随着他年龄的增长(grew older)，他对互联网和科技行业产生了兴趣，此处需要形容词比较级。",
+          "knowledgePoints": ["比较级最高级"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q42",
+          "order": 42,
+          "questionType": "fill_blank_transform",
+          "stem": "fortunately",
+          "options": [],
+          "answer": "unfortunately",
+          "answerExplanation": "句意：但不幸的是(unfortunately)，他遇到了大问题，迫使他停下来，此处需要反义副词。",
+          "knowledgePoints": ["副词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q43",
+          "order": 43,
+          "questionType": "fill_blank_transform",
+          "stem": "solve",
+          "options": [],
+          "answer": "solution",
+          "answerExplanation": "句意：他的想法是为人们提供一个在线支付的解决方案(solution)，此处需要名词。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q44",
+          "order": 44,
+          "questionType": "fill_blank_transform",
+          "stem": "card",
+          "options": [],
+          "answer": "cards",
+          "answerExplanation": "句意：他们可以用电子邮件代替信用卡(credit cards)，此处需要名词复数。",
+          "knowledgePoints": ["名词单复数"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q45",
+          "order": 45,
+          "questionType": "fill_blank_transform",
+          "stem": "profit",
+          "options": [],
+          "answer": "profitable",
+          "answerExplanation": "句意：它几乎没有利润(profitable)，此处需要形容词。",
+          "knowledgePoints": ["形容词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q46",
+          "order": 46,
+          "questionType": "fill_blank_transform",
+          "stem": "success",
+          "options": [],
+          "answer": "successful",
+          "answerExplanation": "句意：经过长时间的斗争，它成功了(successful)，此处需要形容词。",
+          "knowledgePoints": ["形容词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q47",
+          "order": 47,
+          "questionType": "fill_blank_transform",
+          "stem": "satisfy",
+          "options": [],
+          "answer": "satisfied",
+          "answerExplanation": "句意：Reid并不满意(satisfied)，此处需要形容词（过去分词形式）。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q48",
+          "order": 48,
+          "questionType": "fill_blank_transform",
+          "stem": "find",
+          "options": [],
+          "answer": "found",
+          "answerExplanation": "句意：一天，他发现(found)人们在网上花很多时间找工作，此处需要动词过去式。",
+          "knowledgePoints": ["动词时态"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q49",
+          "order": 49,
+          "questionType": "fill_blank_transform",
+          "stem": "look",
+          "options": [],
+          "answer": "looking",
+          "answerExplanation": "句意：人们花很多时间在网上找(looking)工作，spend time (in) doing sth. 结构，此处需要动名词。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2023-10-q50",
+          "order": 50,
+          "questionType": "fill_blank_transform",
+          "stem": "name",
+          "options": [],
+          "answer": "named",
+          "answerExplanation": "句意：他决定创建一个连接雇主和求职者的网站，并将其命名为(named)LinkedIn，此处需要动词过去式，与前文create并列。",
+          "knowledgePoints": ["动词时态"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2023-10-s7",
+      "type": "写作",
+      "order": 7,
+      "writingPrompt": "某英文报社正在举办题为\"My Goal for Next Year\"的征文活动。请你根据下述写作要点提交一篇英文短文应征。\n• 你明年的目标是什么\n• 你打算如何实现这一目标\n请根据所提供材料中的要求完成一篇100词左右的英文写作任务。将你的答案写在答题卡相应的位置上。",
+      "scorePerQuestion": 30,
+      "totalScore": 30,
+      "questions": [
+        {
+          "questionId": "00015-2023-10-q51",
+          "order": 51,
+          "questionType": "essay",
+          "stem": "请以\"My Goal for Next Year\"为题，根据写作要点（你明年的目标是什么；你打算如何实现这一目标）写一篇100词左右的英文短文。",
+          "options": [],
+          "answer": "",
+          "answerExplanation": "官方参考范文：\nMy Goal for Next Year\nMy goal for next year is to become a better person. I want to improve myself in every aspect and become more competent in every field. To achieve this goal, I will take the following measures.\nFirstly, I will improve my knowledge. I will read more books to widen my horizons and enrich my knowledge. In addition, I will also learn some new skills to enhance my competitiveness.\nSecondly, I will improve my fitness. I want to be healthy and strong, so I will exercise more and eat a healthy diet.\nThirdly, I will improve my personality. I want to be more patient, tolerant and understanding. To achieve this, I will try to see things from other people's perspectives and respect their opinions.\nThroughout the implementation of these measures, I will constantly adjust my attitude and behavior to become a better person. I believe that as long as I keep trying and don't give up, I will achieve my goal.",
+          "knowledgePoints": ["写作-说明类"],
+          "difficultyTag": null
+        }
+      ]
+    }
+  ],
+  "parsingNotes": []
+}

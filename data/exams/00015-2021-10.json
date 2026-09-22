@@ -1,0 +1,761 @@
+{
+  "examId": "00015-2021-10",
+  "title": "全国2021年10月高等教育自学考试英语(二)试题",
+  "year": 2021,
+  "month": 10,
+  "courseCode": "00015",
+  "courseName": "英语(二)",
+  "sourceFile": "395eaa74-2021_10____________.pdf",
+  "totalScore": 100,
+  "timeLimitMinutes": 150,
+  "status": "待校对",
+  "sections": [
+    {
+      "sectionId": "00015-2021-10-s1",
+      "type": "阅读判断",
+      "order": 1,
+      "passageTitle": "Who Is James Bond?",
+      "passageText": "The latest Bond film is an enormous box-office (票房) hit. But who is James Bond? Where does he come from? Author Ian Fleming, the creator of James Bond, told us something about the origins of the world's most famous secret agent.\n\nIn the first Bond novel, Ian Fleming told us that James Bond was the son of a Scottish father and an Asian mother. But perhaps this was not really true. The title of the 19th Bond film, \"The World Is Not Enough,\" was based on the Latin motto of the Bond family, which is mentioned in one of the early novels. However, it now appears that the motto is not that of the Scottish Bonds, but that of a different Bond family, who came from England. So perhaps Bond is English, not Scottish.\n\nBond went to Eton College, the same school as his creator Ian Fleming. This is a school where young people learn how to move in high society, like Bond does so well.\n\nAfter leaving school, Bond did not go to university. He joined the British Secret Service. He soon got promoted to the top. From then on he was 007, \"licensed to kill\", and so began a career which would take him to all the corners of the earth.\n\nIn the early days, Bond's role was quite clear. He was working for the West. His main enemies were men from the KGB and other dangerous organizations. Since the end of the Cold War, the role of the Service has changed, and Bond's job profile has changed with it. Now his main enemies are the big bosses of organized crime and international terrorism.\n\nUnlike the Cold War, organized crime is unlikely to come to an end. We can therefore be sure that James Bond, the best-known English fictional hero of the 20th century, has many more adventures ahead of him.",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2021-10-q1",
+          "order": 1,
+          "questionType": "single_choice",
+          "stem": "The new Bond film made much money for its producer.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "定位第一段 \"The latest Bond film is an enormous box-office hit.\" 这部最新的邦德电影票房大卖，与题目意思相符，故选A。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q2",
+          "order": 2,
+          "questionType": "single_choice",
+          "stem": "Ian Fleming directed the latest film about James Bond.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "原文只说Ian Fleming是James Bond的创作者(author/creator)，文中未提及他是否执导了最新的电影，故选C。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q3",
+          "order": 3,
+          "questionType": "single_choice",
+          "stem": "\"The World Is Not Enough\" is the name of a novel.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "原文提到\"The World Is Not Enough\"是第19部邦德电影的片名(the 19th Bond film)，而非小说，与题目意思不符，故选B。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q4",
+          "order": 4,
+          "questionType": "single_choice",
+          "stem": "Bond is unable to move in high society.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "定位第三段\"This is a school where young people learn how to move in high society, like Bond does so well.\"邦德很擅长在上流社会中活动，与题目意思不符，故选B。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q5",
+          "order": 5,
+          "questionType": "single_choice",
+          "stem": "Bond went to university before he became a secret agent.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "定位第四段\"After leaving school, Bond did not go to university.\"邦德没有上大学，与题目意思不符，故选B。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q6",
+          "order": 6,
+          "questionType": "single_choice",
+          "stem": "The British Secret Service gave Bond many awards.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "文中未提及英国特勤局是否给邦德颁发了许多奖项，故选C。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q7",
+          "order": 7,
+          "questionType": "single_choice",
+          "stem": "Bond went to many parts of the world because of his job.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "定位第四段\"...and so began a career which would take him to all the corners of the earth.\"邦德因工作去了世界各个角落，与题目意思相符，故选A。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q8",
+          "order": 8,
+          "questionType": "single_choice",
+          "stem": "Bond fought against many dangerous organizations.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "定位第五段\"His main enemies were men from the KGB and other dangerous organizations.\"与题目意思相符，故选A。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q9",
+          "order": 9,
+          "questionType": "single_choice",
+          "stem": "We can expect more adventurous stories about Bond.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "定位末段\"Unlike the Cold War, organized crime is unlikely to come to an end. We can therefore be sure that James Bond...has many more adventures ahead of him.\"与题目意思相符，故选A。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q10",
+          "order": 10,
+          "questionType": "single_choice",
+          "stem": "This text tells about the personality of James Bond.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "全文讲述的是詹姆斯·邦德这一角色的起源、求学、入职经历及敌人的变化，而非他的性格，与题目意思不符，故选B。",
+          "knowledgePoints": ["段落主旨理解"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2021-10-s2",
+      "type": "阅读理解选择",
+      "order": 2,
+      "passageTitle": "Universal Gestures",
+      "passageText": "Gestures for victory, defeat and stress are almost the same in all countries.\n\nOn the front page of a newspaper we often see the picture of people holding their head in shock. People put their hands on their head or over their mouth when they look on a scene with shock or horror. Chris Ulrich is an expert on body language. He said that covering your mouth or putting your hands on your head helps make you feel safer from a perceived threat. By covering part of your face you can feel hidden from the shocking event. Additionally these reactions can help a person comfort himself through touch. Ulrich said it is a self comforting gesture to help people in the moment.\n\nIn times of strong anxiety, people will twist their hands to calm themselves. Ulrich said it is a reaction people often have when they are in front of an audience or nervous. \"It's a comfort for them that they'll get through it,\" said Ulrich. He relates to a parent trying to calm a child.\n\nMost athletes react to victories or defeats with specific behaviors. A 2008 study examined pictures of judo (柔道) competitors during the 2008 Olympic Games. They were from different countries, but they showed similar behaviors when they won a match. The winners would throw their head back or raise their hands in triumph. Ulrich said these victory behaviors are a way winners \"explode\" out and take up more space.\n\nHowever, if an athlete suffers a loss, he will act in a way that makes him physically smaller, such as hanging his head. \"When you lose, you want to disappear,\" said Ulrich. The study also found that the judo competitors had the same behavior when they lost.",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2021-10-q11",
+          "order": 11,
+          "questionType": "single_choice",
+          "stem": "People put their hands over their mouth to ___.",
+          "options": ["A. avoid a danger", "B. gain self-comfort", "C. hide their shock", "D. show their anxiety"],
+          "answer": "B",
+          "answerExplanation": "定位第二段\"He said that covering your mouth or putting your hands on your head helps make you feel safer... these reactions can help a person comfort himself through touch. Ulrich said it is a self comforting gesture...\"，即这些动作是为了自我安慰，故选B。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q12",
+          "order": 12,
+          "questionType": "single_choice",
+          "stem": "People tend to twist their hands when they are ___.",
+          "options": ["A. depressed", "B. angry", "C. shocked", "D. nervous"],
+          "answer": "D",
+          "answerExplanation": "定位第三段\"In times of strong anxiety, people will twist their hands to calm themselves.\"strong anxiety对应nervous，故选D。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q13",
+          "order": 13,
+          "questionType": "single_choice",
+          "stem": "In Paragraph 4, \"that gesture\" refers to ___.",
+          "options": ["A. shaking one's hands", "B. covering one's face", "C. twisting one's hands", "D. rubbing one's face"],
+          "answer": "C",
+          "answerExplanation": "该段落描述的姿势是people will twist their hands to calm themselves，即扭动双手，故选C。原题干印刷为\"Paragraph 4\"，但按官方答案该内容对应的是描写twist their hands的那一段；此处按原文逐字转录题干，未做改动。",
+          "knowledgePoints": ["词义猜测"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q14",
+          "order": 14,
+          "questionType": "single_choice",
+          "stem": "Judo winners often act in a way that makes them ___.",
+          "options": ["A. occupy more space", "B. appear physically smaller", "C. obtain more respect", "D. become more competitive"],
+          "answer": "A",
+          "answerExplanation": "定位\"The winners would throw their head back or raise their hands in triumph. Ulrich said these victory behaviors are a way winners 'explode' out and take up more space.\"，即占据更多空间，故选A。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q15",
+          "order": 15,
+          "questionType": "single_choice",
+          "stem": "The judo losers would ___.",
+          "options": ["A. raise their arms", "B. lower their heads", "C. beat their chests", "D. sit on their knees"],
+          "answer": "B",
+          "answerExplanation": "定位末段\"if an athlete suffers a loss, he will act in a way that makes him physically smaller, such as hanging his head.\"即垂下头，故选B。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2021-10-s3",
+      "type": "段落大意与句子补全",
+      "order": 3,
+      "passageTitle": "Little Steps, Big Reward",
+      "passageText": "① More than 145 million Americans take walking as part of their exercise, according to a recent report. That's 15 million more people walking than last year. Many places in America have reported an increase in walking. But most of the walkers are found in big cities like New York.\n\n② Despite the increase in walking, only about 30% of Americans say they have at least 3 hours to take exercise a week. Our society has been conditioned to be inactive. People rely on modern conveniences and become lazy. The inactive lifestyle has a negative aspect. We are more likely to be in poor health like overweight, which will threaten our life span. That's where walking comes in.\n\n③ Walking is the best way to improve our health. Just 30 minutes of regular quick walking can help lose weight. At the same time, it can help lower the risk of heart disease and some cancers, and improve our blood pressure. If 30 minutes is too much, we may divide it into three 10-minute parts during the day. Most of us can find 10 minutes if we really try.\n\n④ Walking requires only a pair of shoes and suits any schedules. Keep a pair of sport shoes at work. If you have a few minutes of free time, make use of them to take a quick walk. Even if you go to a health club several times a week, you can still look for ways to be active while at work. It may be walking downstairs for a direct talk rather than sending an email.\n\n⑤ Small efforts can make a big difference. But the hardest part for us is getting started. It's usually like this. When people get to a comfort level of walking for 10 minutes, they might think about trying 11 minutes. That first step is really worthy.",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2021-10-q16",
+          "order": 16,
+          "questionType": "single_choice",
+          "stem": "Paragraph ①:",
+          "options": [
+            "A. The key to walking is getting started.",
+            "B. Walking is the first step to making changes.",
+            "C. The advantage of walking is its simplicity.",
+            "D. Walking is a great way for health improvement.",
+            "E. More Americans take up walking than before.",
+            "F. Modern lifestyle affects our health negatively."
+          ],
+          "answer": "E",
+          "answerExplanation": "第①段讲述目前有1亿4千5百万美国人把走路当成日常锻炼，比去年多了1500万，对应E选项。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q17",
+          "order": 17,
+          "questionType": "single_choice",
+          "stem": "Paragraph ②:",
+          "options": [
+            "A. The key to walking is getting started.",
+            "B. Walking is the first step to making changes.",
+            "C. The advantage of walking is its simplicity.",
+            "D. Walking is a great way for health improvement.",
+            "E. More Americans take up walking than before.",
+            "F. Modern lifestyle affects our health negatively."
+          ],
+          "answer": "F",
+          "answerExplanation": "第②段讲人们依赖现代便利设施、变得懒惰，这种不运动的生活方式会威胁健康，对应F选项。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q18",
+          "order": 18,
+          "questionType": "single_choice",
+          "stem": "Paragraph ③:",
+          "options": [
+            "A. The key to walking is getting started.",
+            "B. Walking is the first step to making changes.",
+            "C. The advantage of walking is its simplicity.",
+            "D. Walking is a great way for health improvement.",
+            "E. More Americans take up walking than before.",
+            "F. Modern lifestyle affects our health negatively."
+          ],
+          "answer": "D",
+          "answerExplanation": "第③段开篇\"Walking is the best way to improve our health.\"并阐述走路对健康的好处，对应D选项。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q19",
+          "order": 19,
+          "questionType": "single_choice",
+          "stem": "Paragraph ④:",
+          "options": [
+            "A. The key to walking is getting started.",
+            "B. Walking is the first step to making changes.",
+            "C. The advantage of walking is its simplicity.",
+            "D. Walking is a great way for health improvement.",
+            "E. More Americans take up walking than before.",
+            "F. Modern lifestyle affects our health negatively."
+          ],
+          "answer": "C",
+          "answerExplanation": "第④段\"Walking requires only a pair of shoes and suits any schedules.\"说明走路简单易行，对应C选项。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q20",
+          "order": 20,
+          "questionType": "single_choice",
+          "stem": "Paragraph ⑤:",
+          "options": [
+            "A. The key to walking is getting started.",
+            "B. Walking is the first step to making changes.",
+            "C. The advantage of walking is its simplicity.",
+            "D. Walking is a great way for health improvement.",
+            "E. More Americans take up walking than before.",
+            "F. Modern lifestyle affects our health negatively."
+          ],
+          "answer": "A",
+          "answerExplanation": "第⑤段\"Small efforts can make a big difference. But the hardest part for us is getting started.\"强调迈出第一步最重要，对应A选项。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q21",
+          "order": 21,
+          "questionType": "single_choice",
+          "stem": "Reports say that the walkers are mostly from ___.",
+          "options": [
+            "A. we divide a 30-minute walk into 3 parts",
+            "B. our inactiveness",
+            "C. we may like to try a longer one",
+            "D. big cities in America",
+            "E. a daily 30-minute quick walk",
+            "F. a face-to-face talk"
+          ],
+          "answer": "D",
+          "answerExplanation": "第①段\"But most of the walkers are found in big cities like New York.\"，故选D。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q22",
+          "order": 22,
+          "questionType": "single_choice",
+          "stem": "Many diseases are largely caused by ___.",
+          "options": [
+            "A. we divide a 30-minute walk into 3 parts",
+            "B. our inactiveness",
+            "C. we may like to try a longer one",
+            "D. big cities in America",
+            "E. a daily 30-minute quick walk",
+            "F. a face-to-face talk"
+          ],
+          "answer": "B",
+          "answerExplanation": "第②段\"The inactive lifestyle has a negative aspect. We are more likely to be in poor health...\"说明不运动的生活方式导致疾病，故选B。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q23",
+          "order": 23,
+          "questionType": "single_choice",
+          "stem": "We can keep healthy by taking ___.",
+          "options": [
+            "A. we divide a 30-minute walk into 3 parts",
+            "B. our inactiveness",
+            "C. we may like to try a longer one",
+            "D. big cities in America",
+            "E. a daily 30-minute quick walk",
+            "F. a face-to-face talk"
+          ],
+          "answer": "E",
+          "answerExplanation": "第③段\"Just 30 minutes of regular quick walking can help lose weight...\"，故选E。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q24",
+          "order": 24,
+          "questionType": "single_choice",
+          "stem": "We can take a quick walk downstairs for ___.",
+          "options": [
+            "A. we divide a 30-minute walk into 3 parts",
+            "B. our inactiveness",
+            "C. we may like to try a longer one",
+            "D. big cities in America",
+            "E. a daily 30-minute quick walk",
+            "F. a face-to-face talk"
+          ],
+          "answer": "F",
+          "answerExplanation": "第④段\"It may be walking downstairs for a direct talk rather than sending an email.\"direct talk即face-to-face talk，故选F。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q25",
+          "order": 25,
+          "questionType": "single_choice",
+          "stem": "When feeling good after a 10-minute walk, ___.",
+          "options": [
+            "A. we divide a 30-minute walk into 3 parts",
+            "B. our inactiveness",
+            "C. we may like to try a longer one",
+            "D. big cities in America",
+            "E. a daily 30-minute quick walk",
+            "F. a face-to-face talk"
+          ],
+          "answer": "C",
+          "answerExplanation": "第⑤段\"When people get to a comfort level of walking for 10 minutes, they might think about trying 11 minutes.\"即尝试更长时间，故选C。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2021-10-s4",
+      "type": "填句补文",
+      "order": 4,
+      "passageTitle": "North Africa",
+      "passageText": "Africa is the second largest continent on Earth. It is about 8,000 kilometers long from north to south. It can be divided into three major regions: northern Africa, central Africa, and southern Africa. ___(26)___\n\nAfrica is separated from Europe by the Mediterranean Sea (地中海). It is connected to Asia in the east. For this reason, it has been easy for people from Europe, Asia and other areas to come to North Africa. ___(27)___\n\nMost of North Africa is covered by the Sahara Desert. ___(28)___ There is little rainfall here. The few people who live in the desert live in oases (绿洲). The valley of the Nile River forms one of the oases that stretch across the desert in the east.\n\nMany North African nations have a very important resource. They have large deposits of petroleum ___(29)___. In return, these nations receive a lot of money. They are spending some of this money to make life better for their people.\n\nEgypt is an important nation in North Africa. ___(30)___ It has served as a bridge between Africa and Asia. People from many nations have passed through Egypt. Today, it controls the Suez Canal. The canal connects the Mediterranean Sea and the Red Sea. It is important for ships traveling between nations in Europe and Asia.",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2021-10-q26",
+          "order": 26,
+          "questionType": "single_choice",
+          "stem": "第26空",
+          "options": [
+            "A. It has always been a great barrier to people traveling south.",
+            "B. This oil is shipped to many parts of the world.",
+            "C. Each region has its special geography and history.",
+            "D. Asia is much larger than Europe.",
+            "E. All these people have left their influence there.",
+            "F. About 40 million people live there today."
+          ],
+          "answer": "C",
+          "answerExplanation": "26题前提到非洲分为三大区域：北非、中非和南部非洲，接下来讲的应该也与这三个区域各有其地理和历史特点有关，故选C。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q27",
+          "order": 27,
+          "questionType": "single_choice",
+          "stem": "第27空",
+          "options": [
+            "A. It has always been a great barrier to people traveling south.",
+            "B. This oil is shipped to many parts of the world.",
+            "C. Each region has its special geography and history.",
+            "D. Asia is much larger than Europe.",
+            "E. All these people have left their influence there.",
+            "F. About 40 million people live there today."
+          ],
+          "answer": "E",
+          "answerExplanation": "前句说来自欧洲、亚洲等地的人很容易来到北非，E选项\"所有这些人都在那里留下了影响\"承接上文，故选E。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q28",
+          "order": 28,
+          "questionType": "single_choice",
+          "stem": "第28空",
+          "options": [
+            "A. It has always been a great barrier to people traveling south.",
+            "B. This oil is shipped to many parts of the world.",
+            "C. Each region has its special geography and history.",
+            "D. Asia is much larger than Europe.",
+            "E. All these people have left their influence there.",
+            "F. About 40 million people live there today."
+          ],
+          "answer": "A",
+          "answerExplanation": "前一句提到撒哈拉沙漠，A选项\"它一直是人们向南旅行的一大障碍\"符合撒哈拉沙漠的情况，故选A。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q29",
+          "order": 29,
+          "questionType": "single_choice",
+          "stem": "第29空",
+          "options": [
+            "A. It has always been a great barrier to people traveling south.",
+            "B. This oil is shipped to many parts of the world.",
+            "C. Each region has its special geography and history.",
+            "D. Asia is much larger than Europe.",
+            "E. All these people have left their influence there.",
+            "F. About 40 million people live there today."
+          ],
+          "answer": "B",
+          "answerExplanation": "前一句说北非国家拥有大量石油储备(petroleum=oil)，B选项\"这些石油被运往世界各地\"承接上文，故选B。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q30",
+          "order": 30,
+          "questionType": "single_choice",
+          "stem": "第30空",
+          "options": [
+            "A. It has always been a great barrier to people traveling south.",
+            "B. This oil is shipped to many parts of the world.",
+            "C. Each region has its special geography and history.",
+            "D. Asia is much larger than Europe.",
+            "E. All these people have left their influence there.",
+            "F. About 40 million people live there today."
+          ],
+          "answer": "F",
+          "answerExplanation": "前一句说埃及是北非的一个重要国家，后一句说它是非洲和亚洲之间的桥梁；D选项与句意不连贯，可排除；F选项\"约4千万人在此生活\"符合语境，故选F。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2021-10-s5",
+      "type": "填词补文",
+      "order": 5,
+      "passageTitle": "Learning from Mistakes",
+      "passageText": "Lots of people don't dare to make mistakes. They fear that they will be blamed by others or lose their money and ___(31)___. Therefore, they are under a lot of stress. But risks are unavoidable and they do ___(32)___ the way towards success. Have you ever heard of someone who achieves success without making any mistakes?\n\nSo it is ___(33)___ that making mistakes in your effort to realize your ___(34)___ is considered a must. You shouldn't worry about making mistakes as you may get a lot of ___(35)___ from them. By making mistakes you can ___(36)___ between the correct and the ___(37)___ things you did. Anthony D'Angelo said, \"In order to succeed you must fail, so that you know what to do the next time.\" Robert Stevenson even went to the ___(38)___ as to say, \"Our business in life is not to succeed, but to continue to ___(39)___ in good spirits.\"\n\nYou needn't worry about anything as long as you keep on going by ___(40)___ learning from your mistakes and trying even harder.",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "00015-2021-10-q31",
+          "order": 31,
+          "questionType": "single_choice",
+          "stem": "第31空",
+          "options": ["A. extreme", "B. discover", "C. distinguish", "D. advantages", "E. fail", "F. belongings", "G. recently", "H. natural", "I. pave", "J. incorrect", "K. wisely", "L. dreams"],
+          "answer": "F",
+          "answerExplanation": "and连接并列成分，应填入与money同性质的名词；句意为担心被别人责怪，或失去钱和财物，只有F. belongings（财物）符合题意。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q32",
+          "order": 32,
+          "questionType": "single_choice",
+          "stem": "第32空",
+          "options": ["A. extreme", "B. discover", "C. distinguish", "D. advantages", "E. fail", "F. belongings", "G. recently", "H. natural", "I. pave", "J. incorrect", "K. wisely", "L. dreams"],
+          "answer": "I",
+          "answerExplanation": "该处应填入实义动词原形与do构成强调结构（they do pave the way...）；固定搭配pave the way (towards) 铺平道路，I选项最符合题意。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q33",
+          "order": 33,
+          "questionType": "single_choice",
+          "stem": "第33空",
+          "options": ["A. extreme", "B. discover", "C. distinguish", "D. advantages", "E. fail", "F. belongings", "G. recently", "H. natural", "I. pave", "J. incorrect", "K. wisely", "L. dreams"],
+          "answer": "H",
+          "answerExplanation": "be动词后优先考虑形容词；句意为犯错误是很自然的一件事情，H. natural（自然的）最合适。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q34",
+          "order": 34,
+          "questionType": "single_choice",
+          "stem": "第34空",
+          "options": ["A. extreme", "B. discover", "C. distinguish", "D. advantages", "E. fail", "F. belongings", "G. recently", "H. natural", "I. pave", "J. incorrect", "K. wisely", "L. dreams"],
+          "answer": "L",
+          "answerExplanation": "句意为在努力实现你的（梦想）的过程中犯错误是很自然的一件事情；空格处需要名词，L. dreams（梦想）符合句意。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q35",
+          "order": 35,
+          "questionType": "single_choice",
+          "stem": "第35空",
+          "options": ["A. extreme", "B. discover", "C. distinguish", "D. advantages", "E. fail", "F. belongings", "G. recently", "H. natural", "I. pave", "J. incorrect", "K. wisely", "L. dreams"],
+          "answer": "D",
+          "answerExplanation": "a lot of + 可数名词复数，只剩D. advantages（优势）可选，句意为你可以从错误中获得很多益处。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q36",
+          "order": 36,
+          "questionType": "single_choice",
+          "stem": "第36空",
+          "options": ["A. extreme", "B. discover", "C. distinguish", "D. advantages", "E. fail", "F. belongings", "G. recently", "H. natural", "I. pave", "J. incorrect", "K. wisely", "L. dreams"],
+          "answer": "C",
+          "answerExplanation": "can后面需填入动词原形；固定搭配distinguish between A and B（区分A和B），C选项符合句意。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q37",
+          "order": 37,
+          "questionType": "single_choice",
+          "stem": "第37空",
+          "options": ["A. extreme", "B. discover", "C. distinguish", "D. advantages", "E. fail", "F. belongings", "G. recently", "H. natural", "I. pave", "J. incorrect", "K. wisely", "L. dreams"],
+          "answer": "J",
+          "answerExplanation": "and连接并列成分，前面是correct，此处形容词修饰things，与correct形成对照，J. incorrect（不正确的）符合题意。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q38",
+          "order": 38,
+          "questionType": "single_choice",
+          "stem": "第38空",
+          "options": ["A. extreme", "B. discover", "C. distinguish", "D. advantages", "E. fail", "F. belongings", "G. recently", "H. natural", "I. pave", "J. incorrect", "K. wisely", "L. dreams"],
+          "answer": "A",
+          "answerExplanation": "固定搭配go to the extreme as to say（甚至极端地说），A选项符合题意。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q39",
+          "order": 39,
+          "questionType": "single_choice",
+          "stem": "第39空",
+          "options": ["A. extreme", "B. discover", "C. distinguish", "D. advantages", "E. fail", "F. belongings", "G. recently", "H. natural", "I. pave", "J. incorrect", "K. wisely", "L. dreams"],
+          "answer": "E",
+          "answerExplanation": "to后面需接动词原形，只剩E. fail可选；此处引用了Robert Louis Stevenson的名言\"to continue to fail in good spirits\"。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q40",
+          "order": 40,
+          "questionType": "single_choice",
+          "stem": "第40空",
+          "options": ["A. extreme", "B. discover", "C. distinguish", "D. advantages", "E. fail", "F. belongings", "G. recently", "H. natural", "I. pave", "J. incorrect", "K. wisely", "L. dreams"],
+          "answer": "K",
+          "answerExplanation": "by后接名词或动名词，空格后已有learning，成分不缺，此处应填副词修饰learning，K. wisely（明智地）符合题意。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2021-10-s6",
+      "type": "完形填空",
+      "order": 6,
+      "passageTitle": "Interlaken, Switzerland",
+      "passageText": "The sound of cow bells ringing across Interlaken's grassland is comforting (comfort). Climbing up the nearby mountains is also ___(41)___ (enjoy). So is skiing down them. The town of Interlaken is ___(42)___ (locate) in a beautiful setting between two lakes. It is also close to the ___(43)___ (mountain) villages. The outdoor possibilities are ___(44)___ (end) around Interlaken in summer and winter. They range from sailing, skiing, to climbing or just ___(45)___ (relax) in a pool. People can enjoy boating in the summer. They can also take ___(46)___ (please) in skiing in the winter. This place is a perfect choice for people if they like ice climbing or ___(47)___ (roll) down a hill inside a ball. It meets ___(48)___ (near) everyone's needs.\n\nForeigners are not allowed to buy ___(49)___ (house) in Interlaken. But they can buy one in nearby villages. Many ___(50)___ (retire) people consider Interlaken a great place to settle around.",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "00015-2021-10-q41",
+          "order": 41,
+          "questionType": "fill_blank_transform",
+          "stem": "enjoy",
+          "options": [],
+          "answer": "enjoyable",
+          "answerExplanation": "be动词后优先考虑形容词，句意为爬附近的山也是很有乐趣的，enjoy变形容词enjoyable。",
+          "knowledgePoints": ["形容词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q42",
+          "order": 42,
+          "questionType": "fill_blank_transform",
+          "stem": "locate",
+          "options": [],
+          "answer": "located",
+          "answerExplanation": "be located in为固定搭配，意为\"位于，坐落于\"，故填located。",
+          "knowledgePoints": ["被动语态"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q43",
+          "order": 43,
+          "questionType": "fill_blank_transform",
+          "stem": "mountain",
+          "options": [],
+          "answer": "mountainous",
+          "answerExplanation": "此处需要形容词修饰villages，mountain变形容词mountainous（多山的）。",
+          "knowledgePoints": ["形容词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q44",
+          "order": 44,
+          "questionType": "fill_blank_transform",
+          "stem": "end",
+          "options": [],
+          "answer": "endless",
+          "answerExplanation": "be动词后考虑形容词，句意为在夏季和冬季，户外活动的可能性是无穷无尽的，end变形容词endless。",
+          "knowledgePoints": ["形容词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q45",
+          "order": 45,
+          "questionType": "fill_blank_transform",
+          "stem": "relax",
+          "options": [],
+          "answer": "relaxing",
+          "answerExplanation": "or连接并列成分，与climbing并列（动名词形式），relax变为relaxing。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q46",
+          "order": 46,
+          "questionType": "fill_blank_transform",
+          "stem": "please",
+          "options": [],
+          "answer": "pleasure",
+          "answerExplanation": "固定搭配take pleasure in doing sth.（享受做某事），please变名词pleasure。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q47",
+          "order": 47,
+          "questionType": "fill_blank_transform",
+          "stem": "roll",
+          "options": [],
+          "answer": "rolling",
+          "answerExplanation": "or连接并列成分，与climbing同为动名词形式，roll变为rolling。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q48",
+          "order": 48,
+          "questionType": "fill_blank_transform",
+          "stem": "near",
+          "options": [],
+          "answer": "nearly",
+          "answerExplanation": "该句成分不缺，需填副词修饰meets，near变副词nearly（几乎）。",
+          "knowledgePoints": ["副词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q49",
+          "order": 49,
+          "questionType": "fill_blank_transform",
+          "stem": "house",
+          "options": [],
+          "answer": "houses",
+          "answerExplanation": "句意为外国人不允许购买房屋（复数概念），house变复数houses。",
+          "knowledgePoints": ["名词单复数"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2021-10-q50",
+          "order": 50,
+          "questionType": "fill_blank_transform",
+          "stem": "retire",
+          "options": [],
+          "answer": "retired",
+          "answerExplanation": "句意为许多退休人士认为茵特拉根是一个定居的好地方，retire变过去分词作定语retired，表\"已退休的\"。",
+          "knowledgePoints": ["被动语态"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2021-10-s7",
+      "type": "写作",
+      "order": 7,
+      "passageTitle": null,
+      "passageText": null,
+      "writingPrompt": "某英语学习报征集一篇题为\"My Favorite Chinese Festival\"的稿件。请就此题目写一篇英文短文应征，内容包括：\n· 你最喜爱的中国节日是什么\n· 你为什么喜欢这个节日\n请根据所提供材料中的要求完成一篇100词左右的英文写作任务。",
+      "scorePerQuestion": 30,
+      "totalScore": 30,
+      "questions": [
+        {
+          "questionId": "00015-2021-10-q51",
+          "order": 51,
+          "questionType": "essay",
+          "stem": "My Favorite Chinese Festival",
+          "options": [],
+          "answer": "",
+          "answerExplanation": "官方参考范文：\"I am writing about Chinese New Year's Day. It is the beginning of a year. There are different ways to celebrate, such as singing and dancing. When it comes to different ways to celebrate, the majority of people believe that they have their own benefits. Faced with different ways to celebrate, different people have different choices. On the one hand, some people like singing because it is more meaningful. On the other hand other people prefer dancing because it is more enjoyable. Everyone can choose what he likes. As far as I am concerned, I like singing because it is more meaningful. I hope you can enjoy it, as it is indeed good for us.\"",
+          "knowledgePoints": ["写作-说明类", "写作-观点类"],
+          "difficultyTag": null
+        }
+      ]
+    }
+  ],
+  "parsingNotes": [
+    "第13题官方印刷题干为\"In Paragraph 4, 'that gesture' refers to___.\"；按passageText中的实际段落顺序数，描述twist their hands这一动作的是第3个自然段（若把开篇单句算作独立段落）或第2个自然段（若不单独算），与题干标注的\"Paragraph 4\"存在出入。此处已按官方答案(C. twisting one's hands)和原文逐字定位作答，题干本身按试卷原文逐字保留未做改动，仅供人工核对确认原卷段落计数方式。"
+  ]
+}

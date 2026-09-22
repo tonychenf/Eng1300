@@ -1,0 +1,661 @@
+{
+  "examId": "00015-2022-10",
+  "title": "2022年10月高等教育自学考试英语(二)试题",
+  "year": 2022,
+  "month": 10,
+  "courseCode": "00015",
+  "courseName": "英语(二)",
+  "sourceFile": "ce3e06da-2022_10____________.pdf",
+  "totalScore": 100,
+  "timeLimitMinutes": 150,
+  "status": "待校对",
+  "sections": [
+    {
+      "sectionId": "00015-2022-10-s1",
+      "type": "阅读判断",
+      "order": 1,
+      "passageTitle": "Lacking in Self-Esteem? Good for you!",
+      "passageText": "According to psychological and educational theories, self-esteem is essential for a successful life. Generations of children, especially minority kids, have been educated according to the theory that they lack self-esteem, and that this deficiency is central to any problems they may have in making their way in the world.\n\nWell, guess what? A new research has found that self-esteem can be just as high among grade D students and drunk drivers as it is among Nobel Prize winners and former presidents. In fact, people with high self-esteem can engage in far more anti-social behavior than those with low self-esteem.\n\n\"We used to believe that high self-esteem would cause all sorts of positive consequences and that if we raised self-esteem, people would do better in life,\" a researcher said. \"Mostly, the data have failed to support that.\" Racists, street thugs and school bullies all have high scores on the self-esteem tests. And you can see why. If you think you're highly gifted, you're particularly offended if other people don't treat you that way. So you hit out or commit crimes to defend your pride. After all, who are they to suggest that you could be doing something wrong? What do they know?\n\nSelf-esteem can also be an educational concern. College teachers are constantly complaining about the high self-esteem of their students.\n\nWhen every grade in the school is assessed so as to make the kid feel good rather than to give an accurate measure of his work, the kid can develop self-esteem dangerously unrelated to the truth. When he's told he is getting a C grade in college, he can then get deeply offended or extremely angry. Weak professors give in to the pressure – hence, grade inflation, which results in their students' vague touch with reality.",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2022-10-q1",
+          "order": 1,
+          "questionType": "single_choice",
+          "stem": "It is believed that minority kids often have self-esteem problem.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "根据第一段“Generations of children, especially minority kids, have been educated according to the theory that they lack self-esteem...”可知人们普遍认为少数族裔孩子存在自尊问题，说法正确。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q2",
+          "order": 2,
+          "questionType": "single_choice",
+          "stem": "A new research shows that high self-esteem is essential to success.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "根据第二段“self-esteem can be just as high among grade D students and drunk drivers as it is among Nobel Prize winners and former presidents”可知自尊心高低与是否成功并无必然联系，与题干说法不符，故为False。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q3",
+          "order": 3,
+          "questionType": "single_choice",
+          "stem": "Parents are responsible for their children's self-esteem.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "全文均未提及父母对孩子自尊心的责任，故为Not Given。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q4",
+          "order": 4,
+          "questionType": "single_choice",
+          "stem": "Anti-social behavior is related to low self-esteem.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "根据第二段“people with high self-esteem can engage in far more anti-social behavior than those with low self-esteem”可知反社会行为与高自尊而非低自尊相关，题干说法错误，故为False。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q5",
+          "order": 5,
+          "questionType": "single_choice",
+          "stem": "Racists have low self-esteem.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "根据“Racists, street thugs and school bullies all have high scores on the self-esteem tests.”可知种族主义者的自尊测试得分高，并非低，说法错误，故为False。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q6",
+          "order": 6,
+          "questionType": "single_choice",
+          "stem": "People with high self-esteem are hurt more easily.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "根据“If you think you're highly gifted, you're particularly offended if other people don't treat you that way.”可知高自尊者在未获得预期对待时更容易感到被冒犯、受伤，说法正确，故为True。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q7",
+          "order": 7,
+          "questionType": "single_choice",
+          "stem": "College students are faced with high economic pressure.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "全文未提及大学生面临经济压力的相关内容，故为Not Given。",
+          "knowledgePoints": ["阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q8",
+          "order": 8,
+          "questionType": "single_choice",
+          "stem": "College teachers are often annoyed with students' high self-esteem.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "根据“College teachers are constantly complaining about the high self-esteem of their students.”可知大学教师常因学生自尊心过高而抱怨、恼火，说法正确，故为True。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q9",
+          "order": 9,
+          "questionType": "single_choice",
+          "stem": "High grades help students know the truth of themselves.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "根据最后一段“the kid can develop self-esteem dangerously unrelated to the truth”可知一味给高分反而使学生的自我认知与事实脱节，并非帮助其认清真实水平，说法错误，故为False。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q10",
+          "order": 10,
+          "questionType": "single_choice",
+          "stem": "Some college students may find a C grade offending.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "根据“When he's told he is getting a C grade in college, he can then get deeply offended or extremely angry.”可知部分学生确实会因得到C等成绩而感到被冒犯，说法正确，故为True。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2022-10-s2",
+      "type": "阅读理解选择",
+      "order": 2,
+      "passageTitle": "Organic Farming",
+      "passageText": "During thousands of years of human civilization, the raising of animals and growing of plants have always been organic. Chemicals for farming first came up at the turn of the 20th century. Widespread use of chemicals began after World War II. In the 1950s and 60s farmers started using chemical fertilizers and pesticides. Recently, however, more and more farmers have been returning to organic farming.\n\nIn organic farming, farm products are produced in more natural ways. Crops, meat and other food are produced without chemicals. Chemical fertilizers, pesticides, and growth hormones are forbidden. Farmers enrich the soil with natural fertilizers. They pull out weeds by hand. Hay and straw are put between the rows of plants to stop weeding. They rely on the natural enemies of pests to control pests. Animals are fed organically and can eat grass outdoors. Cows, for example, are kept in pastures and fields. Vegetables and fruit are also produced with organic methods.\n\nOrganic farming enjoys many advantages. For example, crop rotation can preserve the good qualities of soils. The growing of different crops can keep soils healthy and fertile. Organic farming is healthier for farm workers, and there are fewer remains of chemicals in food. In the long run, organic farms save energy and protect the environment. It can slow down global warming and reduce the pollution of ground water.\n\nMeanwhile, there are some disadvantages. Organic food is more expensive. Organic products may cost up to 40% more. Production costs are higher as farmers need more workers, and the land output is much less. Marketing and distribution is not efficient because organic food is provided in smaller amount. Crop illness may happen very often. Besides, organic farming cannot produce enough food for the world's population to survive. This could lead to starvation in countries that can produce enough food today.",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2022-10-q11",
+          "order": 11,
+          "questionType": "single_choice",
+          "stem": "Organic farming ______.",
+          "options": ["A. started in the 1950s", "B. had a short history", "C. has become popular in recent years", "D. was promoted by World War II"],
+          "answer": "C",
+          "answerExplanation": "根据第一段“Recently, however, more and more farmers have been returning to organic farming.”可知有机农业近年来越来越受欢迎，选C。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q12",
+          "order": 12,
+          "questionType": "single_choice",
+          "stem": "In organic farming ______.",
+          "options": ["A. cows can move around in fields", "B. natural enemies of pests are scarce", "C. chemicals are used to kill pests", "D. machines are used to pull out weeds"],
+          "answer": "A",
+          "answerExplanation": "根据第二段“Cows, for example, are kept in pastures (草场) and fields.”可知奶牛可以在田间自由活动，选A。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q13",
+          "order": 13,
+          "questionType": "single_choice",
+          "stem": "The phrase \"crop rotation\" (Para. 3) probably means \"______\".",
+          "options": ["A. growing high-yielding crops", "B. seasonal growing of crops", "C. planting soil-enriching crops", "D. regular changing of crops"],
+          "answer": "D",
+          "answerExplanation": "根据第三段“crop rotation can preserve the good qualities of soils. The growing of different crops can keep soils healthy and fertile.”可推知crop rotation指定期轮换种植不同作物，选D。",
+          "knowledgePoints": ["词义猜测"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q14",
+          "order": 14,
+          "questionType": "single_choice",
+          "stem": "One advantage of organic farming is that it is ______.",
+          "options": ["A. water-saving", "B. labor-saving", "C. market-friendly", "D. environmentally-friendly"],
+          "answer": "D",
+          "answerExplanation": "根据第三段“organic farms save energy and protect the environment”可知有机农业的优势之一是环保，选D。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q15",
+          "order": 15,
+          "questionType": "single_choice",
+          "stem": "The problem of organic farming is ______.",
+          "options": ["A. poor qualities of soils", "B. high production costs", "C. the use of too much land", "D. the shortage of farm workers"],
+          "answer": "B",
+          "answerExplanation": "根据最后一段“Production costs are higher as farmers need more workers, and the land output is much less.”可知有机农业的问题之一是生产成本高，选B。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2022-10-s3",
+      "type": "段落大意与句子补全",
+      "order": 3,
+      "passageTitle": "Health Benefits of Honey with Milk",
+      "passageText": "Honey and milk get along well. Since ancient times, this mix is known for its amazing health benefits.\n\n(1) Take a glass of honey with milk before you set out for your day in the morning, and you are guaranteed enough to get through the morning rush. Milk provides you the proteins (required) while honey helps you get the energy by breaking down these proteins. No wonder this drink is meant for all ages alike.\n\n(2) Milk is known for providing calcium, which, in right levels, helps in preventing bone diseases as we age. Research has indicated that honey does a good job of carrying nutrients in the food through the blood to various parts of the body. In particular, honey helps in the absorption of calcium, the vital part of milk.\n\n(3) If you ask doctors or your grandmother for a solution to your sleeplessness, you are bound to get the same answer — a glass of warm milk with honey. It is best known to induce sleep. So take it regularly if you have sleeping problems.\n\n(4) Milk and honey not only help in preventing aging by keeping the skin glowing, but also improve your body as a whole as they contain antioxidants. These help keep the body young and flexible. For a very long time, this has been an open secret in keeping your body look and feel young.\n\n(5) Both milk and honey are known to ward off harmful bacteria in our body, but their combined strength is more effective in achieving this effect. Cough and cold can be prevented by taking this drink regularly. It also aids in digestion and treating bowel disorders.",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2022-10-q16",
+          "order": 16,
+          "questionType": "single_choice",
+          "stem": "Paragraph (1):",
+          "options": ["A. Honey milk for digestion", "B. Honey milk for a youthful glow", "C. Honey milk for stronger bones", "D. Honey milk for energy", "E. Honey milk for a sound sleep", "F. Honey milk for antibacterial benefits"],
+          "answer": "D",
+          "answerExplanation": "第(1)段提到“Milk provides you the proteins required while honey helps you get the energy by breaking down these proteins”，说明这段讲的是牛奶蜂蜜帮助获取能量，对应D。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q17",
+          "order": 17,
+          "questionType": "single_choice",
+          "stem": "Paragraph (2):",
+          "options": ["A. Honey milk for digestion", "B. Honey milk for a youthful glow", "C. Honey milk for stronger bones", "D. Honey milk for energy", "E. Honey milk for a sound sleep", "F. Honey milk for antibacterial benefits"],
+          "answer": "C",
+          "answerExplanation": "第(2)段提到“Milk is known for providing calcium...helps in preventing bone diseases”，说明这段讲的是补钙强健骨骼，对应C。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q18",
+          "order": 18,
+          "questionType": "single_choice",
+          "stem": "Paragraph (3):",
+          "options": ["A. Honey milk for digestion", "B. Honey milk for a youthful glow", "C. Honey milk for stronger bones", "D. Honey milk for energy", "E. Honey milk for a sound sleep", "F. Honey milk for antibacterial benefits"],
+          "answer": "E",
+          "answerExplanation": "第(3)段提到“a glass of warm milk with honey. It is best known to induce sleep.”，说明这段讲的是辅助睡眠，对应E。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q19",
+          "order": 19,
+          "questionType": "single_choice",
+          "stem": "Paragraph (4):",
+          "options": ["A. Honey milk for digestion", "B. Honey milk for a youthful glow", "C. Honey milk for stronger bones", "D. Honey milk for energy", "E. Honey milk for a sound sleep", "F. Honey milk for antibacterial benefits"],
+          "answer": "B",
+          "answerExplanation": "第(4)段提到“help in preventing aging by keeping the skin glowing...keeping your body look and feel young”，说明这段讲的是保持年轻光泽，对应B。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q20",
+          "order": 20,
+          "questionType": "single_choice",
+          "stem": "Paragraph (5):",
+          "options": ["A. Honey milk for digestion", "B. Honey milk for a youthful glow", "C. Honey milk for stronger bones", "D. Honey milk for energy", "E. Honey milk for a sound sleep", "F. Honey milk for antibacterial benefits"],
+          "answer": "F",
+          "answerExplanation": "第(5)段提到“Both milk and honey are known to ward off harmful bacteria in our body”，说明这段讲的是抗菌功效，对应F。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q21",
+          "order": 21,
+          "questionType": "single_choice",
+          "stem": "Milk is rich in ______.",
+          "options": ["A. proteins and calcium", "B. fat and sugar", "C. cough and cold", "D. your body look and feel young", "E. drink milk and honey", "F. of calcium"],
+          "answer": "A",
+          "answerExplanation": "第(1)段提到“Milk provides you the proteins”，第(2)段提到“Milk is known for providing calcium”，综合两处信息可知牛奶富含蛋白质和钙，选A。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q22",
+          "order": 22,
+          "questionType": "single_choice",
+          "stem": "Milk and honey help ______.",
+          "options": ["A. proteins and calcium", "B. fat and sugar", "C. cough and cold", "D. your body look and feel young", "E. drink milk and honey", "F. of calcium"],
+          "answer": "D",
+          "answerExplanation": "第(4)段提到“this has been an open secret in keeping your body look and feel young”，选D。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q23",
+          "order": 23,
+          "questionType": "single_choice",
+          "stem": "Honey helps the absorption ______.",
+          "options": ["A. proteins and calcium", "B. fat and sugar", "C. cough and cold", "D. your body look and feel young", "E. drink milk and honey", "F. of calcium"],
+          "answer": "F",
+          "answerExplanation": "第(2)段提到“honey helps in the absorption of calcium”，选F。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q24",
+          "order": 24,
+          "questionType": "single_choice",
+          "stem": "Your body may bend or move easily if you ______.",
+          "options": ["A. proteins and calcium", "B. fat and sugar", "C. cough and cold", "D. your body look and feel young", "E. drink milk and honey", "F. of calcium"],
+          "answer": "E",
+          "answerExplanation": "第(4)段提到“These help keep the body young and flexible”，flexible即bend or move easily之意，对应“drink milk and honey”，选E。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q25",
+          "order": 25,
+          "questionType": "single_choice",
+          "stem": "Drinking honey milk regularly can prevent ______.",
+          "options": ["A. proteins and calcium", "B. fat and sugar", "C. cough and cold", "D. your body look and feel young", "E. drink milk and honey", "F. of calcium"],
+          "answer": "C",
+          "answerExplanation": "第(5)段提到“Cough and cold can be prevented by taking this drink regularly.”，选C。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2022-10-s4",
+      "type": "填句补文",
+      "order": 4,
+      "passageTitle": "Insomnia",
+      "passageText": "I just could not fall asleep the other night. I just didn't feel sleepy. I can't explain why, but it was really annoying.\n\nI got very bored lying in bed, so I decided to read a book. ___(26)___ But even when I finished reading, I still didn't feel tired. So I listened to some peaceful music.\n\nThat didn't work, either. I have heard people say if you have a warm drink before bedtime, it will help you drift off to sleep. So I went downstairs and made myself a cup of tea. ___(27)___ Still, I couldn't sleep. I was getting very frustrated by this point!\n\nIt felt strange to be awake while everyone else was asleep. ___(28)___ In fact, it was a little big frightening. When you go to sleep, it feels like one day ends and another begins. But if you stay up late, you realize that day and night are just a gentle transition, a cycle while has no end and no beginning. At 4 a.m., I noticed a faint light coming through my curtains. The sun had started to rise!\n\nNormally, I'm a heavy sleeper. ___(29)___ So on this occasion, I consider myself lucky to see a beautiful sunrise. I knew I needed to get some rest, but it seemed the harder I tried to force myself asleep, the more difficult it was.\n\nEventually, I just let my mind go free. ___(30)___ I listened to the birdsong... and the next thing I knew it was 11 a.m.! I was happy that I had managed to get some sleep! I have never struggled with sleeping before, so this was my first experience of insomnia. Fortunately, I have been sleeping well since then.",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2022-10-q26",
+          "order": 26,
+          "questionType": "single_choice",
+          "stem": "26",
+          "options": ["A. The world seemed so quiet.", "B. I stopped forcing myself to sleep.", "C. After my tea, I got back into bed.", "D. I didn't want to wake up my family.", "E. I thought reading would help me get to sleep.", "F. I had never been awake at this time in the morning."],
+          "answer": "E",
+          "answerExplanation": "前一句说决定读书，因此该句应与读书有关，选择E“I thought reading would help me get to sleep.”。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q27",
+          "order": 27,
+          "questionType": "single_choice",
+          "stem": "27",
+          "options": ["A. The world seemed so quiet.", "B. I stopped forcing myself to sleep.", "C. After my tea, I got back into bed.", "D. I didn't want to wake up my family.", "E. I thought reading would help me get to sleep.", "F. I had never been awake at this time in the morning."],
+          "answer": "C",
+          "answerExplanation": "前一句提到了泡茶（tea），因此该句应与喝完茶后的动作有关，选择C“After my tea, I got back into bed.”。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q28",
+          "order": 28,
+          "questionType": "single_choice",
+          "stem": "28",
+          "options": ["A. The world seemed so quiet.", "B. I stopped forcing myself to sleep.", "C. After my tea, I got back into bed.", "D. I didn't want to wake up my family.", "E. I thought reading would help me get to sleep.", "F. I had never been awake at this time in the morning."],
+          "answer": "A",
+          "answerExplanation": "后一句提到“In fact, it was a little big frightening.”，it指代前文提到的事物，A“The world seemed so quiet.”符合语境，指安静的世界让人感到吓人。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q29",
+          "order": 29,
+          "questionType": "single_choice",
+          "stem": "29",
+          "options": ["A. The world seemed so quiet.", "B. I stopped forcing myself to sleep.", "C. After my tea, I got back into bed.", "D. I didn't want to wake up my family.", "E. I thought reading would help me get to sleep.", "F. I had never been awake at this time in the morning."],
+          "answer": "F",
+          "answerExplanation": "后一句表述“很幸运能看到美丽的日出”，说明已到清晨时分，与此相关的只有F“I had never been awake at this time in the morning.”。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q30",
+          "order": 30,
+          "questionType": "single_choice",
+          "stem": "30",
+          "options": ["A. The world seemed so quiet.", "B. I stopped forcing myself to sleep.", "C. After my tea, I got back into bed.", "D. I didn't want to wake up my family.", "E. I thought reading would help me get to sleep.", "F. I had never been awake at this time in the morning."],
+          "answer": "B",
+          "answerExplanation": "前一句“Eventually, I just let my mind go free.”指最终不再强迫自己入睡，与之匹配的只有B“I stopped forcing myself to sleep.”。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2022-10-s5",
+      "type": "填词补文",
+      "order": 5,
+      "passageTitle": "Smiles",
+      "passageText": "A smile costs nothing but creates much. It enriches those (who ___(31)___,) without making those (who give) poor. It happens in a ___(32)___ and the memory of it sometimes lasts ___(33)___. None are so rich that they can get along without it, and none so ___(34)___ but are richer for its benefits. It creates ___(35)___ in the home, and fosters goodwill in a business. It is rest to the weary, daylight to the ___(36)___ and sunshine to the sad.\n\nYet it can't be bought, begged, borrowed, or stolen, for it is something that is no earthly good to anybody till it is given ___(37)___. And if in the last-minute rush of Christmas ___(38)___, some of our salespeople should be too ___(39)___ to give you a smile, may we ___(40)___ you to leave one of yours? For nobody needs a smile so much as those who have none left to give!",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "00015-2022-10-q31",
+          "order": 31,
+          "questionType": "single_choice",
+          "stem": "31",
+          "options": ["A. forever", "B. away", "C. happiness", "D. satisfied", "E. discouraged", "F. flash", "G. receive", "H. tired", "I. poor", "J. enough", "K. buying", "L. ask"],
+          "answer": "G",
+          "answerExplanation": "此处为定语从句，who后面缺少谓语动词，且主语who指代those（复数），需要动词原形。根据词义，“receive（接受、得到）”最合适，选G。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q32",
+          "order": 32,
+          "questionType": "single_choice",
+          "stem": "32",
+          "options": ["A. forever", "B. away", "C. happiness", "D. satisfied", "E. discouraged", "F. flash", "G. receive", "H. tired", "I. poor", "J. enough", "K. buying", "L. ask"],
+          "answer": "F",
+          "answerExplanation": "“in a ___”后接单数名词，备选中happiness不可数，只有flash可用（in a flash意为“一瞬间”），选F。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q33",
+          "order": 33,
+          "questionType": "single_choice",
+          "stem": "33",
+          "options": ["A. forever", "B. away", "C. happiness", "D. satisfied", "E. discouraged", "F. flash", "G. receive", "H. tired", "I. poor", "J. enough", "K. buying", "L. ask"],
+          "answer": "A",
+          "answerExplanation": "“it sometimes lasts ___”，last为系动词，后面缺表语，且lasts后一般接表示时间长度的词，选A“forever（永远）”。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q34",
+          "order": 34,
+          "questionType": "single_choice",
+          "stem": "34",
+          "options": ["A. forever", "B. away", "C. happiness", "D. satisfied", "E. discouraged", "F. flash", "G. receive", "H. tired", "I. poor", "J. enough", "K. buying", "L. ask"],
+          "answer": "I",
+          "answerExplanation": "“none so ___”与前句“None are so rich that they can get along without it”形成并列结构，应选反义词“poor（贫穷的）”，选I。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q35",
+          "order": 35,
+          "questionType": "single_choice",
+          "stem": "35",
+          "options": ["A. forever", "B. away", "C. happiness", "D. satisfied", "E. discouraged", "F. flash", "G. receive", "H. tired", "I. poor", "J. enough", "K. buying", "L. ask"],
+          "answer": "C",
+          "answerExplanation": "“It creates ___”，creates为及物动词，后面需要接名词，只剩“happiness（幸福）”符合，选C。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q36",
+          "order": 36,
+          "questionType": "single_choice",
+          "stem": "36",
+          "options": ["A. forever", "B. away", "C. happiness", "D. satisfied", "E. discouraged", "F. flash", "G. receive", "H. tired", "I. poor", "J. enough", "K. buying", "L. ask"],
+          "answer": "E",
+          "answerExplanation": "“daylight to the ___ and sunshine to the sad”与the weary、the sad并列，the后接形容词表一类人，且应为消极词汇；weary已含有tired之意，故排除H，选E“discouraged（气馁的）”。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q37",
+          "order": 37,
+          "questionType": "single_choice",
+          "stem": "37",
+          "options": ["A. forever", "B. away", "C. happiness", "D. satisfied", "E. discouraged", "F. flash", "G. receive", "H. tired", "I. poor", "J. enough", "K. buying", "L. ask"],
+          "answer": "B",
+          "answerExplanation": "“it is given ___”为被动句，成分不缺，需填副词与give搭配，“give away（送出、给予）”符合句意，选B。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q38",
+          "order": 38,
+          "questionType": "single_choice",
+          "stem": "38",
+          "options": ["A. forever", "B. away", "C. happiness", "D. satisfied", "E. discouraged", "F. flash", "G. receive", "H. tired", "I. poor", "J. enough", "K. buying", "L. ask"],
+          "answer": "K",
+          "answerExplanation": "“of Christmas ___”中Christmas作形容词修饰名词，空格需填名词，只剩动名词“buying（购物）”可选，选K。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q39",
+          "order": 39,
+          "questionType": "single_choice",
+          "stem": "39",
+          "options": ["A. forever", "B. away", "C. happiness", "D. satisfied", "E. discouraged", "F. flash", "G. receive", "H. tired", "I. poor", "J. enough", "K. buying", "L. ask"],
+          "answer": "H",
+          "answerExplanation": "“too…to”句型需填形容词或副词，结合圣诞抢购的语境，推知售货员太忙太累而无法微笑，选H“tired”。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q40",
+          "order": 40,
+          "questionType": "single_choice",
+          "stem": "40",
+          "options": ["A. forever", "B. away", "C. happiness", "D. satisfied", "E. discouraged", "F. flash", "G. receive", "H. tired", "I. poor", "J. enough", "K. buying", "L. ask"],
+          "answer": "L",
+          "answerExplanation": "“may we ___ you to leave one of yours”，may为情态动词，后接动词原形，构成“情态动词+do”结构，选L“ask”。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2022-10-s6",
+      "type": "完形填空",
+      "order": 6,
+      "passageTitle": "The Importance of Friendship for School-age Children",
+      "passageText": "Friends are very important to school-age children's healthy (health) development. Research has ___(41)___ (show) that children who lack friends can suffer from emotional and mental difficulties later in life. They have also found that children with friends have a ___(42)___ (great) sense of happiness, better self-esteem and fewer problems as they grow up.\n\nFriendships provide children with more than just fun ___(43)___ (playmate). They help children develop emotionally and ___(44)___ (moral). In interacting with friends, children learn many ___(45)___ (society) skills, such as how to communicate, and how to cooperate. They practice ___(46)___ (control) their emotions and responding to the emotions of others.\n\nThey develop their ___(47)___ (able) to think through and negotiate different situations in their relationships.\n\nHaving friends ___(48)___ (affect) children in many ways, even their school ___(49)___ (perform). Children tend to have better attitudes about school and learning when they have friends there. In short, friendships are not just a luxury, they are a ___(50)___ (necessary) for children.",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "00015-2022-10-q41",
+          "order": 41,
+          "questionType": "fill_blank_transform",
+          "stem": "show",
+          "options": [],
+          "answer": "shown",
+          "answerExplanation": "“Research has ___ that...”，has后接过去分词构成现在完成时，填shown。",
+          "knowledgePoints": ["动词时态"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q42",
+          "order": 42,
+          "questionType": "fill_blank_transform",
+          "stem": "great",
+          "options": [],
+          "answer": "greater",
+          "answerExplanation": "后半句“better self-esteem and fewer problems”均为比较级并列，此处也应填比较级greater。",
+          "knowledgePoints": ["比较级最高级"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q43",
+          "order": 43,
+          "questionType": "fill_blank_transform",
+          "stem": "playmate",
+          "options": [],
+          "answer": "playmates",
+          "answerExplanation": "“fun ___”修饰的是可数名词玩伴，泛指多个玩伴，需用复数形式playmates。",
+          "knowledgePoints": ["名词单复数"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q44",
+          "order": 44,
+          "questionType": "fill_blank_transform",
+          "stem": "moral",
+          "options": [],
+          "answer": "morally",
+          "answerExplanation": "“develop emotionally and ___”，and并列前后成分，前面是副词emotionally，此处也应填副词morally。",
+          "knowledgePoints": ["副词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q45",
+          "order": 45,
+          "questionType": "fill_blank_transform",
+          "stem": "society",
+          "options": [],
+          "answer": "social",
+          "answerExplanation": "“___ skills”中skills为名词，前面需要形容词修饰，填social。",
+          "knowledgePoints": ["形容词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q46",
+          "order": 46,
+          "questionType": "fill_blank_transform",
+          "stem": "control",
+          "options": [],
+          "answer": "controlling",
+          "answerExplanation": "“practice ___ their emotions”，practice doing sth为固定搭配，填controlling。",
+          "knowledgePoints": ["动词时态"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q47",
+          "order": 47,
+          "questionType": "fill_blank_transform",
+          "stem": "able",
+          "options": [],
+          "answer": "ability",
+          "answerExplanation": "“develop their ___”，develop为及物动词，缺少宾语，需填名词ability（能力）。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q48",
+          "order": 48,
+          "questionType": "fill_blank_transform",
+          "stem": "affect",
+          "options": [],
+          "answer": "affects",
+          "answerExplanation": "“Having friends ___ children”，动名词短语Having friends作主语，谓语动词用第三人称单数形式affects。",
+          "knowledgePoints": ["动词时态"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q49",
+          "order": 49,
+          "questionType": "fill_blank_transform",
+          "stem": "perform",
+          "options": [],
+          "answer": "performance",
+          "answerExplanation": "“their school ___”中their修饰名词，需填名词performance（表现）。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2022-10-q50",
+          "order": 50,
+          "questionType": "fill_blank_transform",
+          "stem": "necessary",
+          "options": [],
+          "answer": "necessity",
+          "answerExplanation": "“they are a ___”，a后接名词单数，需填necessity（必需品）。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2022-10-s7",
+      "type": "写作",
+      "order": 7,
+      "passageTitle": null,
+      "passageText": null,
+      "writingPrompt": "某英语学习报征集一篇题为\"My Dream Trip\"的稿件。请就此题目写一篇英文短文应征，内容包括：\n· 你最想去哪里旅游\n· 为什么你最想去那里",
+      "scorePerQuestion": 30,
+      "totalScore": 30,
+      "questions": [
+        {
+          "questionId": "00015-2022-10-q51",
+          "order": 51,
+          "questionType": "essay",
+          "stem": "请根据所提供材料中的要求完成一篇100词左右的英文写作任务。",
+          "options": [],
+          "answer": "",
+          "answerExplanation": "官方参考例文：\nRecently, more and more people are talking about dream trip. From my perspective, it is totally undoubted that Beijing is a perfect destination. The reasons why I believe so are listed as below.\n\nThe first point that I want to mention is that there are so many scenery spots in Beijing, and that is because this city has a very long history. What is more, it's easier for us to understand that there are so many delicious foods in Beijing, which is because many local snacks can be found there.\n\nFrom what I mention above, we can easily come to the conclusion that Beijing is a perfect destination. After all, there are so many scenery spots and delicious foods.",
+          "knowledgePoints": ["写作-观点类"],
+          "difficultyTag": null
+        }
+      ]
+    }
+  ],
+  "parsingNotes": [
+    "全部51题的客观题答案与解析均以PDF第7-11页独立印刷的《2022年10月英语（二）真题答案》官方解析区（含【答案】【解析】标注）为准；原始题目所在页面（第1-6页）部分选项上有不完整的删除线标注（如第11题仅A、B选项被划掉，C、D未做任何标记，无法仅凭删除线唯一确定答案），因此未采用这些删除线作为判分依据，而是全部核对独立答案页确认。",
+    "第16题（Task 1，Paragraph (1)配对）在原题图片中，其余四段（(2)-(5)）段首均印有对应答案字母（如\"C (2)\"\"E (3)\"），但第(1)段前未印刷任何字母标注，答案D是根据独立答案页第16题确认得出，并非直接从原题页标注读出，特此说明（图片本身清晰，不属于字迹模糊问题）。",
+    "第五部分（完形填空词形变换，第41-50题）原题图片中夹杂了两处与本篇短文内容无关的插入文字：一处是第46题空后出现的蓝色手写体\"practice doing sth\"提示，另一处是passageText第47题前出现的大段蓝色文字\"写作 playing sports have has many benefits. 动词短语做主语用ing, doing做主语时，谓语动词用三单式\"，经比对判断二者均为解析笔记/其他题目的批注混入，并非该篇短文原文内容，已从passageText中剔除，仅保留完整的短文正文与空格占位。",
+    "第五部分（填词补文，第31-40题）passageText 第36题空位，原题图片印刷为\"__36/tired__\"，其中\"tired\"疑似为原始文档制作者标注的候选词（官方解析中提到\"可以考虑tired和discouraged，但由于weary已经表示了tired的含义，因此排除，选择discouraged\"），已在passageText中还原为纯空格占位符\"___(36)___\"，未保留\"tired\"字样，避免与正确答案discouraged混淆。",
+    "第四部分（填句补文）passageText中\"a cycle while has no end and no beginning\"一句，\"while\"处按语法应为\"which\"，怀疑是原试卷印刷错误，但为保证passageText逐字还原原文，未做修正，直接保留\"while\"，供人工校对时留意。",
+    "第二部分（阅读理解选择）第13、14题在原始试卷版式中，第14题的题干和选项印刷在第13题之前（推测为跨页排版所致），但本文件questions数组按题号顺序（13在前、14在后）排列，仅涉及原文呈现顺序问题，不影响题目内容与答案准确性。"
+  ]
+}

@@ -1,0 +1,663 @@
+{
+  "examId": "13000-2026-04",
+  "title": "2026年4月高等教育自学考试英语(专升本)试题",
+  "year": 2026,
+  "month": 4,
+  "courseCode": "13000",
+  "courseName": "英语(专升本)",
+  "sourceFile": "a402e084-2604________13000______.pdf",
+  "totalScore": 100,
+  "timeLimitMinutes": 150,
+  "status": "待校对",
+  "sections": [
+    {
+      "sectionId": "13000-2026-04-s1",
+      "type": "阅读判断",
+      "order": 1,
+      "passageTitle": "Australia",
+      "passageText": "Australia was a country I always wanted to visit. This year I saved up some money and booked a flight to go travelling. I had some friends studying there, so it was a perfect opportunity to see friends and travel around.\n\nThe flight made me realize exactly how far away Australia is from home. I spent 10 hours flying from London to Hong Kong, then a further 8 hours to Sydney, my first stop in Australia. The flight went quite quickly though, since there were lots of films to keep me entertained.\n\nWhen I arrived, I felt strange. Everything was upside down over there. It was the start of winter in May! Fortunately, for me the weather was still warm and sunny. It also took me a while to get used to the time difference.\n\nAustralia is truly beautiful. It is full of views and wildlife you would not find anywhere else in the world. One of the highlights of my trip was visiting a koala (考拉) reserve in Brisbane. There were koalas everywhere sleeping in the trees. I even got a chance to hold one. I learnt lots of facts about koalas too. They can sleep for up to 22 hours a day to save energy!\n\nAt the reserve there was also a big lawn full of kangaroos (袋鼠). We were allowed to feed and touch them. They were really cute and friendly. I loved visiting Australia, from the mountains and waterfalls in the National Parks to the long white sandy beaches. It's an incredible country and worth visiting. I'm already dreaming of going back!",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "13000-2026-04-q1",
+          "order": 1,
+          "questionType": "single_choice",
+          "stem": "I longed to visit Australia.",
+          "options": ["A. Yes", "B. False", "C. Not given"],
+          "answer": "A",
+          "answerExplanation": "根据文章第一段第一句\"Australia was a country I always wanted to visit.\"可知，作者一直渴望访问澳大利亚，该句提供的是正确信息。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q2",
+          "order": 2,
+          "questionType": "single_choice",
+          "stem": "I made some new friends in Australia.",
+          "options": ["A. Yes", "B. False", "C. Not given"],
+          "answer": "C",
+          "answerExplanation": "文章第一段提到\"I had some friends studying there\"，说明作者在澳大利亚有朋友，但没有提到在访问期间结交了新朋友，文中没有提及相关信息。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q3",
+          "order": 3,
+          "questionType": "single_choice",
+          "stem": "I spent over 20 hours on the flight to Australia.",
+          "options": ["A. Yes", "B. False", "C. Not given"],
+          "answer": "B",
+          "answerExplanation": "根据文章第二段\"I spent 10 hours flying from London to Hong Kong, then a further 8 hours to Sydney\"可知，飞行时间总共是18小时，不是20多小时，该句提供的是错误信息。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q4",
+          "order": 4,
+          "questionType": "single_choice",
+          "stem": "I watched the films to kill the flight time.",
+          "options": ["A. Yes", "B. False", "C. Not given"],
+          "answer": "A",
+          "answerExplanation": "根据文章第二段最后一句\"The flight went quite quickly though, since there were lots of films to keep me entertained.\"可知，作者通过看电影来打发飞行时间，该句提供的是正确信息。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q5",
+          "order": 5,
+          "questionType": "single_choice",
+          "stem": "I felt very tired after the flight.",
+          "options": ["A. Yes", "B. False", "C. Not given"],
+          "answer": "C",
+          "answerExplanation": "文章第三段提到\"It also took me a while to get used to the time difference.\"，但没有提到作者因为时差感到非常疲惫，文中没有提及相关信息。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q6",
+          "order": 6,
+          "questionType": "single_choice",
+          "stem": "Koalas were seen in most of parts of the world.",
+          "options": ["A. Yes", "B. False", "C. Not given"],
+          "answer": "B",
+          "answerExplanation": "根据文章第四段\"It is full of views and wildlife you would not find anywhere else in the world.\"可知，考拉是澳大利亚特有的动物，不是在世界许多地方都能找到，该句提供的是错误信息。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q7",
+          "order": 7,
+          "questionType": "single_choice",
+          "stem": "Koalas spend most of their time sleeping.",
+          "options": ["A. Yes", "B. False", "C. Not given"],
+          "answer": "A",
+          "answerExplanation": "根据文章第四段最后一句\"They can sleep for up to 22 hours a day to save energy!\"可知，考拉每天可以睡22小时，大部分时间都在睡觉，该句提供的是正确信息。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q8",
+          "order": 8,
+          "questionType": "single_choice",
+          "stem": "Koalas feed on tree leaves.",
+          "options": ["A. Yes", "B. False", "C. Not given"],
+          "answer": "C",
+          "answerExplanation": "文章提到了考拉每天睡22小时，但没有提到考拉主要以树叶为食，文中没有提及相关信息。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q9",
+          "order": 9,
+          "questionType": "single_choice",
+          "stem": "Visitors were asked to keep distance from the kangaroos.",
+          "options": ["A. Yes", "B. False", "C. Not given"],
+          "answer": "B",
+          "answerExplanation": "根据文章第五段\"We were allowed to feed and touch them.\"可知，游客可以喂食和触摸袋鼠，不是被要求与袋鼠保持距离，该句提供的是错误信息。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q10",
+          "order": 10,
+          "questionType": "single_choice",
+          "stem": "The author enjoyed the sand beaches in Australia.",
+          "options": ["A. Yes", "B. False", "C. Not given"],
+          "answer": "A",
+          "answerExplanation": "根据文章最后一段\"I loved visiting Australia, from the mountains and waterfalls in the National Parks to the long white sandy beaches.\"可知，作者喜欢澳大利亚的沙滩，该句提供的是正确信息。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "13000-2026-04-s2",
+      "type": "阅读理解选择",
+      "order": 2,
+      "passageTitle": "Veganism",
+      "passageText": "Veganism. What does it mean? To some of you, it might be a completely new word. And it's certainly a word I have only become familiar with in recent years. A vegan diet is one that contains no animal products. That means no meat, no milk, no eggs, etc.\n\nI became interested in it on the internet. I came across a woman called Freelee. She claimed to regularly eat around fifty bananas a day to stay healthy.\n\nFifty bananas! I quickly realized that this was not the diet for me. However, what she was saying about veganism did \"pique\" my interest. And I went on to watch many more vegan videos. Eventually, I switched to veganism about six months ago.\n\nI start off with a fruit drink made of bananas, berries and orange juice. For lunch, I typically have potato fries with a sweet sauce. For dinner I normally have rice with a tomato sauce and some vegetables. I even make tasty vegan puddings. One of my favorites is coconut cream mixed with chocolate powder and sugar.\n\nWhile veganism is often associated with physical weakness, that is certainly not the case for me. I have discovered many delicious vegan products, which one might never consider as vegan. Personally, eating this way has given me a much more positive feeling",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "13000-2026-04-q11",
+          "order": 11,
+          "questionType": "single_choice",
+          "stem": "According to Paragraph 1, a vegan diet is ____.",
+          "options": ["A. advised by food experts", "B. familiar to most people", "C. followed by many people", "D. free from animal products"],
+          "answer": "D",
+          "answerExplanation": "根据文章第一段最后一句\"A vegan diet is one that contains no animal products. That means no meat, no milk, no eggs, etc.\"可知，纯素饮食不含动物产品。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q12",
+          "order": 12,
+          "questionType": "single_choice",
+          "stem": "The author knew the vegan lifestyle through ____.",
+          "options": ["A. online videos", "B. her friends", "C. vegan books", "D. TV programs"],
+          "answer": "A",
+          "answerExplanation": "根据文章第二段\"I became interested in it on the internet. I came across a woman called Freelee.\"以及后文提到watch vegan videos可知，作者是通过网络视频了解到纯素生活方式的。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q13",
+          "order": 13,
+          "questionType": "single_choice",
+          "stem": "The word \"pique\" (Para. 2) probably means ____.",
+          "options": ["A. express", "B. arouse", "C. Expand", "D. protect"],
+          "answer": "B",
+          "answerExplanation": "\"pique\"在这里的意思是\"引起、激发\"，与\"arouse\"同义。\"pique my interest\"意为\"引起我的兴趣\"。",
+          "knowledgePoints": ["词义猜测"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q14",
+          "order": 14,
+          "questionType": "single_choice",
+          "stem": "The author believes that her vegan diet is ____",
+          "options": ["A. Healthy", "B. cheap", "C. sugar-free", "D. low-salt"],
+          "answer": "A",
+          "answerExplanation": "根据文章第四段\"While veganism is often associated with physical weakness, that is certainly not the case for me.\"以及第五段\"Personally, eating this way has given me a much more positive outlook on life.\"（官方解析引用的措辞与试题卷印刷原文\"...a much more positive feeling\"略有出入，但结论一致）可知，作者认为她的纯素饮食是健康的。",
+          "knowledgePoints": ["观点态度理解"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q15",
+          "order": 15,
+          "questionType": "single_choice",
+          "stem": "Kristina is mentioned because she ____",
+          "options": ["A. attracted a lot of fans", "B. had a positive attitude toward life", "C. went on a special fruit-based diet", "D. quickly recovered from a spider bite"],
+          "answer": "D",
+          "answerExplanation": "官方答案为D，解析引用\"Kristina was bitten by a deadly spider... Yet she made a full and speedy recovery.\"，但试题卷实际印刷的短文（见本节passageText，共5段）全文并未出现\"Kristina\"或\"spider\"相关内容。该题缺乏原文依据，需人工核对原始试卷图像确认短文是否完整（详见parsingNotes）。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "13000-2026-04-s3",
+      "type": "段落大意与句子补全",
+      "order": 3,
+      "passageTitle": "Bottled Water",
+      "passageText": "①Over the last 15 years, more and more people in the US have been drinking bottled water. There is no sign of slowing down. In fact, sales of bottled water are going up faster than any other kind of drink. It is true even in cities where it is safe to drink tap water. This has been a disaster for the environment and for our health.\n\n②Most bottled water comes from underground water. Much of this underground water could have flowed into rivers and lakes. Using this water can make droughts (干旱) more serious. Many companies use water from mountain glaciers (冰川), but this is not much better. When the glacier melts, the water usually flows to areas like rivers or wetlands. When companies take glacier water, they take it from areas that need it.\n\n③It takes about 1.6 liters of water to make one liter of bottled water. This wastes a lot of water. Also transporting the bottled water to stores burns fuel and creates pollution. The problems do not stop when the water reaches people who buy it. Water bottles are made from plastic which does not break down. Although it can be recycled, people usually do not put it in the recycle can.\n\n④Some may say that bottled water is safer and healthier than tap water. But that is not true. Sometimes chemicals or bacteria get into bottled water, and companies have to destroy them. Actually, tap water is often healthier than bottled water. Bottled water may lack fluoride (氟化物) which helps protect our teeth. Fluoride is found in tiny amounts in tap water.\n\n⑤Obviously, more people need to know that tap water is safer and healthier. Unfortunately, tap water cannot advertise itself. When a product that is cheaper and better does not win, that is bad news. When the product is water, we all lose.",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "13000-2026-04-q16",
+          "order": 16,
+          "questionType": "single_choice",
+          "stem": "Paragraph①",
+          "options": ["A. Making droughts worse", "B. Harmful elements in bottled water", "C. Need for a better image of tap water", "D. Growing attention to tap water", "E. Causing waste and pollution", "F. Increasing sales of bottled water"],
+          "answer": "F",
+          "answerExplanation": "第一段主要讲的是瓶装水销量不断增长的情况。\"Over the last 15 years, more and more people in the US have been drinking bottled water. There is no sign of slowing down.\"",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q17",
+          "order": 17,
+          "questionType": "single_choice",
+          "stem": "Paragraph②",
+          "options": ["A. Making droughts worse", "B. Harmful elements in bottled water", "C. Need for a better image of tap water", "D. Growing attention to tap water", "E. Causing waste and pollution", "F. Increasing sales of bottled water"],
+          "answer": "A",
+          "answerExplanation": "第二段主要讲的是瓶装水的使用会加剧干旱问题。\"Using this water can make droughts more serious.\"",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q18",
+          "order": 18,
+          "questionType": "single_choice",
+          "stem": "Paragraph③",
+          "options": ["A. Making droughts worse", "B. Harmful elements in bottled water", "C. Need for a better image of tap water", "D. Growing attention to tap water", "E. Causing waste and pollution", "F. Increasing sales of bottled water"],
+          "answer": "E",
+          "answerExplanation": "第三段主要讲的是瓶装水的生产和运输造成浪费和污染。\"This wastes a lot of water. Also transporting the bottled water to stores burns fuel and creates pollution.\"",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q19",
+          "order": 19,
+          "questionType": "single_choice",
+          "stem": "Paragraph④",
+          "options": ["A. Making droughts worse", "B. Harmful elements in bottled water", "C. Need for a better image of tap water", "D. Growing attention to tap water", "E. Causing waste and pollution", "F. Increasing sales of bottled water"],
+          "answer": "B",
+          "answerExplanation": "第四段主要讲的是瓶装水中的有害成分，以及自来水实际上更健康。\"Sometimes chemicals or bacteria get into bottled water... Bottled water may lack fluoride which helps protect our teeth.\"",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q20",
+          "order": 20,
+          "questionType": "single_choice",
+          "stem": "Paragraph⑤",
+          "options": ["A. Making droughts worse", "B. Harmful elements in bottled water", "C. Need for a better image of tap water", "D. Growing attention to tap water", "E. Causing waste and pollution", "F. Increasing sales of bottled water"],
+          "answer": "C",
+          "answerExplanation": "第五段主要讲的是需要改善自来水的形象。\"Obviously, more people need to know that tap water is safer and healthier.\"",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q21",
+          "order": 21,
+          "questionType": "single_choice",
+          "stem": "City people prefer bottled water ____",
+          "options": ["A. in tiny amounts", "B. towards tap water", "C. does harm to the environment", "D. brings more health benefits", "E. with the problem of drought", "F. despite the safety of tap water"],
+          "answer": "F",
+          "answerExplanation": "根据第一段\"It is true even in cities where it is safe to drink tap water.\"可知，尽管自来水是安全的，城市居民还是更喜欢瓶装水。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q22",
+          "order": 22,
+          "questionType": "single_choice",
+          "stem": "Taking water from glaciers helps little ____",
+          "options": ["A. in tiny amounts", "B. towards tap water", "C. does harm to the environment", "D. brings more health benefits", "E. with the problem of drought", "F. despite the safety of tap water"],
+          "answer": "E",
+          "answerExplanation": "根据第二段\"When companies take glacier water, they take it from areas that need it.\"可知，从冰川取水对干旱问题没有帮助。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q23",
+          "order": 23,
+          "questionType": "single_choice",
+          "stem": "Transportation of bottled water ____",
+          "options": ["A. in tiny amounts", "B. towards tap water", "C. does harm to the environment", "D. brings more health benefits", "E. with the problem of drought", "F. despite the safety of tap water"],
+          "answer": "C",
+          "answerExplanation": "根据第三段\"Also transporting the bottled water to stores burns fuel and creates pollution.\"可知，瓶装水的运输对环境有害。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q24",
+          "order": 24,
+          "questionType": "single_choice",
+          "stem": "Compared with bottled water, tap water ____",
+          "options": ["A. in tiny amounts", "B. towards tap water", "C. does harm to the environment", "D. brings more health benefits", "E. with the problem of drought", "F. despite the safety of tap water"],
+          "answer": "D",
+          "answerExplanation": "根据第四段\"Actually, tap water is often healthier than bottled water.\"可知，与瓶装水相比，自来水带来更多健康益处。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q25",
+          "order": 25,
+          "questionType": "single_choice",
+          "stem": "People need to change their attitude ____",
+          "options": ["A. in tiny amounts", "B. towards tap water", "C. does harm to the environment", "D. brings more health benefits", "E. with the problem of drought", "F. despite the safety of tap water"],
+          "answer": "B",
+          "answerExplanation": "根据第五段\"Obviously, more people need to know that tap water is safer and healthier.\"可知，人们需要改变对自来水的态度。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "13000-2026-04-s4",
+      "type": "填句补文",
+      "order": 4,
+      "passageTitle": "Bird Maps and Compasses",
+      "passageText": "Every year hundreds of species of birds take long trips. ___(26)___ In the fall, they fly to warmer climates where food is plentiful all winter. When spring comes, they fly back to raise their young where they were born. For a long time people wondered where the birds went and what routes they took.\n\nResearchers now know that migrating birds are guided by their own sorts of maps and compasses. But it has taken many decades to uncover the secrets of these navigation (导航) tools. In the 1800s, scientists started putting bands around birds' legs. ___(27)___ When people found the banded birds, they contacted the person named on the band and told him where and when they had found the bird. In this simple way, scientists learned a lot about where birds traveled, where they stopped, and how fast they moved.\n\nToday scientists still put bands on birds' legs. They also use new ways of tracking birds such as airplanes, computers, and satellites. ___(28)___\n\nBirds often migrate in groups. You may have seen Canada geese flying high in the sky in a V-form. Young birds follow their parents. ___(29)___ They may follow a river and remember what it looks like. Also, birds use the position of the sun and stars as a compass to find their way.\n\n___(30)___ Chemicals in their brains allow them to sense the magnetic field and travel in the right direction. But scientists are still researching how this happens. They think some birds may actually be able to see the earth's magnetic field.",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "13000-2026-04-q26",
+          "order": 26,
+          "questionType": "single_choice",
+          "stem": "第26空",
+          "options": ["A. The bands contained a name and address.", "B. Birds use the earth's magnetic field to navigate too.", "C. A map and a compass are often helpful for long trips.", "D. They fly thousands of miles from one home to another.", "E. They learn the route that the older geese have traveled before.", "F. They have answered many questions about how birds navigate."],
+          "answer": "D",
+          "answerExplanation": "根据前一句\"Every year hundreds of species of birds take long trips.\"和后一句\"In the fall, they fly to warmer climates...\"可知，这里应该是说鸟类从一个家飞到另一个家数千英里。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q27",
+          "order": 27,
+          "questionType": "single_choice",
+          "stem": "第27空",
+          "options": ["A. The bands contained a name and address.", "B. Birds use the earth's magnetic field to navigate too.", "C. A map and a compass are often helpful for long trips.", "D. They fly thousands of miles from one home to another.", "E. They learn the route that the older geese have traveled before.", "F. They have answered many questions about how birds navigate."],
+          "answer": "A",
+          "answerExplanation": "根据前一句\"In the 1800s, scientists started putting bands around birds' legs.\"和后一句\"When people found the banded birds, they contacted the person named on the band...\"可知，这里应该是说脚环包含姓名和地址。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q28",
+          "order": 28,
+          "questionType": "single_choice",
+          "stem": "第28空",
+          "options": ["A. The bands contained a name and address.", "B. Birds use the earth's magnetic field to navigate too.", "C. A map and a compass are often helpful for long trips.", "D. They fly thousands of miles from one home to another.", "E. They learn the route that the older geese have traveled before.", "F. They have answered many questions about how birds navigate."],
+          "answer": "F",
+          "answerExplanation": "根据前一句\"They also use new ways of tracking birds such as airplanes, computers, and satellites.\"可知，这里应该是说这些新方法回答了许多关于鸟类如何导航的问题。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q29",
+          "order": 29,
+          "questionType": "single_choice",
+          "stem": "第29空",
+          "options": ["A. The bands contained a name and address.", "B. Birds use the earth's magnetic field to navigate too.", "C. A map and a compass are often helpful for long trips.", "D. They fly thousands of miles from one home to another.", "E. They learn the route that the older geese have traveled before.", "F. They have answered many questions about how birds navigate."],
+          "answer": "E",
+          "answerExplanation": "根据前一句\"Young birds follow their parents.\"可知，这里应该是说它们学习年长的大雁之前走过的路线。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q30",
+          "order": 30,
+          "questionType": "single_choice",
+          "stem": "第30空",
+          "options": ["A. The bands contained a name and address.", "B. Birds use the earth's magnetic field to navigate too.", "C. A map and a compass are often helpful for long trips.", "D. They fly thousands of miles from one home to another.", "E. They learn the route that the older geese have traveled before.", "F. They have answered many questions about how birds navigate."],
+          "answer": "B",
+          "answerExplanation": "根据后一句\"Chemicals in their brains allow them to sense the magnetic field and travel in the right direction.\"可知，这里应该是说鸟类也利用地球磁场来导航。",
+          "knowledgePoints": ["连贯性衔接"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "13000-2026-04-s5",
+      "type": "填词补文",
+      "order": 5,
+      "passageTitle": "My Hometown and My College Town",
+      "passageText": "My hometown and my college town have several things in common. First, both are ___(31)___ communities. My hometown, Gridlock, has a population of only about 10,000 people. Similarly, my college town, Subnormal, ___(32)___ of about 11,000 local residents. This population rises to 15,000 people when the college students are ___(33)___ classes. Second, both are located in rural areas. Gridlock is surrounded by farmland, which is devoted ___(34)___ to growing corn and beans. Likewise, Subnormal lies in the ___(35)___ of farmland that is used to ___(36)___ pigs and cattle. Third, both contain college campuses. Gridlock is ___(37)___ to Neutron College, which is famous for its Agricultural Economics program. In the same ___(38)___, Subnormal boasts the ___(39)___ campus of Quark College, which is well ___(40)___ for its Agricultural Engineering Department.",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "13000-2026-04-q31",
+          "order": 31,
+          "questionType": "single_choice",
+          "stem": "第31空：both are ___ communities",
+          "options": ["A. consists", "B. mainly", "C. attending", "D. Clear", "E. small", "F. center", "G. hardly", "H. beautiful", "I. raise", "J. known", "K. home", "L. Way"],
+          "answer": "E",
+          "answerExplanation": "根据后文\"has a population of only about 10,000 people\"可知，这两个都是小社区，所以选small。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q32",
+          "order": 32,
+          "questionType": "single_choice",
+          "stem": "第32空：Subnormal ___ of about 11,000 local residents",
+          "options": ["A. consists", "B. mainly", "C. attending", "D. Clear", "E. small", "F. center", "G. hardly", "H. beautiful", "I. raise", "J. known", "K. home", "L. Way"],
+          "answer": "A",
+          "answerExplanation": "consist of 是固定搭配，意为\"由...组成\"，这里是说大学城由大约11000名当地居民组成。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q33",
+          "order": 33,
+          "questionType": "single_choice",
+          "stem": "第33空：when the college students are ___ classes",
+          "options": ["A. consists", "B. mainly", "C. attending", "D. Clear", "E. small", "F. center", "G. hardly", "H. beautiful", "I. raise", "J. known", "K. home", "L. Way"],
+          "answer": "C",
+          "answerExplanation": "attend classes 是固定搭配，意为\"上课\"，这里是说当大学生上课时，人口增加到15000人。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q34",
+          "order": 34,
+          "questionType": "single_choice",
+          "stem": "第34空：devoted ___ to growing corn and beans",
+          "options": ["A. consists", "B. mainly", "C. attending", "D. Clear", "E. small", "F. center", "G. hardly", "H. beautiful", "I. raise", "J. known", "K. home", "L. Way"],
+          "answer": "B",
+          "answerExplanation": "mainly 意为\"主要地\"，这里是说Gridlock被农田包围，主要种植玉米和豆类。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q35",
+          "order": 35,
+          "questionType": "single_choice",
+          "stem": "第35空：Subnormal lies in the ___ of farmland",
+          "options": ["A. consists", "B. mainly", "C. attending", "D. Clear", "E. small", "F. center", "G. hardly", "H. beautiful", "I. raise", "J. known", "K. home", "L. Way"],
+          "answer": "F",
+          "answerExplanation": "in the center of 是固定搭配，意为\"在...中心\"，这里是说Subnormal位于养猪养牛的农田中心。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q36",
+          "order": 36,
+          "questionType": "single_choice",
+          "stem": "第36空：used to ___ pigs and cattle",
+          "options": ["A. consists", "B. mainly", "C. attending", "D. Clear", "E. small", "F. center", "G. hardly", "H. beautiful", "I. raise", "J. known", "K. home", "L. Way"],
+          "answer": "I",
+          "answerExplanation": "raise pigs and cattle 意为\"养猪和牛\"，raise 在这里是\"饲养\"的意思。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q37",
+          "order": 37,
+          "questionType": "single_choice",
+          "stem": "第37空：Gridlock is ___ to Neutron College",
+          "options": ["A. consists", "B. mainly", "C. attending", "D. Clear", "E. small", "F. center", "G. hardly", "H. beautiful", "I. raise", "J. known", "K. home", "L. Way"],
+          "answer": "K",
+          "answerExplanation": "be home to 是固定搭配，意为\"是...的所在地\"，这里是说Gridlock是Neutron College的所在地。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q38",
+          "order": 38,
+          "questionType": "single_choice",
+          "stem": "第38空：In the same ___",
+          "options": ["A. consists", "B. mainly", "C. attending", "D. Clear", "E. small", "F. center", "G. hardly", "H. beautiful", "I. raise", "J. known", "K. home", "L. Way"],
+          "answer": "L",
+          "answerExplanation": "in the same way 是固定搭配，意为\"同样地\"，这里是说同样地，Subnormal也有Quark College美丽的校园。试题卷词库选项印刷为\"L.Way\"（首字母大写），句中实际应为小写\"way\"，为印刷格式问题，不影响答案字母L。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q39",
+          "order": 39,
+          "questionType": "single_choice",
+          "stem": "第39空：the ___ campus of Quark College",
+          "options": ["A. consists", "B. mainly", "C. attending", "D. Clear", "E. small", "F. center", "G. hardly", "H. beautiful", "I. raise", "J. known", "K. home", "L. Way"],
+          "answer": "H",
+          "answerExplanation": "beautiful campus 意为\"美丽的校园\"，这里是说Subnormal拥有Quark College美丽的校园。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q40",
+          "order": 40,
+          "questionType": "single_choice",
+          "stem": "第40空：which is well ___ for its Agricultural Engineering Department",
+          "options": ["A. consists", "B. mainly", "C. attending", "D. Clear", "E. small", "F. center", "G. hardly", "H. beautiful", "I. raise", "J. known", "K. home", "L. Way"],
+          "answer": "J",
+          "answerExplanation": "be well known for 是固定搭配，意为\"以...闻名\"，这里是说该学院以其农业工程系而闻名。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "13000-2026-04-s6",
+      "type": "完形填空",
+      "order": 6,
+      "passageTitle": "Advertising with Digital Technology",
+      "passageText": "Technology has become an essential part of our daily life. It ___(41)___ (accompany) us everywhere we go. Digital technology, in the form of smart ___(42)___ (phone), web-based TVs and computers, is ___(43)___ (change) the world, especially for advertisers. Consumers today interact with ads in new ways. They can ___(44)___ (easy) take part in surveys or just turn them off if they want to. They can also promote a brand by ___(45)___ (suggest) how good a product is to other people. Social media networks also play an ___(46)___ (importance) part in global advertising strategies. People also want relevant ads on their screens. While they browse the Internet, it would be ___(47)___ (help) for such ads to show up. Internet ___(48)___ (user) click on these ads more often if they look for relevant ___(49)___ (inform). Advertisers are now ___(50)___ (face) with a great challenge: using new technology to form new relationships with customers and create new business models.",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "13000-2026-04-q41",
+          "order": 41,
+          "questionType": "fill_blank_transform",
+          "stem": "accompany",
+          "options": [],
+          "answer": "accompanies",
+          "answerExplanation": "主语是It，第三人称单数，一般现在时，所以用accompanies。",
+          "knowledgePoints": ["动词时态"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q42",
+          "order": 42,
+          "questionType": "fill_blank_transform",
+          "stem": "phone",
+          "options": [],
+          "answer": "phones",
+          "answerExplanation": "smart phone是可数名词，这里用复数形式phones表示一类事物。",
+          "knowledgePoints": ["名词单复数"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q43",
+          "order": 43,
+          "questionType": "fill_blank_transform",
+          "stem": "change",
+          "options": [],
+          "answer": "changing",
+          "answerExplanation": "前面有is，这里用现在进行时，所以用changing。",
+          "knowledgePoints": ["动词时态"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q44",
+          "order": 44,
+          "questionType": "fill_blank_transform",
+          "stem": "easy",
+          "options": [],
+          "answer": "easily",
+          "answerExplanation": "这里需要副词修饰动词短语take part in，所以用easily。",
+          "knowledgePoints": ["副词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q45",
+          "order": 45,
+          "questionType": "fill_blank_transform",
+          "stem": "suggest",
+          "options": [],
+          "answer": "suggesting",
+          "answerExplanation": "by是介词，后面接动名词形式，所以用suggesting。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q46",
+          "order": 46,
+          "questionType": "fill_blank_transform",
+          "stem": "importance",
+          "options": [],
+          "answer": "important",
+          "answerExplanation": "这里需要形容词修饰名词part，所以用importance的形容词形式important。",
+          "knowledgePoints": ["形容词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q47",
+          "order": 47,
+          "questionType": "fill_blank_transform",
+          "stem": "help",
+          "options": [],
+          "answer": "helpful",
+          "answerExplanation": "这里需要形容词作表语，所以用help的形容词形式helpful。",
+          "knowledgePoints": ["形容词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q48",
+          "order": 48,
+          "questionType": "fill_blank_transform",
+          "stem": "user",
+          "options": [],
+          "answer": "users",
+          "answerExplanation": "user是可数名词，这里用复数形式users表示一类人。",
+          "knowledgePoints": ["名词单复数"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q49",
+          "order": 49,
+          "questionType": "fill_blank_transform",
+          "stem": "inform",
+          "options": [],
+          "answer": "information",
+          "answerExplanation": "relevant后面接名词，inform的名词形式是information，意为\"信息\"。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "13000-2026-04-q50",
+          "order": 50,
+          "questionType": "fill_blank_transform",
+          "stem": "face",
+          "options": [],
+          "answer": "faced",
+          "answerExplanation": "be faced with 是固定搭配，意为\"面临\"，所以用faced。",
+          "knowledgePoints": ["被动语态"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "13000-2026-04-s7",
+      "type": "写作",
+      "order": 7,
+      "passageTitle": null,
+      "passageText": null,
+      "writingPrompt": "请根据所提供材料中的要求完成一篇100词左右的英文写作任务。某英文报社正在举办题为\"Safe Journey\"的征文活动。请你根据下述写作要点提交一篇英文短文应征。\n●旅途中安全的重要性\n●旅途中应该特别注意的事项",
+      "scorePerQuestion": 30,
+      "totalScore": 30,
+      "questions": [
+        {
+          "questionId": "13000-2026-04-q51",
+          "order": 51,
+          "questionType": "essay",
+          "stem": "请根据所提供材料中的要求完成一篇100词左右的英文写作任务（题为\"Safe Journey\"）。要点：①旅途中安全的重要性；②旅途中应该特别注意的事项。",
+          "options": [],
+          "answer": "",
+          "answerExplanation": "官方参考范文：\n\nSafe Journey\n\nTraveling is one of the most exciting experiences in life, but safety should always come first. A safe journey not only ensures our physical well-being but also allows us to fully enjoy the beauty of the trip.\n\nDuring the journey, we should pay special attention to several important matters. First, we should always keep our personal belongings safe, especially valuable items like wallets, passports and electronic devices. It's better to carry them in a secure bag that stays close to our body. Second, we should be aware of our surroundings at all times, especially in crowded places or unfamiliar areas. Avoid walking alone at night in unknown neighborhoods. Third, we should follow traffic rules strictly, whether we are driving or walking as pedestrians. Fourth, we should keep in touch with family or friends, letting them know our whereabouts regularly.\n\nIn conclusion, safety is the foundation of a pleasant journey. By taking these simple precautions, we can ensure that our travels are not only enjoyable but also safe.\n\n（此为官方参考范文，非唯一标准答案，官方未提供额外的分项评分细则。）",
+          "knowledgePoints": ["写作-说明类"],
+          "difficultyTag": null
+        }
+      ]
+    }
+  ],
+  "parsingNotes": [
+    "结构对比说明：本套13000试卷结构与00015历年典型结构完全一致——阅读判断10分、阅读理解选择10分、段落大意与句子补全10分、填句补文10分、填词补文15分、完形填空(词形变换)15分、写作30分，共7部分、100分，顺序和典型分值均与00015相同，未发现结构性差异。",
+    "第二部分标题印刷有误：试题卷第3页印刷标题为\"第二部分：阅读选择 (第11~20题，每题1分，共10分)\"，但实际本部分只有第11~15题共5题（四选一），官方答案页明确写明\"第11~15题，每题2分，共10分\"，与实际印刷的题目数量(5题)一致。已按答案页及实际题目数量记录为5题、每题2分、共10分；题号范围印刷（11~20）与实际不符，怀疑是排版错误，建议人工核对原卷确认。",
+    "第15题(\"Kristina is mentioned because she___\")存疑，需重点人工复核：官方答案为D(\"quickly recovered from a spider bite\")，官方解析引用\"Kristina was bitten by a deadly spider... Yet she made a full and speedy recovery.\"，但试题卷实际印刷的Veganism短文（第11~15题所配短文，共5段，见s2.passageText）全文中并未出现\"Kristina\"或\"spider\"相关内容，短文在\"a much more positive feeling\"处结束（无更多文字）。怀疑原卷短文可能遗漏/截断了包含Kristina内容的段落，或官方答案页对应的是不同版本/更长版本的短文。已如实按官方答案记录为D，但该题在本文件的passageText中缺乏原文依据，强烈建议人工核对原始试卷图像（试题卷第3页）确认短文是否完整印刷。",
+    "第14题官方答案解析引用短文原句为\"a much more positive outlook on life\"，但试题卷实际印刷原文为\"...has given me a much more positive feeling\"（该句后无更多文字，段落到此结束），措辞与官方解析引用不完全一致（不影响答案A的结论）。已按试题卷实际印刷文字记录passageText，如与官方解析引文有出入，以试题卷原图为准，建议人工复核。",
+    "第12题官方答案解析引用短文原句为\"As I was surfing videos on the Internet, I came across a woman called Freelee\"，但试题卷实际印刷原文为\"I became interested in it on the internet. I came across a woman called Freelee.\"，措辞不完全一致（不影响答案A的结论）。已按试题卷实际印刷文字记录passageText。",
+    "timeLimitMinutes(150分钟)：试题卷封面及各页均未印刷明确的考试时长，此处按同系列自考英语试卷的常规惯例填写150分钟，未经试卷原文确认，建议人工核实。",
+    "第38题词库选项在试题卷原图中印刷为\"L.Way\"（首字母大写W），已按原图格式记录在options中；实际填入句中(\"in the same way\")应为小写，属印刷格式问题，不影响答案字母L的准确性。",
+    "写作部分(第51题)官方仅提供一篇参考范文，未提供分项评分细则/得分点说明，已将参考范文全文记录在该题answerExplanation字段中并加以说明。"
+  ]
+}

@@ -1,0 +1,772 @@
+{
+  "examId": "00015-2015-04",
+  "title": "2015年4月高等教育自学考试英语(二)试题",
+  "year": 2015,
+  "month": 4,
+  "courseCode": "00015",
+  "courseName": "英语(二)",
+  "sourceFile": "e8194fb2-2015_04____________.pdf",
+  "totalScore": 100,
+  "timeLimitMinutes": 150,
+  "status": "待校对",
+  "sections": [
+    {
+      "sectionId": "00015-2015-04-s1",
+      "type": "阅读判断",
+      "order": 1,
+      "passageTitle": "Using Music to Change Your Mood",
+      "passageText": "Everyone knows that listening to music when feeling bad can provide a relief. Music can also reduce stress, make depression more bearable and help you relax.\n\nAll the benefits of music can only be got if the listener enjoys the music he is listening to. If the listener dislikes the music or finds it boring, it will have a negative effect on him instead of a positive one.\n\nNow let's examine what most of us do when it comes to listening to music. We usually just listen to a play list and allow a program to randomly（任意地）select the songs we are going to listen to. This is where the problem lies. What if you liked the first song but found the second one boring? What if the third one was a motivating song while the fourth didn't suit your emotions? What do you think the result will be?\n\nWhat you'll have is an emotional mess! The first song will lift your mood a little. The second will make you a little bored. The third will motivate you and then the fourth will put you down. In the end you'll end up feeling worse than before.\n\nI strongly recommend dividing your play list into different small lists. For example, a list for relaxation, a list for motivation and so on. Another very important thing you must do is to get rid of all of the old music that you are bored of. Besides, don't listen to songs with negative words or messages.\n\nThe music you listen to can delay your recovery from breakups（分手）by months and months! People who listen to romantic songs after breakups recover 10 times slower than those who don't. So be careful with your play list if you want to recover faster.",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2015-04-q1",
+          "order": 1,
+          "questionType": "single_choice",
+          "stem": "Music is believed to have a comforting effect.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "对应原文第一段第一句：Everyone knows that listening to music when feeling bad can provide a relief. 人人都知道心情不好时听音乐可以带来安慰，与题干意思一致，故选A。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q2",
+          "order": 2,
+          "questionType": "single_choice",
+          "stem": "One can benefit from all kinds of music.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "对应原文第二段第一句：All the benefits of music can only be got if the listener enjoys the music he is listening to. 只有喜欢所听的音乐才能受益，并非所有音乐都能带来好处，与题干不符，故选B。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q3",
+          "order": 3,
+          "questionType": "single_choice",
+          "stem": "People tend to listen to music selectively.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "对应原文第三段第二句：We usually just listen to a play list and allow a program to randomly select the songs. 原文说人们经常让程序随机选歌，而非有选择性地听，与题干不符，故选B。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q4",
+          "order": 4,
+          "questionType": "single_choice",
+          "stem": "People generally prefer motivating songs.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "原文只是举例说第三首歌可能是激昂的、第四首不适合情绪，并未提及人们普遍偏好激昂的歌曲，原文未提及，故选C。",
+          "knowledgePoints": ["阅读细节定位", "阅读推理判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q5",
+          "order": 5,
+          "questionType": "single_choice",
+          "stem": "You should listen to songs that suit your emotions.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "文章第五段说要把歌单分成适合不同情绪/场合的小列表，与题干意思一致，故选A。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q6",
+          "order": 6,
+          "questionType": "single_choice",
+          "stem": "It's advisable to have different lists of songs.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "原文第五段第一句：I strongly recommend dividing your play list into different small lists. 作者强烈建议把播放列表分成不同的小列表，与题干意思一致，故选A。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q7",
+          "order": 7,
+          "questionType": "single_choice",
+          "stem": "You should remove all of the old music from your list.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "原文是说清除所有你不喜欢/感到厌烦的老歌（get rid of all of the old music that you are bored of），并非移除全部老歌，题目的表述与原文不符，故选B。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q8",
+          "order": 8,
+          "questionType": "single_choice",
+          "stem": "People should listen to songs with positive words.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "A",
+          "answerExplanation": "原文说不要听带有负面歌词或信息的歌曲（don't listen to songs with negative words or messages），题目是原文的同义表达，故选A。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q9",
+          "order": 9,
+          "questionType": "single_choice",
+          "stem": "Romantic songs help people recover from breakups faster.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "B",
+          "answerExplanation": "原文说分手后听浪漫歌曲的人比不听的人恢复得慢10倍（recover 10 times slower），\"faster\"与\"slower\"意思相反，与原文不符，故选B。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q10",
+          "order": 10,
+          "questionType": "single_choice",
+          "stem": "Many people like romantic songs.",
+          "options": ["A. True", "B. False", "C. Not Given"],
+          "answer": "C",
+          "answerExplanation": "原文只提到分手后听浪漫歌曲恢复得慢，并未提及有多少人喜欢浪漫歌曲，原文未提及，故选C。",
+          "knowledgePoints": ["阅读细节定位", "阅读推理判断"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2015-04-s2",
+      "type": "阅读理解选择",
+      "order": 2,
+      "passageTitle": "Just Introduce Yourself",
+      "passageText": "It's so easy to walk into your first job and feel like a stranger in a' strange land. But you don't have to stay that way, and you shouldn't.\n\nYou have to remind yourself to kick your shyness away and introduce yourself. Just a handshake will do. Ask the supervisor who hired you to introduce you around a bit. That's the best way to make contacts. Then you'll know what to do and say when you meet these people again.\n\nDon't do what my friend Sue did at her first job at Entertainment Weekly. \"That is one of my biggest regrets: I hardly talked to anyone at all when I was there. I was scared and just thought people would talk to me first. For a long time, I was hung up on the thought that if someone was older, I respected them automatically. And even if someone started on Monday, and I started Tuesday, I just felt they had more experience. In the area I worked for four months, I hardly spoke to these people,\" she said.\n\n\"Of course, now I realize that was the most stupid thing. If I could do that again, I'd remember that it's so important not to feel shy about introducing yourself. It's not like you have to be very bold, ready to take over the place. Just introduce yourself and ask if there is anything you can do for them. That breaks the ice.\"\n\nSue believes that if she had introduced herself around a bit, there would be just no telling what other opportunities or what other acquaintances she might have now. Not that she regrets where she is now at all. But had she talked to more people at her first job, \"maybe it would have helped me get somewhere sooner,\" she said.",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2015-04-q11",
+          "order": 11,
+          "questionType": "single_choice",
+          "stem": "How do people usually feel when meeting people at their first job?",
+          "options": ["A. Shy.", "B. Puzzled.", "C. Curious.", "D. Excited."],
+          "answer": "A",
+          "answerExplanation": "事实细节题。根据文章第一段第一句\"It's so easy...feel like a stranger in a strange land\"和第二段第一句\"You have to remind yourself to kick your shyness away and introduce yourself\"可知，人们在陌生环境第一次工作时会感觉自己像陌生人，容易害羞，故选A。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q12",
+          "order": 12,
+          "questionType": "single_choice",
+          "stem": "When Sue started her first job, she_______.",
+          "options": [
+            "A. introduced herself around",
+            "B. asked her supervisor for help",
+            "C. shook hands with colleagues",
+            "D. waited for others to talk to her"
+          ],
+          "answer": "D",
+          "answerExplanation": "事实细节题。根据文章第三段Sue所说\"I was scared and just thought people would talk to me first\"可知，Sue第一次工作时没有主动介绍自己，而是等别人先和她说话，故选D。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q13",
+          "order": 13,
+          "questionType": "single_choice",
+          "stem": "\"I was hung up on the thought\" in Paragraph 3 probably means \"I _____.\"",
+          "options": ["A. believed", "B. Guessed", "C. Learned", "D. admitted"],
+          "answer": "A",
+          "answerExplanation": "句意理解题。根据文章第三段画线部分所在句的意思，如果别人是老员工，Sue就会习惯性地尊重他们，这是她所坚持的一种想法/认定，由下句中的felt也可推测出来，故选A。",
+          "knowledgePoints": ["词义猜测"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q14",
+          "order": 14,
+          "questionType": "single_choice",
+          "stem": "What did Sue suggest we do at our first job?",
+          "options": [
+            "A. Seize every possible opportunity.",
+            "B. Get ready to take over the place.",
+            "C. Make active contacts with others.",
+            "D. Stay humble before the older staff."
+          ],
+          "answer": "C",
+          "answerExplanation": "事实细节题。根据文章第四段倒数第二句\"Just introduce yourself and ask if there is anything you can do for them\"可知，Sue建议在第一次工作时要主动介绍自己并主动与人交流，故选C。",
+          "knowledgePoints": ["阅读细节定位"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q15",
+          "order": 15,
+          "questionType": "single_choice",
+          "stem": "In talking about her first job experience, Sue expressed a sense of ______.",
+          "options": ["A. relief", "B. regret", "C. failure", "D. Longing"],
+          "answer": "B",
+          "answerExplanation": "事实细节题。根据文章第三段第二句中的\"my biggest regrets\"可知，Sue在讲述她的第一次工作经历时表现出后悔的感觉，故选B。",
+          "knowledgePoints": ["观点态度理解"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2015-04-s3",
+      "type": "段落大意与句子补全",
+      "order": 3,
+      "passageTitle": "The Woman behind the Brooklyn Bridge",
+      "passageText": "①John Roebling planned to build the Brooklyn Bridge before 1867. But he never really got started. In 1869, he died of an accident. The job fell to his son Washington, a master of construction. In 1872, Washington was injured in building the bridge. He could not walk any longer. He could only see the building of the bridge from his window. But his mind was still fresh. How could he get his ideas down to the workers?\n\n②That's where Emily came in. Emily and Washington married in 1865. At that time John was planning the bridge. He sent his son around the world to study bridges. Emily went along with her husband and learnt much about bridge building. When John died and Washington became the boss, she taught herself more about bridge building. She wanted to help her husband with his new job.\n\n③Emily regularly came to the building site. She gave Washington's instructions to the workers. And then she took questions back to him. However, as time went on, her role started to change. Soon, workers saw her as the new boss. As she had more and more knowledge, she became the chief engineer. She met with officials, discussed with other engineers, and instructed the workers.\n\n④Emily also helped to solve problems outside the building site. Some people once questioned her husband's ability to head the bridge building. And the American Society of Civil Engineers would think about replacing him. Emily went to meet the group. She gave a speech in defense of her husband. The group finally decided to keep him on the job.\n\n⑤It took up 14 years to build the bridge. For 11 of those years, Emily was the one in charge. The bridge finally opened on May 24, 1883. She was one of the first people to cross the bridge. Emily never planned on becoming an engineer, but she turned out to be a great one.",
+      "scorePerQuestion": 1,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2015-04-q16",
+          "order": 16,
+          "questionType": "single_choice",
+          "stem": "Task 1: 为第①段选择最恰当的小标题 Paragraph ①:",
+          "options": [
+            "A. How did Emily pick up bridge building?",
+            "B. What happened to John and Washington?",
+            "C. How did Emily feel about her work?",
+            "D. What role did Emily play in building the bridge?",
+            "E. How long did it take to build the bridge?",
+            "F. Why did Emily give a speech?"
+          ],
+          "answer": "B",
+          "answerExplanation": "第一段主要讲述John去世以及他的儿子Washington在建设大桥时受伤的经历，选项B讲的是John和Washington发生了什么事，与本段对应，故选B。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q17",
+          "order": 17,
+          "questionType": "single_choice",
+          "stem": "Task 1: 为第②段选择最恰当的小标题 Paragraph ②:",
+          "options": [
+            "A. How did Emily pick up bridge building?",
+            "B. What happened to John and Washington?",
+            "C. How did Emily feel about her work?",
+            "D. What role did Emily play in building the bridge?",
+            "E. How long did it take to build the bridge?",
+            "F. Why did Emily give a speech?"
+          ],
+          "answer": "A",
+          "answerExplanation": "本段主要讲述Emily跟随丈夫学习了很多有关桥梁建设的知识，丈夫成为老板后她又自学了更多知识，选项A讲的是Emily是如何学会桥梁建设的，与本段对应，故选A。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q18",
+          "order": 18,
+          "questionType": "single_choice",
+          "stem": "Task 1: 为第③段选择最恰当的小标题 Paragraph ③:",
+          "options": [
+            "A. How did Emily pick up bridge building?",
+            "B. What happened to John and Washington?",
+            "C. How did Emily feel about her work?",
+            "D. What role did Emily play in building the bridge?",
+            "E. How long did it take to build the bridge?",
+            "F. Why did Emily give a speech?"
+          ],
+          "answer": "D",
+          "answerExplanation": "本段主要讲述Emily经常去建筑工地指导工人，把问题反馈给丈夫，最后成为总工程师，选项D讲的是Emily在建设大桥中所起的作用，与本段对应，故选D。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q19",
+          "order": 19,
+          "questionType": "single_choice",
+          "stem": "Task 1: 为第④段选择最恰当的小标题 Paragraph ④:",
+          "options": [
+            "A. How did Emily pick up bridge building?",
+            "B. What happened to John and Washington?",
+            "C. How did Emily feel about her work?",
+            "D. What role did Emily play in building the bridge?",
+            "E. How long did it take to build the bridge?",
+            "F. Why did Emily give a speech?"
+          ],
+          "answer": "F",
+          "answerExplanation": "本段主要讲述Emily做演讲的原因：有人怀疑她丈夫的能力，美国土木工程师协会考虑替换他，Emily为丈夫辩护做了一次演讲，选项F讲的是Emily为什么要演讲，与本段对应，故选F。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q20",
+          "order": 20,
+          "questionType": "single_choice",
+          "stem": "Task 1: 为第⑤段选择最恰当的小标题 Paragraph ⑤:",
+          "options": [
+            "A. How did Emily pick up bridge building?",
+            "B. What happened to John and Washington?",
+            "C. How did Emily feel about her work?",
+            "D. What role did Emily play in building the bridge?",
+            "E. How long did it take to build the bridge?",
+            "F. Why did Emily give a speech?"
+          ],
+          "answer": "E",
+          "answerExplanation": "本段第一句是中心句，主要讲述建设大桥花了14年时间，选项E讲的是建设大桥花了多长时间，与本段对应，故选E。",
+          "knowledgePoints": ["段落大意概括"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q21",
+          "order": 21,
+          "questionType": "single_choice",
+          "stem": "Task 2: After his father died,__________.",
+          "options": [
+            "A. Washington went to study bridges",
+            "B. to express her thanks",
+            "C. Washington took over the job",
+            "D. to build the bridge",
+            "E. Emily began to play a bigger role",
+            "F. to defend her husband"
+          ],
+          "answer": "C",
+          "answerExplanation": "题干中心词是\"died\"，对应第一段第三、四句：Washington的父亲John于1869年死于一场事故，建设大桥的工作就落到了Washington身上。本题意为\"他父亲死后，Washington接管了工作\"，选C。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q22",
+          "order": 22,
+          "questionType": "single_choice",
+          "stem": "Task 2: Accompanied by Emily,__________.",
+          "options": [
+            "A. Washington went to study bridges",
+            "B. to express her thanks",
+            "C. Washington took over the job",
+            "D. to build the bridge",
+            "E. Emily began to play a bigger role",
+            "F. to defend her husband"
+          ],
+          "answer": "A",
+          "answerExplanation": "题干中心词是\"accompanied\"，对应第二段第四、五句：John把儿子Washington送到世界各地学习桥梁知识，Emily陪着丈夫一起学习。本题意为\"在Emily的陪伴下，Washington去学习了桥梁知识\"，选A。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q23",
+          "order": 23,
+          "questionType": "single_choice",
+          "stem": "Task 2: As time went on,__________.",
+          "options": [
+            "A. Washington went to study bridges",
+            "B. to express her thanks",
+            "C. Washington took over the job",
+            "D. to build the bridge",
+            "E. Emily began to play a bigger role",
+            "F. to defend her husband"
+          ],
+          "answer": "E",
+          "answerExplanation": "题干中\"As time went on\"直接对应原文第三段第四句：随着时间推移，Emily的角色开始改变，发挥更大作用。本题意为\"随着时间推移，Emily开始发挥更大的作用\"，选E。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q24",
+          "order": 24,
+          "questionType": "single_choice",
+          "stem": "Task 2: Emily gave a speech__________.",
+          "options": [
+            "A. Washington went to study bridges",
+            "B. to express her thanks",
+            "C. Washington took over the job",
+            "D. to build the bridge",
+            "E. Emily began to play a bigger role",
+            "F. to defend her husband"
+          ],
+          "answer": "F",
+          "answerExplanation": "题干中心词是\"speech\"，对应第四段倒数第二句：Emily为给丈夫辩护做了一次演讲（in defense of her husband，对应F选项的defend），选F。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q25",
+          "order": 25,
+          "questionType": "single_choice",
+          "stem": "Task 2: It took fourteen years__________.",
+          "options": [
+            "A. Washington went to study bridges",
+            "B. to express her thanks",
+            "C. Washington took over the job",
+            "D. to build the bridge",
+            "E. Emily began to play a bigger role",
+            "F. to defend her husband"
+          ],
+          "answer": "D",
+          "answerExplanation": "题干中心词是\"fourteen years\"，第五段中心句是第一句，意为\"建设大桥花费了14年时间\"，与原文表述一致，选D。",
+          "knowledgePoints": ["逻辑关系判断"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2015-04-s4",
+      "type": "填句补文",
+      "order": 4,
+      "passageTitle": "Playing Games-Not Only Fun",
+      "passageText": "For many people, playing games is a way to have some fun.___(26)___ It is a great way to keep your mental health in check. Actually, anything that requires you to do some thinking will help you keep your brain healthy.\n\nYou may say that this sounds great but you just don't have the time to do it. If you want to improve your mental health, you will make time for it.___(27)___You can exercise your brain before work and while the rest of your family is still in bed. This can greatly change your attitude for the rest of the day.\n\nTurn the TV off in the evening and spend some time playing games alone or with a family member.___(28)___Try a variety of new games, too. This way, you don't get bored playing the same one all the time.\n\nMost games offer several different levels. To get the most exercise for your brain, start out with the easy stuff.___(29)___ As your level of skill improves, go on to challenge your brain by moving into more advanced levels of the game.\n\nFind the games that you really enjoy playing. Keeping your brain sharp with such games is really going to pay off for you in many ways.___(30)___ You will find that you have less stress and that it is easier to make decisions. You will also find that your memory is improving.",
+      "scorePerQuestion": 2,
+      "totalScore": 10,
+      "questions": [
+        {
+          "questionId": "00015-2015-04-q26",
+          "order": 26,
+          "questionType": "single_choice",
+          "stem": "根据短文内容，为第26空选择最恰当的句子。",
+          "options": [
+            "A. Set aside about 30 minutes a day when you can play games.",
+            "B. This is especially true if you are new to a game.",
+            "C. Playing games can help you make new friends.",
+            "D. You will be surprised at how much it improves your life.",
+            "E. However, it can also help you exercise your brain.",
+            "F. You can also invite friends over to play games with you."
+          ],
+          "answer": "E",
+          "answerExplanation": "空格前一句意为\"对于许多人来说，玩游戏是获得快乐的一种方式\"，空格后一句意为\"它是一种控制心理健康的好方式\"。选项E（然而，它也能帮助锻炼你的大脑）与前后文衔接最紧密，并与第一段最后一句keep your brain healthy和标题Not Only Fun照应，故选E。",
+          "knowledgePoints": ["连贯性衔接", "逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q27",
+          "order": 27,
+          "questionType": "single_choice",
+          "stem": "根据短文内容，为第27空选择最恰当的句子。",
+          "options": [
+            "A. Set aside about 30 minutes a day when you can play games.",
+            "B. This is especially true if you are new to a game.",
+            "C. Playing games can help you make new friends.",
+            "D. You will be surprised at how much it improves your life.",
+            "E. However, it can also help you exercise your brain.",
+            "F. You can also invite friends over to play games with you."
+          ],
+          "answer": "A",
+          "answerExplanation": "空格前一句意为\"如果你想改善心理健康，你需要挤出时间来\"，下文应紧接着讲如何挤出时间，选项A（每天留出大约30分钟时间玩游戏）与上文衔接最紧密，故选A。",
+          "knowledgePoints": ["连贯性衔接", "逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q28",
+          "order": 28,
+          "questionType": "single_choice",
+          "stem": "根据短文内容，为第28空选择最恰当的句子。",
+          "options": [
+            "A. Set aside about 30 minutes a day when you can play games.",
+            "B. This is especially true if you are new to a game.",
+            "C. Playing games can help you make new friends.",
+            "D. You will be surprised at how much it improves your life.",
+            "E. However, it can also help you exercise your brain.",
+            "F. You can also invite friends over to play games with you."
+          ],
+          "answer": "F",
+          "answerExplanation": "空格前一句意为\"在晚上关掉电视，自己或者与家人一起花些时间玩游戏\"，选项F（你也可以邀请朋友过来和你一起玩游戏）与上文衔接最紧密，故选F。",
+          "knowledgePoints": ["连贯性衔接", "逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q29",
+          "order": 29,
+          "questionType": "single_choice",
+          "stem": "根据短文内容，为第29空选择最恰当的句子。",
+          "options": [
+            "A. Set aside about 30 minutes a day when you can play games.",
+            "B. This is especially true if you are new to a game.",
+            "C. Playing games can help you make new friends.",
+            "D. You will be surprised at how much it improves your life.",
+            "E. However, it can also help you exercise your brain.",
+            "F. You can also invite friends over to play games with you."
+          ],
+          "answer": "B",
+          "answerExplanation": "空格前一句意为\"为了让你的大脑得到更多锻炼，先从简单的开始\"，选项B（如果你对某个游戏不了解，这一点尤其如此）与上下文衔接最紧密，故选B。",
+          "knowledgePoints": ["连贯性衔接", "逻辑关系判断"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q30",
+          "order": 30,
+          "questionType": "single_choice",
+          "stem": "根据短文内容，为第30空选择最恰当的句子。",
+          "options": [
+            "A. Set aside about 30 minutes a day when you can play games.",
+            "B. This is especially true if you are new to a game.",
+            "C. Playing games can help you make new friends.",
+            "D. You will be surprised at how much it improves your life.",
+            "E. However, it can also help you exercise your brain.",
+            "F. You can also invite friends over to play games with you."
+          ],
+          "answer": "D",
+          "answerExplanation": "空格前一句意为\"玩这样的游戏能保持头脑灵敏，会以很多方式回报你\"，空格后一句意为\"你会发现你的压力更少，也更容易做出决定\"，选项D（你会惊讶地发现游戏给你的生活带来很大改善）与上下文衔接最紧密，故选D。",
+          "knowledgePoints": ["连贯性衔接", "逻辑关系判断"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2015-04-s5",
+      "type": "填词补文",
+      "order": 5,
+      "passageTitle": "Learn from Your Failures",
+      "passageText": "Have you ever failed? If not, it is ___(31)___ that you have never taken a ___(32)___on trying anything new, or else you are lying.\n\nThere is nothing ___(33)___with failing, as long as you learn from your mistakes, modify your approach and try again. In fact, the more often you fail, the sooner it will be that you ___(34)___succeed, provided that you do learn and keep trying.\n\nYou can ___(35)___ only from experience and you get experience only from having a go at something. It may be more ___(36)___ to succeed, but you can ___(37)___ learn more from failing. This is only if you are observant and take ___(38)___ of what you are doing and which things have worked and which haven't. You then need to ___(39)___ what has happened, alter your ___(40)___ and move on.\n\nSo go for it! You will eventually get there—unless you stop trying.",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "00015-2015-04-q31",
+          "order": 31,
+          "questionType": "single_choice",
+          "stem": "根据短文内容，为第31空选择最恰当的词。",
+          "options": ["A. probable", "E. start", "I. wrong", "B. actually", "F. chance", "J. note", "C. direction", "G. special", "K. analyze", "D. finally", "H. grow", "L. pleasant"],
+          "answer": "A",
+          "answerExplanation": "由空格前的is和空格后的that从句可知，空格处需要填一个形容词。句意为\"如果你从未失败过，很可能是你从来不敢冒险尝试新事物，否则就是在说谎\"。It is probable that...为固定句型，意为\"很可能……\"，故选A。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q32",
+          "order": 32,
+          "questionType": "single_choice",
+          "stem": "根据短文内容，为第32空选择最恰当的词。",
+          "options": ["A. probable", "E. start", "I. wrong", "B. actually", "F. chance", "J. note", "C. direction", "G. special", "K. analyze", "D. finally", "H. grow", "L. pleasant"],
+          "answer": "F",
+          "answerExplanation": "由空格前的冠词a可知，空格处需要填一个名词。take a chance意为\"冒险\"，故选F。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q33",
+          "order": 33,
+          "questionType": "single_choice",
+          "stem": "根据短文内容，为第33空选择最恰当的词。",
+          "options": ["A. probable", "E. start", "I. wrong", "B. actually", "F. chance", "J. note", "C. direction", "G. special", "K. analyze", "D. finally", "H. grow", "L. pleasant"],
+          "answer": "I",
+          "answerExplanation": "由空格前的nothing可知，空格处需要填一个形容词。句意为失败没有什么不对的，只要能从错误中吸取教训再试一次，故选I。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q34",
+          "order": 34,
+          "questionType": "single_choice",
+          "stem": "根据短文内容，为第34空选择最恰当的词。",
+          "options": ["A. probable", "E. start", "I. wrong", "B. actually", "F. chance", "J. note", "C. direction", "G. special", "K. analyze", "D. finally", "H. grow", "L. pleasant"],
+          "answer": "D",
+          "answerExplanation": "由空格后的动词succeed可知，该句结构完整，空格处需要填一个副词。句意为你失败的次数越多，最后成功得就越快，finally意为\"最终\"，B项虽也是副词但不符合句意，故选D。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q35",
+          "order": 35,
+          "questionType": "single_choice",
+          "stem": "根据短文内容，为第35空选择最恰当的词。",
+          "options": ["A. probable", "E. start", "I. wrong", "B. actually", "F. chance", "J. note", "C. direction", "G. special", "K. analyze", "D. finally", "H. grow", "L. pleasant"],
+          "answer": "H",
+          "answerExplanation": "由空格前的情态动词can和空格后的副词only可知，空格处需要填一个动词。句意为你可以从经历中成长，并从尝试中获得经验，故选H。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q36",
+          "order": 36,
+          "questionType": "single_choice",
+          "stem": "根据短文内容，为第36空选择最恰当的词。",
+          "options": ["A. probable", "E. start", "I. wrong", "B. actually", "F. chance", "J. note", "C. direction", "G. special", "K. analyze", "D. finally", "H. grow", "L. pleasant"],
+          "answer": "L",
+          "answerExplanation": "由空格前的be动词和比较级more可知，空格处需要填一个形容词。句意为虽然成功也许更令人高兴，但实际上你能从失败中学到更多，pleasant意为\"令人愉快的\"，故选L。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q37",
+          "order": 37,
+          "questionType": "single_choice",
+          "stem": "根据短文内容，为第37空选择最恰当的词。",
+          "options": ["A. probable", "E. start", "I. wrong", "B. actually", "F. chance", "J. note", "C. direction", "G. special", "K. analyze", "D. finally", "H. grow", "L. pleasant"],
+          "answer": "B",
+          "answerExplanation": "由空格前的情态动词can和空格后的动词learn可知，空格处需要填一个副词。句意为实际上你能从失败中学到更多，actually意为\"实际上\"，故选B。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q38",
+          "order": 38,
+          "questionType": "single_choice",
+          "stem": "根据短文内容，为第38空选择最恰当的词。",
+          "options": ["A. probable", "E. start", "I. wrong", "B. actually", "F. chance", "J. note", "C. direction", "G. special", "K. analyze", "D. finally", "H. grow", "L. pleasant"],
+          "answer": "J",
+          "answerExplanation": "由空格前的动词take可知，空格处需要填一个名词。take note of为固定搭配，意为\"留意，注意\"，表示注意你正在做的事，故选J。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q39",
+          "order": 39,
+          "questionType": "single_choice",
+          "stem": "根据短文内容，为第39空选择最恰当的词。",
+          "options": ["A. probable", "E. start", "I. wrong", "B. actually", "F. chance", "J. note", "C. direction", "G. special", "K. analyze", "D. finally", "H. grow", "L. pleasant"],
+          "answer": "K",
+          "answerExplanation": "由空格前的不定式to可知，空格处需要填一个动词。句意为你需要分析发生了什么，analyze意为\"分析\"，故选K。",
+          "knowledgePoints": ["词汇辨析"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q40",
+          "order": 40,
+          "questionType": "single_choice",
+          "stem": "根据短文内容，为第40空选择最恰当的词。",
+          "options": ["A. probable", "E. start", "I. wrong", "B. actually", "F. chance", "J. note", "C. direction", "G. special", "K. analyze", "D. finally", "H. grow", "L. pleasant"],
+          "answer": "C",
+          "answerExplanation": "由空格前的物主代词your可知，空格处应填一个名词。alter your direction意为\"改变方向\"，故选C。",
+          "knowledgePoints": ["固定搭配"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2015-04-s6",
+      "type": "完形填空",
+      "order": 6,
+      "passageTitle": "Voice and Text Chatting",
+      "passageText": "Voice chat and text chat are quickly (quick) becoming preferred ways of communicating with others online. For language ___(41)___(learner), these forms of communication ___(42)___(able) them to share ideas about themselves and the world in almost real time. They can establish friendships with people from around the globe. Thus, it can be an easy way to learn languages and world ___(43)___(culture).\n\nHowever, care and consideration should be ___(44)___(give) when you are looking for friends on the Internet because you ___(45)___(real) don't know who the person is at the other end. Thus, never give out personal information ___(46)___(include) your name, age, where you live, and the name of the school you attend. Also, be ___(47)___(care) about meeting online acquaintances in person, and if you do so, make sure it is in a public place and go with a friend or a family member. ___(48)___(final), contact local authorities if you feel you are in danger. Again, chatting with others can be an enjoyable and ___(49)___(education) activity if you use care when ___(50)___(do) so.",
+      "scorePerQuestion": 1.5,
+      "totalScore": 15,
+      "questions": [
+        {
+          "questionId": "00015-2015-04-q41",
+          "order": 41,
+          "questionType": "fill_blank_transform",
+          "stem": "learner",
+          "options": [],
+          "answer": "learners",
+          "answerExplanation": "由空格前的介词for和名词language可知，空格处需要填一个名词。下文中的them提示这里应为名词复数，language learners意为\"语言学习者\"，故答案为learners。",
+          "knowledgePoints": ["名词单复数"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q42",
+          "order": 42,
+          "questionType": "fill_blank_transform",
+          "stem": "able",
+          "options": [],
+          "answer": "enable",
+          "answerExplanation": "由空格前的名词短语可知，空格处需要填一个动词。形容词able的动词形式为enable，又因主语为复数（these forms of communication...them），故答案为enable。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q43",
+          "order": 43,
+          "questionType": "fill_blank_transform",
+          "stem": "culture",
+          "options": [],
+          "answer": "cultures",
+          "answerExplanation": "由空格前的动词learn可知，空格处需要填一个名词，与前面的languages并列，故答案为cultures。",
+          "knowledgePoints": ["名词单复数"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q44",
+          "order": 44,
+          "questionType": "fill_blank_transform",
+          "stem": "give",
+          "options": [],
+          "answer": "given",
+          "answerExplanation": "由空格前的情态动词结构should be可知，空格处需要填一个过去分词构成被动语态。动词give的过去分词形式为given，故答案为given。",
+          "knowledgePoints": ["被动语态"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q45",
+          "order": 45,
+          "questionType": "fill_blank_transform",
+          "stem": "real",
+          "options": [],
+          "answer": "really",
+          "answerExplanation": "由空格后的动词know可知，空格处需要填一个副词修饰动词。形容词real的副词形式为really，故答案为really。",
+          "knowledgePoints": ["副词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q46",
+          "order": 46,
+          "questionType": "fill_blank_transform",
+          "stem": "include",
+          "options": [],
+          "answer": "including",
+          "answerExplanation": "由空格后的your name, age等词可知，空格处需要填一个现在分词，动词include的现在分词形式为including，用作介词性短语引出举例，故答案为including。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q47",
+          "order": 47,
+          "questionType": "fill_blank_transform",
+          "stem": "care",
+          "options": [],
+          "answer": "careful",
+          "answerExplanation": "由空格前的be动词可知，空格处需要填一个形容词。名词/动词care的形容词形式为careful，故答案为careful。",
+          "knowledgePoints": ["形容词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q48",
+          "order": 48,
+          "questionType": "fill_blank_transform",
+          "stem": "final",
+          "options": [],
+          "answer": "Finally",
+          "answerExplanation": "由空格后的句子可知，空格处需要填一个副词。形容词final的副词形式为finally，又因该词位于句首，首字母需大写，故答案为Finally。",
+          "knowledgePoints": ["副词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q49",
+          "order": 49,
+          "questionType": "fill_blank_transform",
+          "stem": "education",
+          "options": [],
+          "answer": "educational",
+          "answerExplanation": "由空格后的名词activity可知，空格处需要填一个形容词。名词education的形容词形式为educational，与空格前的形容词enjoyable构成并列结构共同修饰activity，educational activity意为\"教育活动\"，故答案为educational。",
+          "knowledgePoints": ["形容词构词"],
+          "difficultyTag": null
+        },
+        {
+          "questionId": "00015-2015-04-q50",
+          "order": 50,
+          "questionType": "fill_blank_transform",
+          "stem": "do",
+          "options": [],
+          "answer": "doing",
+          "answerExplanation": "由空格所在的句子结构可知，空格处需要填一个动名词，这里作为时间状语从句的简化形式（when doing so），该空的逻辑主语与主句主语一致，故用主动的doing形式，答案为doing。",
+          "knowledgePoints": ["词性转换"],
+          "difficultyTag": null
+        }
+      ]
+    },
+    {
+      "sectionId": "00015-2015-04-s7",
+      "type": "写作",
+      "order": 7,
+      "passageTitle": null,
+      "passageText": null,
+      "writingPrompt": "某英文报社正在举办题为\"I Like Playing Sports\"的征文活动。请就此题目写一篇英文短文应征，词数100词左右。内容包括以下两个方面：\n1. 你经常做什么体育运动？\n2. 体育运动对你有哪些好处？",
+      "scorePerQuestion": 30,
+      "totalScore": 30,
+      "questions": [
+        {
+          "questionId": "00015-2015-04-q51",
+          "order": 51,
+          "questionType": "essay",
+          "stem": "I Like Playing Sports：请根据材料要求写一篇100词左右的英文短文，内容包括：(1)你经常做什么体育运动？(2)体育运动对你有哪些好处？",
+          "options": [],
+          "answer": "",
+          "answerExplanation": "官方给出参考范文，无逐条评分细则。参考范文：\"I Like Playing Sports. There are many kinds of sports that I enjoy, such as swimming, running and dancing. However the sport that I like most is basketball. I can't play it very well, but I still show great interest in it. I like playing sports, because playing sports is really a good thing. Firstly, it helps me keep healthy. Exercise is one of the most active and effective means to enhance the physical health. Secondly, playing sports is a good way to relax. When you are upset, sports may pull you out from depression. Finally, it's easier to make friends while you take part in sport activities because you have the same interest. It's important for making friends. All in all, I get a lot from sports.\"",
+          "knowledgePoints": ["写作-说明类"],
+          "difficultyTag": null
+        }
+      ]
+    }
+  ],
+  "parsingNotes": [
+    "第22题题干在原卷扫描图片中存在印刷排版异常，显示为\"22.  22.A. ccompanied by Emily,________.\"（题号与首词重复且被截断）。已根据官方答案页解析（第22题定位词为\"accompanied\"，句意为\"在Emily的陪伴下，Washington去学习了桥梁知识\"）将题干校正为\"Accompanied by Emily, ________.\"，建议人工核对试卷原图确认此处是否确系原卷印刷瑕疵。",
+    "第51题（写作）官方答案页只提供了一篇参考范文，未给出分项评分标准（如内容/语言/结构各占多少分），已将范文全文记录在该题answerExplanation中作为参考，实际评分需人工按学校/机构评分细则另行确定。"
+  ]
+}
