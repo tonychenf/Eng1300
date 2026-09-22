@@ -1,0 +1,19 @@
+{
+  "subjectCode": "biochem",
+  "note": "两级考点体系：一级 = 教材章（28 章），二级 = 章内知识点。tagId 用 kp-<章号>-<序号>。本文件目前只填了第 1 章，其余 27 章待补。",
+  "chapterCount": 28,
+  "points": [
+    { "tagId": "kp-01", "name": "蛋白质化学", "parentTagId": null, "level": 1, "chapterNo": 1 },
+    { "tagId": "kp-01-01", "name": "蛋白质的元素组成", "parentTagId": "kp-01", "level": 2 },
+    { "tagId": "kp-01-02", "name": "氨基酸的结构与分类", "parentTagId": "kp-01", "level": 2 },
+    { "tagId": "kp-01-03", "name": "氨基酸的理化性质", "parentTagId": "kp-01", "level": 2 },
+    { "tagId": "kp-01-04", "name": "肽与肽键", "parentTagId": "kp-01", "level": 2 },
+    { "tagId": "kp-01-05", "name": "蛋白质的一级结构", "parentTagId": "kp-01", "level": 2 },
+    { "tagId": "kp-01-06", "name": "蛋白质的二级结构", "parentTagId": "kp-01", "level": 2 },
+    { "tagId": "kp-01-07", "name": "蛋白质的三级结构", "parentTagId": "kp-01", "level": 2 },
+    { "tagId": "kp-01-08", "name": "蛋白质的四级结构", "parentTagId": "kp-01", "level": 2 },
+    { "tagId": "kp-01-09", "name": "蛋白质的理化性质", "parentTagId": "kp-01", "level": 2 },
+    { "tagId": "kp-01-10", "name": "蛋白质的变性与沉淀", "parentTagId": "kp-01", "level": 2 },
+    { "tagId": "kp-01-11", "name": "蛋白质结构与功能的关系", "parentTagId": "kp-01", "level": 2 }
+  ]
+}

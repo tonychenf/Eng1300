@@ -1,0 +1,19 @@
+{
+  "subjectCode": "biochem",
+  "courseCode": "biochem-main",
+  "courseName": "生物化学与分子生物学",
+  "totalScore": 100,
+  "timeLimitMinutes": 120,
+  "passScore": 60,
+  "note": "题量比例照搬《蛋白质的化学》一章的实际构成（填空12 : 选择13 : 名词解释7 : 问答2），分值是为了凑成 100 分整数配的。模板可随时改，改动只影响之后新组的卷子，见需求文档 §6.4.6。",
+  "items": [
+    { "ord": 1, "label": "填空题",   "filter": { "questionTypes": ["fill_text", "fill_numeric"] },
+      "questionCount": 12, "scoreMode": "FROM_TEMPLATE", "scorePerQuestion": 2,  "pickUnit": "QUESTION", "subtotal": 24 },
+    { "ord": 2, "label": "选择题",   "filter": { "questionTypes": ["single_choice"] },
+      "questionCount": 13, "scoreMode": "FROM_TEMPLATE", "scorePerQuestion": 2,  "pickUnit": "QUESTION", "subtotal": 26 },
+    { "ord": 3, "label": "名词解释", "filter": { "questionTypes": ["term_explain"] },
+      "questionCount": 7,  "scoreMode": "FROM_TEMPLATE", "scorePerQuestion": 4,  "pickUnit": "QUESTION", "subtotal": 28 },
+    { "ord": 4, "label": "问答题",   "filter": { "questionTypes": ["short_answer"] },
+      "questionCount": 2,  "scoreMode": "FROM_TEMPLATE", "scorePerQuestion": 11, "pickUnit": "QUESTION", "subtotal": 22 }
+  ]
+}
