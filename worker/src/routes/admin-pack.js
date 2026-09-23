@@ -4,6 +4,7 @@
 // 要手写 SQL——而手写 SQL 改判分标准这件事，出错了不会有任何地方报错。
 import { Hono } from 'hono';
 import { NORMALIZERS } from '../normalizers/index.js';
+import { STRATEGY_INFO, ANSWER_SHAPES, GRADERS } from '../graders/index.js';
 import { validateRubricPayload, settingInt } from '../lib/subject-pack.js';
 
 export const adminPackRouter = new Hono();
@@ -61,6 +62,10 @@ adminPackRouter.get('/subjects/:id/pack', async (c) => {
       effective: String(effective[g.key]),
     })),
     availableNormalizers: Object.keys(NORMALIZERS),
+    // 界面不要自己抄一份策略清单：抄一份就会和注册表分叉，表现为"界面上有这个策略，
+    // 保存之后判分说不认识"。
+    availableStrategies: STRATEGY_INFO,
+    availableShapes: ANSWER_SHAPES,
   });
 });
 
@@ -89,6 +94,21 @@ adminPackRouter.put('/subjects/:id/pack/types', async (c) => {
     if (seen.has(code)) { problems.push(`题型码 ${code} 重复`); continue; }
     seen.add(code);
     if (!String(t.name || '').trim()) problems.push(`题型 ${code} 没填名称`);
+    // 判分策略与作答形态是题型的两个维度（§6.4.4），少一个这个题型就判不了分。
+    // 写入时严查：读取时才发现的话，整个学科会因为一行配置而用不了。
+    const g = GRADERS[String(t.gradingStrategy || '')];
+    if (!g) {
+      problems.push(`题型 ${code} 的判分策略 ${JSON.stringify(t.gradingStrategy)} 不在注册表里` +
+        `（可选 ${Object.keys(GRADERS).join('、')}）`);
+    } else if (g.needsAi !== !!t.needsAi) {
+      // 勾了"需要 AI"却选了规则策略，交卷时的"待批改"计数会和实际判分对不上
+      problems.push(`题型 ${code} 的"需要 AI 判分"与策略 ${g.strategy} 不一致：` +
+        `该策略${g.needsAi ? '要' : '不要'} AI`);
+    }
+    if (!ANSWER_SHAPES.includes(String(t.answerShape || ''))) {
+      problems.push(`题型 ${code} 的作答形态 ${JSON.stringify(t.answerShape)} 不合法` +
+        `（可选 ${ANSWER_SHAPES.join('、')}）`);
+    }
     for (const n of (Array.isArray(t.normalizers) ? t.normalizers : [])) {
       // 写错名字不能静默跳过：跳过的后果是判分悄悄少折一层等价，
       // 表现为"某些对的答案被判错"，而没有任何地方会报错。
@@ -102,12 +122,14 @@ adminPackRouter.put('/subjects/:id/pack/types', async (c) => {
     stmts.push(c.env.DB.prepare(
       `INSERT INTO subject_question_types
          (subject_id, type_code, name, is_objective, in_practice, needs_ai,
-          input_widget, ai_review_on_miss, normalizers, sort_order)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+          input_widget, ai_review_on_miss, normalizers, sort_order,
+          answer_shape, grading_strategy)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     ).bind(id, String(t.typeCode), String(t.name), t.isObjective ? 1 : 0,
            t.inPractice ? 1 : 0, t.needsAi ? 1 : 0,
            String(t.inputWidget || 'text'), t.aiReviewOnMiss ? 1 : 0,
-           JSON.stringify(Array.isArray(t.normalizers) ? t.normalizers : []), i + 1));
+           JSON.stringify(Array.isArray(t.normalizers) ? t.normalizers : []), i + 1,
+           String(t.answerShape), String(t.gradingStrategy)));
   });
   // 先删后插放在一个 batch 里：分两次的话中间那一刻学科是没有题型的，
   // 正在交卷的人会撞上 subject_pack_missing。

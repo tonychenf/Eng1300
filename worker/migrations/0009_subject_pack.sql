@@ -13,6 +13,14 @@ CREATE TABLE IF NOT EXISTS subject_question_types (
   is_objective INTEGER NOT NULL DEFAULT 1,   -- 规则可判；0 表示要 AI 或人工
   in_practice INTEGER NOT NULL DEFAULT 1,    -- 是否进专项练习（蓝本写死排除 essay）
   needs_ai INTEGER NOT NULL DEFAULT 0,
+  -- N5 补：题型 = **作答形态 × 判分策略**两个正交维度（§6.4.4）。
+  -- 只写一个名字（"填空题"）的话，第三个学科要排序题、匹配题、人工判分就得回头
+  -- 改这张表和判分骨架——那正是这次改造要消灭的东西。
+  answer_shape TEXT,       -- CHOICE_ONE / CHOICE_MANY / TEXT_SHORT / NUMBER / TEXT_LONG / ORDERING / MATCHING
+  -- 默认判分策略，得分单元可以逐个覆盖（question_items.grading_strategy）。
+  -- 取值见 src/graders/index.js 的注册表。**可空是给旧库留的**：线上那张表是 N3
+  -- 建的，没有这两列，只能由 scripts/ci/ensure-columns.sh 补上再回填。
+  grading_strategy TEXT,
   input_widget TEXT NOT NULL DEFAULT 'text', -- 作答控件：choice / text / textarea
   -- 规则判错之后要不要再交给 AI 复核。选择题的答案是闭集，复核没有意义；
   -- 自由填空才值得复核。蓝本把这条写死在 gradeQuestion 的 if 分支里。
@@ -70,26 +78,26 @@ CREATE TABLE IF NOT EXISTS subject_settings (
 -- N2 那次就是漏了门闩，撤销掉的授权会被下次部署悄悄插回去，不报错也看不出来。
 -- 门闩记录与被门闩的写入同属一次 d1 execute --file。
 
-INSERT OR IGNORE INTO subject_question_types (subject_id, type_code, name, is_objective, in_practice, needs_ai, input_widget, ai_review_on_miss, normalizers, sort_order)
-SELECT (SELECT subject_id FROM subjects WHERE code = 'english'), 'single_choice', '单项选择', 1, 1, 0, 'choice', 0, '["choice"]', 1
+INSERT OR IGNORE INTO subject_question_types (subject_id, type_code, name, is_objective, in_practice, needs_ai, input_widget, ai_review_on_miss, normalizers, sort_order, answer_shape, grading_strategy)
+SELECT (SELECT subject_id FROM subjects WHERE code = 'english'), 'single_choice', '单项选择', 1, 1, 0, 'choice', 0, '["choice"]', 1, 'CHOICE_ONE', 'EXACT'
   WHERE NOT EXISTS (SELECT 1 FROM seed_state WHERE name = 'n3-pack-seed');
-INSERT OR IGNORE INTO subject_question_types (subject_id, type_code, name, is_objective, in_practice, needs_ai, input_widget, ai_review_on_miss, normalizers, sort_order)
-SELECT (SELECT subject_id FROM subjects WHERE code = 'english'), 'fill_text', '填空改写', 1, 1, 0, 'text', 1, '["en-spelling"]', 2
+INSERT OR IGNORE INTO subject_question_types (subject_id, type_code, name, is_objective, in_practice, needs_ai, input_widget, ai_review_on_miss, normalizers, sort_order, answer_shape, grading_strategy)
+SELECT (SELECT subject_id FROM subjects WHERE code = 'english'), 'fill_text', '填空改写', 1, 1, 0, 'text', 1, '["en-spelling"]', 2, 'TEXT_SHORT', 'EXACT'
   WHERE NOT EXISTS (SELECT 1 FROM seed_state WHERE name = 'n3-pack-seed');
-INSERT OR IGNORE INTO subject_question_types (subject_id, type_code, name, is_objective, in_practice, needs_ai, input_widget, ai_review_on_miss, normalizers, sort_order)
-SELECT (SELECT subject_id FROM subjects WHERE code = 'english'), 'essay', '写作', 0, 0, 1, 'textarea', 0, '[]', 3
+INSERT OR IGNORE INTO subject_question_types (subject_id, type_code, name, is_objective, in_practice, needs_ai, input_widget, ai_review_on_miss, normalizers, sort_order, answer_shape, grading_strategy)
+SELECT (SELECT subject_id FROM subjects WHERE code = 'english'), 'essay', '写作', 0, 0, 1, 'textarea', 0, '[]', 3, 'TEXT_LONG', 'AI_DIMENSION'
   WHERE NOT EXISTS (SELECT 1 FROM seed_state WHERE name = 'n3-pack-seed');
-INSERT OR IGNORE INTO subject_question_types (subject_id, type_code, name, is_objective, in_practice, needs_ai, input_widget, ai_review_on_miss, normalizers, sort_order)
-SELECT (SELECT subject_id FROM subjects WHERE code = 'biochem'), 'single_choice', '单项选择', 1, 1, 0, 'choice', 0, '["choice"]', 1
+INSERT OR IGNORE INTO subject_question_types (subject_id, type_code, name, is_objective, in_practice, needs_ai, input_widget, ai_review_on_miss, normalizers, sort_order, answer_shape, grading_strategy)
+SELECT (SELECT subject_id FROM subjects WHERE code = 'biochem'), 'single_choice', '单项选择', 1, 1, 0, 'choice', 0, '["choice"]', 1, 'CHOICE_ONE', 'EXACT'
   WHERE NOT EXISTS (SELECT 1 FROM seed_state WHERE name = 'n3-pack-seed');
-INSERT OR IGNORE INTO subject_question_types (subject_id, type_code, name, is_objective, in_practice, needs_ai, input_widget, ai_review_on_miss, normalizers, sort_order)
-SELECT (SELECT subject_id FROM subjects WHERE code = 'biochem'), 'fill_text', '填空', 1, 1, 0, 'text', 1, '["trim-case"]', 2
+INSERT OR IGNORE INTO subject_question_types (subject_id, type_code, name, is_objective, in_practice, needs_ai, input_widget, ai_review_on_miss, normalizers, sort_order, answer_shape, grading_strategy)
+SELECT (SELECT subject_id FROM subjects WHERE code = 'biochem'), 'fill_text', '填空', 1, 1, 0, 'text', 1, '["trim-case"]', 2, 'TEXT_SHORT', 'EXACT'
   WHERE NOT EXISTS (SELECT 1 FROM seed_state WHERE name = 'n3-pack-seed');
-INSERT OR IGNORE INTO subject_question_types (subject_id, type_code, name, is_objective, in_practice, needs_ai, input_widget, ai_review_on_miss, normalizers, sort_order)
-SELECT (SELECT subject_id FROM subjects WHERE code = 'biochem'), 'term_explain', '名词解释', 0, 1, 1, 'textarea', 0, '[]', 3
+INSERT OR IGNORE INTO subject_question_types (subject_id, type_code, name, is_objective, in_practice, needs_ai, input_widget, ai_review_on_miss, normalizers, sort_order, answer_shape, grading_strategy)
+SELECT (SELECT subject_id FROM subjects WHERE code = 'biochem'), 'term_explain', '名词解释', 0, 1, 1, 'textarea', 0, '[]', 3, 'TEXT_LONG', 'AI_SCORE_POINTS'
   WHERE NOT EXISTS (SELECT 1 FROM seed_state WHERE name = 'n3-pack-seed');
-INSERT OR IGNORE INTO subject_question_types (subject_id, type_code, name, is_objective, in_practice, needs_ai, input_widget, ai_review_on_miss, normalizers, sort_order)
-SELECT (SELECT subject_id FROM subjects WHERE code = 'biochem'), 'short_answer', '问答', 0, 1, 1, 'textarea', 0, '[]', 4
+INSERT OR IGNORE INTO subject_question_types (subject_id, type_code, name, is_objective, in_practice, needs_ai, input_widget, ai_review_on_miss, normalizers, sort_order, answer_shape, grading_strategy)
+SELECT (SELECT subject_id FROM subjects WHERE code = 'biochem'), 'short_answer', '问答', 0, 1, 1, 'textarea', 0, '[]', 4, 'TEXT_LONG', 'AI_SCORE_POINTS'
   WHERE NOT EXISTS (SELECT 1 FROM seed_state WHERE name = 'n3-pack-seed');
 
 INSERT OR IGNORE INTO subject_rubrics (subject_id, version, payload, is_current)

@@ -8,7 +8,8 @@
 //   {
 //     grading: { partialCredit, caseSensitive },
 //     essay:   { type: 'DIMENSION_WEIGHTED', dimensionMax, totalScore, dimensions: [{key,name,weight,hint}] }
-//            | { type: 'POINT_HIT', ... }                       // 采分点命中式，判分实现在 N5
+//            | { type: 'POINT_HIT', totalScore, openWeightCap }   // 采分点命中式，判分器 AI_SCORE_POINTS
+//            | { type: 'LEVEL_BANDED', totalScore, bands: [{level,name,range,desc}], requireReason }
 //     mastery: { masteredMinTotal, masteredMinStreak, weakRateBelow, correctThreshold,
 //                weights: { untested, lastWrong, byStreak: [{upTo, weight}] } },
 //     passLine
@@ -18,6 +19,7 @@
 // 英语的判分规则和提示词，学生拿到一份"生物化学用英语作文标准打出来的分"，
 // 而系统一切正常。
 import { resolveNormalizers } from '../normalizers/index.js';
+import { resolveGrader, ANSWER_SHAPES } from '../graders/index.js';
 
 function fail(code, message) {
   const err = new Error(`${code}: ${message}`);
@@ -62,6 +64,27 @@ export async function loadPack(db, subjectId) {
       throw fail('bad_pack_json',
         `学科#${subjectId} 题型 ${r.type_code} 的 normalizers 不是合法 JSON：${String(r.normalizers).slice(0, 60)}`);
     }
+    // 题型 = 作答形态 × 判分策略（§6.4.4）。两个维度都要有值：
+    // 判分策略取不到就没法判分，而回落一个默认值（比如 EXACT）的后果是数值题被
+    // 当成文本比对、主观题被当成客观题判 0 分，全程不报错。
+    const where = `学科#${subjectId} 的题型 ${r.type_code}`;
+    if (!r.grading_strategy) {
+      throw fail('strategy_missing',
+        `${where} 没有声明判分策略（grading_strategy）。旧库补列之后要回填，见 scripts/ci/ensure-columns.sh`);
+    }
+    const grader = resolveGrader(r.grading_strategy, where);
+    // 题型上的 needs_ai 与策略要不要 AI 必须一致。不一致的后果是交卷时的
+    // "待批改"计数与实际判分对不上：声明 needs_ai=0 的 AI 题会被当成已判分，
+    // 分数记 0 而状态是"已出分"。
+    if (grader.needsAi !== !!r.needs_ai) {
+      throw fail('pack_inconsistent',
+        `${where} 声明 needs_ai=${r.needs_ai ? 1 : 0}，但判分策略 ${r.grading_strategy} ` +
+        `${grader.needsAi ? '要' : '不要'} AI`);
+    }
+    if (r.answer_shape && !ANSWER_SHAPES.includes(r.answer_shape)) {
+      throw fail('bad_answer_shape',
+        `${where} 的作答形态是 ${JSON.stringify(r.answer_shape)}，只认 ${ANSWER_SHAPES.join('、')}`);
+    }
     types.set(r.type_code, {
       code: r.type_code,
       name: r.name,
@@ -70,7 +93,9 @@ export async function loadPack(db, subjectId) {
       needsAi: !!r.needs_ai,
       aiReviewOnMiss: !!r.ai_review_on_miss,
       widget: r.input_widget,
-      normalizers: resolveNormalizers(names, `学科#${subjectId} 的题型 ${r.type_code}`),
+      answerShape: r.answer_shape || null,
+      gradingStrategy: r.grading_strategy,
+      normalizers: resolveNormalizers(names, where),
       normalizerNames: names,
     });
   }
@@ -249,13 +274,54 @@ export function validateRubricPayload(payload) {
     }
     if (!(Number(e.dimensionMax) > 0)) problems.push('dimensionMax 要是正数');
     if (!(Number(e.totalScore) > 0)) problems.push('totalScore 要是正数');
+  } else if (e.type === 'LEVEL_BANDED') {
+    // 分档评分（§6.6②类型 C）：AI 先选档、再在档内给分。档次区间写歪了，
+    // 判分会当场抛 ai_bad_shape——那时学生正在等分数，所以在写入时就拦住。
+    const bands = Array.isArray(e.bands) ? e.bands : [];
+    const full = Number(e.totalScore);
+    if (!bands.length) problems.push('LEVEL_BANDED 至少要有一个档次');
+    if (!(full > 0)) problems.push('totalScore 要是正数');
+    const levels = bands.map((b) => String(b.level));
+    if (new Set(levels).size !== levels.length) problems.push('档次的 level 有重复');
+    let covered = [];
+    for (const b of bands) {
+      const r = Array.isArray(b.range) ? b.range : [];
+      const lo = Number(r[0]);
+      const hi = Number(r[1]);
+      if (!Number.isFinite(lo) || !Number.isFinite(hi) || lo > hi) {
+        problems.push(`档次 ${b.level} 的 range 不是 [下限, 上限]：${JSON.stringify(b.range)}`);
+        continue;
+      }
+      if (full > 0 && (lo < 0 || hi > full)) {
+        problems.push(`档次 ${b.level} 的 ${lo}～${hi} 超出了满分 ${full}`);
+      }
+      // 区间重叠时同一个分数对应两个档，落档理由就没法核对了
+      for (const [plo, phi, plevel] of covered) {
+        if (lo <= phi && plo <= hi) problems.push(`档次 ${b.level} 与 ${plevel} 的分数区间重叠`);
+      }
+      covered.push([lo, hi, b.level]);
+      if (!String(b.desc || '').trim()) problems.push(`档次 ${b.level} 没写档次描述，AI 没有落档依据`);
+    }
   } else if (e.type !== 'POINT_HIT') {
-    problems.push(`认不出的 essay.type：${JSON.stringify(e.type)}（目前支持 DIMENSION_WEIGHTED、POINT_HIT）`);
+    problems.push(`认不出的 essay.type：${JSON.stringify(e.type)}（目前支持 DIMENSION_WEIGHTED、POINT_HIT、LEVEL_BANDED）`);
+  }
+  // 开放采分点的权重占比上限（§6.4.5 G8）。超过它，采分点式判分就退化成
+  // AI 凭印象打分，失去了"可核对"这个唯一的好处。
+  if (e.openWeightCap !== undefined) {
+    const cap = Number(e.openWeightCap);
+    if (!(cap > 0) || cap > 1) problems.push(`openWeightCap 是 ${JSON.stringify(e.openWeightCap)}，要在 0～1 之间`);
   }
 
   const m = p.mastery || {};
   for (const k of ['masteredMinTotal', 'masteredMinStreak', 'weakRateBelow']) {
     if (!Number.isFinite(Number(m[k]))) problems.push(`mastery.${k} 不是数字`);
+  }
+  // 得分率到多少算"答对"（§6.6③）。部分分题型全靠它分档：写成 0.6 的话，
+  // 10 空答对 6 空就算掌握了这个考点，以后不再抽它——这是个要有人明确拍板的数，
+  // 不能靠代码里的默认值悄悄定下来。
+  const th = Number(m.correctThreshold);
+  if (!(th > 0) || th > 1) {
+    problems.push(`mastery.correctThreshold 是 ${JSON.stringify(m.correctThreshold)}，要在 0～1 之间（1 表示必须全对）`);
   }
   const w = m.weights || {};
   for (const k of ['untested', 'lastWrong']) {

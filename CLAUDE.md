@@ -5,7 +5,8 @@
 React 18 + Vite 前端，部署在 workers.dev。
 
 **改造的需求与架构见 `docs/跨学科学习平台-需求文档.md`。** 里程碑进度：
-N0（独立部署基线）、N1（学科骨架）、N2（学科权限）、N3（能力包）、N4（英语迁入验证）已完成，N5（得分单元与判分骨架）起未开工。
+N0（独立部署基线）、N1（学科骨架）、N2（学科权限）、N3（能力包）、N4（英语迁入验证）已完成，
+N5（得分单元与判分骨架）做到判分骨架，分值归属与多单元作答控件未完成。
 
 文档分三层，不要在一层里写另一层的内容：
 
@@ -56,6 +57,7 @@ in use，同时提示一个已删除的构建临时路径，很容易把注意�
 | n3-pack | 8790 | — |
 | n3-rebuild | 不起服务 | — |
 | n4-parity | 8789 | 8897 |
+| n5-items | 8788 | — |
 
 **LibreOffice 不可用**（连最小 docx 都报 source file could not be loaded），
 生成 Word 后没法转 PDF 看版式。只能做 schema 校验加读回正文核对，版式要如实
@@ -70,10 +72,11 @@ bash 正在执行某个脚本时去编辑它——会在毫不相干的行报语
 
 ```bash
 # 全套回归（推送前必跑）
-cd worker && for s in m2-smoke m3-smoke m4-smoke m5-smoke m6-acceptance n1-subjects n2-grants n3-pack n3-rebuild n4-parity db-isolation; do
+cd worker && for s in m2-smoke m3-smoke m4-smoke m5-smoke m6-acceptance n1-subjects n2-grants n3-pack n3-rebuild n4-parity n5-items db-isolation; do
   echo "=== $s ==="; bash test/$s.sh 2>&1 | grep -E "FAIL|小结" || echo "  !! 没有小结"
 done
-node test/quota-degrade.mjs && node test/essay-parse.mjs && node test/normalizers.test.mjs
+node test/quota-degrade.mjs && node test/essay-parse.mjs && node test/normalizers.test.mjs \
+  && node test/grade-items.test.mjs
 
 # 浏览器实测（手机/平板/PC 三种宽度）
 cd worker && bash test/ui-smoke.sh      # 单课程界面（蓝本遗留）
@@ -258,6 +261,31 @@ CHECK 和主键，所以只能先清空引用它的行再拆表。
 `worker/test/blueprint-reference.mjs` 里，拿它去对系统跑出来的结果。
 **那个文件不要跟着 `src/` 改**——一同步，这组对比就退化成恒等式，而它唯一的价值就是
 不同源。真要改只有一种情况：发现抄错了。
+
+**判分器按策略注册，但"策略"不等于"名字"。** §6.4.4 那张表里 `SEQUENCE` 与 `EXACT`
+在得分单元模型下会落成同一段代码（每个单元自带答案，按位置比对就是精确比对）。
+排序题真正的分歧在部分分口径——"A C B D" 对 "A B C D"，按位置算错 2 个、按相对先后
+算只错 1 对，两种都是通行做法，结果差一倍。**没有内容、定不下口径的策略就空着**，
+`resolveGrader` 当场抛 `strategy_not_implemented`；照着别人抄一段填上去，等于把一个
+没人拍过板的判分口径悄悄上线。
+
+**`partial_credit` 判在题一级，不是组一级。** §6.4.5 的伪码把这个开关写在"单元组"上，
+但一道 10 空的题里每个空自成一组，逐组判完再加起来还是 0.7 分——而 §6.6① 说的
+`partial_credit=false` 是"不按空给部分分"（蓝本口径：本部分无 0.5 分和 1 分的计分）。
+按伪码字面实现，英语将来加一道多空题就会静默开始给部分分。单组题两种写法结果一样，
+所以这个差别**测不出来也看不出来**，只能靠读规格时想清楚。
+
+**得分单元分两类，差别在"学生的答案怎么落到单元上"。** 填空的空与多选的选项是**输入
+单元**，学生逐个填，作答是 `{"序号":"答案"}`；采分点与解答步骤是**判定单元**，学生写
+一整段，判分时才拆。一道题混用两类时"整段"从哪到哪没人说得清，所以直接拒绝
+（`mixed_item_kinds`）。判分循环本身对两类一视同仁——这个区分只影响拆答案那一步。
+
+**给线上已经存在的表加列，要走 `scripts/ci/ensure-columns.sh`，并且回填。**
+迁移里的 `CREATE TABLE IF NOT EXISTS` 对已有表一行都不改（0002 那条老坑），
+而 `ALTER TABLE ADD COLUMN` 没有 `IF NOT EXISTS`，写进迁移第二次就断。回填语句一律
+带 `WHERE 该列 IS NULL` 自限：管理员改过的值不会被冲掉，上次部署补了列没填上值的库
+这次会补齐，所以不需要门闩（门闩那条规矩针对的是**会删数据**的动作）。
+**回填不出来的行要让部署当场失败**，而不是把一个读不到判分策略的学科放上线。
 
 **学科码只从 URL 取。** 服务端从路径参数取（`/api/s/:subjectCode/*` + `resolveSubject`
 中间件），前端从 `useParams()` 取。不要从请求体或组件 props 传——蓝本的

@@ -46,6 +46,11 @@ CREATE TABLE IF NOT EXISTS answer_records (
   ai_judged INTEGER NOT NULL DEFAULT 0,
   ai_score REAL,
   ai_comment TEXT,
+  -- N5 得分单元：逐单元的对错与得分，一种形状覆盖多空、采分点、多选部分分、步骤分。
+  -- 没有得分单元的题（英语现状）这两列留空，判分走单值退化路径。
+  -- JSON 数组，一项一个单元组：{group, strategy, weight, rate, scored, items:[{ord,hit,fraction,note?}]}
+  item_results TEXT,
+  score_rate REAL,                 -- 题目得分率 0～1；score = score_rate × 本卷赋予该题的分值
   answered_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 -- 一题一条记录，增量保存用 UPSERT

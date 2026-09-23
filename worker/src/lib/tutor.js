@@ -14,6 +14,7 @@
 // （PRD §10.3）。
 import { chatJSON } from './ai.js';
 import { promptFor, renderTemplate } from './subject-pack.js';
+import { dimensionRate } from '../graders/index.js';
 
 function bad(code, message) {
   const err = new Error(`${code}: ${message}`);
@@ -108,8 +109,9 @@ export async function gradeEssay(env, pack, { prompt, essay }) {
       `模型返回里找不到任何维度分，顶层键为 ${Object.keys(data).join(',') || '（空）'}`);
   }
   const scores = Object.fromEntries(R.keys.map((k) => [k, found[k] ?? 0]));
-  const weighted = R.dims.reduce((a, d) => a + scores[d.key] * Number(d.weight), 0);
-  const total = Math.round((weighted / R.max) * R.full * 10) / 10;
+  // 加权那一步走判分器注册表里的 AI_DIMENSION，不在这儿另写一遍：
+  // 两份实现改一处忘一处，同一篇作文在两个入口会出两个分，而两边都"成功"。
+  const total = Math.round(dimensionRate(R.dims, scores, R.max) * R.full * 10) / 10;
 
   return {
     scores,

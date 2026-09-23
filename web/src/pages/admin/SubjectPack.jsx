@@ -13,6 +13,21 @@ const WIDGETS = [
   { value: 'text', label: '单行文本' },
   { value: 'textarea', label: '多行文本' },
 ];
+// 只是把注册表里的代号翻成中文，取值本身还是后端给的
+const SHAPE_LABELS = {
+  CHOICE_ONE: '单选一项', CHOICE_MANY: '多选若干项', TEXT_SHORT: '短文本（可多个空）',
+  NUMBER: '数值', TEXT_LONG: '长文本', ORDERING: '排序', MATCHING: '配对',
+};
+const STRATEGY_LABELS = {
+  EXACT: 'EXACT 归一化后精确比对',
+  SET: 'SET 集合比对（顺序无关，可从候选池任选 N 个）',
+  NUMERIC: 'NUMERIC 数值容差 + 单位',
+  ENUM: 'ENUM 必须取自题干给定的枚举',
+  AI_SCORE_POINTS: 'AI_SCORE_POINTS AI 逐个采分点判命中',
+  AI_DIMENSION: 'AI_DIMENSION AI 按维度打分加权',
+  AI_LEVEL_BANDED: 'AI_LEVEL_BANDED AI 先落档再给分',
+  MANUAL: 'MANUAL 人工阅卷',
+};
 const FEATURE_LABELS = {
   essay_grade: '主观题批改',
   wrong_analyze: '错题分析',
@@ -20,8 +35,9 @@ const FEATURE_LABELS = {
   assessment: '能力评估',
 };
 
-function TypeRow({ t, all, onChange, onRemove }) {
+function TypeRow({ t, all, strategies, shapes, onChange, onRemove }) {
   const set = (patch) => onChange({ ...t, ...patch });
+  const strat = strategies.find((s) => s.code === t.gradingStrategy);
   return (
     <div className="card card-pad" style={{ marginBottom: 8 }}>
       <div className="row" style={{ flexWrap: 'wrap', gap: 8 }}>
@@ -41,13 +57,47 @@ function TypeRow({ t, all, onChange, onRemove }) {
           </select>
         </label>
       </div>
+      {/* 题型 = 作答形态 × 判分策略（§6.4.4）。两个下拉框的取值都来自后端的注册表，
+          界面这边不留一份副本——副本迟早会和注册表分叉。 */}
+      <div className="row" style={{ flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
+        <label className="small" style={{ flex: '1 1 180px' }}>
+          作答形态
+          <select value={t.answerShape || ''} onChange={(e) => set({ answerShape: e.target.value })}>
+            <option value="">（请选择）</option>
+            {shapes.map((sh) => <option key={sh} value={sh}>{SHAPE_LABELS[sh] || sh}</option>)}
+          </select>
+        </label>
+        <label className="small" style={{ flex: '1 1 220px' }}>
+          判分策略
+          <select
+            value={t.gradingStrategy || ''}
+            onChange={(e) => {
+              // needsAi 跟着策略走，不让它单独勾：两者打架的后果是交卷时的
+              // "待批改"计数与实际判分对不上，而界面上看不出任何异常。
+              const picked = strategies.find((x) => x.code === e.target.value);
+              set({ gradingStrategy: e.target.value, needsAi: !!picked?.needsAi });
+            }}
+          >
+            <option value="">（请选择）</option>
+            {strategies.filter((x) => x.implemented).map((x) => (
+              <option key={x.code} value={x.code}>{STRATEGY_LABELS[x.code] || x.code}</option>
+            ))}
+          </select>
+        </label>
+      </div>
+      {strat?.manual ? (
+        <p className="tiny faint" style={{ margin: '4px 0 0' }}>
+          人工阅卷：交卷后这类题记"待人工判分"，客观题的分先出。本期还没有阅卷界面。
+        </p>
+      ) : null}
       <div className="row" style={{ flexWrap: 'wrap', gap: 12, marginTop: 8 }}>
         <label className="tiny"><input type="checkbox" checked={t.isObjective}
           onChange={(e) => set({ isObjective: e.target.checked })} /> 规则可判</label>
         <label className="tiny"><input type="checkbox" checked={t.inPractice}
           onChange={(e) => set({ inPractice: e.target.checked })} /> 进专项练习</label>
-        <label className="tiny"><input type="checkbox" checked={t.needsAi}
-          onChange={(e) => set({ needsAi: e.target.checked })} /> 需要 AI 判分</label>
+        <label className="tiny faint">
+          <input type="checkbox" checked={t.needsAi} disabled readOnly /> 需要 AI 判分（由策略决定）
+        </label>
         <label className="tiny"><input type="checkbox" checked={t.aiReviewOnMiss}
           onChange={(e) => set({ aiReviewOnMiss: e.target.checked })} /> 判错后交 AI 复核</label>
       </div>
@@ -92,6 +142,8 @@ export default function SubjectPack() {
       isObjective: !!t.is_objective, inPractice: !!t.in_practice,
       needsAi: !!t.needs_ai, aiReviewOnMiss: !!t.ai_review_on_miss,
       inputWidget: t.input_widget,
+      answerShape: t.answer_shape || '',
+      gradingStrategy: t.grading_strategy || '',
       normalizers: JSON.parse(t.normalizers || '[]'),
     })));
     setRubricText(r.currentRubric ? JSON.stringify(JSON.parse(r.currentRubric.payload), null, 2) : '');
@@ -142,6 +194,7 @@ export default function SubjectPack() {
         {types.map((t, i) => (
           <TypeRow
             key={i} t={t} all={data.availableNormalizers}
+            strategies={data.availableStrategies} shapes={data.availableShapes}
             onChange={(nt) => setTypes(types.map((x, j) => (j === i ? nt : x)))}
             onRemove={() => setTypes(types.filter((_, j) => j !== i))}
           />
@@ -150,6 +203,7 @@ export default function SubjectPack() {
           <button className="btn ghost sm" type="button" onClick={() => setTypes([...types, {
             typeCode: '', name: '', isObjective: true, inPractice: true,
             needsAi: false, aiReviewOnMiss: false, inputWidget: 'text', normalizers: [],
+            answerShape: 'TEXT_SHORT', gradingStrategy: 'EXACT',
           }])}>加一个题型</button>
           <button className="btn sm" type="button"
             onClick={() => run(() => put(`/admin/subjects/${id}/pack/types`, { questionTypes: types }), '题型已保存')}>
