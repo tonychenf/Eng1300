@@ -31,6 +31,33 @@ migrate() {
 cleanup() { rm -rf "$ROOT_DIR/.wrangler"; }
 trap cleanup EXIT
 
+# ── 事故回归（2026-09-23 部署 #44：线上题库被清空） ───────────────────────
+#
+# 特征串撞上了 0002_bank.sql 里的注释。线上 D1 的 sqlite_master.sql 保留注释，
+# 本地 workerd 把注释剥成空行——所以**这件事在本地用 sqlite_master 根本测不出来**，
+# 上一版这套测试 28/0 全绿。
+#
+# 所以下面几条不查 sqlite_master，直接拿脚本里的特征串去比对建表语句的原文。
+# 这是环境无关的：新结构的 DDL 文本里（连注释一起）不该出现任何一个旧结构特征串。
+echo "== 特征串不能撞上新结构的建表语句（含注释） =="
+MIG=migrations/0002_bank.sql
+# 特征串从脚本里现取，不在测试里另抄一份——抄一份就会各改各的，
+# 而这条断言的全部意义就是"脚本用的那几个串没撞上建表语句"。
+MARKERS=$(grep -oE "^is_legacy +[a-z_]+ +'[^']+'" "$SCRIPT" | sed -E "s/.*'([^']+)'.*/\1/")
+check "从脚本里取到了 3 个特征串" "$(printf '%s\n' "$MARKERS" | grep -c .)" "3"
+HITS=0
+while IFS= read -r m; do
+  [ -n "$m" ] || continue
+  if grep -qF "$m" "$MIG"; then
+    echo "     !! 特征串「$m」出现在 $MIG 里"
+    HITS=$((HITS+1))
+  fi
+done <<< "$MARKERS"
+check "没有任何特征串出现在新结构的建表语句里" "$HITS" "0"
+# 剥注释这层也要有：光靠"别写进注释"是靠人记性
+check "脚本比对前会剥掉 SQL 注释" "$([ "$(grep -c 'strip_comments' "$SCRIPT")" -ge 2 ] && echo yes || echo no)" "yes"
+
+echo
 echo "== 把库退回线上那个库的样子 =="
 rm -rf .wrangler
 # 先跑完整迁移把周边表建齐，再把这三张换成旧结构。
@@ -63,6 +90,8 @@ npx wrangler d1 execute "$D1_NAME" --local --command "
   INSERT INTO ai_settings (purpose,base_url,api_key_encrypted,model)
     VALUES ('TUTORING','http://x/v1','ENC-KEY-DO-NOT-LOSE','m1'),
            ('PARSING','http://y/v1','ENC-KEY-2','m2');
+  INSERT OR IGNORE INTO seed_state (name,sha) VALUES
+    ('001-fake-exam.sql','deadbeef'), ('002-fake-exam.sql','cafebabe');
 " >/dev/null 2>&1 || { echo "造数据失败"; exit 1; }
 
 echo
@@ -128,12 +157,26 @@ check "生化也能放一个'结构'"  "$(ins_kp rb-k2 结构 biochem)" "ok"
 check "英语再放一个'结构'被拒" "$(ins_kp rb-k3 结构 english)" "err"
 
 echo
+echo "== 门闩与种子指纹 =="
+check "重建之后门闩落下了" \
+  "$(one "SELECT COUNT(*) FROM seed_state WHERE name='n3-legacy-rebuild';")" "1"
+# 拆了题库却不作废指纹，seed-if-changed.sh 会看着"指纹没变"把导入整个跳过，
+# 留下一个空题库，而在它之后每一步都不报错——#44 就是这么来的。
+check "题库种子指纹已被作废" \
+  "$(one "SELECT COUNT(*) FROM seed_state WHERE name GLOB '[0-9][0-9][0-9]-*.sql';")" "0"
+check "非题库的门闩记录没被误删" \
+  "$(one "SELECT COUNT(*) FROM seed_state WHERE name='n3-pack-seed';")" "1"
+
+echo
 echo "== 再跑一次：必须是空操作 =="
 npx wrangler d1 execute "$D1_NAME" --local --command \
   "INSERT INTO attempts (attempt_id,user_id,course_code,mode,status) VALUES ('rb-a2',(SELECT id FROM users WHERE username='RBUSER'),'RBT','EXAM','已交卷')" >/dev/null 2>&1
 OUT2=$(bash "$SCRIPT" --local 2>&1)
 echo "$OUT2" | sed 's/^/     /'
 check "报告跳过、零写入" "$(echo "$OUT2" | grep -c '跳过，零写入')" "1"
+# 第二次必须是被**门闩**挡住的，不是"又判断了一遍、这次判对了"。
+# 判断逻辑再准也只是"这次没错"；会删数据的动作只能做一次。
+check "挡住它的是门闩而不是又判断了一遍" "$(echo "$OUT2" | grep -c '门闩已落')" "1"
 # 这条才是重点：第二次要是照样清一遍，每次部署都会把学员的作答记录抹掉，
 # 而且不报错——日志里只会多一行"完成"
 check "第二次没有再清作答记录" "$(one "SELECT COUNT(*) FROM attempts;")" "1"

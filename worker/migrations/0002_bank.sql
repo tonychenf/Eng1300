@@ -64,8 +64,11 @@ CREATE TABLE IF NOT EXISTS questions (
   section_type TEXT NOT NULL,
   ord INTEGER NOT NULL,
   -- N3：题型由学科在 subject_question_types 里声明，这里不能再写死枚举。
-  -- 原来是 CHECK (question_type IN ('single_choice','fill_blank_transform','essay'))，
-  -- 生化有四种题型，第三个学科还会有别的，每加一科改一次 CHECK 是不可持续的。
+  -- 蓝本原来在这一列上有个只认三种英语题型的 CHECK；
+  -- 生化有四种题型，第三个学科还会有别的，每加一科改一次约束是不可持续的。
+  -- 注意：**不要把那条旧约束的原文抄进注释**。线上 D1 的 sqlite_master.sql 保留注释，
+  -- 而重建脚本是按 DDL 文本判断新旧的——抄进来就会被当成"这还是旧表"，
+  -- 于是每次部署都重清一次题库。本地 workerd 会把注释剥成空行，所以本地测不出来。
   -- 校验没有消失，只是挪到了发布路径上（admin-bank.js 的整卷发布会逐题查），
   -- 好处是拒绝时能说清楚"该学科声明了哪几种"，而 CHECK 只会给一句约束失败。
   question_type TEXT NOT NULL,

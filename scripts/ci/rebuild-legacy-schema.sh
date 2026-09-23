@@ -16,6 +16,22 @@
 # 为什么要排在迁移**之前**：0002 里新加的 idx_questions_subject 建在 subject_id 上，
 # 旧表没这一列，迁移会当场断在那句。顺序是 重建 → 迁移 → 部署 → 导题库。
 #
+# **这个脚本清过一次线上题库，读完下面两段再改它。**
+#
+# 事故（2026-09-23，部署 #44）：第一版按「DDL 文本里有没有旧约束」判断新旧，
+# 而我在 0002_bank.sql 的注释里抄了那条旧约束的原文。线上 D1 的 sqlite_master.sql
+# **保留注释**，于是新表被当成旧表，每次部署都重清一遍 questions。
+# 本地 workerd 把注释剥成空行，所以 n3-rebuild.sh 28/0 全绿，测不出来。
+# #43 没暴露是因为那轮种子指纹变了会重新导入，正好把坑填上；#44 指纹没变、
+# 导入跳过，题库就空了。
+#
+# 由此定下三条，改这个脚本时不要拆掉：
+#   ① **上门闩**。会删数据的动作只能做一次，门闩记在 seed_state，
+#      不能每次部署重新判断——判断逻辑再准也只是"这次没错"。
+#   ② **比对前先剥注释**。注释会进 sqlite_master，特征串撞上注释就是误判。
+#   ③ **删了题库就让种子指纹失效**。这条是当时缺的不变量：有它的话，误判的后果
+#      只是多导一次题库（浪费额度），而不是留下一个空题库还一路绿到验证步骤。
+#
 # 用法：rebuild-legacy-schema.sh --local|--remote
 set -uo pipefail
 
@@ -42,18 +58,42 @@ ddl_of() {
 count_of() {
   d1 --json --command "SELECT COUNT(*) AS c FROM $1" 2>/dev/null | jq -r '.[0].results[0].c // 0'
 }
+# 比对前先把 SQL 行注释剥掉：sqlite_master 存的是建表语句原文，注释也在里面，
+# 特征串撞上注释就是误判（见抬头的事故记录）。
+strip_comments() { sed 's/--.*$//'; }
+
 is_legacy() {   # 表名 特征串
   local ddl; ddl=$(ddl_of "$1")
-  [ -n "$ddl" ] && printf '%s' "$ddl" | grep -qF "$2"
+  [ -n "$ddl" ] && printf '%s' "$ddl" | strip_comments | grep -qF "$2"
 }
+
+# 门闩。做过就再也不做——这是个会删数据的动作，不能每次部署重新判断一次。
+LATCH='n3-legacy-rebuild'
+HAS_SEED_STATE=$(ddl_of seed_state)
+if [ -z "$HAS_SEED_STATE" ]; then
+  # 迁移还没跑过，是个全新的库，天生就是新结构，没有什么要重建的。
+  echo "旧结构重建：seed_state 还不存在（全新的库），跳过，零写入。"
+  exit 0
+fi
+DONE=$(d1 --json --command "SELECT COUNT(*) AS c FROM seed_state WHERE name = '$LATCH'" 2>/dev/null \
+  | jq -r '.[0].results[0].c // 0')
+if [ "${DONE:-0}" != "0" ]; then
+  echo "旧结构重建：门闩已落（$LATCH），跳过，零写入。"
+  exit 0
+fi
 
 LEGACY_Q=0; LEGACY_K=0; LEGACY_A=0
 is_legacy questions        'CHECK (question_type IN'   && LEGACY_Q=1
 is_legacy knowledge_points 'name TEXT NOT NULL UNIQUE' && LEGACY_K=1
 is_legacy ai_settings      'purpose TEXT PRIMARY KEY'  && LEGACY_A=1
 
+drop_latch() {
+  d1 --command "INSERT OR IGNORE INTO seed_state (name, sha) VALUES ('$LATCH', 'done');" >/dev/null 2>&1
+}
+
 if [ $((LEGACY_Q + LEGACY_K + LEGACY_A)) -eq 0 ]; then
-  echo "旧结构重建：三张表都已是 N3 结构（或还没建），跳过，零写入。"
+  echo "旧结构重建：三张表都已是 N3 结构，落门闩后不再检查。"
+  drop_latch
   exit 0
 fi
 
@@ -90,6 +130,13 @@ d1 --command "
 [ "$LEGACY_Q" = "1" ] && { echo "  ++ 拆掉旧的 questions（$(count_of questions) 行，题库由流水线按内容指纹重新导入）"; d1 --command "DROP TABLE questions;" || exit 1; }
 [ "$LEGACY_K" = "1" ] && { echo "  ++ 拆掉旧的 knowledge_points（$(count_of knowledge_points) 行，随题库一起重新导入）"; d1 --command "DROP TABLE knowledge_points;" || exit 1; }
 
+# 题库拆掉了，种子的内容指纹就必须一起作废，否则 seed-if-changed.sh 会看着
+# "指纹没变"把导入整个跳过，留下一个空题库——而在它之后的每一步都不会报错。
+# 这条不变量当时缺了，就是 #44 那次空题库的直接原因。
+echo "  ++ 作废题库种子指纹，强制下一步重新导入"
+d1 --command "DELETE FROM seed_state WHERE name GLOB '[0-9][0-9][0-9]-*.sql';" || exit 1
+
+drop_latch
 # 不在这里重建表：紧接着跑的迁移会按 0002_bank.sql 的新结构建出来，
 # 两处各写一份 DDL 迟早对不上，而对不上是不会报错的。
-echo "旧结构重建：完成。表由随后的迁移按新结构重建，题库由种子重新导入。"
+echo "旧结构重建：完成，门闩已落。表由随后的迁移按新结构重建，题库由种子重新导入。"
