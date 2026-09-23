@@ -74,7 +74,7 @@ INSERT OR IGNORE INTO subject_question_types (subject_id, type_code, name, is_ob
 SELECT (SELECT subject_id FROM subjects WHERE code = 'english'), 'single_choice', '单项选择', 1, 1, 0, 'choice', 0, '["choice"]', 1
   WHERE NOT EXISTS (SELECT 1 FROM seed_state WHERE name = 'n3-pack-seed');
 INSERT OR IGNORE INTO subject_question_types (subject_id, type_code, name, is_objective, in_practice, needs_ai, input_widget, ai_review_on_miss, normalizers, sort_order)
-SELECT (SELECT subject_id FROM subjects WHERE code = 'english'), 'fill_blank_transform', '填空改写', 1, 1, 0, 'text', 1, '["en-spelling"]', 2
+SELECT (SELECT subject_id FROM subjects WHERE code = 'english'), 'fill_text', '填空改写', 1, 1, 0, 'text', 1, '["en-spelling"]', 2
   WHERE NOT EXISTS (SELECT 1 FROM seed_state WHERE name = 'n3-pack-seed');
 INSERT OR IGNORE INTO subject_question_types (subject_id, type_code, name, is_objective, in_practice, needs_ai, input_widget, ai_review_on_miss, normalizers, sort_order)
 SELECT (SELECT subject_id FROM subjects WHERE code = 'english'), 'essay', '写作', 0, 0, 1, 'textarea', 0, '[]', 3
@@ -83,7 +83,7 @@ INSERT OR IGNORE INTO subject_question_types (subject_id, type_code, name, is_ob
 SELECT (SELECT subject_id FROM subjects WHERE code = 'biochem'), 'single_choice', '单项选择', 1, 1, 0, 'choice', 0, '["choice"]', 1
   WHERE NOT EXISTS (SELECT 1 FROM seed_state WHERE name = 'n3-pack-seed');
 INSERT OR IGNORE INTO subject_question_types (subject_id, type_code, name, is_objective, in_practice, needs_ai, input_widget, ai_review_on_miss, normalizers, sort_order)
-SELECT (SELECT subject_id FROM subjects WHERE code = 'biochem'), 'fill_blank', '填空', 1, 1, 0, 'text', 1, '["trim-case"]', 2
+SELECT (SELECT subject_id FROM subjects WHERE code = 'biochem'), 'fill_text', '填空', 1, 1, 0, 'text', 1, '["trim-case"]', 2
   WHERE NOT EXISTS (SELECT 1 FROM seed_state WHERE name = 'n3-pack-seed');
 INSERT OR IGNORE INTO subject_question_types (subject_id, type_code, name, is_objective, in_practice, needs_ai, input_widget, ai_review_on_miss, normalizers, sort_order)
 SELECT (SELECT subject_id FROM subjects WHERE code = 'biochem'), 'term_explain', '名词解释', 0, 1, 1, 'textarea', 0, '[]', 3

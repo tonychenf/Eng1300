@@ -622,7 +622,7 @@
         {
           "questionId": "00015-2023-10-q41",
           "order": 41,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "old",
           "options": [],
           "answer": "older",
@@ -633,7 +633,7 @@
         {
           "questionId": "00015-2023-10-q42",
           "order": 42,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "fortunately",
           "options": [],
           "answer": "unfortunately",
@@ -644,7 +644,7 @@
         {
           "questionId": "00015-2023-10-q43",
           "order": 43,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "solve",
           "options": [],
           "answer": "solution",
@@ -655,7 +655,7 @@
         {
           "questionId": "00015-2023-10-q44",
           "order": 44,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "card",
           "options": [],
           "answer": "cards",
@@ -666,7 +666,7 @@
         {
           "questionId": "00015-2023-10-q45",
           "order": 45,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "profit",
           "options": [],
           "answer": "profitable",
@@ -677,7 +677,7 @@
         {
           "questionId": "00015-2023-10-q46",
           "order": 46,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "success",
           "options": [],
           "answer": "successful",
@@ -688,7 +688,7 @@
         {
           "questionId": "00015-2023-10-q47",
           "order": 47,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "satisfy",
           "options": [],
           "answer": "satisfied",
@@ -699,7 +699,7 @@
         {
           "questionId": "00015-2023-10-q48",
           "order": 48,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "find",
           "options": [],
           "answer": "found",
@@ -710,7 +710,7 @@
         {
           "questionId": "00015-2023-10-q49",
           "order": 49,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "look",
           "options": [],
           "answer": "looking",
@@ -721,7 +721,7 @@
         {
           "questionId": "00015-2023-10-q50",
           "order": 50,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "name",
           "options": [],
           "answer": "named",

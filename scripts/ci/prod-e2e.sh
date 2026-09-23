@@ -59,7 +59,7 @@ while read -r QID QTYPE; do
   # 目的是造出"对一些错一些"的真实作答，好让错题本和 AI 分析有东西可做。
   case "$QTYPE" in
     essay)                ANS="$ESSAY_TEXT" ;;
-    fill_blank_transform) ANS="the" ;;
+    fill_text) ANS="the" ;;
     *)                    ANS="A" ;;
   esac
   CODE=$(api -o /dev/null -w '%{http_code}' -X PUT "$WORKER_URL/api/attempts/$ATT/answers" "${S[@]}" \

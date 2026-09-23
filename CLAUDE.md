@@ -5,7 +5,7 @@
 React 18 + Vite 前端，部署在 workers.dev。
 
 **改造的需求与架构见 `docs/跨学科学习平台-需求文档.md`。** 里程碑进度：
-N0（独立部署基线）、N1（学科骨架）、N2（学科权限）、N3（能力包）已完成，N4（英语迁入验证）起未开工。
+N0（独立部署基线）、N1（学科骨架）、N2（学科权限）、N3（能力包）、N4（英语迁入验证）已完成，N5（得分单元与判分骨架）起未开工。
 
 文档分三层，不要在一层里写另一层的内容：
 
@@ -55,6 +55,7 @@ in use，同时提示一个已删除的构建临时路径，很容易把注意�
 | n2-grants | 8795 | — |
 | n3-pack | 8790 | — |
 | n3-rebuild | 不起服务 | — |
+| n4-parity | 8789 | 8897 |
 
 **LibreOffice 不可用**（连最小 docx 都报 source file could not be loaded），
 生成 Word 后没法转 PDF 看版式。只能做 schema 校验加读回正文核对，版式要如实
@@ -69,7 +70,7 @@ bash 正在执行某个脚本时去编辑它——会在毫不相干的行报语
 
 ```bash
 # 全套回归（推送前必跑）
-cd worker && for s in m2-smoke m3-smoke m4-smoke m5-smoke m6-acceptance n1-subjects n2-grants n3-pack n3-rebuild db-isolation; do
+cd worker && for s in m2-smoke m3-smoke m4-smoke m5-smoke m6-acceptance n1-subjects n2-grants n3-pack n3-rebuild n4-parity db-isolation; do
   echo "=== $s ==="; bash test/$s.sh 2>&1 | grep -E "FAIL|小结" || echo "  !! 没有小结"
 done
 node test/quota-degrade.mjs && node test/essay-parse.mjs && node test/normalizers.test.mjs
@@ -251,6 +252,12 @@ CHECK 和主键，所以只能先清空引用它的行再拆表。
 **改主键会连带打断 upsert。** `ai_settings` 的主键从 `purpose` 改成
 `(purpose, subject_id)` 之后，`ON CONFLICT(purpose)` 那句不再匹配，写入静默失效——
 接口返回 200，读回来是 null。改主键时要把所有 `ON CONFLICT` 一起找出来。
+
+**证明"行为没变"需要一个不同源的参照物。** N4 要证明加了学科层与能力包之后英语行为
+与蓝本一致，办法是把蓝本改造前的三段逻辑（判分、作文加权、掌握度分档）原样冻在
+`worker/test/blueprint-reference.mjs` 里，拿它去对系统跑出来的结果。
+**那个文件不要跟着 `src/` 改**——一同步，这组对比就退化成恒等式，而它唯一的价值就是
+不同源。真要改只有一种情况：发现抄错了。
 
 **学科码只从 URL 取。** 服务端从路径参数取（`/api/s/:subjectCode/*` + `resolveSubject`
 中间件），前端从 `useParams()` 取。不要从请求体或组件 props 传——蓝本的

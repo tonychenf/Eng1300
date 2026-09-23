@@ -913,7 +913,7 @@
         {
           "questionId": "00015-2017-04-q41",
           "order": 41,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "blame",
           "options": [],
           "answer": "blamed",
@@ -926,7 +926,7 @@
         {
           "questionId": "00015-2017-04-q42",
           "order": 42,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "actual",
           "options": [],
           "answer": "actually",
@@ -939,7 +939,7 @@
         {
           "questionId": "00015-2017-04-q43",
           "order": 43,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "hear",
           "options": [],
           "answer": "heard",
@@ -952,7 +952,7 @@
         {
           "questionId": "00015-2017-04-q44",
           "order": 44,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "nature",
           "options": [],
           "answer": "natural",
@@ -966,7 +966,7 @@
         {
           "questionId": "00015-2017-04-q45",
           "order": 45,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "consider",
           "options": [],
           "answer": "considered",
@@ -979,7 +979,7 @@
         {
           "questionId": "00015-2017-04-q46",
           "order": 46,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "advantage",
           "options": [],
           "answer": "advantages",
@@ -992,7 +992,7 @@
         {
           "questionId": "00015-2017-04-q47",
           "order": 47,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "correct",
           "options": [],
           "answer": "incorrect",
@@ -1006,7 +1006,7 @@
         {
           "questionId": "00015-2017-04-q48",
           "order": 48,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "go",
           "options": [],
           "answer": "went",
@@ -1019,7 +1019,7 @@
         {
           "questionId": "00015-2017-04-q49",
           "order": 49,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "spirit",
           "options": [],
           "answer": "spirits",
@@ -1032,7 +1032,7 @@
         {
           "questionId": "00015-2017-04-q50",
           "order": 50,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "wise",
           "options": [],
           "answer": "wisely",

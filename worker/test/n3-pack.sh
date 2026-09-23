@@ -158,7 +158,7 @@ exec_sql "INSERT INTO courses (course_code, course_name, subject_id) VALUES ('NR
   INSERT INTO exams (exam_id, course_code, title, year, month) VALUES ('nrm-e','NRM','t',2026,4);
   INSERT INTO sections (section_id, exam_id, type, ord) VALUES ('nrm-s','nrm-e','完形填空',1);
   INSERT INTO questions (question_id,section_id,exam_id,course_code,section_type,ord,question_type,answer,status,subject_id)
-    VALUES ('nrm-q','nrm-s','nrm-e','NRM','完形填空',1,'fill_blank_transform','traveled','已发布',$ENG);
+    VALUES ('nrm-q','nrm-s','nrm-e','NRM','完形填空',1,'fill_text','traveled','已发布',$ENG);
   INSERT INTO knowledge_points (tag_id,name,subject_id) VALUES ('nrm-kp','归一化器测试考点',$ENG);
   INSERT INTO question_knowledge_points (question_id,tag_id) VALUES ('nrm-q','nrm-kp');"
 exec_sql "INSERT OR IGNORE INTO user_subject_grants (user_id,subject_id) VALUES ($SID,$ENG);"
@@ -187,10 +187,10 @@ check "答错的仍然判错"                   "$(answer_nrm travelling)" "0"
 
 # 这一对才是关键：摘掉归一化器之后，同一个英式拼写就该判错。
 # 变不动的话说明拼写表还写死在判分代码里，声明只是摆设。
-exec_sql "UPDATE subject_question_types SET normalizers='[]' WHERE subject_id=$ENG AND type_code='fill_blank_transform';"
+exec_sql "UPDATE subject_question_types SET normalizers='[]' WHERE subject_id=$ENG AND type_code='fill_text';"
 check "摘掉 en-spelling 之后英式拼写判错" "$(answer_nrm travelled)" "0"
 check "摘掉之后原样答仍然判对（没把基础折叠一起弄丢）" "$(answer_nrm traveled)" "1"
-exec_sql "UPDATE subject_question_types SET normalizers='[\"en-spelling\"]' WHERE subject_id=$ENG AND type_code='fill_blank_transform';"
+exec_sql "UPDATE subject_question_types SET normalizers='[\"en-spelling\"]' WHERE subject_id=$ENG AND type_code='fill_text';"
 check "装回去之后英式拼写又判对了" "$(answer_nrm travelled)" "1"
 
 echo

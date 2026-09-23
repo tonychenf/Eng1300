@@ -1,0 +1,153 @@
+{
+  "subjectCode": "english",
+  "note": "单层考点体系：英语没有章的概念，21 个考点直接挂在学科下（生化是章→知识点两级）。",
+  "points": [
+    {
+      "tagId": "kp-001",
+      "name": "写作-综合",
+      "parentTagId": null,
+      "level": 1,
+      "questionCount": 1
+    },
+    {
+      "tagId": "kp-002",
+      "name": "写作-观点类",
+      "parentTagId": null,
+      "level": 1,
+      "questionCount": 6
+    },
+    {
+      "tagId": "kp-003",
+      "name": "写作-记叙类",
+      "parentTagId": null,
+      "level": 1,
+      "questionCount": 2
+    },
+    {
+      "tagId": "kp-004",
+      "name": "写作-说明类",
+      "parentTagId": null,
+      "level": 1,
+      "questionCount": 12
+    },
+    {
+      "tagId": "kp-005",
+      "name": "副词构词",
+      "parentTagId": null,
+      "level": 1,
+      "questionCount": 24
+    },
+    {
+      "tagId": "kp-006",
+      "name": "动词时态",
+      "parentTagId": null,
+      "level": 1,
+      "questionCount": 31
+    },
+    {
+      "tagId": "kp-007",
+      "name": "名词单复数",
+      "parentTagId": null,
+      "level": 1,
+      "questionCount": 23
+    },
+    {
+      "tagId": "kp-008",
+      "name": "固定搭配",
+      "parentTagId": null,
+      "level": 1,
+      "questionCount": 76
+    },
+    {
+      "tagId": "kp-009",
+      "name": "形容词构词",
+      "parentTagId": null,
+      "level": 1,
+      "questionCount": 37
+    },
+    {
+      "tagId": "kp-010",
+      "name": "段落主旨理解",
+      "parentTagId": null,
+      "level": 1,
+      "questionCount": 10
+    },
+    {
+      "tagId": "kp-011",
+      "name": "段落大意概括",
+      "parentTagId": null,
+      "level": 1,
+      "questionCount": 97
+    },
+    {
+      "tagId": "kp-012",
+      "name": "比较级最高级",
+      "parentTagId": null,
+      "level": 1,
+      "questionCount": 6
+    },
+    {
+      "tagId": "kp-013",
+      "name": "被动语态",
+      "parentTagId": null,
+      "level": 1,
+      "questionCount": 22
+    },
+    {
+      "tagId": "kp-014",
+      "name": "观点态度理解",
+      "parentTagId": null,
+      "level": 1,
+      "questionCount": 9
+    },
+    {
+      "tagId": "kp-015",
+      "name": "词义猜测",
+      "parentTagId": null,
+      "level": 1,
+      "questionCount": 11
+    },
+    {
+      "tagId": "kp-016",
+      "name": "词性转换",
+      "parentTagId": null,
+      "level": 1,
+      "questionCount": 59
+    },
+    {
+      "tagId": "kp-017",
+      "name": "词汇辨析",
+      "parentTagId": null,
+      "level": 1,
+      "questionCount": 135
+    },
+    {
+      "tagId": "kp-018",
+      "name": "连贯性衔接",
+      "parentTagId": null,
+      "level": 1,
+      "questionCount": 81
+    },
+    {
+      "tagId": "kp-019",
+      "name": "逻辑关系判断",
+      "parentTagId": null,
+      "level": 1,
+      "questionCount": 127
+    },
+    {
+      "tagId": "kp-020",
+      "name": "阅读推理判断",
+      "parentTagId": null,
+      "level": 1,
+      "questionCount": 64
+    },
+    {
+      "tagId": "kp-021",
+      "name": "阅读细节定位",
+      "parentTagId": null,
+      "level": 1,
+      "questionCount": 217
+    }
+  ]
+}

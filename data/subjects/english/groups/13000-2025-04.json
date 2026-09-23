@@ -517,7 +517,7 @@
         {
           "questionId": "13000-2025-04-q41",
           "order": 41,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "secret",
           "options": [],
           "answer": "secretly",
@@ -528,7 +528,7 @@
         {
           "questionId": "13000-2025-04-q42",
           "order": 42,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "year",
           "options": [],
           "answer": "years",
@@ -539,7 +539,7 @@
         {
           "questionId": "13000-2025-04-q43",
           "order": 43,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "aware",
           "options": [],
           "answer": "unaware",
@@ -550,7 +550,7 @@
         {
           "questionId": "13000-2025-04-q44",
           "order": 44,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "get",
           "options": [],
           "answer": "got",
@@ -561,7 +561,7 @@
         {
           "questionId": "13000-2025-04-q45",
           "order": 45,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "become",
           "options": [],
           "answer": "became",
@@ -572,7 +572,7 @@
         {
           "questionId": "13000-2025-04-q46",
           "order": 46,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "train",
           "options": [],
           "answer": "trained",
@@ -583,7 +583,7 @@
         {
           "questionId": "13000-2025-04-q47",
           "order": 47,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "complete",
           "options": [],
           "answer": "completely",
@@ -594,7 +594,7 @@
         {
           "questionId": "13000-2025-04-q48",
           "order": 48,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "relax",
           "options": [],
           "answer": "relaxing",
@@ -605,7 +605,7 @@
         {
           "questionId": "13000-2025-04-q49",
           "order": 49,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "know",
           "options": [],
           "answer": "knew",
@@ -616,7 +616,7 @@
         {
           "questionId": "13000-2025-04-q50",
           "order": 50,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "tell",
           "options": [],
           "answer": "told",

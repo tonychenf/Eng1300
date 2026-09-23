@@ -522,8 +522,18 @@ jobs:
               else
                 echo "  FAIL 找不到英语学科，无法验证能力包"; FAIL=1
               fi
-              # 旧库重建那一步跑完之后，题型 CHECK 不该还在。留着的话生化的题型将来插不进去，
-              # 而现象是导入失败，不是"约束还在"——所以在这里直接查表结构。
+              # ---- N4 英语迁入 ----
+              # 题型改名（fill_blank_transform → fill_text）落到线上没有，只有这两条能证明。
+              # 没落地的话现象是发布被 N3 那道门拦下，或者判分时抛 question_type_not_declared，
+              # 而这两件事都要等有人真去做题才会发生。
+              if [ -n "$ENG_ID" ] && [ "$ENG_ID" != "null" ]; then
+                check "英语已声明 fill_text" \
+                  "$(jq -r '[.questionTypes[].type_code] | index("fill_text") != null' /tmp/pack.json)" "true"
+                check "旧题型码已不在声明里" \
+                  "$(jq -r '[.questionTypes[].type_code] | index("fill_blank_transform") // "absent"' /tmp/pack.json)" "absent"
+              fi
+
+              # 题型声明真的在起作用：写作声明成不进练习，可选题型里就不该有它。
               check "写作仍然不进专项练习（题型声明生效）" \
                 "$(curl -sS -m 20 "$WORKER_URL/api/practice/section-types?courseCode=13000" \
                    -H "Authorization: Bearer $TOKEN" | jq -r '[.sectionTypes[].section_type] | index("写作") // "absent"')" "absent"

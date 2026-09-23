@@ -517,7 +517,7 @@
         {
           "questionId": "13000-2026-04-q41",
           "order": 41,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "accompany",
           "options": [],
           "answer": "accompanies",
@@ -528,7 +528,7 @@
         {
           "questionId": "13000-2026-04-q42",
           "order": 42,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "phone",
           "options": [],
           "answer": "phones",
@@ -539,7 +539,7 @@
         {
           "questionId": "13000-2026-04-q43",
           "order": 43,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "change",
           "options": [],
           "answer": "changing",
@@ -550,7 +550,7 @@
         {
           "questionId": "13000-2026-04-q44",
           "order": 44,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "easy",
           "options": [],
           "answer": "easily",
@@ -561,7 +561,7 @@
         {
           "questionId": "13000-2026-04-q45",
           "order": 45,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "suggest",
           "options": [],
           "answer": "suggesting",
@@ -572,7 +572,7 @@
         {
           "questionId": "13000-2026-04-q46",
           "order": 46,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "importance",
           "options": [],
           "answer": "important",
@@ -583,7 +583,7 @@
         {
           "questionId": "13000-2026-04-q47",
           "order": 47,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "help",
           "options": [],
           "answer": "helpful",
@@ -594,7 +594,7 @@
         {
           "questionId": "13000-2026-04-q48",
           "order": 48,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "user",
           "options": [],
           "answer": "users",
@@ -605,7 +605,7 @@
         {
           "questionId": "13000-2026-04-q49",
           "order": 49,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "inform",
           "options": [],
           "answer": "information",
@@ -616,7 +616,7 @@
         {
           "questionId": "13000-2026-04-q50",
           "order": 50,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "face",
           "options": [],
           "answer": "faced",

@@ -897,7 +897,7 @@
         {
           "questionId": "00015-2020-08-q41",
           "order": 41,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "planet",
           "options": [],
           "answer": "planets",
@@ -910,7 +910,7 @@
         {
           "questionId": "00015-2020-08-q42",
           "order": 42,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "final",
           "options": [],
           "answer": "finally",
@@ -923,7 +923,7 @@
         {
           "questionId": "00015-2020-08-q43",
           "order": 43,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "jealous",
           "options": [],
           "answer": "jealousy",
@@ -936,7 +936,7 @@
         {
           "questionId": "00015-2020-08-q44",
           "order": 44,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "warm",
           "options": [],
           "answer": "warmth",
@@ -949,7 +949,7 @@
         {
           "questionId": "00015-2020-08-q45",
           "order": 45,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "fight",
           "options": [],
           "answer": "fighting",
@@ -962,7 +962,7 @@
         {
           "questionId": "00015-2020-08-q46",
           "order": 46,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "possess",
           "options": [],
           "answer": "possession",
@@ -975,7 +975,7 @@
         {
           "questionId": "00015-2020-08-q47",
           "order": 47,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "treat",
           "options": [],
           "answer": "treated",
@@ -988,7 +988,7 @@
         {
           "questionId": "00015-2020-08-q48",
           "order": 48,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "little",
           "options": [],
           "answer": "less",
@@ -1001,7 +1001,7 @@
         {
           "questionId": "00015-2020-08-q49",
           "order": 49,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "pay",
           "options": [],
           "answer": "paying",
@@ -1014,7 +1014,7 @@
         {
           "questionId": "00015-2020-08-q50",
           "order": 50,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "friendly",
           "options": [],
           "answer": "friendlier",

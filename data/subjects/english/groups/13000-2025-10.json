@@ -517,7 +517,7 @@
         {
           "questionId": "13000-2025-10-q41",
           "order": 41,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "differ",
           "options": [],
           "answer": "difference",
@@ -528,7 +528,7 @@
         {
           "questionId": "13000-2025-10-q42",
           "order": 42,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "simple",
           "options": [],
           "answer": "simply",
@@ -539,7 +539,7 @@
         {
           "questionId": "13000-2025-10-q43",
           "order": 43,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "do",
           "options": [],
           "answer": "doing",
@@ -550,7 +550,7 @@
         {
           "questionId": "13000-2025-10-q44",
           "order": 44,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "understand",
           "options": [],
           "answer": "understood",
@@ -561,7 +561,7 @@
         {
           "questionId": "13000-2025-10-q45",
           "order": 45,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "great",
           "options": [],
           "answer": "greater",
@@ -572,7 +572,7 @@
         {
           "questionId": "13000-2025-10-q46",
           "order": 46,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "contribution",
           "options": [],
           "answer": "contributions",
@@ -583,7 +583,7 @@
         {
           "questionId": "13000-2025-10-q47",
           "order": 47,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "limit",
           "options": [],
           "answer": "limited",
@@ -594,7 +594,7 @@
         {
           "questionId": "13000-2025-10-q48",
           "order": 48,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "affect",
           "options": [],
           "answer": "affects",
@@ -605,7 +605,7 @@
         {
           "questionId": "13000-2025-10-q49",
           "order": 49,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "decide",
           "options": [],
           "answer": "decision",
@@ -616,7 +616,7 @@
         {
           "questionId": "13000-2025-10-q50",
           "order": 50,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "willing",
           "options": [],
           "answer": "unwilling",

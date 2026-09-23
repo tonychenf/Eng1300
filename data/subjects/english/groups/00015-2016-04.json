@@ -624,7 +624,7 @@
         {
           "questionId": "00015-2016-04-q41",
           "order": 1,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "treat",
           "options": [],
           "answer": "treatment",
@@ -635,7 +635,7 @@
         {
           "questionId": "00015-2016-04-q42",
           "order": 2,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "real",
           "options": [],
           "answer": "really",
@@ -646,7 +646,7 @@
         {
           "questionId": "00015-2016-04-q43",
           "order": 3,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "pleasant",
           "options": [],
           "answer": "unpleasant",
@@ -657,7 +657,7 @@
         {
           "questionId": "00015-2016-04-q44",
           "order": 4,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "lose",
           "options": [],
           "answer": "loss",
@@ -668,7 +668,7 @@
         {
           "questionId": "00015-2016-04-q45",
           "order": 5,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "ask",
           "options": [],
           "answer": "asked",
@@ -679,7 +679,7 @@
         {
           "questionId": "00015-2016-04-q46",
           "order": 6,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "surprise",
           "options": [],
           "answer": "surprising",
@@ -690,7 +690,7 @@
         {
           "questionId": "00015-2016-04-q47",
           "order": 7,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "annoy",
           "options": [],
           "answer": "annoying",
@@ -701,7 +701,7 @@
         {
           "questionId": "00015-2016-04-q48",
           "order": 8,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "respond",
           "options": [],
           "answer": "responded",
@@ -712,7 +712,7 @@
         {
           "questionId": "00015-2016-04-q49",
           "order": 9,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "decide",
           "options": [],
           "answer": "decision",
@@ -723,7 +723,7 @@
         {
           "questionId": "00015-2016-04-q50",
           "order": 10,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "listen",
           "options": [],
           "answer": "listener",

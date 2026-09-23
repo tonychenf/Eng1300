@@ -12,7 +12,10 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const outDir = process.argv[2] || path.join(root, 'worker', 'seed');
-const examDir = path.join(root, 'data', 'exams');
+// N4：英语的数据搬进了 data/subjects/english/，和生化同一种布局——
+// 学科是顶层分区，英语不再是"默认的那个"，只是第一个学科。
+const subjectDir = path.join(root, 'data', 'subjects', 'english');
+const examDir = path.join(subjectDir, 'groups');
 
 // 课程合并：00015《英语(二)》在 2024 年 10 月起改用新代码 13000《英语(专升本)》，
 // 是同一门课的前后两个编号。JSON 里保留每份卷子印的原始代码，入库时统一归到 13000，
@@ -46,7 +49,13 @@ for (const f of fs.readdirSync(outDir)) {
 }
 
 // ---- 考点标签库 ----
-const kps = JSON.parse(fs.readFileSync(path.join(root, 'data', 'knowledge-points.json'), 'utf8'));
+// 考点文件包成了 { subjectCode, note, points: [...] }，与生化同形；
+// 读不到 points 就抛错，不要回落成"当它是个数组"——那会静默生成一份空考点库。
+const kpFile = JSON.parse(fs.readFileSync(path.join(subjectDir, 'knowledge-points.json'), 'utf8'));
+if (!Array.isArray(kpFile.points)) {
+  throw new Error(`考点文件的形状不对：顶层键是 ${Object.keys(kpFile).join(',')}，应当有 points 数组`);
+}
+const kps = kpFile.points;
 const kpByName = new Map(kps.map((k) => [k.name, k.tagId]));
 // N3：考点带学科。原来 name 是全局 UNIQUE，多学科之后必撞；改成
 // (subject_id, name) 唯一之后，subject_id 留空的话 SQLite 认为 NULL 各不相同，

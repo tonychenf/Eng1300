@@ -642,7 +642,7 @@
         {
           "questionId": "00015-2018-04-q41",
           "order": 41,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "use",
           "options": [],
           "answer": "used",
@@ -653,7 +653,7 @@
         {
           "questionId": "00015-2018-04-q42",
           "order": 42,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "help",
           "options": [],
           "answer": "helpful",
@@ -664,7 +664,7 @@
         {
           "questionId": "00015-2018-04-q43",
           "order": 43,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "career",
           "options": [],
           "answer": "careers",
@@ -675,7 +675,7 @@
         {
           "questionId": "00015-2018-04-q44",
           "order": 44,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "work",
           "options": [],
           "answer": "working",
@@ -686,7 +686,7 @@
         {
           "questionId": "00015-2018-04-q45",
           "order": 45,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "effective",
           "options": [],
           "answer": "effectively",
@@ -697,7 +697,7 @@
         {
           "questionId": "00015-2018-04-q46",
           "order": 46,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "value",
           "options": [],
           "answer": "valuable",
@@ -708,7 +708,7 @@
         {
           "questionId": "00015-2018-04-q47",
           "order": 47,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "know",
           "options": [],
           "answer": "knowing",
@@ -719,7 +719,7 @@
         {
           "questionId": "00015-2018-04-q48",
           "order": 48,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "different",
           "options": [],
           "answer": "difference",
@@ -730,7 +730,7 @@
         {
           "questionId": "00015-2018-04-q49",
           "order": 49,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "profession",
           "options": [],
           "answer": "professional",
@@ -741,7 +741,7 @@
         {
           "questionId": "00015-2018-04-q50",
           "order": 50,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "supplier",
           "options": [],
           "answer": "suppliers",

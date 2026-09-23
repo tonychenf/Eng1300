@@ -632,7 +632,7 @@
         {
           "questionId": "00015-2015-04-q41",
           "order": 41,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "learner",
           "options": [],
           "answer": "learners",
@@ -643,7 +643,7 @@
         {
           "questionId": "00015-2015-04-q42",
           "order": 42,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "able",
           "options": [],
           "answer": "enable",
@@ -654,7 +654,7 @@
         {
           "questionId": "00015-2015-04-q43",
           "order": 43,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "culture",
           "options": [],
           "answer": "cultures",
@@ -665,7 +665,7 @@
         {
           "questionId": "00015-2015-04-q44",
           "order": 44,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "give",
           "options": [],
           "answer": "given",
@@ -676,7 +676,7 @@
         {
           "questionId": "00015-2015-04-q45",
           "order": 45,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "real",
           "options": [],
           "answer": "really",
@@ -687,7 +687,7 @@
         {
           "questionId": "00015-2015-04-q46",
           "order": 46,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "include",
           "options": [],
           "answer": "including",
@@ -698,7 +698,7 @@
         {
           "questionId": "00015-2015-04-q47",
           "order": 47,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "care",
           "options": [],
           "answer": "careful",
@@ -709,7 +709,7 @@
         {
           "questionId": "00015-2015-04-q48",
           "order": 48,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "final",
           "options": [],
           "answer": "Finally",
@@ -720,7 +720,7 @@
         {
           "questionId": "00015-2015-04-q49",
           "order": 49,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "education",
           "options": [],
           "answer": "educational",
@@ -731,7 +731,7 @@
         {
           "questionId": "00015-2015-04-q50",
           "order": 50,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "do",
           "options": [],
           "answer": "doing",

@@ -517,7 +517,7 @@
         {
           "questionId": "00015-2020-10-q41",
           "order": 1,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "mistake",
           "options": [],
           "answer": "mistaken",
@@ -528,7 +528,7 @@
         {
           "questionId": "00015-2020-10-q42",
           "order": 2,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "end",
           "options": [],
           "answer": "endless",
@@ -539,7 +539,7 @@
         {
           "questionId": "00015-2020-10-q43",
           "order": 3,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "cover",
           "options": [],
           "answer": "covered",
@@ -550,7 +550,7 @@
         {
           "questionId": "00015-2020-10-q44",
           "order": 4,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "percent",
           "options": [],
           "answer": "percentage",
@@ -561,7 +561,7 @@
         {
           "questionId": "00015-2020-10-q45",
           "order": 5,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "include",
           "options": [],
           "answer": "including",
@@ -572,7 +572,7 @@
         {
           "questionId": "00015-2020-10-q46",
           "order": 6,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "surprising",
           "options": [],
           "answer": "Surprisingly",
@@ -583,7 +583,7 @@
         {
           "questionId": "00015-2020-10-q47",
           "order": 7,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "get",
           "options": [],
           "answer": "getting",
@@ -594,7 +594,7 @@
         {
           "questionId": "00015-2020-10-q48",
           "order": 8,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "bad",
           "options": [],
           "answer": "worse",
@@ -605,7 +605,7 @@
         {
           "questionId": "00015-2020-10-q49",
           "order": 9,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "use",
           "options": [],
           "answer": "uses",
@@ -616,7 +616,7 @@
         {
           "questionId": "00015-2020-10-q50",
           "order": 10,
-          "questionType": "fill_blank_transform",
+          "questionType": "fill_text",
           "stem": "shock",
           "options": [],
           "answer": "shocked",

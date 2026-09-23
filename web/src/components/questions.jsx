@@ -52,7 +52,7 @@ export function Question({ q, compact, value, onChange, review }) {
       <div style={{ display: 'flex', alignItems: 'flex-start' }}>
         <span className="q-num">{q.ord}</span>
         <div style={{ flex: 1, minWidth: 0 }}>
-          {q.questionType === 'fill_blank_transform' ? (
+          {q.questionType === 'fill_text' ? (
             <div className="q-stem">
               给定词：<strong className="mono">{q.stem}</strong>
             </div>
@@ -67,7 +67,7 @@ export function Question({ q, compact, value, onChange, review }) {
       <div style={{ marginTop: 10 }}>
         {q.questionType === 'essay' ? (
           <Essay q={q} value={answered} onChange={onChange} review={review} />
-        ) : q.questionType === 'fill_blank_transform' ? (
+        ) : q.questionType === 'fill_text' ? (
           <FillBlank q={q} value={answered} onChange={onChange} review={review} />
         ) : compact ? (
           <LetterRow q={q} value={answered} onChange={onChange} review={review} />
