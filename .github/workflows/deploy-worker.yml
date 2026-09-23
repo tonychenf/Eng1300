@@ -189,6 +189,21 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: bash scripts/ci/rebuild-legacy-schema.sh --remote
 
+      # 补列必须排在迁移**之前**。两条理由，第二条是部署 #48 用失败换来的：
+      #   1. 线上那些表是早先的部署建的，迁移里的 CREATE TABLE IF NOT EXISTS
+      #      不会给它们加列（0002 那条老坑），只能靠这一步。
+      #   2. **迁移里只要有一条语句提到新列，在旧库上就会整条失败**——哪怕那条语句
+      #      带着门闩、一行都不会插。SQLite 在准备语句时就校验列名，不看 WHERE。
+      #      0009 的题型种子正是这样：门闩早就合上了，但它的列清单里有 answer_shape，
+      #      于是旧库上直接报 "table ... has no column named answer_shape"，
+      #      迁移整步红掉、后面全跳过。
+      # 加列是增量动作、不删数据，所以按列检测、每次部署重跑，不需要门闩。
+      # 新库走到这里时表还没建，整步是零写入的空操作，由迁移把表连列一起建好。
+      - name: Ensure new columns exist on already-created tables
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: bash scripts/ci/ensure-columns.sh --remote
+
       - name: Apply database migrations
         working-directory: worker
         env:
@@ -199,14 +214,6 @@ jobs:
             echo "── 执行 $f"
             npx wrangler d1 execute "$D1_NAME" --remote --yes --file="$f"
           done
-
-      # N5：给已有的表补新列。排在迁移**之后**——线上那张表已经存在，
-      # 迁移里的 CREATE TABLE IF NOT EXISTS 不会动它，只能靠这一步。
-      # 加列是增量动作、不删数据，所以按列检测、每次部署重跑，不需要门闩。
-      - name: Ensure new columns exist on already-created tables
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: bash scripts/ci/ensure-columns.sh --remote
 
       # 部署排在题库导入之前。导入受 D1 每日写入额度限制，额度耗尽时会失败；
       # 早先它排在前面，一失败后面的部署就整步跳过，连续八次运行的 Worker 代码

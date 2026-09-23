@@ -118,6 +118,34 @@ exec_sql "DELETE FROM subject_question_types WHERE type_code='mystery_type';"
 bash "$ROOT_DIR/../scripts/ci/ensure-columns.sh" --local >/dev/null 2>&1
 check "清掉之后又能通过" "$?" "0"
 
+echo
+echo "== 旧库模拟：补列必须排在迁移之前 =="
+# 这一段复现的是部署 #48：迁移里只要有一条语句**提到**新列，在旧库上就整条失败，
+# 哪怕那条语句带着门闩、一行都不会插——SQLite 准备语句时就校验列名，不看 WHERE。
+# 本地库每次都是新建的，天生带着这两列，所以不把列删掉就永远测不到这件事。
+npx wrangler d1 execute "$D1_NAME" --local --command \
+  "ALTER TABLE subject_question_types DROP COLUMN answer_shape;" >/dev/null 2>&1
+npx wrangler d1 execute "$D1_NAME" --local --command \
+  "ALTER TABLE subject_question_types DROP COLUMN grading_strategy;" >/dev/null 2>&1
+check "旧库模拟成功（两列都没了）" "$(cols subject_question_types | grep -cw answer_shape)" "0"
+
+# ① 反面：先迁移后补列，0009 当场红。这一条是"顺序错了会怎样"的证据，
+#    没有它，下面那条"顺序对了能过"说明不了顺序有没有用。
+npx wrangler d1 execute "$D1_NAME" --local --file=migrations/0009_subject_pack.sql >/tmp/n5-mig9.log 2>&1
+check "旧库上直接跑迁移会失败" "$?" "1"
+check "报错点名是哪一列" "$(grep -c 'no column named answer_shape' /tmp/n5-mig9.log)" "1"
+
+# ② 正面：按流水线的顺序，先补列再迁移
+bash "$ROOT_DIR/../scripts/ci/ensure-columns.sh" --local >/tmp/n5-ensure2.log 2>&1
+check "补列步骤通过" "$?" "0"
+check "两列都补回来了" "$(cols subject_question_types | grep -cw grading_strategy)" "1"
+check "旧行的策略也回填了" "$(one 'SELECT COUNT(*) FROM subject_question_types WHERE grading_strategy IS NULL;')" "0"
+MIGOK=1
+for m in migrations/*.sql; do
+  npx wrangler d1 execute "$D1_NAME" --local --file="$m" >/dev/null 2>&1 || MIGOK=0
+done
+check "补完列之后整套迁移跑得过" "$MIGOK" "1"
+
 echo "== 启动服务 =="
 DEV_LOG=/tmp/n5-dev.log
 for i in $(seq 1 20); do ss -ltn 2>/dev/null | grep -q ":$PORT " || break; sleep 1; done
