@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { get, patch, post } from '../../api.js';
 import { Alert, Loading, PageHead } from '../../components/ui.jsx';
 
@@ -89,6 +90,9 @@ export default function Users() {
                   </td>
                   <td data-label="">
                     <div className="row">
+                      {u.role === 'SUPER_ADMIN' ? null : (
+                        <Link className="btn ghost sm" to={`/admin/users/${u.id}/subjects`}>学科</Link>
+                      )}
                       <button className="btn ghost sm" onClick={() => reset(u)}>重置密码</button>
                       {u.role === 'SUPER_ADMIN' ? null : (
                         <button className={`btn sm ${u.disabled ? 'ghost' : 'danger'}`} onClick={() => toggle(u)}>

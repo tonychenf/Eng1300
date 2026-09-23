@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { requireAuth } from '../lib/auth.js';
+import { requireCourseAccess, requireAttemptAccess, accessibleCourseFilter } from '../lib/access.js';
 import { masteryTier } from '../lib/mastery.js';
 import { gradeEssay, analyzeWrong, assessAbility } from '../lib/tutor.js';
 import { mapLimit } from '../lib/ai.js';
@@ -13,6 +14,13 @@ studyRouter.use('/wrongbook/*', requireAuth);
 studyRouter.use('/wrongbook', requireAuth);
 studyRouter.use('/assessment', requireAuth);
 studyRouter.use('/ai/*', requireAuth);
+
+// 学科访问控制（N2，见 lib/access.js 顶部注释）。
+// /wrongbook/filters 是跨学科聚合，不挂 403 类中间件，在 handler 里过滤行。
+studyRouter.use('/wrongbook', requireCourseAccess);
+studyRouter.use('/assessment', requireCourseAccess);
+studyRouter.use('/ai/assessment', requireCourseAccess);
+studyRouter.use('/ai/attempts/:id/*', requireAttemptAccess);
 
 // 近期权重：越靠后的一次占比越高（PRD §7.5）
 const DECAY = [0.35, 0.25, 0.20, 0.12, 0.08];
@@ -90,20 +98,23 @@ studyRouter.get('/wrongbook', async (c) => {
 // 错题本的筛选项：只列出真正有错题的题型与考点，避免选了个空条件
 studyRouter.get('/wrongbook/filters', async (c) => {
   const me = c.get('user');
+  // 跨学科聚合：筛选项是从错题里汇总出来的，不过滤的话，
+  // 学科被撤销之后它的题型和考点仍然出现在筛选下拉里——等于告诉学员那边还有东西。
+  const acc = accessibleCourseFilter(me, 'w');
   const { results: types } = await c.env.DB.prepare(
     `SELECT q.section_type, COUNT(*) AS n
        FROM wrong_items w JOIN questions q ON q.question_id = w.question_id
-      WHERE w.user_id = ? AND w.corrected = 0
+      WHERE w.user_id = ? AND w.corrected = 0 AND ${acc.sql}
       GROUP BY q.section_type ORDER BY n DESC`
-  ).bind(me.id).all();
+  ).bind(me.id, ...acc.binds).all();
   const { results: tags } = await c.env.DB.prepare(
     `SELECT k.name, COUNT(*) AS n
        FROM wrong_items w
        JOIN question_knowledge_points x ON x.question_id = w.question_id
        JOIN knowledge_points k ON k.tag_id = x.tag_id
-      WHERE w.user_id = ? AND w.corrected = 0
+      WHERE w.user_id = ? AND w.corrected = 0 AND ${acc.sql}
       GROUP BY k.name ORDER BY n DESC`
-  ).bind(me.id).all();
+  ).bind(me.id, ...acc.binds).all();
   return c.json({ sectionTypes: types, knowledgePoints: tags });
 });
 

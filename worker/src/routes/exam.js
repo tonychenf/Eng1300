@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { planPaper } from '../lib/paper.js';
 import { gradeQuestion } from '../lib/grade.js';
 import { requireAuth } from '../lib/auth.js';
+import { requireCourseAccess, requireAttemptAccess, accessibleCourseFilter } from '../lib/access.js';
 import { masteryWrites } from '../lib/mastery.js';
 import { wrongbookWrites } from '../lib/wrongbook.js';
 
@@ -12,6 +13,12 @@ export const examRouter = new Hono();
 examRouter.use('/exams/*', requireAuth);
 examRouter.use('/attempts/*', requireAuth);
 examRouter.use('/history', requireAuth);
+
+// 学科访问控制挂在鉴权之后、handler 之前（N2，见 lib/access.js 顶部注释）。
+// 挂成中间件而不是在每个 handler 里调，是为了让"漏掉校验"变成做不到的事。
+// /history 是跨学科聚合，不能用 403，改为在查询里过滤行——见下面那条 SQL。
+examRouter.use('/exams/*', requireCourseAccess);
+examRouter.use('/attempts/*', requireAttemptAccess);
 
 const DIFFICULTIES = ['随机', '简单', '正常', '困难'];
 
@@ -398,10 +405,13 @@ examRouter.get('/attempts/:id/report', async (c) => {
 // ---- 历史记录 ----
 examRouter.get('/history', async (c) => {
   const me = c.get('user');
+  // 跨学科聚合：只能过滤行，不能整个接口 403。
+  // 少了这层过滤，学科授权被撤销之后，历史记录里那几次模考照样列出来。
+  const acc = accessibleCourseFilter(me, 'attempts');
   const { results } = await c.env.DB.prepare(
     `SELECT attempt_id, course_code, mode, status, difficulty, started_at, submitted_at,
             duration_seconds, objective_score, total_score, pending_ai
-       FROM attempts WHERE user_id = ? ORDER BY started_at DESC LIMIT 50`
-  ).bind(me.id).all();
+       FROM attempts WHERE user_id = ? AND ${acc.sql} ORDER BY started_at DESC LIMIT 50`
+  ).bind(me.id, ...acc.binds).all();
   return c.json({ attempts: results });
 });

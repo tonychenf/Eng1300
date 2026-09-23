@@ -7,6 +7,8 @@
 //
 // 见 docs/跨学科学习平台-需求文档.md §6.2.3。
 
+import { checkGrant, isAdmin } from './access.js';
+
 /** 按学科码取学科行。找不到返回 null。 */
 export async function loadSubject(db, code) {
   if (!code) return null;
@@ -20,21 +22,25 @@ export async function loadSubject(db, code) {
  * 学科已停用 → 403，且文案要和"没权限"分开，否则管理员停用了学科、学员却收到
  *              "请联系管理员开通"，两边都不知道发生了什么。
  *
- * N2 接缝：访问权限（user_subject_grants）在这之后再加一层 requireSubjectAccess。
- * 本中间件只负责"这个学科存不存在、能不能进"，不负责"这个人能不能进"。
+ * N2：解析完再查这个人有没有授权（lib/access.js 的 checkGrant）。
+ * 管理员通吃，且停用的学科管理员仍可进入——后台要能查看和导出已停用学科的数据。
  */
 export async function resolveSubject(c, next) {
   const code = c.req.param('subjectCode');
+  const user = c.get('user');
   const subject = await loadSubject(c.env.DB, code);
   if (!subject) {
     return c.json({ error: 'subject_not_found', message: `没有学科「${code}」` }, 404);
   }
-  if (subject.status === '停用') {
+  if (subject.status === '停用' && !isAdmin(user)) {
     return c.json({
       error: 'subject_suspended',
       message: `学科「${subject.name}」已停用`,
     }, 403);
   }
+  const r = await checkGrant(c.env.DB, user, subject);
+  if (!r.ok) return c.json({ error: r.code, message: r.message }, 403);
+
   c.set('subject', subject);
   await next();
 }

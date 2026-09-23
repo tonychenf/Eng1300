@@ -18,6 +18,8 @@ import WrongBook from './pages/WrongBook.jsx';
 import Assessment from './pages/Assessment.jsx';
 import Dashboard from './pages/admin/Dashboard.jsx';
 import Subjects from './pages/admin/Subjects.jsx';
+import SubjectMembers from './pages/admin/SubjectMembers.jsx';
+import UserSubjects from './pages/admin/UserSubjects.jsx';
 import BankList from './pages/admin/BankList.jsx';
 import BankReview from './pages/admin/BankReview.jsx';
 import Users from './pages/admin/Users.jsx';
@@ -138,6 +140,8 @@ export default function App() {
             <Routes>
               <Route index element={<Dashboard />} />
               <Route path="subjects" element={<Subjects />} />
+              <Route path="subjects/:id/members" element={<SubjectMembers />} />
+              <Route path="users/:id/subjects" element={<UserSubjects />} />
               <Route path="bank" element={<BankList />} />
               <Route path="bank/:examId" element={<BankReview />} />
               <Route path="students" element={<Students />} />

@@ -52,6 +52,7 @@ in use，同时提示一个已删除的构建临时路径，很容易把注意�
 | ui-smoke | 8798 | — |
 | n1-subjects | 8799 | — |
 | ui-subjects | 8797 | — |
+| n2-grants | 8795 | — |
 
 **LibreOffice 不可用**（连最小 docx 都报 source file could not be loaded），
 生成 Word 后没法转 PDF 看版式。只能做 schema 校验加读回正文核对，版式要如实
@@ -66,7 +67,7 @@ bash 正在执行某个脚本时去编辑它——会在毫不相干的行报语
 
 ```bash
 # 全套回归（推送前必跑）
-cd worker && for s in m2-smoke m3-smoke m4-smoke m5-smoke m6-acceptance n1-subjects db-isolation; do
+cd worker && for s in m2-smoke m3-smoke m4-smoke m5-smoke m6-acceptance n1-subjects n2-grants db-isolation; do
   echo "=== $s ==="; bash test/$s.sh 2>&1 | grep -E "FAIL|小结" || echo "  !! 没有小结"
 done
 node test/quota-degrade.mjs && node test/essay-parse.mjs
@@ -209,6 +210,21 @@ D1_NAME=$(grep -E '^database_name' wrangler.toml | head -1 | sed -E 's/.*"([^"]*
 **跑测试前要先构建前端。** `wrangler.toml` 的 `[assets]` 指向 `worker/public`，
 那是 vite 的产物、被 gitignore。不存在时 `wrangler dev` 起不来，而报错在 dev 日志里，
 外面只看到"服务 150 秒没起来"，很容易往网络和端口上找。先 `npm run build --prefix web`。
+
+**中间件里取不到路由参数。** `c.req.param('id')` 只对匹配到 `:id` 那个模式的 handler
+有效；用 `use('/attempts/*')` 这类前缀挂的中间件，自己的模式里没有 `:id`，取到的
+永远是 undefined。N2 的 `requireAttemptAccess` 第一版就是这么写的，结果**静默失效**：
+取不到 id 就 `next()`，该 403 的地方返回 200，从外面看一切正常。现在从 `c.req.path`
+里自己解析。**写按前缀挂的中间件时，先确认它要的东西在那个位置真的拿得到。**
+
+**每种路径形状都要单独断一条。** 承上：`/attempts/:id`、`/attempts/:id/report`、
+`/practice/:id/next`、`/ai/attempts/:id/run` 走的是不同的匹配，只测一个过了不代表
+其余的也过。
+
+**只该跑一次的迁移要有门闩。** 流水线每次部署都会把 `migrations/*.sql` 全部重跑。
+N2 那段"给既有学员补授权"如果不加门闩，管理员撤销过的授权会被下次部署
+`INSERT OR IGNORE` 插回去——不报错、日志里看不出来。门闩记在 `seed_state`，
+与被门闩的操作同属一次 `d1 execute --file`。
 
 **学科码只从 URL 取。** 服务端从路径参数取（`/api/s/:subjectCode/*` + `resolveSubject`
 中间件），前端从 `useParams()` 取。不要从请求体或组件 props 传——蓝本的

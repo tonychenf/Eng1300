@@ -18,7 +18,9 @@ adminSubjectsRouter.get('/', async (c) => {
             (SELECT COUNT(*) FROM questions q JOIN courses co ON co.course_code = q.course_code
               WHERE co.subject_id = s.subject_id) AS question_count,
             (SELECT COUNT(*) FROM questions q JOIN courses co ON co.course_code = q.course_code
-              WHERE co.subject_id = s.subject_id AND q.status = '已发布') AS published_questions
+              WHERE co.subject_id = s.subject_id AND q.status = '已发布') AS published_questions,
+            (SELECT COUNT(*) FROM user_subject_grants g
+              WHERE g.subject_id = s.subject_id AND g.status = 'ACTIVE') AS member_count
        FROM subjects s ORDER BY s.sort_order, s.subject_id`
   ).all();
   return c.json({ subjects: results });

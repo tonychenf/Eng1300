@@ -9,7 +9,9 @@ import { practiceRouter } from './routes/practice.js';
 import { studyRouter } from './routes/study.js';
 import { adminStatsRouter } from './routes/admin-stats.js';
 import { adminSubjectsRouter } from './routes/admin-subjects.js';
+import { adminGrantsRouter } from './routes/admin-grants.js';
 import { subjectRouter } from './routes/subject.js';
+import { accessibleSubjectFilter } from './lib/access.js';
 
 const app = new Hono();
 app.use('/api/*', cors());
@@ -127,14 +129,14 @@ app.post('/api/me/password', requireAuth, async (c) => {
 
 // 我能访问的学科。登录后的第一屏（学科选择页）就靠它。
 //
-// N1 阶段返回全部启用中的学科——学科级授权是 N2 的事。这里留的接缝是：
-// 到 N2 只需在这条 SQL 上加一个 user_subject_grants 的 join，
-// 前端与路由都不用动。
+// N2：学员只看到有授权的学科，管理员看到全部（accessibleSubjectFilter）。
+// N1 留的接缝就是这条 SQL 加一个条件，前端与路由确实一行没改。
 //
 // 进度摘要通过 courses.subject_id 关联出来：attempts / wrong_items 目前还没有
 // subject_id 冗余列（那是后续里程碑的事），现在走 join 是正确的，只是多一跳。
 app.get('/api/me/subjects', requireAuth, async (c) => {
   const me = c.get('user');
+  const acc = accessibleSubjectFilter(me);
   const { results } = await c.env.DB.prepare(
     `SELECT s.code, s.name, s.description, s.sort_order, s.content_group_kind,
             (SELECT COUNT(*) FROM questions q
@@ -151,9 +153,9 @@ app.get('/api/me/subjects', requireAuth, async (c) => {
                JOIN courses co ON co.course_code = a.course_code
               WHERE co.subject_id = s.subject_id AND a.user_id = ?1) AS last_activity
        FROM subjects s
-      WHERE s.status = '启用'
+      WHERE s.status = '启用' AND ${acc.sql}
       ORDER BY s.sort_order, s.subject_id`
-  ).bind(me.id).all();
+  ).bind(me.id, ...acc.binds).all();
 
   return c.json({
     subjects: results.map((r) => ({
@@ -263,6 +265,9 @@ admin.put('/settings/:key', async (c) => {
   return c.json({ ok: true, key, value: String(body.value) });
 });
 
+// 授权路由挂在 admin 根上（它自己带 /users/:id/subjects 与 /subjects/:id/members 两组路径）。
+// 必须排在 adminSubjectsRouter 之前：后者挂在 /subjects 下，会先吃掉 /subjects/:id/members。
+admin.route('/', adminGrantsRouter);
 admin.route('/subjects', adminSubjectsRouter);
 admin.route('/bank', bankRouter);
 admin.route('/ai', aiRouter);

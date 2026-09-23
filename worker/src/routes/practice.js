@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { requireAuth } from '../lib/auth.js';
+import { requireCourseAccess, requireAttemptAccess, accessibleCourseFilter } from '../lib/access.js';
 import { gradeQuestion } from '../lib/grade.js';
 import { masteryTier, masteryWrites, tagsOfQuestion } from '../lib/mastery.js';
 import { nextQuestion, scopeTags, scopeQuestionCount } from '../lib/practice.js';
@@ -7,6 +8,19 @@ import { wrongbookWrites } from '../lib/wrongbook.js';
 
 export const practiceRouter = new Hono();
 practiceRouter.use('/practice/*', requireAuth);
+
+// 练习这组路径混了三类，所以要分别挂（N2，见 lib/access.js 顶部注释）：
+//   收 courseCode 的四条 → requireCourseAccess
+//   带 attempt id 的     → requireAttemptAccess
+//   /practice/active     → 跨学科聚合，在 handler 里过滤行
+// 注意 '/practice/:id' 这个模式也会匹配到 '/practice/start' 这类静态路径
+// （:id 吃掉 "start"），此时 requireAttemptAccess 查不到对应 attempt 会直接放行，
+// 真正的校验由上面那条 requireCourseAccess 完成，不会漏。
+for (const path of ['/practice/scope', '/practice/section-types', '/practice/start', '/practice/drill']) {
+  practiceRouter.use(path, requireCourseAccess);
+}
+practiceRouter.use('/practice/:id', requireAttemptAccess);
+practiceRouter.use('/practice/:id/*', requireAttemptAccess);
 
 function newId() {
   return `prc-${crypto.randomUUID()}`;
@@ -32,14 +46,17 @@ async function loadPractice(c, id) {
 practiceRouter.get('/practice/active', async (c) => {
   const me = c.get('user');
   const courseCode = c.req.query('courseCode');
+  // courseCode 可传可不传，不传时是跨学科的，所以这里也要过滤行：
+  // 否则学科被撤销后，那边一个没做完的练习还会被"继续答题"的提示带出来。
+  const acc = accessibleCourseFilter(me, 'a');
   const row = await c.env.DB.prepare(
     `SELECT a.attempt_id, a.course_code, a.practice_stage, a.started_at,
             (SELECT COUNT(*) FROM attempt_questions q WHERE q.attempt_id = a.attempt_id) AS asked
        FROM attempts a
       WHERE a.user_id = ? AND a.mode = 'PRACTICE' AND a.status = '进行中'
-        AND (? IS NULL OR a.course_code = ?)
+        AND (? IS NULL OR a.course_code = ?) AND ${acc.sql}
       ORDER BY a.started_at DESC LIMIT 1`
-  ).bind(me.id, courseCode ?? null, courseCode ?? null).first();
+  ).bind(me.id, courseCode ?? null, courseCode ?? null, ...acc.binds).first();
   return c.json({ active: row || null });
 });
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { get, patch, post } from '../../api.js';
 import { Alert, Loading, PageHead } from '../../components/ui.jsx';
 
@@ -107,10 +108,11 @@ export default function Subjects() {
               {s.description ? <p className="small muted">{s.description}</p> : null}
               <p className="small">
                 课程 <strong>{s.course_count}</strong> 门 ·
-                内容组 <strong>{s.group_count}</strong> 个 ·
-                题目 <strong>{s.question_count}</strong> 道（可抽 <strong>{s.published_questions}</strong>）
+                题目 <strong>{s.question_count}</strong> 道（可抽 <strong>{s.published_questions}</strong>）·
+                已开通 <strong>{s.member_count}</strong> 人
               </p>
               <div className="row" style={{ marginTop: 12 }}>
+                <Link className="btn sm" to={`/admin/subjects/${s.subject_id}/members`}>成员</Link>
                 <button className="btn ghost sm" onClick={() => rename(s)}>改名</button>
                 <button className="btn ghost sm" onClick={() => toggle(s)}>
                   {s.status === '启用' ? '停用' : '启用'}
