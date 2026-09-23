@@ -51,6 +51,7 @@ in use，同时提示一个已删除的构建临时路径，很容易把注意�
 | m6-acceptance | 8796 | 8898 |
 | ui-smoke | 8798 | — |
 | n1-subjects | 8799 | — |
+| ui-subjects | 8797 | — |
 
 **LibreOffice 不可用**（连最小 docx 都报 source file could not be loaded），
 生成 Word 后没法转 PDF 看版式。只能做 schema 校验加读回正文核对，版式要如实
@@ -71,7 +72,11 @@ done
 node test/quota-degrade.mjs && node test/essay-parse.mjs
 
 # 浏览器实测（手机/平板/PC 三种宽度）
-cd worker && bash test/ui-smoke.sh
+cd worker && bash test/ui-smoke.sh      # 单课程界面（蓝本遗留）
+cd worker && bash test/ui-subjects.sh   # 学科选择、切换、导航带学科码
+
+# 注意：上面这些脚本共用 worker/.wrangler，每个都会 rm -rf 它，
+# 所以不能并行跑——并行会把另一套正在用的本地库删掉。
 
 # 重新生成题库种子
 node scripts/build-seed-sql.mjs
