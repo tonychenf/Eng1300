@@ -77,7 +77,7 @@ check "超管登录" "$([ -n "$ADMIN" ] && [ "$ADMIN" != null ] && echo yes)" "y
 adm -o /dev/null -X PUT "$BASE/admin/ai/settings/TUTORING" -H 'Content-Type: application/json' \
   -d "$(jq -n --arg u "http://127.0.0.1:$STUB_PORT/v1" '{baseUrl:$u,apiKey:"k",model:"m",protocol:"openai"}')"
 PW=$(adm -X POST "$BASE/admin/users" -H 'Content-Type: application/json' \
-  -d '{"username":"T001"}' | jq -r '.initialPassword')
+  -d '{"username":"T001","subjects":["english"]}' | jq -r '.initialPassword')
 STU=$(curl -s -X POST "$BASE/auth/login" -H 'Content-Type: application/json' \
   -d "{\"username\":\"T001\",\"password\":\"$PW\"}" | jq -r '.token')
 check "学员用初始密码登录" "$([ -n "$STU" ] && [ "$STU" != null ] && echo yes)" "yes"

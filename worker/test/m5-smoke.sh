@@ -70,7 +70,7 @@ curl -s -X POST "$BASE/setup" -H 'X-Setup-Token: test-setup-m5' \
 ADMIN=$(curl -s -X POST "$BASE/auth/login" -H 'Content-Type: application/json' \
   -d '{"username":"admin","password":"adminpass123"}' | jq -r '.token')
 PW=$(curl -s -X POST "$BASE/admin/users" -H "Authorization: Bearer $ADMIN" \
-  -H 'Content-Type: application/json' -d '{"username":"T001"}' | jq -r '.initialPassword')
+  -H 'Content-Type: application/json' -d '{"username":"T001","subjects":["english"]}' | jq -r '.initialPassword')
 STU=$(curl -s -X POST "$BASE/auth/login" -H 'Content-Type: application/json' \
   -d "{\"username\":\"T001\",\"password\":\"$PW\"}" | jq -r '.token')
 
@@ -231,7 +231,7 @@ check "失败调用也记了" \
 
 echo "== 越权 =="
 PW2=$(curl -s -X POST "$BASE/admin/users" -H "Authorization: Bearer $ADMIN" \
-  -H 'Content-Type: application/json' -d '{"username":"T002"}' | jq -r '.initialPassword')
+  -H 'Content-Type: application/json' -d '{"username":"T002","subjects":["english"]}' | jq -r '.initialPassword')
 STU2=$(curl -s -X POST "$BASE/auth/login" -H 'Content-Type: application/json' \
   -d "{\"username\":\"T002\",\"password\":\"$PW2\"}" | jq -r '.token')
 check "别人的作答不能跑 AI(403)" \

@@ -11,7 +11,7 @@ import { adminStatsRouter } from './routes/admin-stats.js';
 import { adminSubjectsRouter } from './routes/admin-subjects.js';
 import { adminGrantsRouter } from './routes/admin-grants.js';
 import { subjectRouter } from './routes/subject.js';
-import { accessibleSubjectFilter } from './lib/access.js';
+import { accessibleSubjectFilter, writeGrantWithAudit, upsertGrantStmt } from './lib/access.js';
 
 const app = new Hono();
 app.use('/api/*', cors());
@@ -209,18 +209,56 @@ admin.post('/users', async (c) => {
   }
   const password = body.password || randomPassword();
   const passwordHash = await bcrypt.hash(password, 10);
+
+  // 可选地在建号时一并开通学科。
+  //
+  // N2 之后新建学员默认没有任何学科授权，什么都打不开。分两步做当然也行，
+  // 但"建完账号就能用"是绝大多数场景，而且忘了第二步不会报错——学员只会看到
+  // 一句"管理员尚未为你开通任何学科"，然后来问。所以这里给一步到位的路。
+  // 学科码打错就整个建号失败，不静默跳过：跳过的话账号建出来了、学科没开，
+  // 正是上面那种"忘了第二步"的情形。
+  const codes = Array.isArray(body.subjects) ? [...new Set(body.subjects.map(String))] : [];
+  let subjectIds = [];
+  if (codes.length) {
+    const holes = codes.map(() => '?').join(',');
+    const { results } = await c.env.DB.prepare(
+      `SELECT subject_id, code FROM subjects WHERE code IN (${holes})`
+    ).bind(...codes).all();
+    const missing = codes.filter((x) => !results.some((r) => r.code === x));
+    if (missing.length) {
+      return c.json({ error: 'subject_not_found', message: `没有这些学科：${missing.join('、')}` }, 404);
+    }
+    subjectIds = results.map((r) => r.subject_id);
+  }
+
+  // try 只圈建号这一条：username_taken 是靠 err.message 里有 UNIQUE 判的，
+  // 把授权写入也圈进来的话，那边万一报 UNIQUE 就会谎报"用户名已存在"——
+  // 而账号其实已经建好了，管理员照着提示改个名字重建，就多出一个废账号。
+  let newId;
   try {
     const result = await c.env.DB.prepare(
       'INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)'
     ).bind(username, passwordHash, 'USER').run();
-    return c.json({
-      user: { id: result.meta.last_row_id, username, role: 'USER' },
-      initialPassword: password,
-    }, 201);
+    newId = result.meta.last_row_id;
   } catch (err) {
     if (String(err.message).includes('UNIQUE')) return c.json({ error: 'username_taken' }, 409);
     throw err;
   }
+
+  // 授权写失败就往外抛，不吞：这次失败改变了管理员要的那个结果
+  // （"建个能用的账号"），吞掉的话返回 201、学员却什么都打不开。
+  for (const sid of subjectIds) {
+    await writeGrantWithAudit(
+      c.env.DB, c.get('user').id, newId, sid, 'GRANT', null, { status: 'ACTIVE', expires_at: null },
+      upsertGrantStmt(c.env.DB, newId, sid, c.get('user').id, null, '建号时一并开通')
+    );
+  }
+
+  return c.json({
+    user: { id: newId, username, role: 'USER' },
+    initialPassword: password,
+    grantedSubjects: codes,
+  }, 201);
 });
 
 admin.post('/users/:id/reset-password', async (c) => {

@@ -18,7 +18,7 @@ export default function Users() {
     setError(''); setCredential(null);
     try {
       const r = await post('/admin/users', { username: username.trim() });
-      setCredential({ username: r.user.username, password: r.initialPassword });
+      setCredential({ id: r.user.id, username: r.user.username, password: r.initialPassword });
       setUsername('');
       await load();
     } catch (err) { setError(err.message); }
@@ -55,6 +55,15 @@ export default function Users() {
             <div className="tiny" style={{ marginTop: 4 }}>
               密码只在此处显示一次，请立即复制转交，页面刷新后无法找回。
             </div>
+            {/* 新建的账号默认没有任何学科授权，什么都打不开。忘了这一步不会报错——
+                学员只会看到"管理员尚未为你开通任何学科"，然后来问。这里直接给入口。 */}
+            {credential.id ? (
+              <div className="tiny" style={{ marginTop: 6 }}>
+                这个账号还没有任何学科权限，
+                <Link to={`/admin/users/${credential.id}/subjects`}>去开通学科</Link>
+                {' '}之后才能使用。
+              </div>
+            ) : null}
           </Alert>
         </div>
       ) : null}

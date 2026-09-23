@@ -457,6 +457,39 @@ jobs:
                 -H "Authorization: Bearer $TOKEN" | jq -r '.courses | length')
               check "生化学科名下没有英语的课程" "$BIO_COURSES" "0"
 
+              # ---- N2 学科权限 ----
+              # 迁移里那段"给既有学员补授权"在线上到底生效没有，只有这几条能证明。
+              # 补漏了的话现象是学员打不开任何学科，而流水线其余断言全绿。
+              T001=$(jq -r '.users[] | select(.username=="T001") | .id' /tmp/users.json)
+              if [ -n "$T001" ] && [ "$T001" != "null" ]; then
+                curl -sS -m 20 -o /tmp/grants.json "$WORKER_URL/api/admin/users/$T001/subjects" \
+                  -H "Authorization: Bearer $TOKEN"
+                check "授权接口在线上可用" \
+                  "$(jq -r 'has("subjects")' /tmp/grants.json)" "true"
+                # 单人授权视图必须把"还没开通的学科"也列出来，否则管理员在界面上
+                # 根本点不到它、没法开通。用 LEFT JOIN 写错成 INNER JOIN 正是这个
+                # 现象，而且不报错。拿 /api/me/subjects 的学科数来对（两个接口走的
+                # 是不同的查询），不写死数字——将来加学科这条不该跟着红。
+                # 只比启用的：授权视图连停用学科也列（管理员要能看到），
+                # /api/me/subjects 不列，管理员哪天停用一个学科这条就会无故变红。
+                ALL_SUBJ=$(echo "$SUBJ" | jq -r '.subjects | length')
+                check "单人视角列出了全部 $ALL_SUBJ 个启用学科（含未开通的）" \
+                  "$(jq -r '[.subjects[] | select(.subject_status=="启用")] | length' /tmp/grants.json)" \
+                  "$ALL_SUBJ"
+                # 权限是新增的约束，不该追溯剥夺既有学员的访问。
+                # 只断"至少有一个已开通"而不是"全部已开通"：后者在管理员真撤销过
+                # 某个学科之后会在下次部署误报，而这条要守的是"补授权跑了没有"。
+                ACTIVE_N=$(jq -r '[.subjects[] | select(.grant_status=="ACTIVE")] | length' /tmp/grants.json)
+                check "既有学员 T001 有授权（迁移没有追溯剥夺访问）" \
+                  "$(( ACTIVE_N > 0 ))" "1"
+                echo "     （T001 已开通 $ACTIVE_N 个学科）"
+              else
+                echo "  FAIL 找不到学员 T001，无法验证授权补齐"; FAIL=1
+              fi
+              check "审计接口在线上可用" \
+                "$(curl -sS -m 20 "$WORKER_URL/api/admin/grants/audit?limit=1" \
+                   -H "Authorization: Bearer $TOKEN" | jq -r 'has("entries")')" "true"
+
               # 缺原文的那道题按要求扣下，不参与组卷
               HELD=$(curl -sS -m 20 "$WORKER_URL/api/admin/bank/exams/13000-2026-04" \
                 -H "Authorization: Bearer $TOKEN" \

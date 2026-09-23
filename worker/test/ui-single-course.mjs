@@ -30,10 +30,12 @@ try {
     await page.fill('#username', USER);
     await page.fill('#password', PASS);
     await page.click('button[type="submit"]');
-    await page.waitForURL(/\/app/, { timeout: 15000 });
+    // N1 之后 /app 是学科选择页；这个学员只开通了 english 一个学科，
+    // 所以会自动进去（判断是"可访问学科数 > 1 才显示选择页"）。
+    await page.waitForURL(/\/app\/english/, { timeout: 15000 });
 
     // 模考设置页
-    await page.goto(`${BASE}/app/exam/new`, { waitUntil: 'networkidle' });
+    await page.goto(`${BASE}/app/english/exam/new`, { waitUntil: 'networkidle' });
     await page.waitForSelector('text=难度倾向', { timeout: 15000 });
     check(`${label}｜模考页没有课程下拉框`, await page.locator('select#course').count(), 0);
     const examText = await page.locator('body').innerText();
@@ -41,7 +43,7 @@ try {
     check(`${label}｜模考页标出可用题数`, /可用\s*\d+\s*题/.test(examText), true);
 
     // 练习设置页
-    await page.goto(`${BASE}/app/practice/new`, { waitUntil: 'networkidle' });
+    await page.goto(`${BASE}/app/english/practice/new`, { waitUntil: 'networkidle' });
     await page.waitForSelector('text=题型范围', { timeout: 15000 });
     check(`${label}｜练习页没有课程下拉框`, await page.locator('select#course').count(), 0);
     // 去掉下拉后取题范围仍要能算出来，否则等于把功能连着控件一起删了
@@ -50,7 +52,7 @@ try {
       /可用题目\s*\d+/.test(await page.locator('body').innerText()), true);
 
     // 首页文案不该再说"选择课程"
-    await page.goto(`${BASE}/app`, { waitUntil: 'networkidle' });
+    await page.goto(`${BASE}/app/english`, { waitUntil: 'networkidle' });
     // 锚在课程卡片自己的字上。"模拟考试"在导航栏里也有，手机上导航是收起来的，
     // 等它可见会一直等不到——那测的是导航不是首页。
     await page.waitForSelector('text=可用真题', { timeout: 15000 });

@@ -65,7 +65,7 @@ curl -s -X POST "$BASE/setup" -H 'X-Setup-Token: test-setup-ui' \
 ADMIN=$(curl -s -X POST "$BASE/auth/login" -H 'Content-Type: application/json' \
   -d '{"username":"admin","password":"adminpass123"}' | jq -r '.token')
 UI_PASS=$(curl -s -X POST "$BASE/admin/users" -H "Authorization: Bearer $ADMIN" \
-  -H 'Content-Type: application/json' -d '{"username":"UI001"}' | jq -r '.initialPassword')
+  -H 'Content-Type: application/json' -d '{"username":"UI001","subjects":["english"]}' | jq -r '.initialPassword')
 [ -n "$UI_PASS" ] && [ "$UI_PASS" != null ] || { echo "建学员账号失败"; exit 1; }
 
 # 前置确认：库里确实只有一门课，否则这套用例测的就不是它想测的东西

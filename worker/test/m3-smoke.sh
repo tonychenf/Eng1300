@@ -90,7 +90,7 @@ mk_student() {
   local name="$1"
   local pw
   pw=$(curl -s -X POST "$BASE/admin/users" -H "Authorization: Bearer $ADMIN" \
-    -H 'Content-Type: application/json' -d "{\"username\":\"$name\"}" | jq -r '.initialPassword')
+    -H 'Content-Type: application/json' -d "{\"username\":\"$name\",\"subjects\":[\"english\"]}" | jq -r '.initialPassword')
   curl -s -X POST "$BASE/auth/login" -H 'Content-Type: application/json' \
     -d "{\"username\":\"$name\",\"password\":\"$pw\"}" | jq -r '.token'
 }

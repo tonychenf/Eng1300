@@ -98,7 +98,7 @@ ADMIN=$(curl -s -X POST "$BASE/auth/login" -H 'Content-Type: application/json' \
   -d '{"username":"admin","password":"admin12345"}' | jq -r '.token')
 [ "$ADMIN" != "null" ] && [ -n "$ADMIN" ] || { echo "管理员登录失败"; exit 1; }
 curl -s -o /dev/null -X POST "$BASE/admin/users" -H "Authorization: Bearer $ADMIN" \
-  -H 'Content-Type: application/json' -d '{"username":"S001","password":"student12345"}'
+  -H 'Content-Type: application/json' -d '{"username":"S001","password":"student12345","subjects":["english","biochem"]}'
 STU=$(curl -s -X POST "$BASE/auth/login" -H 'Content-Type: application/json' \
   -d '{"username":"S001","password":"student12345"}' | jq -r '.token')
 [ "$STU" != "null" ] && [ -n "$STU" ] || { echo "学员登录失败"; exit 1; }
@@ -110,8 +110,12 @@ check "未登录拿不到学科列表" "$CODE" "401"
 
 curl -s -o /tmp/n1-mysubs.json "$BASE/me/subjects" -H "Authorization: Bearer $STU"
 # 期望值从库里现算，不写死 2——将来初始学科增减时这条不该跟着红
-WANT_SUBS=$(one "SELECT COUNT(*) FROM subjects WHERE status='启用';")
-check "学员看到全部启用中的学科" "$(jq -r '.subjects | length' /tmp/n1-mysubs.json)" "$WANT_SUBS"
+# N2 之后学员只看到"已授权 ∩ 启用"的学科，所以期望值要按这个口径算，
+# 不能再用"所有启用中的学科"——那在没全开通时会误报。
+WANT_SUBS=$(one "SELECT COUNT(*) FROM subjects s JOIN user_subject_grants g ON g.subject_id=s.subject_id
+                  WHERE s.status='启用' AND g.user_id=(SELECT id FROM users WHERE username='S001')
+                    AND g.status='ACTIVE';")
+check "学员看到已授权且启用的学科" "$(jq -r '.subjects | length' /tmp/n1-mysubs.json)" "$WANT_SUBS"
 check "学科按 sort_order 排序，english 在前" \
   "$(jq -r '.subjects[0].code' /tmp/n1-mysubs.json)" "english"
 # ready 区分"学科建了"和"学科能用了"。两个学科的 ready 不同，说明隔离是真的。
@@ -187,6 +191,13 @@ check "学科不支持删除" "$CODE" "405"
 
 echo
 echo "== 停用学科 =="
+# 先给 S001 开通这个新学科，再停用它。不先开通的话，"停用后不出现在列表里"
+# 这条断言恒真——它本来就因为没授权而不出现，测不出停用有没有生效。
+curl -s -o /dev/null -X PUT "$BASE/admin/users/$(one "SELECT id FROM users WHERE username='S001';")/subjects" \
+  -H "Authorization: Bearer $ADMIN" -H 'Content-Type: application/json' \
+  -d '{"subjects":[{"code":"english"},{"code":"biochem"},{"code":"history"}]}'
+sget_before=$(curl -s "$BASE/me/subjects" -H "Authorization: Bearer $STU" | jq -r '[.subjects[].code] | index("history") != null')
+check "停用前：已授权的新学科出现在列表里（否则下面那条恒真）" "$sget_before" "true"
 curl -s -o /dev/null -X PATCH "$BASE/admin/subjects/$NEW_ID" -H "Authorization: Bearer $ADMIN" \
   -H 'Content-Type: application/json' -d '{"status":"停用"}'
 CODE=$(curl -s -o /tmp/n1-susp.json -w '%{http_code}' "$BASE/s/history" -H "Authorization: Bearer $STU")

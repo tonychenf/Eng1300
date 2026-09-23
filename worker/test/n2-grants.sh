@@ -93,6 +93,39 @@ check "迁移给管理员没发授权（它本来就通吃）" \
   "$(one "SELECT COUNT(*) FROM user_subject_grants g JOIN users u ON u.id=g.user_id WHERE u.role='SUPER_ADMIN';")" "0"
 
 echo
+echo "== 建号时一并开通学科 =="
+# 默认没授权是对的，但"建完就能用"是绝大多数场景，六套既有测试也都靠它。
+curl -s -o /dev/null -X POST "$BASE/admin/users" -H "Authorization: Bearer $ADMIN" \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"S010","password":"student12345","subjects":["english"]}'
+S010=$(one "SELECT id FROM users WHERE username='S010';")
+check "建号时带 subjects，授权直接落库" \
+  "$(one "SELECT COUNT(*) FROM user_subject_grants WHERE user_id=$S010 AND subject_id=$ENG AND status='ACTIVE';")" "1"
+check "只开了传进来的那个，没有多开" \
+  "$(one "SELECT COUNT(*) FROM user_subject_grants WHERE user_id=$S010;")" "1"
+check "建号的授权也进了审计" \
+  "$(one "SELECT COUNT(*) FROM subject_grant_audit WHERE target_user_id=$S010 AND action='GRANT';")" "1"
+
+# 学科码打错要整个失败，不能静默跳过——跳过的结果是"号建出来了、学科没开"，
+# 跟管理员忘了第二步一模一样，而且不报错。
+BEFORE_N=$(one "SELECT COUNT(*) FROM users;")
+CODE=$(curl -s -o /tmp/n2-badsub.json -w '%{http_code}' -X POST "$BASE/admin/users" \
+  -H "Authorization: Bearer $ADMIN" -H 'Content-Type: application/json' \
+  -d '{"username":"S011","subjects":["english","nosuchsubject"]}')
+check "学科码打错，建号被拒" "$CODE" "404"
+check "拒绝的理由说清楚了" "$(jq -r '.error' /tmp/n2-badsub.json)" "subject_not_found"
+# 这条才是重点：错误码对了但号已经建出来，等于留下一个打不开任何东西的废账号
+check "被拒时账号没有建出来" "$(one "SELECT COUNT(*) FROM users;")" "$BEFORE_N"
+
+# 建号与授权分成两段 try，重名这条容易在重构里被连带改坏：
+# 授权那边万一报 UNIQUE，会被误判成"用户名已存在"，而号其实建好了。
+CODE=$(curl -s -o /tmp/n2-dup.json -w '%{http_code}' -X POST "$BASE/admin/users" \
+  -H "Authorization: Bearer $ADMIN" -H 'Content-Type: application/json' \
+  -d '{"username":"S010","subjects":["english"]}')
+check "重名建号仍返回 409" "$CODE" "409"
+check "重名的错误码" "$(jq -r '.error' /tmp/n2-dup.json)" "username_taken"
+
+echo
 echo "== 没授权时：看不到、进不去 =="
 sget "/me/subjects" /tmp/n2-subs.json >/dev/null
 check "学科列表为空" "$(jq -r '.subjects | length' /tmp/n2-subs.json)" "0"

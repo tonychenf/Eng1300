@@ -187,3 +187,34 @@ export function accessibleSubjectFilter(user) {
     binds: [user.id],
   };
 }
+
+// ── 授权写入 ──────────────────────────────────────────────────────
+//
+// 授权变更与审计用 batch 一起落。不用"审计写失败就吞掉"的记账式处理：
+// 权限审计悄悄少几条，事后想查"谁把这个人的学科关掉的"就查不出来，
+// 而且没人会知道它丢过。D1 的 batch 是一个事务，两条要么都成要么都不成。
+//
+// 放在这里而不是某个路由文件里：建账号和管授权两处都要写授权，
+// 各写一份的话审计格式会慢慢长歪，而这种歪法不会报错。
+export function writeGrantWithAudit(db, actorId, targetUserId, subjectId, action, before, after, stmt) {
+  return db.batch([
+    stmt,
+    db.prepare(
+      `INSERT INTO subject_grant_audit
+         (actor_id, target_user_id, subject_id, action, before_json, after_json)
+       VALUES (?, ?, ?, ?, ?, ?)`
+    ).bind(actorId, targetUserId, subjectId, action,
+           before ? JSON.stringify(before) : null,
+           after ? JSON.stringify(after) : null),
+  ]);
+}
+
+export function upsertGrantStmt(db, userId, subjectId, actorId, expiresAt, note) {
+  return db.prepare(
+    `INSERT INTO user_subject_grants (user_id, subject_id, status, granted_by, expires_at, note)
+     VALUES (?, ?, 'ACTIVE', ?, ?, ?)
+     ON CONFLICT(user_id, subject_id) DO UPDATE SET
+       status = 'ACTIVE', granted_by = excluded.granted_by,
+       granted_at = datetime('now'), expires_at = excluded.expires_at`
+  ).bind(userId, subjectId, actorId, expiresAt ?? null, note ?? null);
+}

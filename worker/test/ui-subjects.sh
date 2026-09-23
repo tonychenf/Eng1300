@@ -55,7 +55,7 @@ curl -s -o /dev/null -X POST "$BASE/setup" -H 'X-Setup-Token: test-setup-uisub' 
 ADMIN=$(curl -s -X POST "$BASE/auth/login" -H 'Content-Type: application/json' \
   -d '{"username":"admin","password":"admin12345"}' | jq -r '.token')
 curl -s -o /dev/null -X POST "$BASE/admin/users" -H "Authorization: Bearer $ADMIN" \
-  -H 'Content-Type: application/json' -d '{"username":"U001","password":"student12345"}'
+  -H 'Content-Type: application/json' -d '{"username":"U001","password":"student12345","subjects":["english","biochem"]}'
 
 echo "== 浏览器用例 =="
 UI_BASE="http://127.0.0.1:$PORT" UI_USER=U001 UI_PASS=student12345 \
