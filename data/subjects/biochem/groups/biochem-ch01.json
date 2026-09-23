@@ -1,0 +1,346 @@
+{
+  "groupId": "biochem-ch01",
+  "subjectCode": "biochem",
+  "courseCode": "biochem-main",
+  "groupKind": "TEXTBOOK_CHAPTER",
+  "orderKey": 1,
+  "chapterNo": 1,
+  "label": "第01章 蛋白质的化学",
+  "answerSource": "AI",
+  "answerReviewed": false,
+  "answerNote": "本文件的全部答案与采分点由 AI 生成，未经人工核对。按需求文档 §6.4.6，AI 生成的答案绝不能自动发布：全部题目 status 置为「待核」，不参与组卷与练习抽题。人工逐条确认后方可转「已发布」。",
+  "sections": [
+    {
+      "sectionId": "biochem-ch01-s1",
+      "type": "填空题",
+      "order": 1,
+      "questions": [
+        {
+          "questionId": "biochem-ch01-q01", "order": 1, "questionType": "fill_text",
+          "stem": "各种生物的蛋白质中，＿元素的含量接近且较恒定，该元素约占蛋白质质量的＿%。",
+          "requiresContext": false, "status": "待核", "sourcePara": 2,
+          "knowledgePoints": ["蛋白质化学/蛋白质的元素组成"],
+          "items": [
+            { "ord": 1, "kind": "BLANK", "strategy": "EXACT", "answer": "氮", "altAnswers": ["N", "氮元素"], "weight": 1 },
+            { "ord": 2, "kind": "BLANK", "strategy": "NUMERIC", "answer": "16", "weight": 1, "params": { "tolerance": 0.05, "unit": "%" } }
+          ]
+        },
+        {
+          "questionId": "biochem-ch01-q02", "order": 2, "questionType": "fill_text",
+          "stem": "组成蛋白质的元素有＿、＿、＿、＿、＿、＿等，有些蛋白质还含有金属元素如＿、＿、＿、＿等。",
+          "requiresContext": false, "status": "待核", "sourcePara": 4,
+          "knowledgePoints": ["蛋白质化学/蛋白质的元素组成"],
+          "items": [
+            { "ord": 1, "kind": "BLANK", "strategy": "SET", "groupKey": "g1", "weight": 1,
+              "params": { "pool": ["碳", "氢", "氧", "氮", "硫", "磷"], "requiredCount": 6,
+                          "alias": { "碳": ["C"], "氢": ["H"], "氧": ["O"], "氮": ["N"], "硫": ["S"], "磷": ["P"] } } },
+            { "ord": 2, "kind": "BLANK", "strategy": "SET", "groupKey": "g1", "weight": 1 },
+            { "ord": 3, "kind": "BLANK", "strategy": "SET", "groupKey": "g1", "weight": 1 },
+            { "ord": 4, "kind": "BLANK", "strategy": "SET", "groupKey": "g1", "weight": 1 },
+            { "ord": 5, "kind": "BLANK", "strategy": "SET", "groupKey": "g1", "weight": 1 },
+            { "ord": 6, "kind": "BLANK", "strategy": "SET", "groupKey": "g1", "weight": 1 },
+            { "ord": 7, "kind": "BLANK", "strategy": "SET", "groupKey": "g2", "weight": 1,
+              "params": { "pool": ["铁", "铜", "锌", "锰", "钼", "钴", "镁", "钙"], "requiredCount": 4,
+                          "alias": { "铁": ["Fe"], "铜": ["Cu"], "锌": ["Zn"], "锰": ["Mn"], "钼": ["Mo"], "钴": ["Co"], "镁": ["Mg"], "钙": ["Ca"] },
+                          "note": "题干带「等」，为开放列举：从候选池任选 4 个即可" } },
+            { "ord": 8, "kind": "BLANK", "strategy": "SET", "groupKey": "g2", "weight": 1 },
+            { "ord": 9, "kind": "BLANK", "strategy": "SET", "groupKey": "g2", "weight": 1 },
+            { "ord": 10, "kind": "BLANK", "strategy": "SET", "groupKey": "g2", "weight": 1 }
+          ]
+        },
+        {
+          "questionId": "biochem-ch01-q03", "order": 3, "questionType": "fill_text",
+          "stem": "肽键包含＿、＿、＿、＿以及与之相连的2个＿原子，这6个原子位于同一个平面，该平面称为＿。",
+          "requiresContext": false, "status": "待核", "sourcePara": 6,
+          "knowledgePoints": ["蛋白质化学/肽与肽键"],
+          "items": [
+            { "ord": 1, "kind": "BLANK", "strategy": "SET", "groupKey": "g1", "weight": 1,
+              "params": { "pool": ["C", "O", "N", "H"], "requiredCount": 4,
+                          "alias": { "C": ["碳", "羰基碳"], "O": ["氧", "羰基氧"], "N": ["氮", "氨基氮"], "H": ["氢", "氨基氢"] } } },
+            { "ord": 2, "kind": "BLANK", "strategy": "SET", "groupKey": "g1", "weight": 1 },
+            { "ord": 3, "kind": "BLANK", "strategy": "SET", "groupKey": "g1", "weight": 1 },
+            { "ord": 4, "kind": "BLANK", "strategy": "SET", "groupKey": "g1", "weight": 1 },
+            { "ord": 5, "kind": "BLANK", "strategy": "EXACT", "answer": "α-碳", "altAnswers": ["Cα", "α碳", "α-碳原子", "阿尔法碳"], "weight": 1 },
+            { "ord": 6, "kind": "BLANK", "strategy": "EXACT", "answer": "肽平面", "altAnswers": ["肽单位", "酰胺平面"], "weight": 1 }
+          ]
+        },
+        {
+          "questionId": "biochem-ch01-q04", "order": 4, "questionType": "fill_text",
+          "stem": "构成蛋白质的氨基酸中，酸性氨基酸有＿和＿。其等电点＿（高/低）于生理pH，所以在生理条件下，该氨基酸残基带＿（正/负）电。",
+          "requiresContext": false, "status": "待核", "sourcePara": 8,
+          "knowledgePoints": ["蛋白质化学/氨基酸的结构与分类", "蛋白质化学/氨基酸的理化性质"],
+          "items": [
+            { "ord": 1, "kind": "BLANK", "strategy": "SET", "groupKey": "g1", "weight": 1,
+              "params": { "pool": ["天冬氨酸", "谷氨酸"], "requiredCount": 2,
+                          "alias": { "天冬氨酸": ["Asp", "D", "门冬氨酸"], "谷氨酸": ["Glu", "E"] } } },
+            { "ord": 2, "kind": "BLANK", "strategy": "SET", "groupKey": "g1", "weight": 1 },
+            { "ord": 3, "kind": "BLANK", "strategy": "ENUM", "answer": "低", "weight": 1, "params": { "enum": ["高", "低"] } },
+            { "ord": 4, "kind": "BLANK", "strategy": "ENUM", "answer": "负", "weight": 1, "params": { "enum": ["正", "负"] } }
+          ]
+        },
+        {
+          "questionId": "biochem-ch01-q05", "order": 5, "questionType": "fill_text",
+          "stem": "构成蛋白质的氨基酸中，碱性氨基酸有＿、＿和＿。其等电点＿（高/低）于生理pH，所以在生理条件下，该氨基酸残基带＿（正/负）电。",
+          "requiresContext": false, "status": "待核", "sourcePara": 10,
+          "knowledgePoints": ["蛋白质化学/氨基酸的结构与分类", "蛋白质化学/氨基酸的理化性质"],
+          "items": [
+            { "ord": 1, "kind": "BLANK", "strategy": "SET", "groupKey": "g1", "weight": 1,
+              "params": { "pool": ["赖氨酸", "精氨酸", "组氨酸"], "requiredCount": 3,
+                          "alias": { "赖氨酸": ["Lys", "K"], "精氨酸": ["Arg", "R"], "组氨酸": ["His", "H"] } } },
+            { "ord": 2, "kind": "BLANK", "strategy": "SET", "groupKey": "g1", "weight": 1 },
+            { "ord": 3, "kind": "BLANK", "strategy": "SET", "groupKey": "g1", "weight": 1 },
+            { "ord": 4, "kind": "BLANK", "strategy": "ENUM", "answer": "高", "weight": 1, "params": { "enum": ["高", "低"] } },
+            { "ord": 5, "kind": "BLANK", "strategy": "ENUM", "answer": "正", "weight": 1, "params": { "enum": ["正", "负"] } }
+          ]
+        },
+        {
+          "questionId": "biochem-ch01-q06", "order": 6, "questionType": "fill_text",
+          "stem": "构成蛋白质的氨基酸中，含有硫元素的氨基酸有＿和＿。这些含硫氨基酸经过细菌腐败作用，会产生＿气体，呈臭鸡蛋气味。",
+          "requiresContext": false, "status": "待核", "sourcePara": 12,
+          "knowledgePoints": ["蛋白质化学/氨基酸的结构与分类"],
+          "items": [
+            { "ord": 1, "kind": "BLANK", "strategy": "SET", "groupKey": "g1", "weight": 1,
+              "params": { "pool": ["半胱氨酸", "蛋氨酸"], "requiredCount": 2,
+                          "alias": { "半胱氨酸": ["Cys", "C"], "蛋氨酸": ["Met", "M", "甲硫氨酸"] } } },
+            { "ord": 2, "kind": "BLANK", "strategy": "SET", "groupKey": "g1", "weight": 1 },
+            { "ord": 3, "kind": "BLANK", "strategy": "EXACT", "answer": "硫化氢", "altAnswers": ["H2S", "H₂S"], "weight": 1 }
+          ]
+        },
+        {
+          "questionId": "biochem-ch01-q07", "order": 7, "questionType": "fill_text",
+          "stem": "构成蛋白质的氨基酸中，含有苯环的氨基酸有＿、＿和＿。含有这些氨基酸残基的蛋白质，因为有苯环的缘故，对紫外线有吸收。蛋白质的最大吸收峰波长是＿nm。",
+          "requiresContext": false, "status": "待核", "sourcePara": 14,
+          "knowledgePoints": ["蛋白质化学/氨基酸的结构与分类", "蛋白质化学/蛋白质的理化性质"],
+          "items": [
+            { "ord": 1, "kind": "BLANK", "strategy": "SET", "groupKey": "g1", "weight": 1,
+              "params": { "pool": ["苯丙氨酸", "酪氨酸", "色氨酸"], "requiredCount": 3,
+                          "alias": { "苯丙氨酸": ["Phe", "F"], "酪氨酸": ["Tyr", "Y"], "色氨酸": ["Trp", "W"] } } },
+            { "ord": 2, "kind": "BLANK", "strategy": "SET", "groupKey": "g1", "weight": 1 },
+            { "ord": 3, "kind": "BLANK", "strategy": "SET", "groupKey": "g1", "weight": 1 },
+            { "ord": 4, "kind": "BLANK", "strategy": "NUMERIC", "answer": "280", "weight": 1, "params": { "tolerance": 0.02, "unit": "nm" } }
+          ]
+        },
+        {
+          "questionId": "biochem-ch01-q08", "order": 8, "questionType": "fill_text",
+          "stem": "维持蛋白质一级结构的化学键主要是＿，在有些蛋白质中，＿也参与了维持其一级结构。",
+          "requiresContext": false, "status": "待核", "sourcePara": 17,
+          "knowledgePoints": ["蛋白质化学/蛋白质的一级结构"],
+          "items": [
+            { "ord": 1, "kind": "BLANK", "strategy": "EXACT", "answer": "肽键", "altAnswers": ["酰胺键"], "weight": 1 },
+            { "ord": 2, "kind": "BLANK", "strategy": "EXACT", "answer": "二硫键", "altAnswers": ["-S-S-", "二硫桥"], "weight": 1 }
+          ]
+        },
+        {
+          "questionId": "biochem-ch01-q09", "order": 9, "questionType": "fill_text",
+          "stem": "蛋白质的二级结构形式有＿、＿、＿和＿等。维持蛋白质二级结构稳定的主要化学键是＿。",
+          "requiresContext": false, "status": "待核", "sourcePara": 19,
+          "knowledgePoints": ["蛋白质化学/蛋白质的二级结构"],
+          "items": [
+            { "ord": 1, "kind": "BLANK", "strategy": "SET", "groupKey": "g1", "weight": 1,
+              "params": { "pool": ["α-螺旋", "β-折叠", "β-转角", "无规卷曲"], "requiredCount": 4,
+                          "alias": { "α-螺旋": ["α螺旋", "阿尔法螺旋"], "β-折叠": ["β折叠", "β-片层", "β-折叠片", "贝塔折叠"], "β-转角": ["β转角", "贝塔转角"], "无规卷曲": ["无规则卷曲", "自由卷曲"] } } },
+            { "ord": 2, "kind": "BLANK", "strategy": "SET", "groupKey": "g1", "weight": 1 },
+            { "ord": 3, "kind": "BLANK", "strategy": "SET", "groupKey": "g1", "weight": 1 },
+            { "ord": 4, "kind": "BLANK", "strategy": "SET", "groupKey": "g1", "weight": 1 },
+            { "ord": 5, "kind": "BLANK", "strategy": "EXACT", "answer": "氢键", "weight": 1 }
+          ]
+        },
+        {
+          "questionId": "biochem-ch01-q10", "order": 10, "questionType": "fill_text",
+          "stem": "维持蛋白质三级结构的主要化学键有＿、＿、＿、＿和范德华引力等。",
+          "requiresContext": false, "status": "待核", "sourcePara": 21,
+          "knowledgePoints": ["蛋白质化学/蛋白质的三级结构"],
+          "items": [
+            { "ord": 1, "kind": "BLANK", "strategy": "SET", "groupKey": "g1", "weight": 1,
+              "params": { "pool": ["疏水作用", "氢键", "离子键", "二硫键"], "requiredCount": 4,
+                          "alias": { "疏水作用": ["疏水键", "疏水相互作用"], "离子键": ["盐键", "盐桥", "静电作用"], "二硫键": ["-S-S-"] } } },
+            { "ord": 2, "kind": "BLANK", "strategy": "SET", "groupKey": "g1", "weight": 1 },
+            { "ord": 3, "kind": "BLANK", "strategy": "SET", "groupKey": "g1", "weight": 1 },
+            { "ord": 4, "kind": "BLANK", "strategy": "SET", "groupKey": "g1", "weight": 1 }
+          ]
+        },
+        {
+          "questionId": "biochem-ch01-q11", "order": 11, "questionType": "fill_text",
+          "stem": "能够维持蛋白质稳定溶解于水的因素有＿和＿。",
+          "requiresContext": false, "status": "待核", "sourcePara": 23,
+          "knowledgePoints": ["蛋白质化学/蛋白质的理化性质"],
+          "items": [
+            { "ord": 1, "kind": "BLANK", "strategy": "SET", "groupKey": "g1", "weight": 1,
+              "params": { "pool": ["水化膜", "同性电荷"], "requiredCount": 2,
+                          "alias": { "水化膜": ["水化层", "水膜"], "同性电荷": ["表面净电荷", "同种电荷", "电荷排斥"] } } },
+            { "ord": 2, "kind": "BLANK", "strategy": "SET", "groupKey": "g1", "weight": 1 }
+          ]
+        },
+        {
+          "questionId": "biochem-ch01-q12", "order": 12, "questionType": "fill_text",
+          "stem": "组成蛋白质的基本结构单位是＿，其氨基均位于＿位碳原子上，除＿（填某一氨基酸名称）外，处于该位的碳原子均具有手性。",
+          "requiresContext": false, "status": "待核", "sourcePara": 25,
+          "knowledgePoints": ["蛋白质化学/氨基酸的结构与分类"],
+          "items": [
+            { "ord": 1, "kind": "BLANK", "strategy": "EXACT", "answer": "氨基酸", "altAnswers": ["α-氨基酸", "L-α-氨基酸"], "weight": 1 },
+            { "ord": 2, "kind": "BLANK", "strategy": "EXACT", "answer": "α", "altAnswers": ["阿尔法", "alpha"], "weight": 1 },
+            { "ord": 3, "kind": "BLANK", "strategy": "EXACT", "answer": "甘氨酸", "altAnswers": ["Gly", "G"], "weight": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "biochem-ch01-s2",
+      "type": "选择题",
+      "order": 2,
+      "questions": [
+        { "questionId": "biochem-ch01-q13", "order": 13, "questionType": "single_choice", "requiresContext": false, "status": "待核", "sourcePara": 29,
+          "stem": "在下列所有氨基酸中，不引起偏振光旋转的氨基酸是（  ）",
+          "options": ["A. 丙氨酸", "B. 亮氨酸", "C. 甘氨酸", "D. 丝氨酸"],
+          "answer": "C", "knowledgePoints": ["蛋白质化学/氨基酸的结构与分类"] },
+        { "questionId": "biochem-ch01-q14", "order": 14, "questionType": "single_choice", "requiresContext": false, "status": "待核", "sourcePara": 32,
+          "stem": "在生理pH情况下，下列氨基酸中哪个带净负电荷（  ）",
+          "options": ["A. Pro", "B. Lys", "C. His", "D. Glu"],
+          "answer": "D", "knowledgePoints": ["蛋白质化学/氨基酸的理化性质"] },
+        { "questionId": "biochem-ch01-q15", "order": 15, "questionType": "single_choice", "requiresContext": false, "status": "待核", "sourcePara": 35,
+          "stem": "构成蛋白质的氨基酸中，R侧链在生理条件带正电荷的氨基酸是（  ）",
+          "options": ["A. 赖氨酸", "B. 蛋氨酸", "C. 亮氨酸", "D. 谷氨酸"],
+          "answer": "A", "knowledgePoints": ["蛋白质化学/氨基酸的理化性质"] },
+        { "questionId": "biochem-ch01-q16", "order": 16, "questionType": "single_choice", "requiresContext": false, "status": "待核", "sourcePara": 38,
+          "stem": "下列蛋白质组分中，哪一种氨基酸在280nm具有最大的光吸收（  ）",
+          "options": ["A. 酪氨酸", "B. 半胱氨酸", "C. 组氨酸", "D. 谷氨酸"],
+          "answer": "A", "knowledgePoints": ["蛋白质化学/蛋白质的理化性质"] },
+        { "questionId": "biochem-ch01-q17", "order": 17, "questionType": "single_choice", "requiresContext": false, "status": "待核", "sourcePara": 41,
+          "stem": "天然蛋白质中不存在的氨基酸是（  ）。",
+          "options": ["A. 半胱氨酸", "B. 瓜氨酸", "C. 丝氨酸", "D. 蛋氨酸"],
+          "answer": "B", "knowledgePoints": ["蛋白质化学/氨基酸的结构与分类"] },
+        { "questionId": "biochem-ch01-q18", "order": 18, "questionType": "single_choice", "requiresContext": false, "status": "待核", "sourcePara": 44,
+          "stem": "破坏α-螺旋结构的氨基酸残基之一是（  ）",
+          "options": ["A. 亮氨酸", "B. 丙氨酸", "C. 脯氨酸", "D. 谷氨酸"],
+          "answer": "C", "knowledgePoints": ["蛋白质化学/蛋白质的二级结构"] },
+        { "questionId": "biochem-ch01-q19", "order": 19, "questionType": "single_choice", "requiresContext": false, "status": "待核", "sourcePara": 47,
+          "stem": "某些蛋白质和酶的巯基直接来自于（  ）",
+          "options": ["A. 蛋氨酸", "B. 胱氨酸", "C. 半胱氨酸", "D. 谷胱甘肽", "E. 同型半胱氨酸"],
+          "answer": "C", "knowledgePoints": ["蛋白质化学/氨基酸的结构与分类"] },
+        { "questionId": "biochem-ch01-q20", "order": 20, "questionType": "single_choice", "requiresContext": false, "status": "待核", "sourcePara": 50,
+          "stem": "天然蛋白质中含有的20种氨基酸的结构（  ）",
+          "options": ["A. 全部是L-型", "B. 全部是D-型", "C. 部分是L-型，部分是D-型", "D. 除甘氨酸外都是L-型"],
+          "answer": "D", "knowledgePoints": ["蛋白质化学/氨基酸的结构与分类"] },
+        { "questionId": "biochem-ch01-q21", "order": 21, "questionType": "single_choice", "requiresContext": false, "status": "待核", "sourcePara": 53,
+          "stem": "在寡聚蛋白质中，亚基间的立体排布、相互作用以及接触部位间的空间结构称为（  ）",
+          "options": ["A. 三级结构", "B. 缔合现象", "C. 四级结构", "D. 变构现象"],
+          "answer": "C", "knowledgePoints": ["蛋白质化学/蛋白质的四级结构"],
+          "correctionApplied": "原卷选项标号有误（第二项标为 D、D 出现两次），已按 A/B/C/D 顺序订正，选项文字未改" },
+        { "questionId": "biochem-ch01-q22", "order": 22, "questionType": "single_choice", "requiresContext": false, "status": "待核", "sourcePara": 56,
+          "stem": "当蛋白质处于等电点时，可使蛋白质分子的（  ）",
+          "options": ["A. 稳定性增加", "B. 表面净电荷不变", "C. 表面净电荷增加", "D. 溶解度最小"],
+          "answer": "D", "knowledgePoints": ["蛋白质化学/蛋白质的理化性质"] },
+        { "questionId": "biochem-ch01-q23", "order": 23, "questionType": "single_choice", "requiresContext": false, "status": "待核", "sourcePara": 59,
+          "stem": "蛋白质分子中-S-S-断裂的方法是（  ）",
+          "options": ["A. 加尿素", "B. 透析法", "C. 加β-巯基乙醇", "D. 加重金属盐"],
+          "answer": "C", "knowledgePoints": ["蛋白质化学/蛋白质的一级结构"] },
+        { "questionId": "biochem-ch01-q24", "order": 24, "questionType": "single_choice", "requiresContext": false, "status": "待核", "sourcePara": 62,
+          "stem": "除哪一种外，下列关于α-螺旋的叙述都是正确的（  ）",
+          "options": ["A. 由肽平面之间的氢键来稳定", "B. 脯氨酰或羟脯氨酰残基具有破坏α-螺旋结构的作用", "C. 由氨基酸残基间的疏水作用来稳定", "D. 它是蛋白质的二级结构之一", "E. 螺旋的空间排列使氨基酸残基R基团间不利的位阻作用降到最低"],
+          "answer": "C", "knowledgePoints": ["蛋白质化学/蛋白质的二级结构"] },
+        { "questionId": "biochem-ch01-q25", "order": 25, "questionType": "single_choice", "requiresContext": false, "status": "待核", "sourcePara": 69,
+          "stem": "某一混合蛋白质溶液，各种蛋白质的等电点分别是4.6，5.0，5.3，6.7，7.3，电泳时欲使所有蛋白质泳向正极，缓冲液的pH值应该是（  ）",
+          "options": ["A. 8.0", "B. 7.0", "C. 6.0", "D. 5.0", "E. 4.0"],
+          "answer": "A", "knowledgePoints": ["蛋白质化学/蛋白质的理化性质"] }
+      ]
+    },
+    {
+      "sectionId": "biochem-ch01-s3",
+      "type": "名词解释",
+      "order": 3,
+      "questions": [
+        { "questionId": "biochem-ch01-q26", "order": 26, "questionType": "term_explain", "requiresContext": false, "status": "待核", "sourcePara": 74,
+          "stem": "肽键", "knowledgePoints": ["蛋白质化学/肽与肽键"],
+          "items": [
+            { "ord": 1, "kind": "SCORE_POINT", "strategy": "AI_SCORE_POINTS", "answer": "一个氨基酸的α-羧基与另一个氨基酸的α-氨基脱水缩合", "weight": 2 },
+            { "ord": 2, "kind": "SCORE_POINT", "strategy": "AI_SCORE_POINTS", "answer": "所形成的酰胺键即为肽键", "weight": 2 },
+            { "ord": 3, "kind": "SCORE_POINT", "strategy": "AI_SCORE_POINTS", "answer": "肽键具有部分双键性质，不能自由旋转", "weight": 1 }
+          ] },
+        { "questionId": "biochem-ch01-q27", "order": 27, "questionType": "term_explain", "requiresContext": false, "status": "待核", "sourcePara": 75,
+          "stem": "肽平面／肽单位", "knowledgePoints": ["蛋白质化学/肽与肽键"],
+          "items": [
+            { "ord": 1, "kind": "SCORE_POINT", "strategy": "AI_SCORE_POINTS", "answer": "肽键中的C、O、N、H四个原子与相邻的两个α-碳原子共六个原子", "weight": 2 },
+            { "ord": 2, "kind": "SCORE_POINT", "strategy": "AI_SCORE_POINTS", "answer": "由于肽键有部分双键性质不能旋转，这六个原子处于同一平面", "weight": 2 },
+            { "ord": 3, "kind": "SCORE_POINT", "strategy": "AI_SCORE_POINTS", "answer": "该刚性平面称为肽平面（肽单位）", "weight": 1 }
+          ] },
+        { "questionId": "biochem-ch01-q28", "order": 28, "questionType": "term_explain", "requiresContext": false, "status": "待核", "sourcePara": 76,
+          "stem": "蛋白质的一级结构", "knowledgePoints": ["蛋白质化学/蛋白质的一级结构"],
+          "items": [
+            { "ord": 1, "kind": "SCORE_POINT", "strategy": "AI_SCORE_POINTS", "answer": "指蛋白质多肽链中氨基酸残基的排列顺序", "weight": 2 },
+            { "ord": 2, "kind": "SCORE_POINT", "strategy": "AI_SCORE_POINTS", "answer": "维持一级结构的主要化学键是肽键，有些蛋白质中二硫键也参与维持", "weight": 2 },
+            { "ord": 3, "kind": "SCORE_POINT", "strategy": "AI_SCORE_POINTS", "answer": "一级结构是空间结构和生物学功能的基础", "weight": 1 }
+          ] },
+        { "questionId": "biochem-ch01-q29", "order": 29, "questionType": "term_explain", "requiresContext": false, "status": "待核", "sourcePara": 77,
+          "stem": "蛋白质的三级结构", "knowledgePoints": ["蛋白质化学/蛋白质的三级结构"],
+          "items": [
+            { "ord": 1, "kind": "SCORE_POINT", "strategy": "AI_SCORE_POINTS", "answer": "指整条多肽链中全部原子的空间排布（三维构象）", "weight": 2 },
+            { "ord": 2, "kind": "SCORE_POINT", "strategy": "AI_SCORE_POINTS", "answer": "包括主链与侧链基团的相对空间位置，在二级结构基础上进一步盘曲折叠形成", "weight": 1 },
+            { "ord": 3, "kind": "SCORE_POINT", "strategy": "AI_SCORE_POINTS", "answer": "主要靠疏水作用、氢键、离子键、二硫键和范德华引力维持，其中疏水作用最重要", "weight": 2 }
+          ] },
+        { "questionId": "biochem-ch01-q30", "order": 30, "questionType": "term_explain", "requiresContext": false, "status": "待核", "sourcePara": 78,
+          "stem": "（蛋白质）亚基", "knowledgePoints": ["蛋白质化学/蛋白质的四级结构"],
+          "items": [
+            { "ord": 1, "kind": "SCORE_POINT", "strategy": "AI_SCORE_POINTS", "answer": "由两条或两条以上多肽链构成的蛋白质中，每一条具有独立三级结构的多肽链称为一个亚基", "weight": 2 },
+            { "ord": 2, "kind": "SCORE_POINT", "strategy": "AI_SCORE_POINTS", "answer": "单个亚基一般没有生物学活性，必须聚合成四级结构才有活性", "weight": 2 },
+            { "ord": 3, "kind": "SCORE_POINT", "strategy": "AI_SCORE_POINTS", "answer": "亚基之间以非共价键（疏水作用、氢键、离子键等）结合", "weight": 1 }
+          ] },
+        { "questionId": "biochem-ch01-q31", "order": 31, "questionType": "term_explain", "requiresContext": false, "status": "待核", "sourcePara": 79,
+          "stem": "基序（motif）", "knowledgePoints": ["蛋白质化学/蛋白质的二级结构"],
+          "items": [
+            { "ord": 1, "kind": "SCORE_POINT", "strategy": "AI_SCORE_POINTS", "answer": "在蛋白质分子中，由两个或两个以上具有二级结构的肽段", "weight": 2 },
+            { "ord": 2, "kind": "SCORE_POINT", "strategy": "AI_SCORE_POINTS", "answer": "在空间上相互接近，形成有规律的特定空间结构组合（超二级结构）", "weight": 2 },
+            { "ord": 3, "kind": "SCORE_POINT", "strategy": "AI_SCORE_POINTS", "answer": "常见如α-螺旋-转角-α-螺旋、锌指结构、亮氨酸拉链等，常与特定功能相关", "weight": 1 }
+          ] },
+        { "questionId": "biochem-ch01-q32", "order": 32, "questionType": "term_explain", "requiresContext": false, "status": "待核", "sourcePara": 80,
+          "stem": "蛋白质变性", "knowledgePoints": ["蛋白质化学/蛋白质的变性与沉淀"],
+          "items": [
+            { "ord": 1, "kind": "SCORE_POINT", "strategy": "AI_SCORE_POINTS", "answer": "在某些理化因素作用下，蛋白质特定的空间构象被破坏", "weight": 2 },
+            { "ord": 2, "kind": "SCORE_POINT", "strategy": "AI_SCORE_POINTS", "answer": "一级结构（肽键）不受影响，不发生肽键断裂", "weight": 1 },
+            { "ord": 3, "kind": "SCORE_POINT", "strategy": "AI_SCORE_POINTS", "answer": "导致理化性质改变（溶解度降低、黏度增加、易被蛋白酶水解）和生物学活性丧失", "weight": 2 }
+          ] }
+      ]
+    },
+    {
+      "sectionId": "biochem-ch01-s4",
+      "type": "问答题",
+      "order": 4,
+      "questions": [
+        { "questionId": "biochem-ch01-q33", "order": 33, "questionType": "short_answer", "requiresContext": false, "status": "待核", "sourcePara": 83,
+          "stem": "简述蛋白质结构与功能的关系。",
+          "knowledgePoints": ["蛋白质化学/蛋白质结构与功能的关系"],
+          "items": [
+            { "ord": 1, "kind": "SCORE_POINT", "strategy": "AI_SCORE_POINTS", "answer": "一级结构是空间构象和生物学功能的基础", "weight": 2 },
+            { "ord": 2, "kind": "SCORE_POINT", "strategy": "AI_SCORE_POINTS", "answer": "一级结构相似的蛋白质，其空间构象和功能也相似（如不同种属的胰岛素）", "weight": 2 },
+            { "ord": 3, "kind": "SCORE_POINT", "strategy": "AI_SCORE_POINTS", "answer": "一级结构中关键氨基酸残基的改变可导致功能异常，即分子病；典型例子是镰状细胞贫血——血红蛋白β链第6位谷氨酸被缬氨酸取代", "weight": 3 },
+            { "ord": 4, "kind": "SCORE_POINT", "strategy": "AI_SCORE_POINTS", "answer": "空间构象决定功能，构象改变则功能改变；如血红蛋白的变构效应，氧合后由紧张态(T)变为松弛态(R)，氧亲和力增高，氧解离曲线呈S形", "weight": 2 },
+            { "ord": 5, "kind": "SCORE_POINT", "strategy": "AI_SCORE_POINTS", "answer": "蛋白质构象异常也可致病，如朊病毒病中α-螺旋转变为β-折叠", "weight": 2 }
+          ] },
+        { "questionId": "biochem-ch01-q34", "order": 34, "questionType": "short_answer", "requiresContext": false, "status": "待核", "sourcePara": 84,
+          "stem": "蛋白质为什么能稳定地溶解于水？有哪些因素容易引起蛋白质沉淀？各种因素造成蛋白质沉淀的原因是怎样的？",
+          "knowledgePoints": ["蛋白质化学/蛋白质的理化性质", "蛋白质化学/蛋白质的变性与沉淀"],
+          "items": [
+            { "ord": 1, "kind": "SCORE_POINT", "strategy": "AI_SCORE_POINTS", "answer": "稳定因素之一是水化膜：蛋白质表面有大量亲水基团，吸引水分子形成水化膜，阻止蛋白质颗粒相互聚集", "weight": 2 },
+            { "ord": 2, "kind": "SCORE_POINT", "strategy": "AI_SCORE_POINTS", "answer": "稳定因素之二是同性电荷：在非等电点的溶液中蛋白质颗粒带同种电荷，相互排斥而不易聚沉", "weight": 2 },
+            { "ord": 3, "kind": "SCORE_POINT", "strategy": "AI_SCORE_POINTS", "answer": "盐析：高浓度中性盐（如硫酸铵）夺去水化膜并中和表面电荷，使蛋白质沉淀；不改变空间构象，是可逆沉淀", "weight": 2 },
+            { "ord": 4, "kind": "SCORE_POINT", "strategy": "AI_SCORE_POINTS", "answer": "有机溶剂沉淀：乙醇、丙酮等与水亲和力强，夺去水化膜并降低介电常数；低温短时作用可逆，室温久置则引起变性", "weight": 2 },
+            { "ord": 5, "kind": "SCORE_POINT", "strategy": "AI_SCORE_POINTS", "answer": "重金属盐沉淀：pH大于等电点时蛋白质带负电，与Hg²⁺、Pb²⁺、Ag⁺等重金属阳离子结合成不溶性盐，同时引起变性", "weight": 2 },
+            { "ord": 6, "kind": "SCORE_POINT", "strategy": "AI_SCORE_POINTS", "answer": "生物碱试剂及某些酸类沉淀：pH小于等电点时蛋白质带正电，与钨酸、三氯乙酸、苦味酸等酸根阴离子结合成不溶性盐", "weight": 1 }
+          ] }
+      ]
+    }
+  ],
+  "parsingNotes": [
+    { "kind": "原题有误", "questionOrders": [21],
+      "note": "选择题第9题（本文件 order 21）选项标号有误：第二项标为「D.缔合现象」应为 B，且 D 出现两次。已按 A/B/C/D 顺序订正，选项文字未改。",
+      "correctedFrom": "三级结构  D.缔合现象  C.四级结构  D.变构现象",
+      "correctedTo": "A.三级结构  B.缔合现象  C.四级结构  D.变构现象" },
+    { "kind": "答案存疑", "questionOrders": [5],
+      "note": "填空第5题：组氨酸等电点约7.59，与生理pH 7.4非常接近，生理条件下侧链仅约半数质子化。按教材口径填「高／正」，但严格说组氨酸是三个碱性氨基酸里唯一的边界情形。人工核对时确认是否接受「部分带正电」一类表述。" },
+    { "kind": "答案存疑", "questionOrders": [7],
+      "note": "填空第7题：280nm处的吸收主要来自色氨酸和酪氨酸，苯丙氨酸的最大吸收在257nm附近且强度很弱。题干按教材简化表述为「含苯环的三种氨基酸」。另：色氨酸所含为吲哚环（含苯环稠合），严格说不是单纯苯环。" },
+    { "kind": "答案存疑", "questionOrders": [16],
+      "note": "选择题第4题（本文件 order 16）：严格说280nm吸收最强的是色氨酸，但选项中无色氨酸，故选酪氨酸。若人工核对时希望避免歧义，可考虑在解析中说明。" },
+    { "kind": "答案存疑", "questionOrders": [2],
+      "note": "填空第2题：题干两处均带「等」，属开放列举。前6空按C、H、O、N、S、P，其中磷仅存在于磷蛋白中，部分教材只列C、H、O、N、S五种。后4空的金属元素候选池已放宽至8种，人工核对时确认本课程教材的口径。" }
+  ]
+}
