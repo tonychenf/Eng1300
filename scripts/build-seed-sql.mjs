@@ -48,8 +48,12 @@ for (const f of fs.readdirSync(outDir)) {
 // ---- 考点标签库 ----
 const kps = JSON.parse(fs.readFileSync(path.join(root, 'data', 'knowledge-points.json'), 'utf8'));
 const kpByName = new Map(kps.map((k) => [k.name, k.tagId]));
+// N3：考点带学科。原来 name 是全局 UNIQUE，多学科之后必撞；改成
+// (subject_id, name) 唯一之后，subject_id 留空的话 SQLite 认为 NULL 各不相同，
+// 唯一约束等于没有——所以这里必须现取，不能省。
 const kpLines = kps.map(
-  (k) => `INSERT OR IGNORE INTO knowledge_points (tag_id, name) VALUES (${q(k.tagId)}, ${q(k.name)});`
+  (k) => `INSERT OR IGNORE INTO knowledge_points (tag_id, name, subject_id) VALUES (` +
+    `${q(k.tagId)}, ${q(k.name)}, (SELECT subject_id FROM subjects WHERE code = 'english'));`
 );
 // 把内容指纹作为最后一条语句写进种子文件本身。
 //
@@ -109,12 +113,14 @@ for (const file of files) {
       if (flagged.has(qu.order)) totalFlagged++;
       lines.push(
         `INSERT INTO questions (question_id, section_id, exam_id, course_code, section_type, ord, ` +
-          `question_type, stem, options, answer, answer_explanation, difficulty_tag, status) VALUES (` +
+          `question_type, stem, options, answer, answer_explanation, difficulty_tag, status, subject_id) VALUES (` +
           `${q(qu.questionId)}, ${q(s.sectionId)}, ${q(d.examId)}, ${q(courseCode)}, ${q(s.type)}, ` +
           `${n(qu.order)}, ${q(qu.questionType)}, ${q(qu.stem)}, ` +
           `${qu.options ? q(JSON.stringify(qu.options)) : 'NULL'}, ${q(qu.answer)}, ` +
           `${q(qu.answerExplanation)}, ${q(qu.difficultyTag)}, ` +
-          `${flagged.has(qu.order) ? "'存疑'" : "'草稿'"});`
+          `${flagged.has(qu.order) ? "'存疑'" : "'草稿'"}, ` +
+          // N3：从 courses 现取，不写死。题型校验与报告分层都按它过滤。
+          `(SELECT subject_id FROM courses WHERE course_code = ${q(courseCode)}));`
       );
       for (const tag of qu.knowledgePoints || []) {
         const tagId = kpByName.get(tag);

@@ -4,6 +4,7 @@ import { requireCourseAccess, requireAttemptAccess, accessibleCourseFilter } fro
 import { gradeQuestion } from '../lib/grade.js';
 import { masteryTier, masteryWrites, tagsOfQuestion } from '../lib/mastery.js';
 import { nextQuestion, scopeTags, scopeQuestionCount } from '../lib/practice.js';
+import { loadPackByCourse, settingInt as packSettingInt, typeInClause } from '../lib/subject-pack.js';
 import { wrongbookWrites } from '../lib/wrongbook.js';
 
 export const practiceRouter = new Hono();
@@ -26,11 +27,9 @@ function newId() {
   return `prc-${crypto.randomUUID()}`;
 }
 
-async function settingInt(db, key, fallback) {
-  const row = await db.prepare('SELECT value FROM system_settings WHERE key = ?').bind(key).first();
-  const n = Number(row?.value);
-  return Number.isFinite(n) ? n : fallback;
-}
+// 参数取值改走能力包：学科覆盖 → 全局默认 → 抛错。
+// 蓝本这里带一个兜底常量（settingInt(db, key, 40)），而那个常量恰好等于种子里的值，
+// 于是"这张表是空的"会被伪装成"配置就是 40"，一直到有人去查才发现。
 
 async function loadPractice(c, id) {
   const me = c.get('user');
@@ -65,7 +64,8 @@ practiceRouter.get('/practice/scope', async (c) => {
   const courseCode = c.req.query('courseCode');
   if (!courseCode) return c.json({ error: 'invalid_request', message: '缺少 courseCode' }, 400);
   const sectionTypes = c.req.query('sectionTypes')?.split(',').filter(Boolean) || null;
-  const scope = { courseCode, sectionTypes, knowledgePoints: null };
+  const pack = await loadPackByCourse(c.env.DB, courseCode);
+  const scope = { courseCode, sectionTypes, knowledgePoints: null, practiceTypes: pack.practiceTypes() };
   const tags = await scopeTags(c.env.DB, scope);
   const questionCount = await scopeQuestionCount(c.env.DB, scope);
   return c.json({ knowledgePoints: tags, questionCount });
@@ -74,12 +74,14 @@ practiceRouter.get('/practice/scope', async (c) => {
 // 该课程可选的题型
 practiceRouter.get('/practice/section-types', async (c) => {
   const courseCode = c.req.query('courseCode');
+  const pack = await loadPackByCourse(c.env.DB, courseCode);
+  const t = typeInClause(pack.practiceTypes(), 'questions');
   const { results } = await c.env.DB.prepare(
     `SELECT section_type, COUNT(*) AS question_count
        FROM questions
-      WHERE course_code = ? AND status = '已发布' AND question_type != 'essay'
+      WHERE course_code = ? AND status = '已发布' AND ${t.sql}
       GROUP BY section_type ORDER BY section_type`
-  ).bind(courseCode).all();
+  ).bind(courseCode, ...t.binds).all();
   return c.json({ sectionTypes: results });
 });
 
@@ -95,7 +97,8 @@ practiceRouter.post('/practice/start', async (c) => {
 
   const sectionTypes = Array.isArray(body.sectionTypes) && body.sectionTypes.length
     ? body.sectionTypes : null;
-  const scope = { courseCode, sectionTypes, knowledgePoints: null };
+  const pack = await loadPackByCourse(c.env.DB, courseCode);
+  const scope = { courseCode, sectionTypes, knowledgePoints: null, practiceTypes: pack.practiceTypes() };
 
   const count = await scopeQuestionCount(c.env.DB, scope);
   if (!count) {
@@ -127,7 +130,8 @@ practiceRouter.post('/practice/drill', async (c) => {
   if (!courseCode || !tagId) {
     return c.json({ error: 'invalid_request', message: '缺少 courseCode 或 tagId' }, 400);
   }
-  const scope = { courseCode, sectionTypes: null, knowledgePoints: [tagId] };
+  const pack = await loadPackByCourse(c.env.DB, courseCode);
+  const scope = { courseCode, sectionTypes: null, knowledgePoints: [tagId], practiceTypes: pack.practiceTypes() };
   const count = await scopeQuestionCount(c.env.DB, scope);
   if (!count) return c.json({ error: 'insufficient_questions', message: '该考点下没有可用题目' }, 422);
 
@@ -171,9 +175,12 @@ practiceRouter.get('/practice/:id/next', async (c) => {
   const a = loaded.attempt;
   if (a.status !== '进行中') return c.json({ error: 'already_submitted', message: '本次练习已结束' }, 409);
 
-  const batchSize = await settingInt(c.env.DB, 'practice.diagnostic_batch_size', 40);
-  const recentWindow = await settingInt(c.env.DB, 'practice.reinforce_recent_window', 20);
-  const pick = await nextQuestion(c.env.DB, a, { batchSize, recentWindow });
+  const pack = await loadPackByCourse(c.env.DB, a.course_code);
+  const batchSize = await packSettingInt(c.env.DB, pack.subjectId, 'practice.diagnostic_batch_size');
+  const recentWindow = await packSettingInt(c.env.DB, pack.subjectId, 'practice.reinforce_recent_window');
+  const pick = await nextQuestion(c.env.DB, a, {
+    batchSize, recentWindow, practiceTypes: pack.practiceTypes(), masteryCfg: pack.rubric.mastery,
+  });
 
   if (pick.done) {
     return c.json({ done: true, reason: pick.reason, message: '这个范围内的题都做完了，可以结束练习看总结' });
@@ -244,8 +251,9 @@ practiceRouter.post('/practice/:id/answer', async (c) => {
   const q = await c.env.DB.prepare('SELECT * FROM questions WHERE question_id = ?')
     .bind(questionId).first();
 
-  // 练习不计分，只判对错；作文这一期没有 AI 批改，先不纳入练习
-  const g = gradeQuestion(q, body.answer, 0);
+  // 练习不计分，只判对错。哪些题型能进练习由学科声明，上面抽题时已经按它过滤过了。
+  const gradePack = await loadPackByCourse(c.env.DB, a.course_code);
+  const g = gradeQuestion(gradePack, q, body.answer, 0);
   const isCorrect = g.isCorrect;
 
   const tagIds = await tagsOfQuestion(c.env.DB, questionId);
@@ -307,6 +315,7 @@ practiceRouter.get('/practice/:id/summary', async (c) => {
        FROM answer_records WHERE attempt_id = ? AND is_correct IS NOT NULL`
   ).bind(a.attempt_id).first();
 
+  const reportPack = await loadPackByCourse(c.env.DB, a.course_code);
   // 本次练习覆盖到的考点，连同该用户在这些考点上的整体掌握度
   const { results: tags } = await c.env.DB.prepare(
     `SELECT k.tag_id, k.name,
@@ -327,7 +336,7 @@ practiceRouter.get('/practice/:id/summary', async (c) => {
     name: t.name,
     sessionCorrect: t.session_correct,
     sessionTotal: t.session_total,
-    tier: masteryTier(t),
+    tier: masteryTier(t, reportPack.rubric.mastery),
   }));
   const order = { 薄弱: 0, 待巩固: 1, 已掌握: 2, 未测: 3 };
   scored.sort((x, y) => (order[x.tier] - order[y.tier])

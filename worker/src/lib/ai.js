@@ -8,8 +8,19 @@ import { decryptSecret } from './crypto.js';
 
 const DEFAULT_MAX_TOKENS = 2000;
 
-export async function loadAISettings(env, purpose) {
-  const row = await env.DB.prepare('SELECT * FROM ai_settings WHERE purpose = ?').bind(purpose).first();
+/**
+ * 取某用途的 AI 配置。
+ *
+ * N3 起这张表按 (purpose, subject_id) 存，subject_id = 0 是全局兜底。
+ * 传 subjectId 时先找该学科的覆盖，没有就回落到全局——学科可以自己指定模型，
+ * 不指定就跟着平台走。ORDER BY subject_id DESC 让覆盖排在兜底前面。
+ */
+export async function loadAISettings(env, purpose, subjectId = 0) {
+  const { results } = await env.DB.prepare(
+    `SELECT * FROM ai_settings WHERE purpose = ? AND subject_id IN (?, 0)
+      ORDER BY subject_id DESC LIMIT 1`
+  ).bind(purpose, subjectId || 0).all();
+  const row = results[0];
   if (!row) return null;
   const apiKey = await decryptSecret(row.api_key_encrypted, env.ENCRYPTION_KEY);
   return { ...row, apiKey };

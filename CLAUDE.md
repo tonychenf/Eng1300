@@ -5,7 +5,7 @@
 React 18 + Vite 前端，部署在 workers.dev。
 
 **改造的需求与架构见 `docs/跨学科学习平台-需求文档.md`。** 里程碑进度：
-N0（独立部署基线）、N1（学科骨架）、N2（学科权限）已完成，N3（能力包）起未开工。
+N0（独立部署基线）、N1（学科骨架）、N2（学科权限）、N3（能力包）已完成，N4（英语迁入验证）起未开工。
 
 文档分三层，不要在一层里写另一层的内容：
 
@@ -53,6 +53,8 @@ in use，同时提示一个已删除的构建临时路径，很容易把注意�
 | n1-subjects | 8799 | — |
 | ui-subjects | 8797 | — |
 | n2-grants | 8795 | — |
+| n3-pack | 8790 | — |
+| n3-rebuild | 不起服务 | — |
 
 **LibreOffice 不可用**（连最小 docx 都报 source file could not be loaded），
 生成 Word 后没法转 PDF 看版式。只能做 schema 校验加读回正文核对，版式要如实
@@ -67,10 +69,10 @@ bash 正在执行某个脚本时去编辑它——会在毫不相干的行报语
 
 ```bash
 # 全套回归（推送前必跑）
-cd worker && for s in m2-smoke m3-smoke m4-smoke m5-smoke m6-acceptance n1-subjects n2-grants db-isolation; do
+cd worker && for s in m2-smoke m3-smoke m4-smoke m5-smoke m6-acceptance n1-subjects n2-grants n3-pack n3-rebuild db-isolation; do
   echo "=== $s ==="; bash test/$s.sh 2>&1 | grep -E "FAIL|小结" || echo "  !! 没有小结"
 done
-node test/quota-degrade.mjs && node test/essay-parse.mjs
+node test/quota-degrade.mjs && node test/essay-parse.mjs && node test/normalizers.test.mjs
 
 # 浏览器实测（手机/平板/PC 三种宽度）
 cd worker && bash test/ui-smoke.sh      # 单课程界面（蓝本遗留）
@@ -225,6 +227,22 @@ D1_NAME=$(grep -E '^database_name' wrangler.toml | head -1 | sed -E 's/.*"([^"]*
 N2 那段"给既有学员补授权"如果不加门闩，管理员撤销过的授权会被下次部署
 `INSERT OR IGNORE` 插回去——不报错、日志里看不出来。门闩记在 `seed_state`，
 与被门闩的操作同属一次 `d1 execute --file`。
+
+**改 `0002_bank.sql` 对已经存在的库没有任何作用。** 迁移全是 `CREATE TABLE IF NOT
+EXISTS`，对已有表一行都不改。新库照着改好的建表语句一次建对，线上那个 N0 时期建的
+库还是旧结构——**本地测试每次都是新库，全绿；线上不变，也不报错**。这类改动要配一道
+按实际结构判断的重建脚本（`scripts/ci/rebuild-legacy-schema.sh`），并且**排在迁移
+之前**：新加的索引如果建在新列上，旧库没那一列，迁移会整条断在那句。
+
+**D1 不让 DROP 有子表引用的父表。** `PRAGMA defer_foreign_keys` 和
+`legacy_alter_table` 都不生效（试过），报的是"Durable Object was reset and rolled
+back"。`ALTER TABLE 改名 → 建新表 → 搬数据 → 删旧表`这条路会留下**半完成状态**
+（新表建好了、旧表没删掉、子表外键指向了旧表），比直接失败更糟。SQLite 又改不了
+CHECK 和主键，所以只能先清空引用它的行再拆表。
+
+**改主键会连带打断 upsert。** `ai_settings` 的主键从 `purpose` 改成
+`(purpose, subject_id)` 之后，`ON CONFLICT(purpose)` 那句不再匹配，写入静默失效——
+接口返回 200，读回来是 null。改主键时要把所有 `ON CONFLICT` 一起找出来。
 
 **学科码只从 URL 取。** 服务端从路径参数取（`/api/s/:subjectCode/*` + `resolveSubject`
 中间件），前端从 `useParams()` 取。不要从请求体或组件 props 传——蓝本的

@@ -6,20 +6,37 @@
 //             所以"蒙对"的考点还会被复验
 //   单考点 —— 把某个考点下的题全部做一遍
 import { tagWeight } from './mastery.js';
+import { typeInClause } from './subject-pack.js';
 
 // 强化阶段避免重复的窗口：最近这么多道题里出现过的题不再出
 const RECENT_WINDOW_DEFAULT = 20;
+
+// 练习可抽的题型由学科声明（subject_question_types.in_practice），不再写死排除写作。
+// 蓝本排除 essay 的理由是"练习靠即时判对错驱动，作文要 AI 批改才有结果，出出来只会
+// 被当成答错、污染掌握度"。这个理由对英语成立，对生化不成立——生化的名词解释和问答
+// 本来就是主体，必须能练。所以它成了一条学科配置。
+//
+// scope.practiceTypes 缺失就抛错，不默默放行：放行的后果是把不该练的题也抽进来，
+// 而抽题接口不会因此报任何错。
+function practiceTypeCond(scope) {
+  if (!Array.isArray(scope.practiceTypes)) {
+    const err = new Error('practice_types_missing: scope 里没有 practiceTypes，调用方要先从能力包取');
+    err.code = 'practice_types_missing';
+    throw err;
+  }
+  return typeInClause(scope.practiceTypes, 'q');
+}
 
 function inClause(values) {
   return values.map(() => '?').join(',');
 }
 
 /** 本次范围内可用的考点及其题量。范围 = 课程 + 题型集合 (+ 可选的考点子集) */
-export async function scopeTags(db, { courseCode, sectionTypes, knowledgePoints }) {
-  // 排除写作：练习靠即时判对错驱动，而作文要 AI 批改才有结果，
-  // 出出来只会被当成答错，反而污染掌握度。等 M5 接上批改再放开。
-  const conds = ["q.course_code = ?", "q.status = '已发布'", "q.question_type != 'essay'"];
-  const binds = [courseCode];
+export async function scopeTags(db, scope) {
+  const { courseCode, sectionTypes, knowledgePoints } = scope;
+  const t = practiceTypeCond(scope);
+  const conds = ["q.course_code = ?", "q.status = '已发布'", t.sql];
+  const binds = [courseCode, ...t.binds];
   if (sectionTypes?.length) {
     conds.push(`q.section_type IN (${inClause(sectionTypes)})`);
     binds.push(...sectionTypes);
@@ -44,10 +61,9 @@ export async function scopeTags(db, { courseCode, sectionTypes, knowledgePoints 
 export async function scopeQuestionCount(db, scope) {
   const tags = await scopeTags(db, scope);
   if (!tags.length) return 0;
-  // 排除写作：练习靠即时判对错驱动，而作文要 AI 批改才有结果，
-  // 出出来只会被当成答错，反而污染掌握度。等 M5 接上批改再放开。
-  const conds = ["q.course_code = ?", "q.status = '已发布'", "q.question_type != 'essay'"];
-  const binds = [scope.courseCode];
+  const t = practiceTypeCond(scope);
+  const conds = ["q.course_code = ?", "q.status = '已发布'", t.sql];
+  const binds = [scope.courseCode, ...t.binds];
   if (scope.sectionTypes?.length) {
     conds.push(`q.section_type IN (${inClause(scope.sectionTypes)})`);
     binds.push(...scope.sectionTypes);
@@ -99,8 +115,9 @@ async function askedQuestions(db, attemptId) {
  * 先排除本次已出过的，再排除最近窗口内做过的；都排完了就退回"历史做得最少的"。
  */
 async function pickForTag(db, { userId, tagId, scope, excludeIds, recentIds }) {
-  const conds = ["q.course_code = ?", "q.status = '已发布'", "q.question_type != 'essay'", 'x.tag_id = ?'];
-  const binds = [scope.courseCode, tagId];
+  const t = practiceTypeCond(scope);
+  const conds = ["q.course_code = ?", "q.status = '已发布'", t.sql, 'x.tag_id = ?'];
+  const binds = [scope.courseCode, ...t.binds, tagId];
   if (scope.sectionTypes?.length) {
     conds.push(`q.section_type IN (${inClause(scope.sectionTypes)})`);
     binds.push(...scope.sectionTypes);
@@ -131,8 +148,8 @@ async function pickForTag(db, { userId, tagId, scope, excludeIds, recentIds }) {
   return tied[Math.floor(Math.random() * tied.length)].question_id;
 }
 
-function pickWeightedTag(tags, mastery) {
-  const weights = tags.map((t) => tagWeight(mastery.get(t.tag_id)));
+function pickWeightedTag(tags, mastery, masteryCfg) {
+  const weights = tags.map((t) => tagWeight(mastery.get(t.tag_id), masteryCfg));
   const total = weights.reduce((a, b) => a + b, 0);
   let r = Math.random() * total;
   for (let i = 0; i < tags.length; i++) {
@@ -146,11 +163,12 @@ function pickWeightedTag(tags, mastery) {
  * 决定下一题。
  * 返回 { questionId, stage, tagId } 或 { done: true, reason } —— 范围内的题出完了。
  */
-export async function nextQuestion(db, attempt, { batchSize, recentWindow = RECENT_WINDOW_DEFAULT }) {
+export async function nextQuestion(db, attempt, { batchSize, recentWindow = RECENT_WINDOW_DEFAULT, practiceTypes, masteryCfg }) {
   const scope = {
     courseCode: attempt.course_code,
     sectionTypes: attempt.scope_section_types ? JSON.parse(attempt.scope_section_types) : null,
     knowledgePoints: attempt.scope_knowledge_point ? [attempt.scope_knowledge_point] : null,
+    practiceTypes,
   };
 
   const asked = await askedQuestions(db, attempt.attempt_id);
@@ -189,7 +207,7 @@ export async function nextQuestion(db, attempt, { batchSize, recentWindow = RECE
   // 强化：按权重抽考点，抽不出题就换一个，全都抽不出说明范围内的题做完了
   const candidates = [...tags];
   while (candidates.length) {
-    const t = pickWeightedTag(candidates, mastery);
+    const t = pickWeightedTag(candidates, mastery, masteryCfg);
     const qid = await pickForTag(db, { userId: attempt.user_id, tagId: t.tag_id, scope, excludeIds, recentIds });
     if (qid) return { questionId: qid, stage: '强化', tagId: t.tag_id };
     candidates.splice(candidates.indexOf(t), 1);

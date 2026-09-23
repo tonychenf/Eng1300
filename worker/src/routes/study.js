@@ -4,6 +4,7 @@ import { requireCourseAccess, requireAttemptAccess, accessibleCourseFilter } fro
 import { masteryTier } from '../lib/mastery.js';
 import { gradeEssay, analyzeWrong, assessAbility } from '../lib/tutor.js';
 import { mapLimit } from '../lib/ai.js';
+import { loadPackByCourse, aiGradedTypes, typeInClause } from '../lib/subject-pack.js';
 
 // 错题分析的并发上限。20 条分四批约 15 秒，既压住总时长，
 // 也不至于把供应商的速率限制打爆。
@@ -132,6 +133,11 @@ studyRouter.post('/ai/attempts/:id/run', async (c) => {
   if (a.status === '进行中') return c.json({ error: 'not_submitted', message: '尚未交卷' }, 409);
 
   const result = { essay: null, wrongItems: { done: 0, failed: 0 } };
+  // 哪些题型要 AI 判分由学科声明。蓝本写死 = 'essay'，生化的名词解释和问答也要
+  // AI 判，而它们不叫 essay——写死的话那些题永远等不到批改，状态一直停在"待判"，
+  // 不报错，只是分数少了一块。
+  const pack = await loadPackByCourse(c.env.DB, a.course_code);
+  const aiTypes = typeInClause(aiGradedTypes(pack), 'q');
 
   // 1) 作文
   const { results: essays } = await c.env.DB.prepare(
@@ -140,8 +146,8 @@ studyRouter.post('/ai/attempts/:id/run', async (c) => {
        JOIN questions q ON q.question_id = aq.question_id
        JOIN sections s ON s.section_id = aq.section_id
        LEFT JOIN answer_records r ON r.attempt_id = aq.attempt_id AND r.question_id = aq.question_id
-      WHERE aq.attempt_id = ? AND q.question_type = 'essay'`
-  ).bind(attemptId).all();
+      WHERE aq.attempt_id = ? AND ${aiTypes.sql}`
+  ).bind(attemptId, ...aiTypes.binds).all();
 
   for (const e of essays) {
     if (e.ai_judged) { result.essay = { status: 'already' }; continue; }
@@ -156,7 +162,7 @@ studyRouter.post('/ai/attempts/:id/run', async (c) => {
       continue;
     }
     try {
-      const graded = await gradeEssay(c.env, {
+      const graded = await gradeEssay(c.env, pack, {
         prompt: e.writing_prompt || e.stem,
         essay: e.user_answer,
       });
@@ -196,7 +202,7 @@ studyRouter.post('/ai/attempts/:id/run', async (c) => {
   // 客户端早就超时了——线上实测就是这么失败的，而本地替身瞬间返回，看不出来。
   await mapLimit(pending, WRONG_ANALYZE_CONCURRENCY, async (w) => {
     try {
-      const out = await analyzeWrong(c.env, {
+      const out = await analyzeWrong(c.env, pack, {
         stem: w.stem,
         options: w.options ? JSON.parse(w.options) : null,
         userAnswer: w.user_answer,
@@ -225,10 +231,10 @@ studyRouter.post('/ai/attempts/:id/run', async (c) => {
                        JOIN questions q ON q.question_id = aq.question_id
                        LEFT JOIN answer_records r ON r.attempt_id = aq.attempt_id
                                                  AND r.question_id = aq.question_id
-                      WHERE aq.attempt_id = ? AND q.question_type = 'essay'
+                      WHERE aq.attempt_id = ? AND ${aiTypes.sql}
                         AND COALESCE(r.ai_judged, 0) = 0)
      WHERE attempt_id = ?`
-  ).bind(attemptId, attemptId, attemptId).run();
+  ).bind(attemptId, attemptId, ...aiTypes.binds, attemptId).run();
 
   return c.json({ ok: true, ...result });
 });
@@ -253,12 +259,14 @@ studyRouter.get('/assessment', async (c) => {
       WHERE m.user_id = ? AND m.course_code = ?`
   ).bind(me.id, courseCode).all();
 
+  const assessPack = await loadPackByCourse(c.env.DB, courseCode);
+  const masteryCfg = assessPack.rubric.mastery;
   const mastery = masteryRows.map((r) => ({
     tagId: r.tag_id,
     name: r.name,
     correct: r.correct_count,
     total: r.correct_count + r.wrong_count,
-    tier: masteryTier(r),
+    tier: masteryTier(r, masteryCfg),
   })).sort((a, b) => a.correct / (a.total || 1) - b.correct / (b.total || 1));
 
   const tierCount = mastery.reduce((acc, m) => {
@@ -355,10 +363,13 @@ studyRouter.post('/ai/assessment', async (c) => {
   ).bind(me.id, courseCode).all();
 
   try {
-    const out = await assessAbility(c.env, {
+    // 这里要自己读一次：assessPack / masteryCfg 是上面 /assessment 那个 handler 里的
+    // 局部变量，跨 handler 用不到。node --check 查不出这种引用错误，只有真跑一次才会响。
+    const aiPack = await loadPackByCourse(c.env.DB, courseCode);
+    const out = await assessAbility(c.env, aiPack, {
       mastery: masteryRows.map((r) => ({
         name: r.name, correct: r.correct_count,
-        total: r.correct_count + r.wrong_count, tier: masteryTier(r),
+        total: r.correct_count + r.wrong_count, tier: masteryTier(r, aiPack.rubric.mastery),
       })),
       recentWrongTags: wrongTags.map((w) => w.name),
       scoreTrend: trend.map((t) => t.total_score),

@@ -4,28 +4,50 @@
 // M3 那版只累计了对错次数，consecutive_correct 一直留 0——当时还没人用它。
 // M4 的强化阶段要按它定抽题权重，所以这里补齐。
 
-/** PRD §7.3 掌握度档位 */
-export function masteryTier(row) {
+// 阈值与权重来自能力包的 rubric.mastery（蓝本把它们写死在下面两个函数里）。
+// 读不到就抛错，不给默认值：默认值恰好等于英语那套，于是新学科会悄悄套用英语的
+// 掌握判定，而报告上一切正常。
+function need(cfg, path) {
+  let v = cfg;
+  for (const k of path.split('.')) v = v?.[k];
+  if (v === undefined || v === null) {
+    const err = new Error(`bad_rubric: 评价标准的 mastery 段缺少 ${path}`);
+    err.code = 'bad_rubric';
+    throw err;
+  }
+  return v;
+}
+
+/** PRD §7.3 掌握度档位。m = pack.rubric.mastery */
+export function masteryTier(row, m) {
   const total = (row.correct_count || 0) + (row.wrong_count || 0);
   if (total === 0) return '未测';
   if (row.last_result === 'wrong') return '薄弱';
-  if (total >= 3 && (row.consecutive_correct || 0) >= 3) return '已掌握';
+  if (total >= need(m, 'masteredMinTotal') && (row.consecutive_correct || 0) >= need(m, 'masteredMinStreak')) {
+    return '已掌握';
+  }
   const recentRate = total ? (row.correct_count || 0) / total : 0;
-  if (recentRate < 0.5) return '薄弱';
-  if (total >= 2) return '待巩固';
+  if (recentRate < need(m, 'weakRateBelow')) return '薄弱';
   return '待巩固';
 }
 
-/** PRD §7.2 强化阶段的抽取权重。答对也永不归零，用来复验"蒙对"的考点。 */
-export function tagWeight(row) {
-  if (!row) return 2.0;                       // 从未测过
-  const total = (row.correct_count || 0) + (row.wrong_count || 0);
-  if (total === 0) return 2.0;
-  if (row.last_result === 'wrong') return 5.0; // 最近一次答错
+/**
+ * PRD §7.2 强化阶段的抽取权重。答对也永不归零，用来复验"蒙对"的考点。
+ * m = pack.rubric.mastery；byStreak 是个梯子，upTo 为 null 的那档兜底，必须排在最后。
+ */
+export function tagWeight(row, m) {
+  const w = need(m, 'weights');
+  const total = row ? (row.correct_count || 0) + (row.wrong_count || 0) : 0;
+  if (!row || total === 0) return need(w, 'untested');
+  if (row.last_result === 'wrong') return need(w, 'lastWrong');
   const streak = row.consecutive_correct || 0;
-  if (streak <= 1) return 2.0;
-  if (streak === 2) return 1.0;
-  return 0.3;                                  // 连对三次及以上，保底不为零
+  const ladder = need(w, 'byStreak');
+  for (const step of ladder) {
+    if (step.upTo === null || step.upTo === undefined || streak <= step.upTo) return step.weight;
+  }
+  const err = new Error(`bad_rubric: byStreak 梯子没有兜底档（最后一档的 upTo 要写成 null），连对 ${streak} 次落不到任何一档`);
+  err.code = 'bad_rubric';
+  throw err;
 }
 
 /**

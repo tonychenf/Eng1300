@@ -180,6 +180,15 @@ jobs:
       - name: Re-check isolation after the database id is filled in
         run: bash scripts/ci/check-db-isolation.sh
 
+      # N3：线上那个库是 N0 时按旧结构建的，迁移里全是 CREATE TABLE IF NOT EXISTS，
+      # 对已经存在的表一行都不会改。必须排在迁移之前：0002 里新加的
+      # idx_questions_subject 建在 subject_id 上，旧表没这一列，迁移会当场断在那句。
+      # 新库或已经换过结构的库走到这里是零写入的空操作。
+      - name: Rebuild legacy tables for the subject pack
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: bash scripts/ci/rebuild-legacy-schema.sh --remote
+
       - name: Apply database migrations
         working-directory: worker
         env:
@@ -489,6 +498,35 @@ jobs:
               check "审计接口在线上可用" \
                 "$(curl -sS -m 20 "$WORKER_URL/api/admin/grants/audit?limit=1" \
                    -H "Authorization: Bearer $TOKEN" | jq -r 'has("entries")')" "true"
+
+              # ---- N3 学科能力包 ----
+              # 判分规则、提示词、掌握度阈值现在全在数据里。种子没导进去的话，
+              # 学员一交卷就是 500，而流水线其余断言全绿——所以必须在这里看一眼。
+              ENG_ID=$(curl -sS -m 20 "$WORKER_URL/api/admin/subjects" \
+                -H "Authorization: Bearer $TOKEN" | jq -r '.subjects[] | select(.code=="english") | .subject_id')
+              if [ -n "$ENG_ID" ] && [ "$ENG_ID" != "null" ]; then
+                curl -sS -m 20 -o /tmp/pack.json "$WORKER_URL/api/admin/subjects/$ENG_ID/pack" \
+                  -H "Authorization: Bearer $TOKEN"
+                check "英语能力包已落库（题型）" \
+                  "$(jq -r '.questionTypes | length > 0' /tmp/pack.json)" "true"
+                check "英语有生效中的评价标准" \
+                  "$(jq -r '.currentRubric != null' /tmp/pack.json)" "true"
+                # 作文权重合计不等于 1 的话分数会整体虚高，而批改照常"成功"
+                check "作文维度权重合计为 1" \
+                  "$(jq -r '[.currentRubric.payload | fromjson | .essay.dimensions[].weight] | add | (. * 1000 | round)' /tmp/pack.json)" "1000"
+                check "四类 AI 提示词都在" \
+                  "$(jq -r '[.prompts[] | select(.missing != true)] | length' /tmp/pack.json)" "4"
+                # 题型声明里引用的归一化器必须都在注册表里，否则判分时会抛 unknown_normalizer
+                check "题型引用的归一化器都认识" \
+                  "$(jq -r '[.questionTypes[].normalizers | fromjson[]] - .availableNormalizers | length' /tmp/pack.json)" "0"
+              else
+                echo "  FAIL 找不到英语学科，无法验证能力包"; FAIL=1
+              fi
+              # 旧库重建那一步跑完之后，题型 CHECK 不该还在。留着的话生化的题型将来插不进去，
+              # 而现象是导入失败，不是"约束还在"——所以在这里直接查表结构。
+              check "写作仍然不进专项练习（题型声明生效）" \
+                "$(curl -sS -m 20 "$WORKER_URL/api/practice/section-types?courseCode=13000" \
+                   -H "Authorization: Bearer $TOKEN" | jq -r '[.sectionTypes[].section_type] | index("写作") // "absent"')" "absent"
 
               # 缺原文的那道题按要求扣下，不参与组卷
               HELD=$(curl -sS -m 20 "$WORKER_URL/api/admin/bank/exams/13000-2026-04" \

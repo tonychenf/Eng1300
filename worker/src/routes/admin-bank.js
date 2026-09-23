@@ -186,6 +186,28 @@ bankRouter.post('/exams/:examId/publish', async (c) => {
     }, 422);
   }
 
+  // N3：题型的 CHECK 从表上去掉了（题型由学科声明），校验挪到这里。
+  // 发布是"这道题从此会被抽给学员"的那一刻，也是最后一道关：题型没在该学科
+  // 声明过的话，判分时 pack.typeOf 会抛错，学员看到的是一次失败的交卷。
+  // 在这里拦住，并且把是哪几道题、什么题型说出来——CHECK 只会给一句约束失败。
+  const { results: badTypes } = await c.env.DB.prepare(
+    `SELECT q.question_id, q.ord, q.question_type
+       FROM questions q
+      WHERE q.exam_id = ? AND q.status != '存疑'
+        AND NOT EXISTS (
+          SELECT 1 FROM subject_question_types t
+           WHERE t.subject_id = q.subject_id AND t.type_code = q.question_type)
+      ORDER BY q.ord LIMIT 20`
+  ).bind(examId).all();
+  if (badTypes.length) {
+    return c.json({
+      error: 'question_type_not_declared',
+      message: `有 ${badTypes.length} 道题的题型没在本学科声明过：` +
+        badTypes.map((b) => `第${b.ord}题(${b.question_type})`).join('、'),
+      questions: badTypes,
+    }, 422);
+  }
+
   // 标记为存疑的题目不随整卷发布
   await c.env.DB.prepare(
     `UPDATE questions SET status = '已发布' WHERE exam_id = ? AND status != '存疑'`

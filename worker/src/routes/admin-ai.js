@@ -10,7 +10,8 @@ const PURPOSES = ['PARSING', 'TUTORING'];
 aiRouter.get('/settings', async (c) => {
   const out = {};
   for (const purpose of PURPOSES) {
-    const row = await c.env.DB.prepare('SELECT * FROM ai_settings WHERE purpose = ?')
+    // 这个界面管的是**全局**那份（subject_id = 0）。学科级覆盖在能力包界面里。
+    const row = await c.env.DB.prepare('SELECT * FROM ai_settings WHERE purpose = ? AND subject_id = 0')
       .bind(purpose).first();
     if (!row) {
       out[purpose] = null;
@@ -38,7 +39,7 @@ aiRouter.put('/settings/:purpose', async (c) => {
   if (!c.env.ENCRYPTION_KEY) return c.json({ error: 'encryption_key_missing' }, 500);
 
   const body = await c.req.json().catch(() => ({}));
-  const existing = await c.env.DB.prepare('SELECT * FROM ai_settings WHERE purpose = ?')
+  const existing = await c.env.DB.prepare('SELECT * FROM ai_settings WHERE purpose = ? AND subject_id = 0')
     .bind(purpose).first();
 
   let encrypted = existing?.api_key_encrypted || null;
@@ -54,9 +55,9 @@ aiRouter.put('/settings/:purpose', async (c) => {
     : (existing?.vision_capable ?? 0);
 
   await c.env.DB.prepare(
-    `INSERT INTO ai_settings (purpose, base_url, api_key_encrypted, model, protocol, vision_capable, updated_at)
-     VALUES (?, ?, ?, ?, ?, ?, datetime('now'))
-     ON CONFLICT(purpose) DO UPDATE SET
+    `INSERT INTO ai_settings (purpose, subject_id, base_url, api_key_encrypted, model, protocol, vision_capable, updated_at)
+     VALUES (?, 0, ?, ?, ?, ?, ?, datetime('now'))
+     ON CONFLICT(purpose, subject_id) DO UPDATE SET
        base_url = excluded.base_url, api_key_encrypted = excluded.api_key_encrypted,
        model = excluded.model, protocol = excluded.protocol,
        vision_capable = excluded.vision_capable, updated_at = excluded.updated_at`

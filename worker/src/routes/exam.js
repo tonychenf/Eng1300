@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { planPaper } from '../lib/paper.js';
 import { gradeQuestion } from '../lib/grade.js';
+import { loadPackByCourse, settingInt as packSettingInt } from '../lib/subject-pack.js';
 import { requireAuth } from '../lib/auth.js';
 import { requireCourseAccess, requireAttemptAccess, accessibleCourseFilter } from '../lib/access.js';
 import { masteryWrites } from '../lib/mastery.js';
@@ -26,11 +27,8 @@ function newId(prefix) {
   return `${prefix}-${crypto.randomUUID()}`;
 }
 
-async function settingInt(db, key, fallback) {
-  const row = await db.prepare('SELECT value FROM system_settings WHERE key = ?').bind(key).first();
-  const n = Number(row?.value);
-  return Number.isFinite(n) ? n : fallback;
-}
+// 参数取值改走能力包（学科覆盖 → 全局默认 → 抛错）。蓝本那个带兜底常量的版本删掉了：
+// 兜底常量恰好等于种子里的值，"表是空的"会被伪装成"配置就是这样"。
 
 // 取一次作答，顺带算出服务端口径的剩余时间。
 // 倒计时一律按 started_at 到现在的真实流逝算，关页面不暂停。
@@ -104,6 +102,8 @@ async function loadPaper(db, attemptId, { withAnswers = true, withCorrect = fals
 
 // 判分并落库。已交卷的直接返回，不重复判。
 async function submitAttempt(db, attempt, { auto = false }) {
+  // 能力包一次读好往下传：这一段要对整卷逐题判分，每题读一次库就是 51 次往返。
+  const pack = await loadPackByCourse(db, attempt.course_code);
   const { results: rows } = await db.prepare(
     `SELECT aq.ord, aq.section_ord, aq.score_per_question, q.question_id, q.question_type, q.answer,
             s.type AS section_type, r.user_answer
@@ -121,9 +121,11 @@ async function submitAttempt(db, attempt, { auto = false }) {
   let unreviewed = 0;
 
   for (const row of rows) {
-    const g = gradeQuestion(row, row.user_answer, row.score_per_question);
+    const g = gradeQuestion(pack, row, row.user_answer, row.score_per_question);
     if (g.score !== null) objective += g.score;
-    if (row.question_type === 'essay') pendingAi++;
+    // 蓝本这里写死 === 'essay'。改读题型声明：哪些题型要 AI 判分由学科自己说了算，
+    // 生化的名词解释和问答都要 AI，而它们不叫 essay。
+    if (pack.typeOf(row.question_type).needsAi) pendingAi++;
     else if (g.needsAiReview) unreviewed++;
 
     writes.push(
@@ -164,7 +166,7 @@ async function submitAttempt(db, attempt, { auto = false }) {
 
   // 掌握度与练习共用一套推进逻辑：按题号顺序逐题推进，连对次数才算得准。
   // 原来那条聚合 SQL 只累计对错次数，连对次数一直留 0，M4 的加权抽题要用它。
-  const graded = rows.filter((r) => r.question_type !== 'essay');
+  const graded = rows.filter((r) => !pack.typeOf(r.question_type).needsAi);
   if (graded.length) {
     const holes = graded.map(() => '?').join(',');
     const { results: tagRows } = await db.prepare(
@@ -179,7 +181,7 @@ async function submitAttempt(db, attempt, { auto = false }) {
     const entries = graded
       .map((r) => ({
         tagIds: byQuestion.get(r.question_id) || [],
-        isCorrect: gradeQuestion(r, r.user_answer, r.score_per_question).isCorrect,
+        isCorrect: gradeQuestion(pack, r, r.user_answer, r.score_per_question).isCorrect,
       }))
       .filter((e) => e.tagIds.length && e.isCorrect !== null);
     writes.push(...(await masteryWrites(db, attempt.user_id, attempt.course_code, entries)));
@@ -187,7 +189,7 @@ async function submitAttempt(db, attempt, { auto = false }) {
     // 错题本：判分时就落库，不等 AI（PRD §10.3 的主链路不依赖 AI）
     const wbEntries = graded.map((r) => ({
       questionId: r.question_id,
-      isCorrect: gradeQuestion(r, r.user_answer, r.score_per_question).isCorrect,
+      isCorrect: gradeQuestion(pack, r, r.user_answer, r.score_per_question).isCorrect,
     }));
     writes.push(...(await wrongbookWrites(db, attempt.user_id, attempt.course_code, wbEntries, {
       attemptId: attempt.attempt_id, source: 'EXAM',
@@ -210,7 +212,8 @@ examRouter.post('/exams/generate', async (c) => {
     .bind(courseCode).first();
   if (!course) return c.json({ error: 'not_found', message: '课程不存在' }, 404);
 
-  const recentAvoid = await settingInt(c.env.DB, 'exam.recent_passage_avoid', 3);
+  const examPack = await loadPackByCourse(c.env.DB, courseCode);
+  const recentAvoid = await packSettingInt(c.env.DB, examPack.subjectId, 'exam.recent_passage_avoid');
 
   let plan;
   try {

@@ -113,6 +113,7 @@ export default function Subjects() {
               </p>
               <div className="row" style={{ marginTop: 12 }}>
                 <Link className="btn sm" to={`/admin/subjects/${s.subject_id}/members`}>成员</Link>
+                <Link className="btn ghost sm" to={`/admin/subjects/${s.subject_id}/pack`}>能力包</Link>
                 <button className="btn ghost sm" onClick={() => rename(s)}>改名</button>
                 <button className="btn ghost sm" onClick={() => toggle(s)}>
                   {s.status === '启用' ? '停用' : '启用'}

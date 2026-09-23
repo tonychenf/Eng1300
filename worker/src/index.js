@@ -10,6 +10,7 @@ import { studyRouter } from './routes/study.js';
 import { adminStatsRouter } from './routes/admin-stats.js';
 import { adminSubjectsRouter } from './routes/admin-subjects.js';
 import { adminGrantsRouter } from './routes/admin-grants.js';
+import { adminPackRouter } from './routes/admin-pack.js';
 import { subjectRouter } from './routes/subject.js';
 import { accessibleSubjectFilter, writeGrantWithAudit, upsertGrantStmt } from './lib/access.js';
 
@@ -304,8 +305,10 @@ admin.put('/settings/:key', async (c) => {
 });
 
 // 授权路由挂在 admin 根上（它自己带 /users/:id/subjects 与 /subjects/:id/members 两组路径）。
-// 必须排在 adminSubjectsRouter 之前：后者挂在 /subjects 下，会先吃掉 /subjects/:id/members。
+// 必须排在 adminSubjectsRouter 之前：后者挂在 /subjects 下，
+// 会先吃掉 /subjects/:id/members 与 /subjects/:id/pack。
 admin.route('/', adminGrantsRouter);
+admin.route('/', adminPackRouter);
 admin.route('/subjects', adminSubjectsRouter);
 admin.route('/bank', bankRouter);
 admin.route('/ai', aiRouter);

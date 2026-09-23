@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { masteryTier } from '../lib/mastery.js';
+import { loadPacksForCourses } from '../lib/subject-pack.js';
 
 export const adminStatsRouter = new Hono();
 
@@ -42,14 +43,28 @@ adminStatsRouter.get('/students/:id', async (c) => {
   if (!user) return c.json({ error: 'not_found' }, 404);
 
   const { results: mastery } = await c.env.DB.prepare(
-    `SELECT m.tag_id, k.name, m.correct_count, m.wrong_count, m.consecutive_correct, m.last_result
+    `SELECT m.tag_id, m.course_code, k.name, m.correct_count, m.wrong_count,
+            m.consecutive_correct, m.last_result
        FROM user_knowledge_mastery m JOIN knowledge_points k ON k.tag_id = m.tag_id
       WHERE m.user_id = ?`
   ).bind(id).all();
 
+  // 这个学员的掌握度行可能横跨多门课、多个学科，各学科的掌握阈值可以不同。
+  // 统一套一套阈值的话，生化的"已掌握"会按英语的标准算出来——数字照样有，就是不对。
+  // （这张看板本身没有学科过滤，那是 §5.1 #13，留在 N7 修。）
+  const packs = await loadPacksForCourses(c.env.DB, mastery.map((r) => r.course_code));
+
   const tierCount = {};
   const scored = mastery.map((r) => {
-    const tier = masteryTier(r);
+    const pack = packs.get(r.course_code);
+    if (!pack) {
+      // 掌握度记录指向了一门查不到的课程。静默跳过会让看板少几行而不报错，
+      // 所以直接抛——数据对不上应当有人看见。
+      const err = new Error(`course_not_found: 掌握度记录指向的课程 ${r.course_code} 不存在`);
+      err.code = 'course_not_found';
+      throw err;
+    }
+    const tier = masteryTier(r, pack.rubric.mastery);
     tierCount[tier] = (tierCount[tier] || 0) + 1;
     return {
       name: r.name, tier,

@@ -41,7 +41,21 @@ function reply(promptText) {
   if (promptText.includes('给学生讲解这道题')) {
     return JSON.stringify({ explanation: '本题考查细节定位，原文第二段明确提到了该信息。' });
   }
-  return JSON.stringify({ ok: true });
+  // 连通性自测：后台"测试连接"发的探针，不属于任何一类功能
+  if (promptText.includes('回复两个字')) return JSON.stringify({ ok: true });
+
+  // 分发不到就明说。
+  //
+  // N3 把提示词搬进了数据库，模板措辞一改，上面这些固定短语就匹配不上。
+  // 原来这里回落成 { ok: true }，于是 AI 调用"成功"、作文却判不出分，
+  // 报错是一句 ai_bad_shape，看不出根因在替身这边——查了很久。
+  // 这正是替身的结构性盲区：它照我们要的形状返回，所以本地怎么跑都像是对的。
+  return JSON.stringify({
+    stubCannotClassify: true,
+    hint: '替身按提示词里的固定短语分发。改了模板措辞就分发不到，'
+        + '表现为"调用成功但结果不对"。对照 migrations/0009_subject_pack.sql 里的模板。',
+    promptHead: promptText.slice(0, 120),
+  });
 }
 
 const server = http.createServer((req, res) => {

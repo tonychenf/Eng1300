@@ -63,8 +63,12 @@ CREATE TABLE IF NOT EXISTS questions (
   course_code TEXT NOT NULL,
   section_type TEXT NOT NULL,
   ord INTEGER NOT NULL,
-  question_type TEXT NOT NULL
-    CHECK (question_type IN ('single_choice', 'fill_blank_transform', 'essay')),
+  -- N3：题型由学科在 subject_question_types 里声明，这里不能再写死枚举。
+  -- 原来是 CHECK (question_type IN ('single_choice','fill_blank_transform','essay'))，
+  -- 生化有四种题型，第三个学科还会有别的，每加一科改一次 CHECK 是不可持续的。
+  -- 校验没有消失，只是挪到了发布路径上（admin-bank.js 的整卷发布会逐题查），
+  -- 好处是拒绝时能说清楚"该学科声明了哪几种"，而 CHECK 只会给一句约束失败。
+  question_type TEXT NOT NULL,
   stem TEXT,
   options TEXT,              -- JSON 数组字符串
   answer TEXT,
@@ -72,8 +76,13 @@ CREATE TABLE IF NOT EXISTS questions (
   difficulty_tag TEXT,
   status TEXT NOT NULL DEFAULT '草稿'
     CHECK (status IN ('草稿', '已发布', '存疑')),
-  reviewed INTEGER NOT NULL DEFAULT 0
+  reviewed INTEGER NOT NULL DEFAULT 0,
+  -- 冗余自 courses.subject_id。题型校验、报告分层都要按学科过滤，
+  -- 每次都 join 一次 courses 只为拿这一个值不划算。
+  -- 写入方负责保持一致（种子生成器从 courses 现取）。
+  subject_id INTEGER REFERENCES subjects(subject_id)
 );
+CREATE INDEX IF NOT EXISTS idx_questions_subject ON questions(subject_id, status);
 -- 组卷与练习抽题的主查询路径：按课程+题型+状态筛选
 CREATE INDEX IF NOT EXISTS idx_questions_pick ON questions(course_code, section_type, status);
 CREATE INDEX IF NOT EXISTS idx_questions_exam ON questions(exam_id);
@@ -81,9 +90,19 @@ CREATE INDEX IF NOT EXISTS idx_questions_section ON questions(section_id);
 
 CREATE TABLE IF NOT EXISTS knowledge_points (
   tag_id TEXT PRIMARY KEY,
-  name TEXT NOT NULL UNIQUE,
-  category TEXT
+  -- N3：name 原来是全局 UNIQUE。多学科之后这是个定时炸弹——英语和生化都可能
+  -- 有叫"结构"的考点，第二个插不进去，而 INSERT OR IGNORE 让它悄悄丢掉。
+  -- 降为 (subject_id, name) 唯一。
+  name TEXT NOT NULL,
+  category TEXT,
+  subject_id INTEGER REFERENCES subjects(subject_id),
+  -- 自引用，结构上支持任意层级（生化是 章 → 知识点 两层，英语是单层）。
+  -- 界面默认展示两级，深度不由表结构限制。
+  parent_tag_id TEXT REFERENCES knowledge_points(tag_id),
+  sort_order INTEGER NOT NULL DEFAULT 0
 );
+CREATE UNIQUE INDEX IF NOT EXISTS idx_kp_subject_name ON knowledge_points(subject_id, name);
+CREATE INDEX IF NOT EXISTS idx_kp_parent ON knowledge_points(parent_tag_id);
 
 CREATE TABLE IF NOT EXISTS question_knowledge_points (
   question_id TEXT NOT NULL REFERENCES questions(question_id),
@@ -113,13 +132,17 @@ CREATE TABLE IF NOT EXISTS exam_templates (
 
 -- 两套 AI 配置：PARSING(题库解析) / TUTORING(教学)
 CREATE TABLE IF NOT EXISTS ai_settings (
-  purpose TEXT PRIMARY KEY CHECK (purpose IN ('PARSING', 'TUTORING')),
+  purpose TEXT NOT NULL CHECK (purpose IN ('PARSING', 'TUTORING')),
+  -- N3：0 表示全局兜底，>0 表示某个学科的覆盖。取值时先按学科找，找不到回落到 0。
+  -- 故意不加外键：0 不是任何学科的 id，加了外键这一行就插不进去。
+  subject_id INTEGER NOT NULL DEFAULT 0,
   base_url TEXT,
   api_key_encrypted TEXT,
   model TEXT,
   protocol TEXT NOT NULL DEFAULT 'openai',
   vision_capable INTEGER NOT NULL DEFAULT 0,
-  updated_at TEXT
+  updated_at TEXT,
+  PRIMARY KEY (purpose, subject_id)
 );
 
 CREATE TABLE IF NOT EXISTS system_settings (
