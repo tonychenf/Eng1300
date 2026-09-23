@@ -38,11 +38,26 @@ for (const file of readdirSync(dir).filter((f) => f.endsWith('.json')).sort()) {
   const out = [];
   const w = (s) => out.push(s);
 
-  w(`# ${d.label} — 答案与采分点（待人工核对）\n`);
+  // 抬头要从 JSON 现算，不能写死。
+  //
+  // 这个文件存在的理由就是"答案卷是派生物、手写会和题库 JSON 各改各的"，
+  // 而头部原来是三行写死的文案：题库里状态已经从「待核」转「草稿」、复核也做过了，
+  // 生成出来的文件却还在说"未经人工核对、全部 status = 待核"。
+  // 派生物里混一段写死的话，比整篇手写更难发现——正文是新的，只有抬头是旧的。
+  const statuses = [...new Set(d.sections.flatMap((s) => s.questions.map((q) => q.status)))].sort();
+  const reviewed = Boolean(d.answerReviewed);
+
+  w(`# ${d.label} — 答案与采分点（${reviewed ? '已复核' : '待核对'}）\n`);
   w('> 本文件由 `scripts/build-answer-review.mjs` 生成，不要手改——改题库 JSON 再重新生成。\n');
-  w('> **全部答案由 AI 生成，未经人工核对。** 按需求文档 §6.4.9，AI 生成的答案绝不能自动发布：');
-  w('> 答案是判分的基准，错一个会让所有做对的学生被判错。全部题目 `status = 待核`，');
-  w('> 不参与组卷与练习抽题，逐条确认后才能转「已发布」。\n');
+  if (reviewed) {
+    w(`> **已复核**：${d.answerReviewedBy || '未记录复核人'}${d.answerReviewedAt ? `，${d.answerReviewedAt}` : ''}。`);
+  } else {
+    w('> **未经核对。**');
+  }
+  w(`> 当前题目状态：\`${statuses.join('` / `')}\`。`);
+  w('> 按需求文档 §6.4.9，AI 生成的答案绝不能自动发布：答案是判分的基准，');
+  w('> 错一个会让所有做对的学生被判错。\n');
+  if (d.answerNote) w(`> ${d.answerNote}\n`);
   w('核对方式：对着原卷逐题看「答案」列；有疑问的看文末「存疑记录」。\n\n---\n');
 
   for (const s of d.sections) {
