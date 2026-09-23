@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { get, post } from '../api.js';
+import { post } from '../api.js';
 import { Alert, Loading, PageHead } from '../components/ui.jsx';
+import { useSubject } from '../subject.jsx';
 
 const DIFFICULTIES = [
   { key: '随机', desc: '不看历史，纯随机组卷' },
@@ -11,20 +12,19 @@ const DIFFICULTIES = [
 ];
 
 export default function ExamNew() {
+  const { path, courses: subjectCourses } = useSubject();
   const navigate = useNavigate();
-  const [courses, setCourses] = useState(null);
   const [courseCode, setCourseCode] = useState('');
   const [difficulty, setDifficulty] = useState('随机');
   const [preview, setPreview] = useState(null);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
 
+  // 依赖里必须带 subjectCourses：切学科时组件不会重新挂载（在路由树里位置没变），
+  // 依赖写空数组的话这段不会重跑，courseCode 会一直停在上一个学科的课程上。
   useEffect(() => {
-    get('/courses').then((r) => {
-      setCourses(r.courses);
-      if (r.courses.length === 1) setCourseCode(r.courses[0].course_code);
-    }).catch((e) => setError(e.message));
-  }, []);
+    if (subjectCourses.length === 1) setCourseCode(subjectCourses[0].course_code);
+  }, [subjectCourses]);
 
   async function generate() {
     setBusy(true); setError(''); setPreview(null);
@@ -35,8 +35,8 @@ export default function ExamNew() {
     } finally { setBusy(false); }
   }
 
-  if (!courses) return <Loading />;
-  const course = courses.find((c) => c.course_code === courseCode);
+  if (!subjectCourses) return <Loading />;
+  const course = subjectCourses.find((c) => c.course_code === courseCode);
 
   return (
     <>
@@ -88,7 +88,7 @@ export default function ExamNew() {
           </Alert>
 
           <div className="sticky-actions">
-            <button className="btn" onClick={() => navigate(`/app/exam/${preview.attemptId}/take`)}>
+            <button className="btn" onClick={() => navigate(path(`/exam/${preview.attemptId}/take`))}>
               开始作答
             </button>
             <button className="btn ghost" onClick={() => setPreview(null)}>重新组卷</button>
@@ -98,13 +98,13 @@ export default function ExamNew() {
         <>
           <div className="card card-pad" style={{ marginBottom: 16 }}>
             {/* 只有一门课时不摆下拉框——只有一个选项的选择器是白让人点一下 */}
-            {courses.length > 1 ? (
+            {subjectCourses.length > 1 ? (
               <div className="field">
                 <label htmlFor="course">课程</label>
                 <select id="course" className="input" value={courseCode}
                   onChange={(e) => setCourseCode(e.target.value)}>
                   <option value="">请选择</option>
-                  {courses.map((c) => (
+                  {subjectCourses.map((c) => (
                     <option key={c.course_code} value={c.course_code}>
                       {c.course_name}（可用 {c.published_questions} 题）
                     </option>

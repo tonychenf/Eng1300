@@ -6,6 +6,13 @@ set -uo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
+# D1 名字从 wrangler.toml 读，不写死。
+# 起因：N0 把库名从 eng1300-mvp 改成 xlearn，六个测试脚本里写死的名字全部失效，
+# 而 wrangler 的报错是"找不到该数据库"，看起来像环境问题不像改名漏改。
+D1_NAME=$(grep -E '^database_name' wrangler.toml | head -1 | sed -E 's/.*"([^"]*)".*/\1/')
+[ -n "$D1_NAME" ] || { echo "从 wrangler.toml 读不到 database_name"; exit 1; }
+
+
 PORT=8791
 BASE="http://localhost:$PORT/api"
 PASS=0; FAIL=0
@@ -16,7 +23,7 @@ check() {
   else FAIL=$((FAIL+1)); echo "  FAIL $desc (期望 $want, 实际 $got)"; fi
 }
 
-sql() { npx wrangler d1 execute eng1300-mvp --local --json --command "$1" 2>/dev/null; }
+sql() { npx wrangler d1 execute "$D1_NAME" --local --json --command "$1" 2>/dev/null; }
 
 cleanup() {
   # wrangler dev 会派生 workerd 子进程，只杀 wrangler 本身杀不掉它，
@@ -39,18 +46,18 @@ EOF
 # 全部迁移都跑，和线上一致。原先只列到 0004，种子文件末尾那条写 seed_state
 # 的语句（表建在 0006）就没表可写，整个文件导入失败——而且失败被 2>&1 吞掉了。
 for m in migrations/*.sql; do
-  npx wrangler d1 execute eng1300-mvp --local --file="$m" >/dev/null 2>&1 \
+  npx wrangler d1 execute "$D1_NAME" --local --file="$m" >/dev/null 2>&1 \
     || { echo "执行 $m 失败"; exit 1; }
 done
 # 只导入两套卷，够测流程且启动快
-npx wrangler d1 execute eng1300-mvp --local --file=seed/000-knowledge-points.sql >/dev/null 2>&1 \
+npx wrangler d1 execute "$D1_NAME" --local --file=seed/000-knowledge-points.sql >/dev/null 2>&1 \
   || { echo "导入 seed/000-knowledge-points.sql 失败"; exit 1; }
 for EXAM in 00015-2024-04 13000-2024-10; do
   F=$(ls seed/*"$EXAM".sql 2>/dev/null | head -1)
   if [ -z "$F" ]; then
     echo "找不到 $EXAM 的种子文件，请先运行 node scripts/build-seed-sql.mjs"; exit 1
   fi
-  npx wrangler d1 execute eng1300-mvp --local --file="$F" >/dev/null 2>&1 \
+  npx wrangler d1 execute "$D1_NAME" --local --file="$F" >/dev/null 2>&1 \
     || { echo "导入 $F 失败"; exit 1; }
 done
 
@@ -221,7 +228,7 @@ BODY=$(curl -s "$ORIGIN/api/does-not-exist")
 case "$BODY" in *not_found*) check "未知接口返回 JSON 404" "ok" "ok" ;; *) check "未知接口返回 JSON 404" "$BODY" "not_found" ;; esac
 
 echo "== 一次性放行脚本 =="
-npx wrangler d1 execute eng1300-mvp --local --file=sql/publish-all.sql >/dev/null 2>&1 \
+npx wrangler d1 execute "$D1_NAME" --local --file=sql/publish-all.sql >/dev/null 2>&1 \
   || { echo "  FAIL publish-all.sql 执行失败"; FAIL=$((FAIL+1)); }
 curl -s -o /tmp/stats2.json "$BASE/admin/bank/stats" -H "Authorization: Bearer $ADMIN"
 check "存疑记录已清零" "$(jq -r '.unresolvedNotes' /tmp/stats2.json)" "0"

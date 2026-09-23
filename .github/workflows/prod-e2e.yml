@@ -18,7 +18,7 @@ on:
   # 触发——改测试本身时跑一次正好，平时推别的代码不会触发。
   push:
     branches:
-      - claude/english-exam-question-bank-a8nbiu
+      - claude/eng1300-multidisciplinary-platform-ozri7n
     paths:
       - '.github/workflows/prod-e2e.yml'
       - 'scripts/ci/prod-e2e.sh'
@@ -35,9 +35,20 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     env:
-      WORKER_URL: https://eng1300-mvp.eng1300-79fe2787.workers.dev
+      # 首次部署后由 deploy-worker 流水线输出，填进来再用
+      WORKER_URL: ''
     steps:
       - uses: actions/checkout@v4
+
+      # WORKER_URL 空着的时候，下面每一步都会去请求一个空地址，报出来的是
+      # curl 的参数错误，看不出根因。这里先把话说清楚。
+      - name: Check the worker url is filled in
+        run: |
+          if [ -z "$WORKER_URL" ]; then
+            echo "::error::WORKER_URL 还没填。本平台首次部署后，deploy-worker 流水线会在运行摘要里输出公网地址，把它填进 .github/workflows/prod-e2e.yml 的 env.WORKER_URL 再跑这条线。"
+            exit 1
+          fi
+          echo "目标站点：$WORKER_URL"
 
       - name: Get admin token
         env:

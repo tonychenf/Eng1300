@@ -3,6 +3,7 @@ import { Link, useLocation, useParams } from 'react-router-dom';
 import { get, post } from '../api.js';
 import { Alert, Loading, PageHead } from '../components/ui.jsx';
 import { Question, OptionBank, sharedOptionsOf } from '../components/questions.jsx';
+import { useSubject } from '../subject.jsx';
 
 // 不足一分钟就显示秒，免得刚交卷的报告写着"用时 0 分钟"
 function formatDuration(seconds) {
@@ -12,6 +13,7 @@ function formatDuration(seconds) {
 }
 
 export default function ExamReport() {
+  const { path } = useSubject();
   const { attemptId } = useParams();
   const location = useLocation();
   const [rep, setRep] = useState(null);
@@ -55,7 +57,7 @@ export default function ExamReport() {
       <PageHead
         title="成绩报告"
         desc={`${attempt.difficulty} · 用时 ${formatDuration(attempt.durationSeconds)}`}
-        actions={<Link className="btn ghost sm" to="/app/history">历史记录</Link>}
+        actions={<Link className="btn ghost sm" to={path('/history')}>历史记录</Link>}
       />
 
       {location.state?.auto ? (
@@ -80,8 +82,8 @@ export default function ExamReport() {
           <button className="btn sm" onClick={runAi} disabled={aiBusy}>
             {aiBusy ? 'AI 处理中…' : attempt.pendingAi > 0 ? '批改作文并生成错题解析' : '重新生成 AI 解析'}
           </button>
-          <Link className="btn ghost sm" to="/app/wrongbook">错题本</Link>
-          <Link className="btn ghost sm" to="/app/assessment">能力评估</Link>
+          <Link className="btn ghost sm" to={path('/wrongbook')}>错题本</Link>
+          <Link className="btn ghost sm" to={path('/assessment')}>能力评估</Link>
         </div>
         {aiMsg ? (
           <div style={{ marginTop: 10 }}><Alert kind={aiMsg.kind}>{aiMsg.text}</Alert></div>
@@ -172,8 +174,8 @@ export default function ExamReport() {
       })}
 
       <div className="sticky-actions">
-        <Link className="btn" to="/app/exam/new">再考一次</Link>
-        <Link className="btn ghost" to="/app">回到首页</Link>
+        <Link className="btn" to={path('/exam/new')}>再考一次</Link>
+        <Link className="btn ghost" to={path('')}>回到首页</Link>
       </div>
     </>
   );

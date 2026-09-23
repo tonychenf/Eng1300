@@ -5,6 +5,13 @@ set -uo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
+# D1 名字从 wrangler.toml 读，不写死。
+# 起因：N0 把库名从 eng1300-mvp 改成 xlearn，六个测试脚本里写死的名字全部失效，
+# 而 wrangler 的报错是"找不到该数据库"，看起来像环境问题不像改名漏改。
+D1_NAME=$(grep -E '^database_name' wrangler.toml | head -1 | sed -E 's/.*"([^"]*)".*/\1/')
+[ -n "$D1_NAME" ] || { echo "从 wrangler.toml 读不到 database_name"; exit 1; }
+
+
 PORT=8793
 BASE="http://localhost:$PORT/api"
 PASS=0; FAIL=0
@@ -25,7 +32,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-sql() { npx wrangler d1 execute eng1300-mvp --local --json --command "$1" 2>/dev/null; }
+sql() { npx wrangler d1 execute "$D1_NAME" --local --json --command "$1" 2>/dev/null; }
 
 # 循环里要反复查"这题的答案是什么""这题带不带某个考点"。每次都起一个 wrangler
 # 进程的话一轮测试要十几分钟，所以开跑前一次性导出到本地文件，之后用 jq 查。
@@ -46,14 +53,14 @@ SETUP_TOKEN=test-setup-m4
 ENCRYPTION_KEY=test-encryption-key-m4
 VARS
 for m in migrations/*.sql; do
-  npx wrangler d1 execute eng1300-mvp --local --file="$m" >/dev/null 2>&1
+  npx wrangler d1 execute "$D1_NAME" --local --file="$m" >/dev/null 2>&1
 done
-npx wrangler d1 execute eng1300-mvp --local --file=seed/000-knowledge-points.sql >/dev/null 2>&1
+npx wrangler d1 execute "$D1_NAME" --local --file=seed/000-knowledge-points.sql >/dev/null 2>&1
 # 四套卷：保证每个部分都有足够的完整篇章可抽
 for EXAM in 00015-2015-04 00015-2016-04 00015-2019-10 13000-2026-04; do
-  npx wrangler d1 execute eng1300-mvp --local --file="$(ls seed/*"$EXAM".sql | head -1)" >/dev/null 2>&1
+  npx wrangler d1 execute "$D1_NAME" --local --file="$(ls seed/*"$EXAM".sql | head -1)" >/dev/null 2>&1
 done
-npx wrangler d1 execute eng1300-mvp --local --file=sql/publish-all.sql >/dev/null 2>&1
+npx wrangler d1 execute "$D1_NAME" --local --file=sql/publish-all.sql >/dev/null 2>&1
 
 echo "== 启动服务 =="
 DEV_LOG=/tmp/m4-dev.log

@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { get, post } from '../api.js';
 import { Alert, Loading, PageHead } from '../components/ui.jsx';
+import { useSubject } from '../subject.jsx';
 
 export default function PracticeNew() {
+  const { path, courses: subjectCourses } = useSubject();
   const navigate = useNavigate();
-  const [courses, setCourses] = useState(null);
   const [courseCode, setCourseCode] = useState('');
   const [types, setTypes] = useState([]);
   const [picked, setPicked] = useState([]);   // 空数组表示不限题型
@@ -14,12 +15,11 @@ export default function PracticeNew() {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
 
+  // 依赖里必须带 subjectCourses：切学科时组件不会重新挂载（在路由树里位置没变），
+  // 依赖写空数组的话这段不会重跑，courseCode 会一直停在上一个学科的课程上。
   useEffect(() => {
-    get('/courses').then((r) => {
-      setCourses(r.courses);
-      if (r.courses.length === 1) setCourseCode(r.courses[0].course_code);
-    }).catch((e) => setError(e.message));
-  }, []);
+    if (subjectCourses.length === 1) setCourseCode(subjectCourses[0].course_code);
+  }, [subjectCourses]);
 
   useEffect(() => {
     if (!courseCode) return;
@@ -49,14 +49,14 @@ export default function PracticeNew() {
         courseCode,
         sectionTypes: picked.length ? picked : undefined,
       });
-      navigate(`/app/practice/${r.attemptId}/run`);
+      navigate(path(`/practice/${r.attemptId}/run`));
     } catch (e) {
       setError(e.message);
       setBusy(false);
     }
   }
 
-  if (!courses) return <Loading />;
+  if (!subjectCourses) return <Loading />;
   const canStart = Boolean(courseCode) && scope && scope.questionCount > 0;
 
   return (
@@ -77,20 +77,20 @@ export default function PracticeNew() {
                 {active.practice_stage} · 已做 {active.asked} 题 · 开始于 {active.started_at}
               </p>
             </div>
-            <Link className="btn sm" to={`/app/practice/${active.attempt_id}/run`}>继续</Link>
+            <Link className="btn sm" to={path(`/practice/${active.attempt_id}/run`)}>继续</Link>
           </div>
         </div>
       ) : null}
 
       <div className="card card-pad" style={{ marginBottom: 16 }}>
         {/* 只有一门课时不摆下拉框——只有一个选项的选择器是白让人点一下 */}
-        {courses.length > 1 ? (
+        {subjectCourses.length > 1 ? (
           <div className="field">
             <label htmlFor="course">课程</label>
             <select id="course" className="input" value={courseCode}
               onChange={(e) => setCourseCode(e.target.value)}>
               <option value="">请选择</option>
-              {courses.map((c) => (
+              {subjectCourses.map((c) => (
                 <option key={c.course_code} value={c.course_code}>{c.course_name}</option>
               ))}
             </select>

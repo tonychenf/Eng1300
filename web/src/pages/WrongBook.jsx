@@ -2,9 +2,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { get } from '../api.js';
 import { Alert, Empty, Loading, PageHead } from '../components/ui.jsx';
 import { optionLetter, optionText } from '../components/questions.jsx';
+import { useSubject } from '../subject.jsx';
 
 export default function WrongBook() {
-  const [courses, setCourses] = useState([]);
+  const { courses: subjectCourses } = useSubject();
   const [courseCode, setCourseCode] = useState('');
   const [filters, setFilters] = useState({ sectionTypes: [], knowledgePoints: [] });
   const [sectionType, setSectionType] = useState('');
@@ -14,13 +15,12 @@ export default function WrongBook() {
   const [open, setOpen] = useState(null);
   const [error, setError] = useState('');
 
+  // 依赖里必须带 subjectCourses：切学科时组件不会重新挂载（在路由树里位置没变），
+  // 依赖写空数组的话这段不会重跑，courseCode 会一直停在上一个学科的课程上。
   useEffect(() => {
-    get('/courses').then((r) => {
-      setCourses(r.courses);
-      if (r.courses.length === 1) setCourseCode(r.courses[0].course_code);
-    }).catch((e) => setError(e.message));
+    if (subjectCourses.length === 1) setCourseCode(subjectCourses[0].course_code);
     get('/wrongbook/filters').then(setFilters).catch(() => {});
-  }, []);
+  }, [subjectCourses]);
 
   const load = useCallback(() => {
     const qs = new URLSearchParams();
@@ -41,11 +41,11 @@ export default function WrongBook() {
 
       <div className="card card-pad" style={{ marginBottom: 16 }}>
         <div className="row">
-          {courses.length > 1 ? (
+          {subjectCourses.length > 1 ? (
             <select className="input" style={{ width: 'auto', minWidth: 160 }}
               value={courseCode} onChange={(e) => setCourseCode(e.target.value)}>
               <option value="">全部课程</option>
-              {courses.map((c) => (
+              {subjectCourses.map((c) => (
                 <option key={c.course_code} value={c.course_code}>{c.course_name}</option>
               ))}
             </select>

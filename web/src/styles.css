@@ -431,3 +431,18 @@ h1, h2, h3 { margin: 0; line-height: 1.35; }
 /* 原文折叠：手机上收起，PC 上恒常展开（那边是左右分栏，不占纵向空间） */
 .passage-body.collapsed { display: none; }
 @media (min-width: 1024px) { .passage-body.collapsed { display: block; } }
+
+/* 学科切换器。放在导航顶部品牌区下方，手机与 PC 共用一套。
+   触控目标 44px、字号 16px（防 iOS 自动放大），与其它输入控件同口径。 */
+.subject-switch {
+  margin-top: 8px;
+  width: 100%;
+  min-height: 44px;
+  font-size: 16px;
+  padding: 6px 8px;
+  border: 1px solid var(--line, #d8dee6);
+  border-radius: 6px;
+  background: #fff;
+  color: inherit;
+}
+.subject-switch:focus { outline: 2px solid #2a6df4; outline-offset: 1px; }

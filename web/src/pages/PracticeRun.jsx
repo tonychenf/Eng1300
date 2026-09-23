@@ -11,7 +11,7 @@ const STAGE_HINT = {
 };
 
 export default function PracticeRun() {
-  const { attemptId } = useParams();
+  const { subjectCode, attemptId } = useParams();
   const navigate = useNavigate();
 
   const [current, setCurrent] = useState(null);   // { stage, question }
@@ -32,7 +32,7 @@ export default function PracticeRun() {
       else setCurrent(r);
     } catch (e) {
       if (e.code === 'already_submitted') {
-        navigate(`/app/practice/${attemptId}/summary`, { replace: true });
+        navigate(`/app/${subjectCode}/practice/${attemptId}/summary`, { replace: true });
         return;
       }
       setError(e.message);
@@ -79,7 +79,7 @@ export default function PracticeRun() {
     try {
       await post(`/practice/${attemptId}/end`);
     } catch { /* 已经结束过也没关系，照样去总结页 */ }
-    navigate(`/app/practice/${attemptId}/summary`, { replace: true });
+    navigate(`/app/${subjectCode}/practice/${attemptId}/summary`, { replace: true });
   }
 
   const answered = stats?.answered || 0;

@@ -3,12 +3,13 @@ import { Link } from 'react-router-dom';
 import { get, post } from '../api.js';
 import { Alert, Loading, PageHead } from '../components/ui.jsx';
 import { SectionBars, TrendLine } from '../components/charts.jsx';
+import { useSubject } from '../subject.jsx';
 
 const TIER_ORDER = ['已掌握', '待巩固', '薄弱', '未测'];
 const TIER_STYLE = { 已掌握: 'ok', 待巩固: 'warn', 薄弱: 'danger', 未测: 'gray' };
 
 export default function Assessment() {
-  const [courses, setCourses] = useState([]);
+  const { path, courses: subjectCourses } = useSubject();
   const [courseCode, setCourseCode] = useState('');
   const [data, setData] = useState(null);
   const [ai, setAi] = useState(null);
@@ -16,12 +17,11 @@ export default function Assessment() {
   const [aiBusy, setAiBusy] = useState(false);
   const [error, setError] = useState('');
 
+  // 依赖里必须带 subjectCourses：切学科时组件不会重新挂载（在路由树里位置没变），
+  // 依赖写空数组的话这段不会重跑，courseCode 会一直停在上一个学科的课程上。
   useEffect(() => {
-    get('/courses').then((r) => {
-      setCourses(r.courses);
-      if (r.courses.length) setCourseCode(r.courses[0].course_code);
-    }).catch((e) => setError(e.message));
-  }, []);
+    if (subjectCourses.length) setCourseCode(subjectCourses[0].course_code);
+  }, [subjectCourses]);
 
   const load = useCallback(() => {
     if (!courseCode) return;
@@ -54,10 +54,10 @@ export default function Assessment() {
       <PageHead
         title="能力评估"
         desc="统计预测与 AI 意见并列显示，互不覆盖"
-        actions={courses.length > 1 ? (
+        actions={subjectCourses.length > 1 ? (
           <select className="input" style={{ width: 'auto' }} value={courseCode}
             onChange={(e) => setCourseCode(e.target.value)}>
-            {courses.map((c) => (
+            {subjectCourses.map((c) => (
               <option key={c.course_code} value={c.course_code}>{c.course_name}</option>
             ))}
           </select>
@@ -154,8 +154,8 @@ export default function Assessment() {
       </div>
 
       <div className="sticky-actions">
-        <Link className="btn" to="/app/exam/new">再考一次</Link>
-        <Link className="btn ghost" to="/app/wrongbook">看错题本</Link>
+        <Link className="btn" to={path('/exam/new')}>再考一次</Link>
+        <Link className="btn ghost" to={path('/wrongbook')}>看错题本</Link>
       </div>
     </>
   );

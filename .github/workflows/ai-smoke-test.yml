@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - claude/english-exam-question-bank-a8nbiu
+      - claude/eng1300-multidisciplinary-platform-ozri7n
     paths:
       - '.github/workflows/ai-smoke-test.yml'
 

@@ -1,4 +1,4 @@
-name: Deploy MVP worker
+name: Deploy XLearn worker
 
 # 这个沙盒开发环境的出站网络策略禁止访问 api.cloudflare.com，所以部署改由
 # GitHub Actions 的运行器代为执行：创建 D1 数据库、建表、写入密钥、发布 Worker、
@@ -7,7 +7,7 @@ name: Deploy MVP worker
 on:
   push:
     branches:
-      - claude/english-exam-question-bank-a8nbiu
+      - claude/eng1300-multidisciplinary-platform-ozri7n
     paths:
       - 'worker/**'
       - 'web/**'
@@ -29,8 +29,8 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  WORKER_NAME: eng1300-mvp
-  D1_NAME: eng1300-mvp
+  WORKER_NAME: xlearn
+  D1_NAME: xlearn
 
 jobs:
   deploy:
@@ -41,6 +41,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+
+      # 本平台是从 Eng1300 复制改造来的，wrangler.toml 里的 database_id 会原样
+      # 带过来。没清掉的话，下面的迁移会直接在 Eng1300 的线上库上建表改表——
+      # 而且迁移都写成 IF NOT EXISTS，不会报任何错，流水线全绿、老站数据被静默改坏。
+      # 这一步必须排在所有 d1 execute 与 deploy 之前。守卫本身有单测：
+      # worker/test/db-isolation.sh
+      - name: Guard against writing to the copied platform's database
+        run: bash scripts/ci/check-db-isolation.sh
 
       - name: Check required secrets
         env:
@@ -120,7 +128,7 @@ jobs:
             "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/subdomain" \
             | jq -r '.result.subdomain // empty')
           if [ -z "$SUB" ]; then
-            CAND="eng1300-$(echo "$CLOUDFLARE_ACCOUNT_ID" | cut -c1-8)"
+            CAND="xlearn-$(echo "$CLOUDFLARE_ACCOUNT_ID" | cut -c1-8)"
             echo "账号还没有 workers.dev 子域名，尝试注册：$CAND"
             RESP=$(curl -sS -X PUT -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
               -H 'Content-Type: application/json' --data "{\"subdomain\":\"$CAND\"}" \
@@ -166,6 +174,11 @@ jobs:
         run: |
           sed -i "s|^database_id = \".*\"|database_id = \"$D1_DATABASE_ID\"|" wrangler.toml
           grep '^database_id' wrangler.toml
+
+      # 回填之后再查一次：这次 D1_DATABASE_ID 有值了，能比对"解析出来的 ID"
+      # 与"写进 toml 的 ID"是否一致，也能拦住解析步骤本身拿错库的情况。
+      - name: Re-check isolation after the database id is filled in
+        run: bash scripts/ci/check-db-isolation.sh
 
       - name: Apply database migrations
         working-directory: worker
@@ -429,6 +442,21 @@ jobs:
               echo "     （共 $QUESTIONS 题，其中 $PUBLISHED_Q 题可参与组卷）"
               check "解析存疑记录已清零" "$(echo "$STATS" | jq -r '.unresolvedNotes')" "0"
 
+              # ---- N1 学科骨架 ----
+              # 线上没有这几条的话，学科层是不是真的上线了只能靠猜
+              SUBJ=$(curl -sS -m 20 "$WORKER_URL/api/me/subjects" -H "Authorization: Bearer $TOKEN" || echo '{}')
+              check "学科接口返回英语与生化两个学科" \
+                "$(echo "$SUBJ" | jq -r '[.subjects[].code] | sort | join(",")')" "biochem,english"
+              check "英语学科已有可抽题（ready）" \
+                "$(echo "$SUBJ" | jq -r '.subjects[] | select(.code=="english") | .ready')" "true"
+              CODE=$(curl -sS -m 20 -o /dev/null -w '%{http_code}' "$WORKER_URL/api/s/nosuchsubject" \
+                -H "Authorization: Bearer $TOKEN" || echo 000)
+              check "不存在的学科返回 404" "$CODE" "404"
+              # 学科隔离：生化名下不能冒出英语的课程
+              BIO_COURSES=$(curl -sS -m 20 "$WORKER_URL/api/s/biochem/courses" \
+                -H "Authorization: Bearer $TOKEN" | jq -r '.courses | length')
+              check "生化学科名下没有英语的课程" "$BIO_COURSES" "0"
+
               # 缺原文的那道题按要求扣下，不参与组卷
               HELD=$(curl -sS -m 20 "$WORKER_URL/api/admin/bank/exams/13000-2026-04" \
                 -H "Authorization: Bearer $TOKEN" \
@@ -469,13 +497,14 @@ jobs:
       - name: Summary
         run: |
           {
-            echo "## 部署完成"
+            echo "## XLearn 部署完成"
             echo ""
             echo "**公网地址：** $WORKER_URL"
             echo ""
             echo "- 健康检查：\`GET $WORKER_URL/api/health\`"
             echo "- 登录：\`POST $WORKER_URL/api/auth/login\`"
-            echo "- 学员入口：$WORKER_URL/login"
+            echo "- 学员入口：$WORKER_URL/login （登录后落到学科选择页）"
+            echo "- 学科接口：\`GET $WORKER_URL/api/me/subjects\`"
             echo "- 后台入口：$WORKER_URL/admin/login"
             echo "- 后台用户管理（仅超级管理员）：\`GET $WORKER_URL/api/admin/users\`"
           } >> "$GITHUB_STEP_SUMMARY"

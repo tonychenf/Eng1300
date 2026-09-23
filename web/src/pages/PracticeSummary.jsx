@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { get, post } from '../api.js';
 import { Alert, Loading, PageHead } from '../components/ui.jsx';
+import { useSubject } from '../subject.jsx';
 
 const TIER_STYLE = {
   已掌握: 'ok',
@@ -11,6 +12,7 @@ const TIER_STYLE = {
 };
 
 export default function PracticeSummary() {
+  const { path } = useSubject();
   const { attemptId } = useParams();
   const navigate = useNavigate();
   const [sum, setSum] = useState(null);
@@ -25,7 +27,7 @@ export default function PracticeSummary() {
     setBusy(true); setError('');
     try {
       const r = await post('/practice/drill', { courseCode: sum.attempt.courseCode, tagId });
-      navigate(`/app/practice/${r.attemptId}/run`);
+      navigate(path(`/practice/${r.attemptId}/run`));
     } catch (e) {
       setError(e.message);
       setBusy(false);
@@ -126,8 +128,8 @@ export default function PracticeSummary() {
       )}
 
       <div className="sticky-actions">
-        <Link className="btn" to="/app/practice/new">再练一轮</Link>
-        <Link className="btn ghost" to="/app">回到首页</Link>
+        <Link className="btn" to={path('/practice/new')}>再练一轮</Link>
+        <Link className="btn ghost" to={path('')}>回到首页</Link>
       </div>
     </>
   );

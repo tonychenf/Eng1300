@@ -2,6 +2,13 @@
 # 单课程界面检查的启动脚本：备库 → 起服务 → 建学员 → 跑浏览器用例 → 收摊。
 set -uo pipefail
 cd "$(dirname "$0")/.."
+
+# D1 名字从 wrangler.toml 读，不写死。
+# 起因：N0 把库名从 eng1300-mvp 改成 xlearn，六个测试脚本里写死的名字全部失效，
+# 而 wrangler 的报错是"找不到该数据库"，看起来像环境问题不像改名漏改。
+D1_NAME=$(grep -E '^database_name' wrangler.toml | head -1 | sed -E 's/.*"([^"]*)".*/\1/')
+[ -n "$D1_NAME" ] || { echo "从 wrangler.toml 读不到 database_name"; exit 1; }
+
 PORT=8798
 BASE="http://127.0.0.1:$PORT/api"
 
@@ -21,17 +28,17 @@ SETUP_TOKEN=test-setup-ui
 ENCRYPTION_KEY=test-encryption-key-ui
 VARS
 for m in migrations/*.sql; do
-  npx wrangler d1 execute eng1300-mvp --local --file="$m" >/dev/null 2>&1 \
+  npx wrangler d1 execute "$D1_NAME" --local --file="$m" >/dev/null 2>&1 \
     || { echo "执行 $m 失败"; exit 1; }
 done
-npx wrangler d1 execute eng1300-mvp --local --file=seed/000-knowledge-points.sql >/dev/null 2>&1 \
+npx wrangler d1 execute "$D1_NAME" --local --file=seed/000-knowledge-points.sql >/dev/null 2>&1 \
   || { echo "导入考点失败"; exit 1; }
 for EXAM in 00015-2015-04 00015-2016-04 00015-2019-10; do
   F=$(ls seed/*"$EXAM".sql 2>/dev/null | head -1)
-  npx wrangler d1 execute eng1300-mvp --local --file="$F" >/dev/null 2>&1 \
+  npx wrangler d1 execute "$D1_NAME" --local --file="$F" >/dev/null 2>&1 \
     || { echo "导入 $F 失败"; exit 1; }
 done
-npx wrangler d1 execute eng1300-mvp --local --file=sql/publish-all.sql >/dev/null 2>&1
+npx wrangler d1 execute "$D1_NAME" --local --file=sql/publish-all.sql >/dev/null 2>&1
 
 echo "== 启动服务 =="
 DEV_LOG=/tmp/ui-dev.log

@@ -1,12 +1,33 @@
 -- M2: 题库、考点、AI配置、系统参数
 -- 对应 docs/prd.md §8 数据模型
 
+-- N1 学科骨架：学科是平台的顶层分区，也是权限边界与报告边界。
+-- 见 docs/跨学科学习平台-需求文档.md §3.3（学科 → 课程 二级模型）。
+CREATE TABLE IF NOT EXISTS subjects (
+  subject_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  code TEXT NOT NULL UNIQUE,          -- 进 URL、进导出文件名、进种子文件名，建科后不可改
+  name TEXT NOT NULL,
+  description TEXT,
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  status TEXT NOT NULL DEFAULT '启用' CHECK (status IN ('启用', '停用')),
+  -- 内容组的排序依据只有一个整数（§6.4.2）；下面两个字段只作展示提示，
+  -- 不允许任何逻辑分支依赖它们。
+  content_group_kind TEXT NOT NULL DEFAULT 'EXAM_PAPER',
+  ingest_pipeline TEXT NOT NULL DEFAULT 'json-direct',
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_subjects_status ON subjects(status, sort_order);
+
 CREATE TABLE IF NOT EXISTS courses (
   course_code TEXT PRIMARY KEY,
   course_name TEXT NOT NULL,
+  -- 逻辑上 NOT NULL，但这里留空值余地：课程先于学科导入时能先落库再补挂。
+  -- 真正的强制在题目契约校验里（§6.4.9），不靠这一层。
+  subject_id INTEGER REFERENCES subjects(subject_id),
   time_limit_minutes INTEGER NOT NULL DEFAULT 150,
   total_score REAL NOT NULL DEFAULT 100
 );
+CREATE INDEX IF NOT EXISTS idx_courses_subject ON courses(subject_id);
 
 CREATE TABLE IF NOT EXISTS exams (
   exam_id TEXT PRIMARY KEY,
@@ -121,9 +142,17 @@ CREATE TABLE IF NOT EXISTS ai_usage_logs (
 CREATE INDEX IF NOT EXISTS idx_usage_created ON ai_usage_logs(created_at);
 
 -- 初始数据
-INSERT OR IGNORE INTO courses (course_code, course_name) VALUES
-  ('00015', '英语(二)'),
-  ('13000', '英语(专升本)');
+INSERT OR IGNORE INTO subjects (code, name, description, sort_order, content_group_kind, ingest_pipeline) VALUES
+  ('english', '英语', '自考英语（二）/英语（专升本）历年真题', 1, 'EXAM_PAPER', 'pdf-ocr-llm'),
+  ('biochem', '生物化学与分子生物学', '按教材章节组织的习题与解析（共 28 章）', 2, 'TEXTBOOK_CHAPTER', 'docx-structured');
+
+INSERT OR IGNORE INTO courses (course_code, course_name, subject_id) VALUES
+  ('00015', '英语(二)',     (SELECT subject_id FROM subjects WHERE code = 'english')),
+  ('13000', '英语(专升本)', (SELECT subject_id FROM subjects WHERE code = 'english'));
+
+-- 补挂：课程行可能是本次迁移之前就存在的（INSERT OR IGNORE 不会回头改它们）
+UPDATE courses SET subject_id = (SELECT subject_id FROM subjects WHERE code = 'english')
+ WHERE course_code IN ('00015', '13000') AND subject_id IS NULL;
 
 INSERT OR IGNORE INTO system_settings (key, value, description) VALUES
   ('practice.diagnostic_batch_size', '40', '学习模块摸底阶段单批最多覆盖的考点数'),

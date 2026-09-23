@@ -99,7 +99,9 @@ const table = (widths, header, rows) => new Table({
 
 const SPACER = (h = 120) => new Paragraph({ spacing: { after: h }, children: [] });
 
-const URL = 'https://eng1300-mvp.eng1300-79fe2787.workers.dev';
+// 本平台首次部署后，deploy-worker 流水线会输出真实地址，用 WORKER_URL 注入。
+// 不要写死被复制方 Eng1300 的地址——手册印出来会把学员引到老站。
+const URL = process.env.WORKER_URL || 'https://xlearn.example.workers.dev';
 
 const children = [];
 

@@ -16,7 +16,7 @@ function mmss(total) {
 }
 
 export default function ExamTake() {
-  const { attemptId } = useParams();
+  const { subjectCode, attemptId } = useParams();
   const navigate = useNavigate();
 
   const [data, setData] = useState(null);
@@ -49,7 +49,7 @@ export default function ExamTake() {
   // 交卷后直接去报告页
   useEffect(() => {
     if (data && data.attempt.status !== '进行中') {
-      navigate(`/app/exam/${attemptId}/report`, { replace: true });
+      navigate(`/app/${subjectCode}/exam/${attemptId}/report`, { replace: true });
     }
   }, [data, attemptId, navigate]);
 
@@ -68,7 +68,7 @@ export default function ExamTake() {
         return;
       }
     }
-    navigate(`/app/exam/${attemptId}/report`, { replace: true, state: { auto } });
+    navigate(`/app/${subjectCode}/exam/${attemptId}/report`, { replace: true, state: { auto } });
   }, [attemptId, navigate]);
 
   // 本地每秒走一格；真正的时间以服务端为准，回到页面时重新对时
@@ -87,7 +87,7 @@ export default function ExamTake() {
           setRemaining(r.attempt.remainingSeconds);
           if (r.attempt.status !== '进行中') {
             submittedRef.current = true;
-            navigate(`/app/exam/${attemptId}/report`, { replace: true, state: { auto: true } });
+            navigate(`/app/${subjectCode}/exam/${attemptId}/report`, { replace: true, state: { auto: true } });
           }
         })
         .catch(() => {});
@@ -112,7 +112,7 @@ export default function ExamTake() {
       } catch (e) {
         if (e.code === 'already_submitted') {
           submittedRef.current = true;
-          navigate(`/app/exam/${attemptId}/report`, { replace: true, state: { auto: true } });
+          navigate(`/app/${subjectCode}/exam/${attemptId}/report`, { replace: true, state: { auto: true } });
           return;
         }
         setError('答案没能保存，请检查网络：' + e.message);

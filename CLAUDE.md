@@ -1,7 +1,11 @@
-# Eng1300 开发规范
+# XLearn 开发规范
 
-自考英语（二）/英语（专升本）真题练习系统。Cloudflare Workers + D1 + Hono 后端，
-React 18 + Vite 前端，部署在 workers.dev，公开免费给学员用。
+跨学科自适应学习平台。由 Eng1300（自考英语真题练习系统）复制改造而来，
+目前有英语与生物化学两个学科。Cloudflare Workers + D1 + Hono 后端，
+React 18 + Vite 前端，部署在 workers.dev。
+
+**改造的需求与架构见 `docs/跨学科学习平台-需求文档.md`。** 里程碑进度：
+N0（独立部署基线）、N1（学科骨架）已完成，N2（学科权限）起未开工。
 
 文档分三层，不要在一层里写另一层的内容：
 
@@ -46,6 +50,7 @@ in use，同时提示一个已删除的构建临时路径，很容易把注意�
 | m5-smoke | 8794 | 8899 |
 | m6-acceptance | 8796 | 8898 |
 | ui-smoke | 8798 | — |
+| n1-subjects | 8799 | — |
 
 **LibreOffice 不可用**（连最小 docx 都报 source file could not be loaded），
 生成 Word 后没法转 PDF 看版式。只能做 schema 校验加读回正文核对，版式要如实
@@ -60,7 +65,7 @@ bash 正在执行某个脚本时去编辑它——会在毫不相干的行报语
 
 ```bash
 # 全套回归（推送前必跑）
-cd worker && for s in m2-smoke m3-smoke m4-smoke m5-smoke m6-acceptance; do
+cd worker && for s in m2-smoke m3-smoke m4-smoke m5-smoke m6-acceptance n1-subjects db-isolation; do
   echo "=== $s ==="; bash test/$s.sh 2>&1 | grep -E "FAIL|小结" || echo "  !! 没有小结"
 done
 node test/quota-degrade.mjs && node test/essay-parse.mjs
@@ -159,7 +164,7 @@ Qwen3-8B 是推理模型，所有结构化调用必须带 `enable_thinking: fals
 
 ## 四、部署与线上验证
 
-推送到 `claude/english-exam-question-bank-a8nbiu` 会自动触发
+推送到 `claude/eng1300-multidisciplinary-platform-ozri7n` 会自动触发
 `.github/workflows/deploy-worker.yml`。顺序是：迁移 → 部署 → 写密钥 → 导题库 →
 放行 → 初始化账号 → 线上验证。
 
@@ -177,6 +182,33 @@ push 触发来破这个死结。
 
 **流水线日志有长度上限。** 大段内联 shell 会把日志尾部撑满，真正的错误被挤掉。
 超过几行的逻辑放进 `scripts/ci/*.sh`。
+
+---
+
+## 四之二、本平台特有（改造引入的）
+
+**库名与 Worker 名不要写死。** N0 把两者都从 `eng1300-mvp` 改成 `xlearn`，
+六个测试脚本里写死的库名当场全部失效，而 wrangler 的报错是"找不到该数据库"，
+看起来像环境问题不像改名漏改。测试脚本一律从 `wrangler.toml` 读：
+
+```bash
+D1_NAME=$(grep -E '^database_name' wrangler.toml | head -1 | sed -E 's/.*"([^"]*)".*/\1/')
+```
+
+**`wrangler.toml` 的 `database_id` 必须留空。** 本平台是从 Eng1300 复制来的，
+这个字段会原样带过来；没清掉的话本平台的迁移会直接在 Eng1300 的线上库上建表改表，
+而且迁移都写成 `IF NOT EXISTS`，**不报任何错、流水线全绿、老站数据被静默改坏**。
+`scripts/ci/check-db-isolation.sh` 在所有 d1 操作之前拦这件事，禁用名单在
+`scripts/ci/forbidden-databases.txt`，守卫本身有单测 `worker/test/db-isolation.sh`。
+
+**跑测试前要先构建前端。** `wrangler.toml` 的 `[assets]` 指向 `worker/public`，
+那是 vite 的产物、被 gitignore。不存在时 `wrangler dev` 起不来，而报错在 dev 日志里，
+外面只看到"服务 150 秒没起来"，很容易往网络和端口上找。先 `npm run build --prefix web`。
+
+**学科码只从 URL 取。** 服务端从路径参数取（`/api/s/:subjectCode/*` + `resolveSubject`
+中间件），前端从 `useParams()` 取。不要从请求体或组件 props 传——蓝本的
+`?courseCode=xxx` 就是只校验参数存在、不校验归属，多学科之后那是越权漏洞。
+页面里也不要自己拼 `/app/${code}/xxx`，用 `useSubject().path()`。
 
 ---
 

@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { get } from '../api.js';
 import { Alert, Empty, Loading, PageHead } from '../components/ui.jsx';
+import { useSubject } from '../subject.jsx';
 
 export default function History() {
+  const { path } = useSubject();
   const [rows, setRows] = useState(null);
   const [error, setError] = useState('');
 
@@ -17,7 +19,7 @@ export default function History() {
   return (
     <>
       <PageHead title="历史记录" desc="每次模考的成绩与用时"
-        actions={<Link className="btn sm" to="/app/exam/new">新的模考</Link>} />
+        actions={<Link className="btn sm" to={path('/exam/new')}>新的模考</Link>} />
 
       {rows.length === 0 ? <Empty>还没有考过，去开一套试试</Empty> : (
         <div className="card" style={{ overflowX: 'auto' }}>
@@ -43,8 +45,8 @@ export default function History() {
                   </td>
                   <td data-label="">
                     {a.status === '进行中'
-                      ? <Link className="btn sm" to={`/app/exam/${a.attempt_id}/take`}>继续作答</Link>
-                      : <Link className="btn ghost sm" to={`/app/exam/${a.attempt_id}/report`}>看报告</Link>}
+                      ? <Link className="btn sm" to={path(`/exam/${a.attempt_id}/take`)}>继续作答</Link>
+                      : <Link className="btn ghost sm" to={path(`/exam/${a.attempt_id}/report`)}>看报告</Link>}
                   </td>
                 </tr>
               ))}
