@@ -302,9 +302,18 @@ check "内容组自己变成已发布（章节可以先挂上）" \
   "$(one "SELECT status FROM exams WHERE exam_id='biochem-ch01';")" "已发布"
 check "题一道都没进已发布" \
   "$(one "SELECT COUNT(*) FROM questions WHERE exam_id='biochem-ch01' AND status='已发布';")" "0"
-# 确认三道之后再发一次，这三道才进去
-for n in 02 03 04; do
-  exec_sql "UPDATE questions SET answer_state='已确认' WHERE question_id='biochem-ch01-q$n';"
+# 确认三道之后再发一次，这三道才进去。
+# **挑题要挑没被扣成存疑的**：按 id 顺序取前三道（q01/q02/q03）会踩到 q02——
+# 它被一条"答案存疑"记录点名，确认答案也发不出去，于是 published 是 2 不是 3。
+# 这正是"按 id、字母序、插入顺序取第一条"那个高发错误，所以按**可达性**挑，
+# 并且把决定可达性的那个属性（status）打出来。
+CONFIRM_IDS=$(sql "SELECT question_id FROM questions
+  WHERE exam_id='biochem-ch01' AND status <> '存疑' ORDER BY ord LIMIT 3;" \
+  | jq -r '.[0].results[].question_id')
+echo "     （挑中的三道：$(echo "$CONFIRM_IDS" | tr '\n' ' ')—— 都不是存疑，所以发得出去）"
+check "挑到了三道" "$(echo "$CONFIRM_IDS" | grep -c .)" "3"
+for qid in $CONFIRM_IDS; do
+  exec_sql "UPDATE questions SET answer_state='已确认' WHERE question_id='$qid';"
 done
 PUB2=$(admj -X POST "$BASE/admin/bank/exams/biochem-ch01/publish")
 check "确认过的三道进去了" "$(echo "$PUB2" | jq -r '.published')" "3"
@@ -339,8 +348,12 @@ bash "$ROOT_DIR/../scripts/ci/ensure-columns.sh" --local >/tmp/n6-ensure.log 2>&
 RC=$?
 check "补上章节号之后脚本通过" "$RC" "0"
 check "第一趟就把 6 列都加上了（这一趟只剩回填）" "$(grep -c '^  ++ 给' /tmp/n6-ensure0.log)" "6"
-check "order_key 回填成 year*100+month" \
-  "$(one "SELECT COUNT(*) FROM exams WHERE order_key <> year*100+month;")" "0"
+# 只对有年月的行成立：生化那一章的 order_key 是上面人工补的章节号 1，
+# 按 year*100+month 算出来是 0——回填故意不碰它（见 ensure-columns.sh 的注释）。
+check "有年月的内容组都回填成 year*100+month" \
+  "$(one "SELECT COUNT(*) FROM exams WHERE year > 0 AND month > 0 AND order_key <> year*100+month;")" "0"
+check "没年月的那一章保住了人工补的章节号" \
+  "$(one "SELECT order_key FROM exams WHERE exam_id='biochem-ch01';")" "1"
 check "label 回填成 title" "$(one 'SELECT COUNT(*) FROM exams WHERE label <> title;')" "0"
 check "answer_state 全部回填成已确认" \
   "$(one "SELECT COUNT(*) FROM questions WHERE answer_state <> '已确认';")" "0"
