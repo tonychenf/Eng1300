@@ -188,7 +188,12 @@ console.log('== 种子生成阶段拒掉不合契约的题（G2 端到端）==')
   const good = run('worker/test/fixtures/n5b-good', '/tmp/n5b-seed-good');
   check('合格的构造卷生成成功', good.code, 0);
   check('并且数出了 1 个题目资源', /1 个题目资源/.test(good.text), true);
-  const sqlPath = '/tmp/n5b-seed-good/001-fixture-2026-01.sql';
+  // 文件名带学科前缀（种子生成器一次跑一个学科，不加前缀两科会互相覆盖）。
+  // 这里不写死前缀，从目录里找——写死的话改一次命名规则就要回来改两处路径，
+  // 而改漏的表现是"生成出了那套卷子的 SQL"变红，指向的却不是真正的问题。
+  const sqlPath = fs.readdirSync('/tmp/n5b-seed-good')
+    .filter((f) => f.endsWith('fixture-2026-01.sql'))
+    .map((f) => `/tmp/n5b-seed-good/${f}`)[0] || '/tmp/n5b-seed-good/缺';
   check('生成出了那套卷子的 SQL', fs.existsSync(sqlPath), true);
   const sql = fs.existsSync(sqlPath) ? fs.readFileSync(sqlPath, 'utf8') : '';
   check('资源写进了 question_assets', sql.includes('INSERT INTO question_assets'), true);
@@ -202,7 +207,9 @@ console.log('== 种子生成阶段拒掉不合契约的题（G2 端到端）==')
   check('写坏的构造卷生成失败', bad.code, 1);
   check('逐条打印题号：alt 缺失那道', bad.text.includes('fx-bad-alt'), true);
   check('逐条打印题号：引用错那道', bad.text.includes('fx-bad-ref'), true);
-  check('失败时不产出 SQL', fs.existsSync('/tmp/n5b-seed-bad/001-fixture-2026-02.sql'), false);
+  check('失败时不产出 SQL',
+    fs.existsSync('/tmp/n5b-seed-bad')
+      && fs.readdirSync('/tmp/n5b-seed-bad').some((f) => f.endsWith('fixture-2026-02.sql')), false);
 }
 
 console.log(`== 小结: ${pass} 通过, ${fail} 失败 ==`);
