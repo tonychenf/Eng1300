@@ -349,8 +349,15 @@ check "种子重导时撞主键、整体失败" "$?" "1"
 check "标成上传的内容组还在" "$(one "SELECT COUNT(*) FROM exams WHERE exam_id='$UP_EX';")" "1"
 check "它的题一道都没少" "$(one "SELECT COUNT(*) FROM questions WHERE exam_id='$UP_EX';")" "$UP_BEFORE"
 exec_sql "UPDATE exams SET origin='SEED' WHERE exam_id='$UP_EX';"
-check "改回种子之后重导又能成功" \
-  "$(npx wrangler d1 execute "$D1_NAME" --local --file="$UP_SEED" >/dev/null 2>&1; echo $?)" "0"
+# 正面对照：护栏不能把正常的重导也挡死。红的时候要说得出为什么——
+# 只报"期望 0 实际 1"的话，下一个人得自己把这一步重放一遍才知道是哪句 SQL 失败。
+npx wrangler d1 execute "$D1_NAME" --local --file="$UP_SEED" >/tmp/n6-reimport.log 2>&1
+REIMPORT_RC=$?
+check "改回种子之后重导又能成功" "$REIMPORT_RC" "0"
+[ "$REIMPORT_RC" = "0" ] || {
+  echo "     （重导失败，报错如下）"
+  grep -oE '"(error|message|cause)"[^,}]*' /tmp/n6-reimport.log | head -4 | sed 's/^/       /'
+}
 
 echo
 echo "== 旧库模拟：新列补得上、回填对得上 =="
