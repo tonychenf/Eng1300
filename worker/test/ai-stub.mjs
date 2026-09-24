@@ -9,6 +9,12 @@
 //   /v1/chat/completions      正常返回
 //   /bad/v1/chat/completions  返回非法 JSON（验证重试后标记待重试）
 //   /fail/v1/chat/completions 返回 500
+//   /wrongshape/v1/chat/completions  返回**合法 JSON 但形状不对**
+//
+// 最后那条是 N6b 加的，它测的东西和 /bad/ 不一样：/bad/ 是"解析不出来"，
+// 而真实服务商更常见的失败是"回了一个像模像样的 JSON，字段数对不上题"。
+// 前者会被 JSON.parse 挡住，后者只有形状校验挡得住——而形状校验没写对时，
+// 表现是半个答案被写进库，看起来像"已经录过了"。
 import http from 'node:http';
 
 const PORT = Number(process.argv[2] || 8899);
@@ -41,6 +47,23 @@ function reply(promptText) {
   if (promptText.includes('给学生讲解这道题')) {
     return JSON.stringify({ explanation: '本题考查细节定位，原文第二段明确提到了该信息。' });
   }
+  // N6b：给上传进来的题生成候选答案。**数量从提示词里现读**，不写死——
+  // 写死 6 的话，换一道 4 空的题就会被形状校验拒掉，而那正是这条链路要测的东西，
+  // 分不清"校验起作用了"和"替身答错了"。
+  if (promptText.includes('请给出正确选项')) {
+    const m = promptText.match(/^\s*([A-Z])\s*[.、．]/m);
+    return JSON.stringify({ choice: m ? m[1] : 'A' });
+  }
+  if (promptText.includes('blanks 的长度必须正好是')) {
+    const n = Number(promptText.match(/正好是\s*(\d+)/)?.[1] || 1);
+    return JSON.stringify({ blanks: Array.from({ length: n }, (_, i) => `替身第${i + 1}空`) });
+  }
+  if (promptText.includes('每条是一句可独立判定命中与否的要点')) {
+    const n = Number(promptText.match(/共\s*(\d+)\s*条/)?.[1] || 1);
+    return JSON.stringify({ points: Array.from({ length: n }, (_, i) => `替身采分点${i + 1}`) });
+  }
+  if (promptText.includes('下面是一道简答题')) return JSON.stringify({ answer: '替身参考答案' });
+
   // 连通性自测：后台"测试连接"发的探针，不属于任何一类功能
   if (promptText.includes('回复两个字')) return JSON.stringify({ ok: true });
 
@@ -96,7 +119,19 @@ const server = http.createServer((req, res) => {
     allPrompts.push(promptText);
     if (allPrompts.length > 50) allPrompts.shift();
 
-    const content = req.url.startsWith('/bad/') ? '这不是 JSON，故意的' : reply(promptText);
+    let content;
+    if (req.url.startsWith('/bad/')) {
+      content = '这不是 JSON，故意的';
+    } else if (req.url.startsWith('/wrongshape/')) {
+      // 合法 JSON、字段名也对，就是数量不对（少给一项）。
+      const n = Number(promptText.match(/正好是\s*(\d+)/)?.[1]
+        || promptText.match(/共\s*(\d+)\s*条/)?.[1] || 2);
+      content = JSON.stringify(promptText.includes('blanks')
+        ? { blanks: Array.from({ length: Math.max(0, n - 1) }, (_, i) => `少一个${i}`) }
+        : { points: Array.from({ length: Math.max(0, n - 1) }, (_, i) => `少一个${i}`) });
+    } else {
+      content = reply(promptText);
+    }
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({
       choices: [{ message: { role: 'assistant', content } }],

@@ -15,6 +15,8 @@
 import { Hono } from 'hono';
 import { resolvePipeline } from '../import/index.js';
 import { ITEM_KINDS } from '../lib/question-items.js';
+import { resolveSettings } from '../lib/ai.js';
+import { generateAnswers, targetItems } from '../lib/ai-answer.js';
 
 export const importRouter = new Hono();
 
@@ -205,6 +207,105 @@ importRouter.post('/import', async (c) => {
   }
 
   return c.json({ ok: true, dryRun: false, ...summary, statements: st.length });
+});
+
+// 给上传进来的题生成候选答案（§6.4.10 的"可选的 AI 辅助"）。
+//
+// 单开一个接口、不塞进上传那一步：34 道题 × 3-4 秒、并发 5 也要二十几秒，
+// 和解压解析挤在同一个请求里会顶到 Worker 的时长上限；分开之后失败几道就重跑几道，
+// 不用把整章重传。界面上仍然是"传完自动接着跑"，对使用者是一件事。
+importRouter.post('/exams/:examId/ai-answers', async (c) => {
+  const db = c.env.DB;
+  const examId = c.req.param('examId');
+  const exam = await db.prepare('SELECT * FROM exams WHERE exam_id = ?').bind(examId).first();
+  if (!exam) return bad(c, 404, 'not_found', `没有内容组 ${examId}`);
+  // 只给后台上传的内容组生成。种子导入的那些一旦种子文件变了就会重新导入，
+  // 写在上面的 AI 答案会被冲掉——而冲掉是静默的，人不会知道自己核过的东西没了。
+  if (exam.origin !== 'UPLOAD') {
+    return bad(c, 422, 'not_uploaded',
+      `内容组 ${examId} 来自${exam.origin === 'SEED' ? '仓库里的种子文件' : '未知来源'}，` +
+      '不在这里补答案：种子一变就会重新导入，写上去的答案会被静默冲掉。');
+  }
+
+  const subject = await db.prepare('SELECT * FROM subjects WHERE subject_id = ?')
+    .bind(exam.subject_id ?? -1).first()
+    || await db.prepare(
+      'SELECT s.* FROM subjects s JOIN courses co ON co.subject_id = s.subject_id WHERE co.course_code = ?'
+    ).bind(exam.course_code).first();
+  if (!subject) return bad(c, 422, 'subject_not_found', '这个内容组挂不到任何学科上');
+
+  const settings = await resolveSettings(c.env, 'PARSING');
+  if (!settings) {
+    return bad(c, 422, 'ai_not_configured',
+      '还没有配置解析 AI。去后台「AI 配置」里填接口地址、模型与 Key（三项都可自由填写）。');
+  }
+
+  const { results: rows } = await db.prepare(
+    `SELECT question_id, ord, question_type, stem, options
+       FROM questions WHERE exam_id = ? AND answer_state = '缺答案' ORDER BY ord`
+  ).bind(examId).all();
+  if (!rows.length) {
+    return c.json({ ok: true, generated: 0, failures: [], message: '这一章没有缺答案的题' });
+  }
+  const { results: itemRows } = await db.prepare(
+    `SELECT i.question_id, i.item_ord, i.item_kind FROM question_items i
+       JOIN questions q ON q.question_id = i.question_id
+      WHERE q.exam_id = ? ORDER BY i.question_id, i.item_ord`
+  ).bind(examId).all();
+  const itemsBy = new Map();
+  for (const r of itemRows) {
+    if (!itemsBy.has(r.question_id)) itemsBy.set(r.question_id, []);
+    itemsBy.get(r.question_id).push({ ord: r.item_ord, kind: r.item_kind });
+  }
+  const questions = rows.map((r) => ({
+    questionId: r.question_id,
+    ord: r.ord,
+    questionType: r.question_type,
+    stem: r.stem,
+    options: (() => { try { return r.options ? JSON.parse(r.options) : null; } catch { return null; } })(),
+    items: itemsBy.get(r.question_id) || [],
+  }));
+
+  const prompt = await db.prepare(
+    `SELECT * FROM subject_ai_prompts WHERE feature = 'answer_generate' AND subject_id IN (?, 0)
+      ORDER BY subject_id DESC LIMIT 1`
+  ).bind(subject.subject_id).first();
+
+  const { generated, failures } = await generateAnswers(c.env, {
+    questions, subjectId: subject.subject_id, prompt,
+  });
+
+  // 落库：一律 待核 + 来源 AI。**绝不自动发布**（§6.4.10 的硬约束）。
+  const byId = new Map(questions.map((q) => [q.questionId, q]));
+  const st = [];
+  for (const g of generated) {
+    st.push(db.prepare(
+      `UPDATE questions SET answer = ?, answer_state = '待核', answer_source = 'AI',
+              answer_reviewed_by = NULL, answer_reviewed_at = NULL
+        WHERE question_id = ?`
+    ).bind(g.answer, g.questionId));
+    if (g.items) {
+      const targets = targetItems(byId.get(g.questionId));
+      g.items.forEach((val, i) => {
+        if (!targets[i]) return;
+        st.push(db.prepare(
+          'UPDATE question_items SET answer = ? WHERE question_id = ? AND item_ord = ?'
+        ).bind(val, g.questionId, targets[i].ord));
+      });
+    }
+  }
+  for (let i = 0; i < st.length; i += BATCH) await db.batch(st.slice(i, i + BATCH));
+
+  return c.json({
+    ok: true,
+    generated: generated.length,
+    attempted: questions.length,
+    failures,
+    // 说清楚这些答案还不能用。界面上要显眼——"AI 生成完了"很容易被读成"可以发布了"。
+    message: `生成了 ${generated.length} 道的候选答案，全部落在「待核」——` +
+      `逐题人工确认之后才能发布。` +
+      (failures.length ? `另有 ${failures.length} 道没生成出来，仍是缺答案。` : ''),
+  });
 });
 
 // 某个内容组的原文段落，校对页对照用。原件已经丢了，这是唯一能对的东西。

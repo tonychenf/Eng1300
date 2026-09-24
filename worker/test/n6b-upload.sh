@@ -12,6 +12,7 @@ D1_NAME=$(grep -E '^database_name' wrangler.toml | head -1 | sed -E 's/.*"([^"]*
 [ -n "$D1_NAME" ] || { echo "从 wrangler.toml 读不到 database_name"; exit 1; }
 
 PORT=8780          # 端口表见 CLAUDE.md
+STUB_PORT=8895
 BASE="http://127.0.0.1:$PORT/api"
 DOCX="$ROOT_DIR/../data/subjects/biochem/source/第01章-蛋白质的化学.docx"
 PASS=0; FAIL=0
@@ -26,6 +27,7 @@ exec_sql() { npx wrangler d1 execute "$D1_NAME" --local --command "$1" >/dev/nul
 
 cleanup() {
   if [ -n "${SERVER_PGID:-}" ]; then kill -9 -- "-$SERVER_PGID" 2>/dev/null || true; fi
+  if [ -n "${STUB_PID:-}" ]; then kill "$STUB_PID" 2>/dev/null || true; fi
   rm -rf "$ROOT_DIR/.wrangler"; rm -f "$ROOT_DIR/.dev.vars"
 }
 trap cleanup EXIT
@@ -43,6 +45,10 @@ VARS
 for m in migrations/*.sql; do
   npx wrangler d1 execute "$D1_NAME" --local --file="$m" >/dev/null 2>&1 || { echo "执行 $m 失败"; exit 1; }
 done
+
+node test/ai-stub.mjs "$STUB_PORT" > /tmp/n6b-stub.log 2>&1 &
+STUB_PID=$!
+for i in $(seq 1 30); do curl -sf -m 1 "http://127.0.0.1:$STUB_PORT/last-prompt" >/dev/null 2>&1 && break; sleep 0.3; done
 
 echo "== 启动服务 =="
 DEV_LOG=/tmp/n6b-dev.log
@@ -136,6 +142,68 @@ DUP=$(up "$Q")
 check "同一个 id 再传一次被拒" "$(echo "$DUP" | jq -r '.error')" "group_exists"
 check "拒绝时说得出它现在的来源" "$(echo "$DUP" | jq -r '.message' | grep -c UPLOAD)" "1"
 check "被拒之后题数没变" "$(one "SELECT COUNT(*) FROM questions WHERE exam_id='biochem-ch01';")" "34"
+
+echo
+echo "== 上传后调 AI 生成候选答案 =="
+setai() {  # 参数：替身路径前缀（''/bad//wrongshape//fail/）
+  curl -s -o /dev/null -X PUT "$BASE/admin/ai/settings/PARSING" -H "Authorization: Bearer $ADMIN" \
+    -H 'Content-Type: application/json' \
+    -d "{\"baseUrl\":\"http://127.0.0.1:$STUB_PORT$1/v1\",\"apiKey\":\"stub\",\"model\":\"stub-model\"}"
+}
+GEN_URL="$BASE/admin/bank/exams/biochem-ch01/ai-answers"
+gen() { curl -s -X POST "$GEN_URL" -H "Authorization: Bearer $ADMIN"; }
+
+# 没配 AI 时要说清楚去哪配，而不是回一句服务器错误
+check "没配 AI 时明确告知" "$(gen | jq -r '.error')" "ai_not_configured"
+check "并且指路到后台 AI 配置" "$(gen | jq -r '.message' | grep -c 'AI 配置')" "1"
+
+# ① 形状不对：合法 JSON 但数量对不上。**这一道必须整道放弃，不能写半个答案。**
+setai '/wrongshape/'
+WRONG=$(gen)
+check "形状不对时不算生成成功" "$(echo "$WRONG" | jq -r '.generated')" "0"
+check "逐题报出是哪些题没生成" \
+  "$(echo "$WRONG" | jq -r '[.failures[] | select(.reason=="ai_bad_shape")] | length > 0')" "true"
+check "形状不对的题仍是缺答案" \
+  "$(one "SELECT COUNT(*) FROM questions WHERE exam_id='biochem-ch01' AND answer_state<>'缺答案';")" "0"
+check "半个答案都没写进得分单元" \
+  "$(one "SELECT COUNT(*) FROM question_items i JOIN questions q ON q.question_id=i.question_id WHERE q.exam_id='biochem-ch01' AND i.answer IS NOT NULL;")" "0"
+
+# ② AI 整个挂掉：题面已经在库里了，这次失败不该改变"上传成功"这个结果
+setai '/fail/'
+FAILED=$(gen)
+check "AI 挂掉不让整件事失败" "$(echo "$FAILED" | jq -r '.ok')" "true"
+check "一道都没生成" "$(echo "$FAILED" | jq -r '.generated')" "0"
+check "34 道全部记进失败清单" "$(echo "$FAILED" | jq -r '.failures | length')" "34"
+check "题面一道没丢" "$(one "SELECT COUNT(*) FROM questions WHERE exam_id='biochem-ch01';")" "34"
+
+# ③ 正常路径
+setai ''
+OK=$(gen)
+check "正常时全部生成" "$(echo "$OK" | jq -r '.generated')" "34"
+check "没有失败的" "$(echo "$OK" | jq -r '.failures | length')" "0"
+check "落在待核，不是已确认" \
+  "$(one "SELECT COUNT(*) FROM questions WHERE exam_id='biochem-ch01' AND answer_state<>'待核';")" "0"
+check "来源标成 AI" \
+  "$(one "SELECT COUNT(DISTINCT answer_source) FROM questions WHERE exam_id='biochem-ch01';")" "1"
+check "确认留痕是空的（没人确认过）" \
+  "$(one "SELECT COUNT(*) FROM questions WHERE exam_id='biochem-ch01' AND answer_reviewed_by IS NOT NULL;")" "0"
+check "50 个空都填上了" \
+  "$(one "SELECT COUNT(*) FROM question_items i JOIN questions q ON q.question_id=i.question_id WHERE q.exam_id='biochem-ch01' AND i.item_kind='BLANK' AND i.answer IS NOT NULL;")" "50"
+check "返回里说清楚还要人工确认" "$(echo "$OK" | jq -r '.message' | grep -c '待核')" "1"
+# 硬约束：AI 生成的答案绝不能自动发布（§6.4.10）
+check "生成完仍然一道都抽不到" \
+  "$(one "SELECT COUNT(*) FROM questions WHERE exam_id='biochem-ch01' AND status='已发布' AND answer_state='已确认';")" "0"
+check "整卷发布也发不出去" \
+  "$(curl -s -X POST "$BASE/admin/bank/exams/biochem-ch01/publish" -H "Authorization: Bearer $ADMIN" | jq -r '.published')" "0"
+# 再跑一次：已经有答案的题不该被重复生成
+AGAIN=$(gen)
+check "再跑一次没有缺答案的题了" "$(echo "$AGAIN" | jq -r '.generated')" "0"
+check "并且明说这一章没有缺答案的题" "$(echo "$AGAIN" | jq -r '.message' | grep -c '没有缺答案')" "1"
+# 种子导入的内容组不在这里补答案（种子一变就会被冲掉）
+check "种子来源的内容组拒绝生成" \
+  "$(exec_sql "UPDATE exams SET origin='SEED' WHERE exam_id='biochem-ch01';"; \
+     curl -s -X POST "$GEN_URL" -H "Authorization: Bearer $ADMIN" | jq -r '.error')" "not_uploaded"
+exec_sql "UPDATE exams SET origin='UPLOAD' WHERE exam_id='biochem-ch01';"
 
 echo
 echo "== 服务还活着 =="
