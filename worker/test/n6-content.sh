@@ -349,6 +349,19 @@ check "种子重导时撞主键、整体失败" "$?" "1"
 check "标成上传的内容组还在" "$(one "SELECT COUNT(*) FROM exams WHERE exam_id='$UP_EX';")" "1"
 check "它的题一道都没少" "$(one "SELECT COUNT(*) FROM questions WHERE exam_id='$UP_EX';")" "$UP_BEFORE"
 exec_sql "UPDATE exams SET origin='SEED' WHERE exam_id='$UP_EX';"
+# 先摘掉这套卷子的作答引用再做正面对照。
+#
+# 前面的 B14 段组过三次卷，attempt_questions 里留下了指向这套题的行，
+# 而种子的清理段要 DELETE FROM questions——**workerd 是强制外键的**，删不动，
+# 报的是一句光秃秃的 "FOREIGN KEY constraint failed"，不说是哪张表。
+# 所以这里不是护栏挡住了重导，是这套卷子在这个时点上本来就重导不了。
+# 摘掉引用之后再对照，测的才是护栏本身。
+#
+# **这件事本身是个隐患**：题库内容一变就要重导，而学生只要做过这套卷子就删不动。
+# 记在 docs/开发踩坑记录.md 第十三节，单独排期处理，不在这一条断言里糊过去。
+exec_sql "DELETE FROM answer_records WHERE question_id IN (SELECT question_id FROM questions WHERE exam_id='$UP_EX');
+  DELETE FROM attempt_questions WHERE question_id IN (SELECT question_id FROM questions WHERE exam_id='$UP_EX');
+  DELETE FROM wrong_items WHERE question_id IN (SELECT question_id FROM questions WHERE exam_id='$UP_EX');"
 # 正面对照：护栏不能把正常的重导也挡死。红的时候要说得出为什么——
 # 只报"期望 0 实际 1"的话，下一个人得自己把这一步重放一遍才知道是哪句 SQL 失败。
 npx wrangler d1 execute "$D1_NAME" --local --file="$UP_SEED" >/tmp/n6-reimport.log 2>&1
