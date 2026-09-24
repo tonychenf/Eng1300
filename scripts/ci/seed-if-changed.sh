@@ -16,7 +16,20 @@
 set -uo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/../../worker"
 
-node ../scripts/build-seed-sql.mjs
+# 逐个学科生成。**不能只跑英语**：`data/subjects/` 下每一科都要进库，
+# 哪怕它的题还全是缺答案/待核——答案状态那道门已经保证它们抽不到、发不出，
+# 而管理员要能在后台看到并逐题录答案（§6.4.10 的补答案工作流）。
+# 少导一科的表现是"GitHub 里明明有，后台却没有"，没有任何地方报错。
+#
+# 生成失败必须中止：这个脚本没开 set -e，不显式判断的话生成器挂了也会接着往下走，
+# 把上一轮留在 seed/ 里的旧文件当成本轮产物导进去。
+for SUBJ_DIR in ../data/subjects/*/; do
+  [ -d "$SUBJ_DIR/groups" ] || continue
+  CODE=$(basename "$SUBJ_DIR")
+  echo "── 生成 $CODE 的种子"
+  SEED_SUBJECT_DIR="$SUBJ_DIR" node ../scripts/build-seed-sql.mjs \
+    || { echo "::error::$CODE 的种子生成失败，中止部署。"; exit 1; }
+done
 
 # 取已记录的指纹。表是空的或查询失败都按"全部要导"处理。
 EXISTING=$(npx wrangler d1 execute "$D1_NAME" --remote --yes --json \

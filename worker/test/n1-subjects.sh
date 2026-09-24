@@ -52,7 +52,7 @@ for m in migrations/*.sql; do
 done
 # 导一套英语卷：english 学科要有题（ready=true），biochem 要没题（ready=false）。
 # 两个学科的 ready 不同，才测得出"学科之间数据是隔开的"。
-npx wrangler d1 execute "$D1_NAME" --local --file=seed/000-knowledge-points.sql >/dev/null 2>&1 \
+npx wrangler d1 execute "$D1_NAME" --local --file=seed/english-000-knowledge-points.sql >/dev/null 2>&1 \
   || { echo "导入考点失败"; exit 1; }
 F=$(ls seed/*13000-2024-10.sql 2>/dev/null | head -1)
 [ -n "$F" ] || { echo "找不到种子文件，请先跑 node scripts/build-seed-sql.mjs"; exit 1; }

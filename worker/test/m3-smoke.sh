@@ -45,7 +45,7 @@ VARS
 for m in migrations/*.sql; do
   npx wrangler d1 execute "$D1_NAME" --local --file="$m" >/dev/null 2>&1
 done
-npx wrangler d1 execute "$D1_NAME" --local --file=seed/000-knowledge-points.sql >/dev/null 2>&1
+npx wrangler d1 execute "$D1_NAME" --local --file=seed/english-000-knowledge-points.sql >/dev/null 2>&1
 # 三套卷：够凑出每个部分的多个候选篇章，也覆盖被扣下的那道题
 # 四套卷：前三套保证每个部分都有至少两篇未被存疑记录点名的完整篇章
 # （组卷要挑得出、还要能换篇），最后一套用来验证被扣下的第15题

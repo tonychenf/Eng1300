@@ -50,8 +50,8 @@ for m in migrations/*.sql; do
     || { echo "执行 $m 失败"; exit 1; }
 done
 # 只导入两套卷，够测流程且启动快
-npx wrangler d1 execute "$D1_NAME" --local --file=seed/000-knowledge-points.sql >/dev/null 2>&1 \
-  || { echo "导入 seed/000-knowledge-points.sql 失败"; exit 1; }
+npx wrangler d1 execute "$D1_NAME" --local --file=seed/english-000-knowledge-points.sql >/dev/null 2>&1 \
+  || { echo "导入 seed/english-000-knowledge-points.sql 失败"; exit 1; }
 for EXAM in 00015-2024-04 13000-2024-10; do
   F=$(ls seed/*"$EXAM".sql 2>/dev/null | head -1)
   if [ -z "$F" ]; then

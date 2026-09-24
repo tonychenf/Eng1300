@@ -31,7 +31,7 @@ for m in migrations/*.sql; do
   npx wrangler d1 execute "$D1_NAME" --local --file="$m" >/dev/null 2>&1 \
     || { echo "执行 $m 失败"; exit 1; }
 done
-npx wrangler d1 execute "$D1_NAME" --local --file=seed/000-knowledge-points.sql >/dev/null 2>&1
+npx wrangler d1 execute "$D1_NAME" --local --file=seed/english-000-knowledge-points.sql >/dev/null 2>&1
 F=$(ls seed/*13000-2024-10.sql 2>/dev/null | head -1)
 [ -n "$F" ] || { echo "找不到种子，先跑 node scripts/build-seed-sql.mjs"; exit 1; }
 npx wrangler d1 execute "$D1_NAME" --local --file="$F" >/dev/null 2>&1

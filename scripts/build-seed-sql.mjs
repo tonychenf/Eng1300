@@ -170,7 +170,9 @@ function writeSeedFile(dir, name, lines) {
 // worker/seed/ 里已经躺着几个新文件了。流水线导题库那一步是 `for f in seed/*.sql`，
 // 它不知道生成器刚才失败过——被拒的题照样进库。
 // **要么全写，要么一个都不写。**
-const pending = [['000-knowledge-points.sql', kpLines]];
+// 文件名带学科前缀。不带的话第二个学科的 000-knowledge-points.sql 会盖掉第一个的，
+// 而且两边的试卷编号会撞在一起——盖掉是静默的，盖完照样导入，只是少了一半考点。
+const pending = [[`${subjectCode}-000-knowledge-points.sql`, kpLines]];
 
 // ---- 各套试卷 ----
 const files = fs.readdirSync(examDir).filter((f) => f.endsWith('.json')).sort();
@@ -366,7 +368,7 @@ for (const file of files) {
     );
   }
 
-  const outName = `${String(files.indexOf(file) + 1).padStart(3, '0')}-${g.groupId}.sql`;
+  const outName = `${subjectCode}-${String(files.indexOf(file) + 1).padStart(3, '0')}-${g.groupId}.sql`;
   pending.push([outName, lines]);
 }
 
@@ -390,8 +392,11 @@ if (badAssets.length) {
 
 // 校验全过了才落盘。清旧文件也放在这里：生成失败时目录保持原样，
 // 而不是留下一个空目录——那样"生成器失败了"会以"题库怎么没了"的形式出现。
+//
+// **只清本学科的文件**：这个脚本一次跑一个学科，流水线按学科循环调它，
+// 清掉全部等于后一个学科把前一个的产物删干净，而删完不报错。
 for (const f of fs.readdirSync(outDir)) {
-  if (f.endsWith('.sql')) fs.unlinkSync(path.join(outDir, f));
+  if (f.endsWith('.sql') && f.startsWith(`${subjectCode}-`)) fs.unlinkSync(path.join(outDir, f));
 }
 for (const [name, lines] of pending) writeSeedFile(outDir, name, lines);
 

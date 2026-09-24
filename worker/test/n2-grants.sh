@@ -49,7 +49,7 @@ VARS
 for m in migrations/*.sql; do
   npx wrangler d1 execute "$D1_NAME" --local --file="$m" >/dev/null 2>&1 || { echo "执行 $m 失败"; exit 1; }
 done
-npx wrangler d1 execute "$D1_NAME" --local --file=seed/000-knowledge-points.sql >/dev/null 2>&1
+npx wrangler d1 execute "$D1_NAME" --local --file=seed/english-000-knowledge-points.sql >/dev/null 2>&1
 # 四套卷：组卷要凑齐七个部分，一套不够（和 m3-smoke 取同一组）
 for EXAM in 00015-2015-04 00015-2016-04 00015-2019-10 13000-2026-04; do
   F=$(ls seed/*"$EXAM".sql 2>/dev/null | head -1)

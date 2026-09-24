@@ -55,7 +55,7 @@ VARS
 for m in migrations/*.sql; do
   npx wrangler d1 execute "$D1_NAME" --local --file="$m" >/dev/null 2>&1 || { echo "执行 $m 失败"; exit 1; }
 done
-npx wrangler d1 execute "$D1_NAME" --local --file=seed/000-knowledge-points.sql >/dev/null 2>&1
+npx wrangler d1 execute "$D1_NAME" --local --file=seed/english-000-knowledge-points.sql >/dev/null 2>&1
 # 四套：13000 的组卷模板要 10 题一篇的「段落大意与句子补全」，2015-04 那篇被扣下
 # 一道存疑题只剩 9 道，凑不满。少导的话组卷直接失败，而失败信息看着像模板配错了。
 for EXAM in 00015-2015-04 00015-2016-04 00015-2019-10 13000-2026-04; do

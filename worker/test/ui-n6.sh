@@ -33,7 +33,7 @@ VARS
 for m in migrations/*.sql; do
   npx wrangler d1 execute "$D1_NAME" --local --file="$m" >/dev/null 2>&1 || { echo "执行 $m 失败"; exit 1; }
 done
-npx wrangler d1 execute "$D1_NAME" --local --file=seed/000-knowledge-points.sql >/dev/null 2>&1
+npx wrangler d1 execute "$D1_NAME" --local --file=seed/english-000-knowledge-points.sql >/dev/null 2>&1
 for EXAM in 00015-2015-04 13000-2026-04; do
   F=$(ls seed/*"$EXAM".sql 2>/dev/null | head -1)
   [ -n "$F" ] || { echo "找不到 $EXAM 的种子"; exit 1; }
