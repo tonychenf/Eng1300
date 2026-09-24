@@ -8,7 +8,7 @@
 // 凡是"某个配置生效了"的断言都成对写：默认配置得到 A，改掉配置得到 B。
 // 只断言一边的话，测的是"这段代码跑通了"，不是"这个开关有用"。
 import { gradeQuestion } from '../src/lib/grade.js';
-import { validateItems, parseItemAnswers, toItem } from '../src/lib/question-items.js';
+import { validateItems, parseItemAnswers, toItem, inputGroupsWithoutAnswer } from '../src/lib/question-items.js';
 import { resolveNormalizers } from '../src/normalizers/index.js';
 import { STRATEGIES, GRADERS } from '../src/graders/index.js';
 import { readFileSync } from 'node:fs';
@@ -512,6 +512,64 @@ console.log('== 注册表本身 ==');
         item(2, { answer: 'b', group_key: 'g', grading_strategy: 'SET', weight: 1 }),
       ],
     }), 'set_weights_uneven');
+}
+
+// ── inputGroupsWithoutAnswer：校对页确认那道门的判据（N6c）────────────────
+//
+// **判据必须和判分器一致。** 自己另立一套"answer 非空"的话，SET 那类整组共用
+// params.pool 的题会被全部误伤——它们的逐空 answer 本来就是空的，判分照样判得了。
+// 反过来写松了，"确认过但没有答案"的题会发到学员面前，判分时才抛
+// item_without_answer，学员看到的是一次失败的交卷。
+{
+  const blank = (ord, over = {}) => ({
+    item_ord: ord, item_kind: 'BLANK', group_key: null,
+    answer: null, alt_answers: null, params: null, ...over,
+  });
+  check('都有答案时没问题',
+    inputGroupsWithoutAnswer([blank(1, { answer: '氮' }), blank(2, { answer: '16' })]).length, 0);
+  check('一个空没答案就点名它',
+    inputGroupsWithoutAnswer([blank(1, { answer: '氮' }), blank(2)]).length, 1);
+  // 取 [0] 之前先兜一层：判据坏成"永远没问题"时这里会是 undefined，
+  // 直接 .includes 会抛异常——那样连小结都打不出来，红得不明不白。
+  check('点名的是第 2 空',
+    (inputGroupsWithoutAnswer([blank(1, { answer: '氮' }), blank(2)])[0] || '').includes('第 2 空'), true);
+  // 只有别名也算有答案：acceptedForms 把 answer 与 alt_answers 一起折
+  check('只有别名也算有答案',
+    inputGroupsWithoutAnswer([blank(1, { alt_answers: '["N"]' })]).length, 0);
+  check('别名是空数组不算',
+    inputGroupsWithoutAnswer([blank(1, { alt_answers: '[]' })]).length, 1);
+  check('别名全是空白字符串不算',
+    inputGroupsWithoutAnswer([blank(1, { alt_answers: '["  "]' })]).length, 1);
+  check('答案是空白字符串不算',
+    inputGroupsWithoutAnswer([blank(1, { answer: '   ' })]).length, 1);
+  // SET：整组共用候选池，逐空 answer 为空是正常的（graders/set.js 的口径）
+  const pooled = [
+    blank(1, { group_key: 'g1', params: '{"pool":["碳","氢","氧"]}' }),
+    blank(2, { group_key: 'g1', params: '{"pool":["碳","氢","氧"]}' }),
+  ];
+  check('候选池组放行（不能比判分器严）', inputGroupsWithoutAnswer(pooled).length, 0);
+  check('候选池是空数组时仍要点名',
+    inputGroupsWithoutAnswer([blank(1, { group_key: 'g1', params: '{"pool":[]}' })]).length, 1);
+  // 同组只要有一个单元带答案，整组就判得了（SET 不写 pool 时退化成集合相等）
+  check('同组有一个带答案就算整组有',
+    inputGroupsWithoutAnswer([
+      blank(1, { group_key: 'g1', answer: '天冬氨酸' }), blank(2, { group_key: 'g1' }),
+    ]).length, 0);
+  check('group_key 为空的单元各自成组（不会互相顶包）',
+    inputGroupsWithoutAnswer([blank(1, { answer: '甲' }), blank(2), blank(3)]).length, 2);
+  // 判定单元不查：开放采分点、交给 AI 判的，没有字面答案是正常的
+  check('采分点不查', inputGroupsWithoutAnswer([
+    { item_ord: 1, item_kind: 'SCORE_POINT', group_key: null, answer: null, alt_answers: null, params: null },
+  ]).length, 0);
+  check('解答步骤不查', inputGroupsWithoutAnswer([
+    { item_ord: 1, item_kind: 'STEP', group_key: null, answer: null, alt_answers: null, params: null },
+  ]).length, 0);
+  check('没有单元的题不报问题', inputGroupsWithoutAnswer([]).length, 0);
+  // 坏 JSON 当成"没有"，不能整个抛错——这个函数要能对库里任意一行给出结论
+  check('alt_answers 是坏 JSON 时当成没有，不抛错',
+    inputGroupsWithoutAnswer([blank(1, { alt_answers: '{坏' })]).length, 1);
+  check('params 是坏 JSON 时当成没有，不抛错',
+    inputGroupsWithoutAnswer([blank(1, { params: '{坏' })]).length, 1);
 }
 
 console.log(`== 小结: ${pass} 通过, ${fail} 失败 ==`);
