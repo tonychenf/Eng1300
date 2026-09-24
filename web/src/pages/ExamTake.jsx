@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { get, post, put } from '../api.js';
 import { Alert, Loading } from '../components/ui.jsx';
 import { Question, OptionBank, sharedOptionsOf, hasAnswer } from '../components/questions.jsx';
+import { RichText } from '../components/rich-text.jsx';
 
 const WARN_AT = 5 * 60; // 剩 5 分钟提醒一次
 
@@ -221,7 +222,9 @@ export default function ExamTake() {
               </button>
               <div className={`passage passage-body${openPassage ? '' : ' collapsed'}`}
                 style={{ marginTop: 8 }}>
-                {section.passageText || section.writingPrompt}
+                {/* 原文里也可能有公式（理科的材料题）。图要按题挂在 question_assets 上，
+                    篇章级资源本期没有，所以这里只渲染公式。 */}
+                <RichText text={section.passageText || section.writingPrompt} />
               </div>
             </div>
           ) : null}

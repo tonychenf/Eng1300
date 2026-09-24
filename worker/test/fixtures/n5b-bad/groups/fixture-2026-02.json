@@ -1,0 +1,57 @@
+{
+  "examId": "fixture-2026-02",
+  "courseCode": "13000",
+  "title": "构造卷（故意写坏）",
+  "year": 2026,
+  "month": 1,
+  "sourceFile": "（构造）",
+  "status": "已发布",
+  "sections": [
+    {
+      "sectionId": "fixture-2026-02-s1",
+      "type": "构造题型",
+      "order": 1,
+      "scorePerQuestion": 2,
+      "totalScore": 4,
+      "questions": [
+        {
+          "questionId": "fx-bad-alt",
+          "order": 1,
+          "questionType": "single_choice",
+          "stem": "下图是碱基配对示意图 ![fig1]，其中氢键数目正确的是？公式 $\\frac{a}{b}$ 与题无关。",
+          "options": [
+            "A. 两个",
+            "B. 三个"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "构造考点"
+          ],
+          "assets": [
+            {
+              "key": "fig1",
+              "kind": "IMAGE",
+              "path": "fixture/ch01/fig1.png",
+              "alt": "",
+              "caption": "图 1-1 碱基配对"
+            }
+          ]
+        },
+        {
+          "questionId": "fx-bad-ref",
+          "order": 2,
+          "questionType": "single_choice",
+          "stem": "引用了不存在的资源 ![nosuch]",
+          "options": [
+            "A. 甲",
+            "B. 乙"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "构造考点"
+          ]
+        }
+      ]
+    }
+  ]
+}

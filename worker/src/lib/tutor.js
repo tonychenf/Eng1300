@@ -15,6 +15,7 @@
 import { chatJSON } from './ai.js';
 import { promptFor, renderTemplate } from './subject-pack.js';
 import { dimensionRate } from '../graders/index.js';
+import { stemForAi } from './stem-assets.js';
 
 function bad(code, message) {
   const err = new Error(`${code}: ${message}`);
@@ -123,7 +124,7 @@ export async function gradeEssay(env, pack, { prompt, essay }) {
 }
 
 /** 错题分析：错因 + 记忆要点 */
-export async function analyzeWrong(env, pack, { stem, options, userAnswer, correctAnswer, knowledgePoints, passage }) {
+export async function analyzeWrong(env, pack, { stem, options, userAnswer, correctAnswer, knowledgePoints, passage, assets }) {
   const { systemPrompt, userTemplate } = await prompts(env, pack, 'wrong_analyze');
   const { data } = await chatJSON(env, {
     purpose: 'TUTORING',
@@ -136,7 +137,10 @@ export async function analyzeWrong(env, pack, { stem, options, userAnswer, corre
         content: renderTemplate(userTemplate, {
           subjectName: pack.name,
           passageBlock: passage ? `原文片段：\n${String(passage).slice(0, 1200)}\n\n` : '',
-          stem,
+          // 图片引用换成 [图：alt] 再发给模型（§6.4.6、G3）。AI 看不到图，
+          // 原样发 ![fig1] 它会照着残缺题干编一段解析；删掉更糟——连“这里有张图”
+          // 都不剩了。没有图的题这一步原样返回。
+          stem: stemForAi(stem, assets),
           optionsBlock: options?.length ? `选项：${options.join(' | ')}\n` : '',
           userAnswer: userAnswer || '（未作答）',
           correctAnswer,
@@ -152,7 +156,7 @@ export async function analyzeWrong(env, pack, { stem, options, userAnswer, corre
 }
 
 /** 答案解读：练习即时反馈用 */
-export async function explainAnswer(env, pack, { stem, options, userAnswer, correctAnswer, isCorrect, passage }) {
+export async function explainAnswer(env, pack, { stem, options, userAnswer, correctAnswer, isCorrect, passage, assets }) {
   const { systemPrompt, userTemplate } = await prompts(env, pack, 'answer_explain');
   const { data } = await chatJSON(env, {
     purpose: 'TUTORING',
@@ -165,7 +169,10 @@ export async function explainAnswer(env, pack, { stem, options, userAnswer, corr
         content: renderTemplate(userTemplate, {
           subjectName: pack.name,
           passageBlock: passage ? `原文片段：\n${String(passage).slice(0, 1200)}\n\n` : '',
-          stem,
+          // 图片引用换成 [图：alt] 再发给模型（§6.4.6、G3）。AI 看不到图，
+          // 原样发 ![fig1] 它会照着残缺题干编一段解析；删掉更糟——连“这里有张图”
+          // 都不剩了。没有图的题这一步原样返回。
+          stem: stemForAi(stem, assets),
           optionsBlock: options?.length ? `选项：${options.join(' | ')}\n` : '',
           userAnswer: userAnswer || '（未作答）',
           correctAnswer,

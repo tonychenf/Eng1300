@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { planPaper } from '../lib/paper.js';
 import { gradeQuestion } from '../lib/grade.js';
 import { loadItemRows } from '../lib/question-items.js';
+import { loadAssetRows } from '../lib/stem-assets.js';
 import { loadPackByCourse, settingInt as packSettingInt } from '../lib/subject-pack.js';
 import { requireAuth } from '../lib/auth.js';
 import { requireCourseAccess, requireAttemptAccess, accessibleCourseFilter } from '../lib/access.js';
@@ -69,6 +70,8 @@ async function loadPaper(db, attemptId, { withAnswers = true, withCorrect = fals
   // 多单元题要一空一个输入框，所以整卷的得分单元一次读好带给前端。
   // 没有得分单元的题这里拿到空数组，前端照旧渲染一个输入框。
   const itemRows = await loadItemRows(db, results.map((r) => r.question_id));
+  // 题干里的图（§6.4.6）。path 自带学科码，前端直接拼 /bank/<path> 取静态资源。
+  const assetRows = await loadAssetRows(db, results.map((r) => r.question_id));
 
   const sections = [];
   for (const row of results) {
@@ -91,6 +94,9 @@ async function loadPaper(db, attemptId, { withAnswers = true, withCorrect = fals
       questionType: row.question_type,
       stem: row.stem,
       options: row.options ? JSON.parse(row.options) : null,
+      // 题干里的 ![key] 要换成图，所以把资源一并带过去。alt 也要给：
+      // 它要落到 <img alt> 上（G1），读屏和图裂时都靠它。
+      assets: assetRows.get(row.question_id) || [],
       // 作答控件要知道这道题有几个空、每个空是什么形态。标准答案不在这里给——
       // 那是判分完之后（withCorrect）才能看的东西。
       items: (itemRows.get(row.question_id) || []).map((it) => ({

@@ -1,0 +1,10 @@
+{
+  "subjectCode": "fixture",
+  "note": "构造用，不是真学科",
+  "points": [
+    {
+      "tagId": "fx-1",
+      "name": "构造考点"
+    }
+  ]
+}

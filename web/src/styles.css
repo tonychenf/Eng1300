@@ -446,3 +446,10 @@ h1, h2, h3 { margin: 0; line-height: 1.35; }
   color: inherit;
 }
 .subject-switch:focus { outline: 2px solid #2a6df4; outline-offset: 1px; }
+
+/* N5b 富媒体题干（§6.4.6）。图和公式都要在 <640px 上不撑出页面级横向滚动条。 */
+.q-figure { margin: 8px 0; }
+.q-figure-img { max-width: 100%; height: auto; display: block; border-radius: 6px; }
+.math-inline { display: inline-block; max-width: 100%; overflow-x: auto; vertical-align: middle; }
+/* 块级公式可能比屏幕宽（长推导），让它自己滚，别把整页带出去 */
+.math-block { display: block; max-width: 100%; overflow-x: auto; margin: 8px 0; }

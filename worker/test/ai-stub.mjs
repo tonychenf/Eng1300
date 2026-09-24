@@ -58,7 +58,20 @@ function reply(promptText) {
   });
 }
 
+// 最近一次收到的提示词。N5b 要验一件替身平时验不了的事：喂给模型的题干里，
+// ![fig1] 有没有真的被换成 [图：alt]（§6.4.6、G3）。这件事只有"模型那头收到了什么"
+// 说得清——单测能证明替换函数对，证明不了调用方记得传 assets。
+let lastPrompt = '';
+// 一次 /ai/.../run 会并发发好几条（错题分析每题一条、作文批改一条），
+// 只留最后一条的话，断言要看的那条很可能被别的盖掉。
+const allPrompts = [];
+
 const server = http.createServer((req, res) => {
+  if (req.url === '/last-prompt') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ prompt: lastPrompt, prompts: allPrompts }));
+    return;
+  }
   let body = '';
   req.on('data', (c) => { body += c; });
   req.on('end', () => {
@@ -79,6 +92,9 @@ const server = http.createServer((req, res) => {
         return;
       }
     } catch { /* 保持空 */ }
+    lastPrompt = promptText;
+    allPrompts.push(promptText);
+    if (allPrompts.length > 50) allPrompts.shift();
 
     const content = req.url.startsWith('/bad/') ? '这不是 JSON，故意的' : reply(promptText);
     res.writeHead(200, { 'Content-Type': 'application/json' });

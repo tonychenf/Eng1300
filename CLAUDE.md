@@ -6,7 +6,7 @@ React 18 + Vite 前端，部署在 workers.dev。
 
 **改造的需求与架构见 `docs/跨学科学习平台-需求文档.md`。** 里程碑进度：
 N0（独立部署基线）、N1（学科骨架）、N2（学科权限）、N3（能力包）、N4（英语迁入验证）已完成，
-N5（得分单元与判分骨架）已完成。N5b（富媒体题干）起未开工。
+N5（得分单元与判分骨架）、N5b（富媒体题干）已完成。N6（生化导入管线）起未开工。
 
 文档分三层，不要在一层里写另一层的内容：
 
@@ -59,6 +59,8 @@ in use，同时提示一个已删除的构建临时路径，很容易把注意�
 | n4-parity | 8789 | 8897 |
 | n5-items | 8788 | — |
 | ui-items | 8786 | — |
+| n5b-assets | 8785 | 8896 |
+| ui-rich | 8784 | — |
 
 **LibreOffice 不可用**（连最小 docx 都报 source file could not be loaded），
 生成 Word 后没法转 PDF 看版式。只能做 schema 校验加读回正文核对，版式要如实
@@ -73,16 +75,17 @@ bash 正在执行某个脚本时去编辑它——会在毫不相干的行报语
 
 ```bash
 # 全套回归（推送前必跑）
-cd worker && for s in m2-smoke m3-smoke m4-smoke m5-smoke m6-acceptance n1-subjects n2-grants n3-pack n3-rebuild n4-parity n5-items db-isolation; do
+cd worker && for s in m2-smoke m3-smoke m4-smoke m5-smoke m6-acceptance n1-subjects n2-grants n3-pack n3-rebuild n4-parity n5-items n5b-assets db-isolation; do
   echo "=== $s ==="; bash test/$s.sh 2>&1 | grep -E "FAIL|小结" || echo "  !! 没有小结"
 done
 node test/quota-degrade.mjs && node test/essay-parse.mjs && node test/normalizers.test.mjs \
-  && node test/grade-items.test.mjs
+  && node test/grade-items.test.mjs && node test/rich-text.test.mjs
 
 # 浏览器实测（手机/平板/PC 三种宽度）
 cd worker && bash test/ui-smoke.sh      # 单课程界面（蓝本遗留）
 cd worker && bash test/ui-subjects.sh   # 学科选择、切换、导航带学科码
 cd worker && bash test/ui-items.sh      # 多单元作答控件（一空一框、逐空标红）
+cd worker && bash test/ui-rich.sh       # 富媒体题干（图 + KaTeX 公式，三种宽度）
 
 # 注意：上面这些脚本共用 worker/.wrangler，每个都会 rm -rf 它，
 # 所以不能并行跑——并行会把另一套正在用的本地库删掉。
@@ -92,6 +95,9 @@ node scripts/build-seed-sql.mjs
 
 # 构建前端（产物进 worker/public，由 Worker 静态托管）
 cd web && npx vite build
+# 题库资源（题干里的图）拷进 worker/public/bank/。**必须排在 vite 之后**：
+# vite 的 emptyOutDir 会清空 worker/public，反过来拷等于没拷，而且不报错
+node scripts/build-bank-assets.mjs
 
 # 生成学员手册
 node scripts/build-user-manual.js
@@ -297,6 +303,32 @@ CHECK 和主键，所以只能先清空引用它的行再拆表。
 回填语句一律带 `WHERE 该列 IS NULL` 自限：管理员改过的值不会被冲掉，上次部署补了列
 没填上值的库这次会补齐，所以不需要门闩（门闩那条规矩针对的是**会删数据**的动作）。
 **回填不出来的行要让部署当场失败**，而不是把一个读不到判分策略的学科放上线。
+
+**题库资源要排在 vite 之后拷。** `vite.config.js` 的 `emptyOutDir: true` 会在每次
+构建时清空 `worker/public`，所以 `node scripts/build-bank-assets.mjs` 必须跑在
+`vite build` 之后。反过来的结果是：页面一切正常，题目里的图全裂，而且没有任何地方
+报错。脚本自己会检查 `worker/public` 在不在，不在就报错退出。
+
+**静态资源取不到时返回的是 index.html，而且是 200。** `[assets]` 配了
+`not_found_handling = "single-page-application"`，所以路径写错的图片请求会拿到一张
+HTML 页面。**断言"图能取到"时只看 200 等于没测**——要看 `content-type` 和字节。
+`n5b-assets.sh` 里为此专门留了一条反面断言（不存在的图也回 200，但它是 text/html）。
+
+**英语真题的阅读原文里有美元号。** `$300 per month … $400 per month`、
+`$0.79, $0.99 and $1.49` 都是真实原文。按"两个 $ 之间是公式"切，这些价格会被当成
+公式，整段原文当场变形。行内公式的护栏是通行的那套：开界符后面不能是空白、闭界符
+前面不能是空白、闭界符后面不能紧跟数字、公式不许跨行。**光有护栏还不够**——
+`rich-text.test.mjs` 拿真实的 1020 道题跑一遍，断言一个公式都不该切出来；
+将来加了新题，这条会替你发现"这段原文被切坏了"。
+
+**KaTeX 是唯一引入的前端库。** 引它的理由只有一个：公式排版没法手写，不引理科就
+上不了。它会往 `worker/public/assets/` 里放约 1.8MB 字体（woff2/woff/ttf 三套），
+只有真渲染公式时才会被浏览器取。
+
+**`alt` 必填不是无障碍客套话。** AI 看不到图，四类教学 AI 调用喂进去的都是题干文本。
+alt 空着，模型会照着残缺信息一本正经地编一段解析——不报错，但结果是错的。
+所以喂 AI 前 `![key]` 要换成 `[图：alt]`（既不是原样发，也不是删掉），
+而 alt 缺失的题在种子生成和整卷发布两道关上都会被拒。
 
 **学科码只从 URL 取。** 服务端从路径参数取（`/api/s/:subjectCode/*` + `resolveSubject`
 中间件），前端从 `useParams()` 取。不要从请求体或组件 props 传——蓝本的

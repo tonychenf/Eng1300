@@ -3,6 +3,7 @@ import { requireAuth } from '../lib/auth.js';
 import { requireCourseAccess, requireAttemptAccess, accessibleCourseFilter } from '../lib/access.js';
 import { masteryTier } from '../lib/mastery.js';
 import { gradeEssay, analyzeWrong, assessAbility } from '../lib/tutor.js';
+import { loadAssetRows } from '../lib/stem-assets.js';
 import { mapLimit } from '../lib/ai.js';
 import { loadPackByCourse, aiGradedTypes, typeInClause } from '../lib/subject-pack.js';
 
@@ -198,11 +199,15 @@ studyRouter.post('/ai/attempts/:id/run', async (c) => {
       LIMIT 20`
   ).bind(attemptId, me.id, attemptId).all();
 
+  // 题目资源一次读好：喂 AI 前要把 ![key] 换成 [图：alt]，逐题读库就是 20 次往返。
+  const assetsByQuestion = await loadAssetRows(c.env.DB, pending.map((w) => w.question_id));
+
   // 并发跑，不要串行。真实服务商一次调用 3-4 秒，20 条串下来 80 秒以上，
   // 客户端早就超时了——线上实测就是这么失败的，而本地替身瞬间返回，看不出来。
   await mapLimit(pending, WRONG_ANALYZE_CONCURRENCY, async (w) => {
     try {
       const out = await analyzeWrong(c.env, pack, {
+        assets: assetsByQuestion.get(w.question_id) || [],
         stem: w.stem,
         options: w.options ? JSON.parse(w.options) : null,
         userAnswer: w.user_answer,

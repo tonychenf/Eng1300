@@ -9,12 +9,20 @@ import fs from 'node:fs';
 import crypto from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+// 契约校验与 worker 共用同一份实现：种子这边认得的写法发布那边不认，
+// 表现是题入了库、发布时被拒，而报错指向一个看起来毫无关系的地方。
+import { validateAssets } from '../worker/src/lib/stem-assets.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const outDir = process.argv[2] || path.join(root, 'worker', 'seed');
 // N4：英语的数据搬进了 data/subjects/english/，和生化同一种布局——
 // 学科是顶层分区，英语不再是"默认的那个"，只是第一个学科。
-const subjectDir = path.join(root, 'data', 'subjects', 'english');
+// SEED_SUBJECT_DIR 是给测试用的：契约校验（§6.4.6 G2、§6.4.9）要能拿一份
+// **故意写坏的**构造数据跑一遍，看它是不是真的拒了、真的把题号打出来了。
+// 拿真实题库测不到——真实题库是对的，跑一百遍也只能证明"没报错"。
+const subjectDir = process.env.SEED_SUBJECT_DIR
+  ? path.resolve(process.env.SEED_SUBJECT_DIR)
+  : path.join(root, 'data', 'subjects', 'english');
 const examDir = path.join(subjectDir, 'groups');
 
 // 课程合并：00015《英语(二)》在 2024 年 10 月起改用新代码 13000《英语(专升本)》，
@@ -44,9 +52,6 @@ const q = (v) => (v === null || v === undefined ? 'NULL' : `'${String(v).replace
 const n = (v) => (v === null || v === undefined ? 'NULL' : Number(v));
 
 fs.mkdirSync(outDir, { recursive: true });
-for (const f of fs.readdirSync(outDir)) {
-  if (f.endsWith('.sql')) fs.unlinkSync(path.join(outDir, f));
-}
 
 // ---- 考点标签库 ----
 // 考点文件包成了 { subjectCode, note, points: [...] }，与生化同形；
@@ -56,6 +61,7 @@ if (!Array.isArray(kpFile.points)) {
   throw new Error(`考点文件的形状不对：顶层键是 ${Object.keys(kpFile).join(',')}，应当有 points 数组`);
 }
 const kps = kpFile.points;
+const subjectCode = kpFile.subjectCode || path.basename(subjectDir);
 const kpByName = new Map(kps.map((k) => [k.name, k.tagId]));
 // N3：考点带学科。原来 name 是全局 UNIQUE，多学科之后必撞；改成
 // (subject_id, name) 唯一之后，subject_id 留空的话 SQLite 认为 NULL 各不相同，
@@ -80,13 +86,33 @@ function writeSeedFile(dir, name, lines) {
   fs.writeFileSync(path.join(dir, name), body + stamp);
 }
 
-writeSeedFile(outDir, '000-knowledge-points.sql', kpLines);
+// 先攒着，等所有校验都过了再一起落盘。
+//
+// 起因：契约校验放在最后，而 SQL 是逐套写出去的，于是"生成失败"之后
+// worker/seed/ 里已经躺着几个新文件了。流水线导题库那一步是 `for f in seed/*.sql`，
+// 它不知道生成器刚才失败过——被拒的题照样进库。
+// **要么全写，要么一个都不写。**
+const pending = [['000-knowledge-points.sql', kpLines]];
 
 // ---- 各套试卷 ----
 const files = fs.readdirSync(examDir).filter((f) => f.endsWith('.json')).sort();
 let totalQ = 0;
 let totalFlagged = 0;
+let totalAssets = 0;
 let unknownTags = new Set();
+// 富媒体题干的契约问题，攒齐一起报——一次只报一条的话，出题人要跑十次才知道
+// 十道题都有什么毛病
+const badAssets = [];
+// 题目资源在盘上的位置。path 的第一段是**学科码**（与 /bank/<code>/... 这个 URL
+// 对齐），文件实际在 data/subjects/<code>/assets/<剩下那段> 下。
+// 第一段对不上本学科时直接当成"文件不在盘上"报出来——那多半是把别的学科的图
+// 抄到这道题上了，而它会在学生面前变成一个破图，没有任何地方报错。
+const assetRoot = path.join(subjectDir, 'assets');
+const assetExists = (rel) => {
+  const [code, ...rest] = String(rel).split('/');
+  if (code !== subjectCode || !rest.length) return false;
+  return fs.existsSync(path.join(assetRoot, ...rest));
+};
 
 for (const file of files) {
   const d = JSON.parse(fs.readFileSync(path.join(examDir, file), 'utf8'));
@@ -97,6 +123,9 @@ for (const file of files) {
   // 幂等：重复导入时先清掉这套卷的旧数据，避免主键冲突或残留
   lines.push(
     `DELETE FROM question_knowledge_points WHERE question_id IN (SELECT question_id FROM questions WHERE exam_id = ${q(d.examId)});`,
+    // 资源行跟着题一起清。不清的话重导之后会留下指向已删题目的孤儿行，
+    // 而外键在 D1 上默认不强制，不会有任何地方报错。
+    `DELETE FROM question_assets WHERE question_id IN (SELECT question_id FROM questions WHERE exam_id = ${q(d.examId)});`,
     `DELETE FROM questions WHERE exam_id = ${q(d.examId)};`,
     `DELETE FROM sections WHERE exam_id = ${q(d.examId)};`,
     `DELETE FROM exam_parsing_notes WHERE exam_id = ${q(d.examId)};`,
@@ -120,6 +149,30 @@ for (const file of files) {
     for (const qu of s.questions) {
       totalQ++;
       if (flagged.has(qu.order)) totalFlagged++;
+
+      // 富媒体题干的契约（§6.4.6、G2）：引用的 key 必须存在、IMAGE 的 alt 必填、
+      // 路径指向的文件必须真在盘上。**在这里拒，不在发布时拒**——种子生成是
+      // 唯一一个既看得到 JSON 又看得到文件系统的环节。
+      const assetProblems = validateAssets(
+        {
+          questionId: qu.questionId,
+          stem: qu.stem,
+          options: qu.options,
+          itemAnswers: (qu.items || []).map((it) => it.answer),
+        },
+        qu.assets,
+        { fileExists: assetExists },
+      );
+      if (assetProblems.length) badAssets.push(...assetProblems);
+      for (const a of qu.assets || []) {
+        totalAssets++;
+        lines.push(
+          `INSERT INTO question_assets (question_id, asset_key, subject_id, kind, path, alt, caption) VALUES (` +
+            `${q(qu.questionId)}, ${q(a.key)}, ` +
+            `(SELECT subject_id FROM courses WHERE course_code = ${q(courseCode)}), ` +
+            `${q(a.kind)}, ${q(a.path)}, ${q(a.alt)}, ${q(a.caption)});`
+        );
+      }
       lines.push(
         `INSERT INTO questions (question_id, section_id, exam_id, course_code, section_type, ord, ` +
           `question_type, stem, options, answer, answer_explanation, difficulty_tag, status, subject_id) VALUES (` +
@@ -146,7 +199,7 @@ for (const file of files) {
   }
 
   const outName = `${String(files.indexOf(file) + 1).padStart(3, '0')}-${d.examId}.sql`;
-  writeSeedFile(outDir, outName, lines);
+  pending.push([outName, lines]);
 }
 
 if (unknownTags.size) {
@@ -154,5 +207,21 @@ if (unknownTags.size) {
   process.exit(1);
 }
 
-console.log(`生成完成：${files.length} 套试卷，${totalQ} 道题，${kps.length} 个考点标签 -> ${outDir}`);
+// G2：资源契约不过关的题**逐条打印题号**并让生成失败。
+// 只打印"有 3 道题有问题"等于没说——出题人要的是"哪道题、缺什么"。
+if (badAssets.length) {
+  console.error(`错误：${badAssets.length} 处富媒体题干不合契约（§6.4.6）：`);
+  for (const p of badAssets) console.error(`  - ${p}`);
+  process.exit(1);
+}
+
+// 校验全过了才落盘。清旧文件也放在这里：生成失败时目录保持原样，
+// 而不是留下一个空目录——那样"生成器失败了"会以"题库怎么没了"的形式出现。
+for (const f of fs.readdirSync(outDir)) {
+  if (f.endsWith('.sql')) fs.unlinkSync(path.join(outDir, f));
+}
+for (const [name, lines] of pending) writeSeedFile(outDir, name, lines);
+
+console.log(`生成完成：${files.length} 套试卷，${totalQ} 道题，${totalAssets} 个题目资源，` +
+  `${kps.length} 个考点标签 -> ${outDir}`);
 console.log(`其中 ${totalFlagged} 道被解析存疑记录点名，标为"存疑"，不参与组卷与练习。`);

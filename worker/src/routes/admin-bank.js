@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import { validateAssets } from '../lib/stem-assets.js';
 
 export const bankRouter = new Hono();
 
@@ -206,6 +207,46 @@ bankRouter.post('/exams/:examId/publish', async (c) => {
         badTypes.map((b) => `第${b.ord}题(${b.question_type})`).join('、'),
       questions: badTypes,
     }, 422);
+  }
+
+  // N5b：富媒体题干的契约（§6.4.6、G2）。这里查的是**发布那一刻库里的实际内容**，
+  // 与种子生成那道校验不是重复：题也可以从后台改，改完 alt 空了、![key] 拼错了，
+  // 种子那道关根本不会再跑。查不了文件在不在（Worker 没有文件系统），
+  // 那条由种子生成时的 fileExists 负责。
+  const { results: assetRows } = await c.env.DB.prepare(
+    `SELECT q.question_id, q.ord, q.stem, q.options,
+            a.asset_key, a.kind, a.path, a.alt
+       FROM questions q
+       LEFT JOIN question_assets a ON a.question_id = q.question_id
+      WHERE q.exam_id = ? AND q.status != '存疑'
+        AND (a.asset_key IS NOT NULL OR q.stem LIKE '%![%')
+      ORDER BY q.ord`
+  ).bind(examId).all();
+  if (assetRows.length) {
+    const byQuestion = new Map();
+    for (const r of assetRows) {
+      if (!byQuestion.has(r.question_id)) {
+        let options = null;
+        try { options = r.options ? JSON.parse(r.options) : null; } catch { options = null; }
+        byQuestion.set(r.question_id, { ord: r.ord, stem: r.stem, options, assets: [] });
+      }
+      if (r.asset_key) {
+        byQuestion.get(r.question_id).assets.push(
+          { key: r.asset_key, kind: r.kind, path: r.path, alt: r.alt });
+      }
+    }
+    const problems = [];
+    for (const [questionId, qu] of byQuestion) {
+      problems.push(...validateAssets(
+        { questionId: `第${qu.ord}题`, stem: qu.stem, options: qu.options }, qu.assets));
+    }
+    if (problems.length) {
+      return c.json({
+        error: 'asset_contract_failed',
+        message: `有 ${problems.length} 处题目资源不合契约，发布被拒`,
+        problems: problems.slice(0, 20),
+      }, 422);
+    }
   }
 
   // 标记为存疑的题目不随整卷发布

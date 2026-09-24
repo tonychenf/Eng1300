@@ -1,3 +1,4 @@
+import { RichText } from './rich-text.jsx';
 // 题目渲染。作答页与成绩报告共用，靠 review 开关切换只读与可作答。
 
 export function optionLetter(opt, index) {
@@ -32,7 +33,7 @@ export function OptionBank({ options }) {
       <div className="stack" style={{ fontSize: 14 }}>
         {options.map((o, i) => (
           <div key={i}>
-            <strong>{optionLetter(o, i)}.</strong> {optionText(o)}
+            <strong>{optionLetter(o, i)}.</strong> <RichText text={optionText(o)} />
           </div>
         ))}
       </div>
@@ -85,10 +86,14 @@ export function Question({ q, compact, value, onChange, review }) {
         <div style={{ flex: 1, minWidth: 0 }}>
           {q.questionType === 'fill_text' ? (
             <div className="q-stem">
-              给定词：<strong className="mono">{q.stem}</strong>
+              给定词：<strong className="mono"><RichText text={q.stem} assets={q.assets} /></strong>
             </div>
           ) : (
-            <div className="q-stem" style={{ whiteSpace: 'pre-wrap' }}>{q.stem}</div>
+            <div className="q-stem" style={{ whiteSpace: 'pre-wrap' }}>
+              {/* 题干里可能有 ![图] 和 $公式$（§6.4.6）。没有标记的题走 RichText
+                  里那条"原样一个 span"的分支，DOM 与改造前一样。 */}
+              <RichText text={q.stem} assets={q.assets} />
+            </div>
           )}
 
           {review ? <Verdict q={q} /> : null}
@@ -226,7 +231,10 @@ function ChoiceList({ q, value, onChange, review }) {
       <label key={i} className={cls}>
         <input type="radio" name={q.questionId} checked={picked} disabled={review}
           onChange={() => onChange(letter)} />
-        <span><span className="key">{letter}.</span> {optionText(opt)}</span>
+        <span>
+          <span className="key">{letter}.</span>{' '}
+          <RichText text={optionText(opt)} assets={q.assets} />
+        </span>
       </label>
     );
   });

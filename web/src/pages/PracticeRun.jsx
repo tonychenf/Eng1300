@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { get, post } from '../api.js';
 import { Alert, Loading } from '../components/ui.jsx';
 import { Question, hasAnswer } from '../components/questions.jsx';
+import { RichText } from '../components/rich-text.jsx';
 
 const STAGE_HINT = {
   摸底: '每个考点先来一道，快速找出薄弱面',
@@ -129,7 +130,7 @@ export default function PracticeRun() {
                 </button>
                 <div className={`passage passage-body${openPassage ? '' : ' collapsed'}`}
                   style={{ marginTop: 8 }}>
-                  {q.passageText || q.writingPrompt}
+                  <RichText text={q.passageText || q.writingPrompt} />
                 </div>
               </div>
             ) : null}

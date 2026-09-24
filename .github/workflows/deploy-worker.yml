@@ -70,9 +70,12 @@ jobs:
           npm install --prefix web --no-audit --no-fund
 
       - name: Build frontend
-        # vite 的产物直接落到 worker/public，随 wrangler deploy 一起上传
+        # vite 的产物直接落到 worker/public，随 wrangler deploy 一起上传。
+        # 拷题库资源必须排在 vite 之后：vite 的 emptyOutDir 会把 worker/public 清空，
+        # 反过来的话页面正常、题目里的图全裂，而且不报错（§6.4.6、G10）。
         run: |
           npm run build --prefix web
+          node scripts/build-bank-assets.mjs
           ls -la worker/public
 
       - name: Resolve Cloudflare account

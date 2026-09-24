@@ -3,6 +3,7 @@ import { Link, useLocation, useParams } from 'react-router-dom';
 import { get, post } from '../api.js';
 import { Alert, Loading, PageHead } from '../components/ui.jsx';
 import { Question, OptionBank, sharedOptionsOf } from '../components/questions.jsx';
+import { RichText } from '../components/rich-text.jsx';
 import { useSubject } from '../subject.jsx';
 
 // 不足一分钟就显示秒，免得刚交卷的报告写着"用时 0 分钟"
@@ -159,7 +160,7 @@ export default function ExamReport() {
                       查看原文{s.passageTitle ? `：${s.passageTitle}` : ''}
                     </summary>
                     <div className="passage" style={{ marginTop: 8 }}>
-                      {s.passageText || s.writingPrompt}
+                      <RichText text={s.passageText || s.writingPrompt} />
                     </div>
                   </details>
                 ) : null}

@@ -3,6 +3,7 @@ import { requireAuth } from '../lib/auth.js';
 import { requireCourseAccess, requireAttemptAccess, accessibleCourseFilter } from '../lib/access.js';
 import { gradeQuestion } from '../lib/grade.js';
 import { loadItemRows } from '../lib/question-items.js';
+import { loadAssetRows } from '../lib/stem-assets.js';
 import { masteryTier, masteryWrites, tagsOfQuestion } from '../lib/mastery.js';
 import { nextQuestion, scopeTags, scopeQuestionCount } from '../lib/practice.js';
 import { loadPackByCourse, settingInt as packSettingInt, typeInClause } from '../lib/subject-pack.js';
@@ -211,6 +212,7 @@ practiceRouter.get('/practice/:id/next', async (c) => {
 
   // 多单元题要一空一个输入框。没有得分单元的题这里是空数组，前端照旧渲染一个框。
   const items = (await loadItemRows(c.env.DB, [q.question_id])).get(q.question_id) || [];
+  const assets = (await loadAssetRows(c.env.DB, [q.question_id])).get(q.question_id) || [];
 
   return c.json({
     stage: pick.stage,
@@ -224,6 +226,7 @@ practiceRouter.get('/practice/:id/next', async (c) => {
       items: items.map((it) => ({
         ord: it.item_ord, kind: it.item_kind, weight: it.weight, groupKey: it.group_key ?? null,
       })),
+      assets,
       sectionType: q.section_type,
       passageTitle: q.passage_title,
       passageText: q.passage_text,
