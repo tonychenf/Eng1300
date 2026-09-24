@@ -5,7 +5,7 @@
 //
 // 这一段的每一条规则都对应 §4.2 里一条真实的资料形态，注释里标了是哪一条。
 // 拿不准的一律写进 parsingNotes 并**写明题号**，不自己猜着填。
-import { readZip } from './lib/zip.mjs';
+import { readZip, entryText } from './lib/zip.mjs';
 import { parseParagraphs, parseNumbering, applyNumbering } from './lib/ooxml.mjs';
 
 function fail(code, message) {
@@ -129,8 +129,8 @@ function splitQuestions(paras, section, notes) {
  * 跑一遍导入。
  * @returns { group, stats }  group 是可直接写盘的题库 JSON，stats 供自检
  */
-export function importDocx(buf, { subjectCode, courseCode, groupId, chapterNo, label }) {
-  const entries = readZip(buf);
+export async function importDocx(buf, { subjectCode, courseCode, groupId, chapterNo, label }) {
+  const entries = await readZip(buf);
   const docXml = entries.get('word/document.xml');
   if (!docXml) throw fail('bad_docx', 'docx 里没有 word/document.xml');
   const numXml = entries.get('word/numbering.xml');
@@ -139,8 +139,8 @@ export function importDocx(buf, { subjectCode, courseCode, groupId, chapterNo, l
   if (!numXml) throw fail('bad_docx', 'docx 里没有 word/numbering.xml，自动编号还原不了');
 
   const paras = applyNumbering(
-    parseParagraphs(docXml.toString('utf8')),
-    parseNumbering(numXml.toString('utf8')),
+    parseParagraphs(entryText(docXml)),
+    parseNumbering(entryText(numXml)),
   );
 
   const notes = [];

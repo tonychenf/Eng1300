@@ -40,7 +40,7 @@ for (const g of cfg.groups) {
     console.error(`错误：找不到原始资料 ${src}`);
     process.exit(1);
   }
-  const { group, stats } = pipeline.run(fs.readFileSync(src), {
+  const { group, stats } = await pipeline.run(fs.readFileSync(src), {
     subjectCode, courseCode: cfg.courseCode,
     groupId: g.groupId, chapterNo: g.chapterNo, label: g.label,
   });

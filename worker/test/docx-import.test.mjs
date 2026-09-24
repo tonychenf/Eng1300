@@ -30,7 +30,7 @@ const check = (desc, got, want) => {
 const { cfg } = resolvePipeline('biochem');
 const g0 = cfg.groups[0];
 const buf = fs.readFileSync(docxPath);
-const { group, stats } = importDocx(buf, {
+const { group, stats } = await importDocx(buf, {
   subjectCode: 'biochem', courseCode: cfg.courseCode,
   groupId: g0.groupId, chapterNo: g0.chapterNo, label: g0.label,
 });
@@ -60,7 +60,7 @@ console.log('== B2：Word 自动编号还原 ==');
 // 这一段刻意绕开 importDocx，直接看段落层：**题号和选项字母在 XML 的文本里
 // 根本不存在**，全靠 numbering.xml 还原。断在 importDocx 的产出上测不到这件事
 // ——切题的正则找不到题号时会把整段并进上一题，题数照样可能凑巧对。
-const files = readZip(buf);
+const files = await readZip(buf);
 const dec = (name) => new TextDecoder().decode(files.get(name));
 const rawParas = parseParagraphs(dec('word/document.xml'));
 const numbered = applyNumbering(
