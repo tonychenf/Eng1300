@@ -84,7 +84,17 @@ const courseOf = (code) => COURSE_ALIAS[code] || code;
 
 // SQL 字符串字面量转义：单引号翻倍，NULL 单独处理
 const q = (v) => (v === null || v === undefined ? 'NULL' : `'${String(v).replace(/'/g, "''")}'`);
-const n = (v) => (v === null || v === undefined ? 'NULL' : Number(v));
+const n = (v) => {
+  if (v === null || v === undefined) return 'NULL';
+  const x = Number(v);
+  // NaN / Infinity 写进 SQL 是一句语法错误，而报错要等到 d1 import 那一步，
+  // 拿到的信息是"导入 003-xxx.sql 失败"——离真正的原因（某处算术算歪了）隔着三层。
+  // 在这里拦住，把算歪的那个值打出来。
+  if (!Number.isFinite(x)) {
+    throw new Error(`要写进 SQL 的数值不是有限数：${JSON.stringify(v)}（算出来是 ${x}）`);
+  }
+  return x;
+};
 
 fs.mkdirSync(outDir, { recursive: true });
 
