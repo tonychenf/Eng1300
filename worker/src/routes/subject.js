@@ -4,6 +4,7 @@
 // 仍挂在老路径上，等后续里程碑逐个搬进来——一次全搬会把蓝本的 240 条断言
 // 同时弄红，分不清是搬迁出的问题还是学科层出的问题。
 import { Hono } from 'hono';
+import { pickableSql } from '../lib/pickable.js';
 import { requireAuth } from '../lib/auth.js';
 import { resolveSubject } from '../lib/subject.js';
 
@@ -22,6 +23,9 @@ function publicShape(s) {
   };
 }
 
+// 学员侧这两处 published_questions 是「能练的题有几道」，所以判据必须与抽题同源：
+// 按 status='已发布' 数出来的是「看起来有题」，缺答案的题也算在内，
+// 症状是学科进得去、点开练习报「没有可练的题」，而概览页明明写着几百道。
 // 学科详情：进入学科后前端拿它建 SubjectContext
 subjectRouter.get('/s/:subjectCode', async (c) => {
   const s = c.get('subject');
@@ -31,7 +35,7 @@ subjectRouter.get('/s/:subjectCode', async (c) => {
        (SELECT COUNT(*) FROM exams e JOIN courses co ON co.course_code = e.course_code
          WHERE co.subject_id = ?1 AND e.status = '已发布') AS published_groups,
        (SELECT COUNT(*) FROM questions q JOIN courses co ON co.course_code = q.course_code
-         WHERE co.subject_id = ?1 AND q.status = '已发布') AS published_questions`
+         WHERE co.subject_id = ?1 AND ${pickableSql('q')}) AS published_questions`
   ).bind(s.subject_id).first();
 
   return c.json({
@@ -54,7 +58,7 @@ subjectRouter.get('/s/:subjectCode/courses', async (c) => {
             (SELECT COUNT(*) FROM exams e
               WHERE e.course_code = co.course_code AND e.status = '已发布') AS published_exams,
             (SELECT COUNT(*) FROM questions q
-              WHERE q.course_code = co.course_code AND q.status = '已发布') AS published_questions
+              WHERE q.course_code = co.course_code AND ${pickableSql('q')}) AS published_questions
        FROM courses co
       WHERE co.subject_id = ?
       ORDER BY co.course_code`

@@ -8,6 +8,7 @@ import { masteryTier, masteryWrites, tagsOfQuestion } from '../lib/mastery.js';
 import { nextQuestion, scopeTags, scopeQuestionCount } from '../lib/practice.js';
 import { loadPackByCourse, settingInt as packSettingInt, typeInClause } from '../lib/subject-pack.js';
 import { wrongbookWrites } from '../lib/wrongbook.js';
+import { pickableSql } from '../lib/pickable.js';
 
 export const practiceRouter = new Hono();
 practiceRouter.use('/practice/*', requireAuth);
@@ -81,7 +82,7 @@ practiceRouter.get('/practice/section-types', async (c) => {
   const { results } = await c.env.DB.prepare(
     `SELECT section_type, COUNT(*) AS question_count
        FROM questions
-      WHERE course_code = ? AND status = '已发布' AND ${t.sql}
+      WHERE course_code = ? AND ${pickableSql('')} AND ${t.sql}
       GROUP BY section_type ORDER BY section_type`
   ).bind(courseCode, ...t.binds).all();
   return c.json({ sectionTypes: results });

@@ -366,19 +366,19 @@ exec_sql "INSERT INTO sections (section_id, exam_id, type, ord, passage_title, p
          ('n5-sec-ctx',  '$EX', 'N5单题抽', 91, '有原文', '这是一段必须连着读的原文');"
 for i in 1 2 3; do
   exec_sql "INSERT INTO questions (question_id, section_id, exam_id, course_code, section_type, ord,
-    question_type, stem, options, answer, status, subject_id)
+    question_type, stem, options, answer, status, answer_state, answer_source, subject_id)
     VALUES ('n5-free-$i', 'n5-sec-free', '$EX', '13000', 'N5单题抽', $i, 'single_choice',
-            '构造题 $i', '[\"A. 甲\",\"B. 乙\"]', 'A', '已发布', $ENG);"
+            '构造题 $i', '[\"A. 甲\",\"B. 乙\"]', 'A', '已发布', '已确认', 'MANUAL', $ENG);"
 done
 exec_sql "INSERT INTO questions (question_id, section_id, exam_id, course_code, section_type, ord,
-  question_type, stem, answer, status, subject_id)
+  question_type, stem, answer, status, answer_state, answer_source, subject_id)
   VALUES ('n5-free-fill', 'n5-sec-free', '$EX', '13000', 'N5单题抽', 4, 'fill_text',
-          '构造填空', 'x', '已发布', $ENG);"
+          '构造填空', 'x', '已发布', '已确认', 'MANUAL', $ENG);"
 for i in 1 2; do
   exec_sql "INSERT INTO questions (question_id, section_id, exam_id, course_code, section_type, ord,
-    question_type, stem, options, answer, status, subject_id)
+    question_type, stem, options, answer, status, answer_state, answer_source, subject_id)
     VALUES ('n5-ctx-$i', 'n5-sec-ctx', '$EX', '13000', 'N5单题抽', $i, 'single_choice',
-            '离开原文读不懂的题 $i', '[\"A. 甲\",\"B. 乙\"]', 'A', '已发布', $ENG);"
+            '离开原文读不懂的题 $i', '[\"A. 甲\",\"B. 乙\"]', 'A', '已发布', '已确认', 'MANUAL', $ENG);"
 done
 check "构造了 5 道单选，其中 2 道依赖原文" "$(one "
   SELECT COUNT(*) FROM questions q JOIN sections s ON s.section_id=q.section_id

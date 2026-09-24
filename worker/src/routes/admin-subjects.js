@@ -19,6 +19,9 @@ adminSubjectsRouter.get('/', async (c) => {
               WHERE co.subject_id = s.subject_id) AS question_count,
             (SELECT COUNT(*) FROM questions q JOIN courses co ON co.course_code = q.course_code
               WHERE co.subject_id = s.subject_id AND q.status = '已发布') AS published_questions,
+            -- §6.4.10：缺答案题数是内容建设进度的核心指标，看板上要有
+            (SELECT COUNT(*) FROM questions q JOIN courses co ON co.course_code = q.course_code
+              WHERE co.subject_id = s.subject_id AND q.answer_state <> '已确认') AS missing_answer_count,
             (SELECT COUNT(*) FROM user_subject_grants g
               WHERE g.subject_id = s.subject_id AND g.status = 'ACTIVE') AS member_count
        FROM subjects s ORDER BY s.sort_order, s.subject_id`

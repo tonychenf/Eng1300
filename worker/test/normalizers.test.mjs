@@ -8,6 +8,8 @@ import { baseFold } from '../src/lib/grade.js';
 import { enSpelling } from '../src/normalizers/en-spelling.js';
 import { choice } from '../src/normalizers/choice.js';
 import { NORMALIZERS, resolveNormalizers } from '../src/normalizers/index.js';
+import { cjkWidth } from '../src/normalizers/cjk-width.js';
+import { chemNomenclature } from '../src/normalizers/chem-nomenclature.js';
 
 let pass = 0, fail = 0;
 const check = (desc, got, want) => {
@@ -123,7 +125,43 @@ try { resolveNormalizers(['no-such-normalizer'], '测试用的题型'); } catch 
 check('报错里说清楚是谁声明的', msg.includes('测试用的题型'), true);
 check('报错里列出注册表有哪些', msg.includes('en-spelling'), true);
 check('空数组是合法的（表示不需要任何学科专属等价）', resolveNormalizers([], 'x').length, 0);
-check('注册表按能力组织，不按学科', Object.keys(NORMALIZERS).sort().join(','), 'choice,en-spelling,trim-case');
+// 原来这条是把注册表的全部键名写死比对。那测的是"有没有人加过归一化器"，
+// 每加一个能力就红一次，而红了之后正确的做法永远是改期望值——这种断言不提供信号。
+// 真正要守住的性质是 §5.3 的那一条：**按能力注册，不按学科**。
+const subjectish = Object.keys(NORMALIZERS)
+  .filter((k) => /english|biochem|英语|生化|chinese|math/i.test(k));
+check('注册表里没有以学科命名的归一化器', subjectish.join(','), '');
+check('注册表的值全是函数',
+  Object.values(NORMALIZERS).every((f) => typeof f === 'function'), true);
+check('键名全是小写连字符（能被 JSON 声明直接引用）',
+  Object.keys(NORMALIZERS).every((k) => /^[a-z][a-z0-9-]*$/.test(k)), true);
+
+console.log('== 生化：全角/希腊字母与氨基酸命名（§5.4） ==');
+const cw = (x) => cjkWidth(baseFold(x));
+const cn = (x) => chemNomenclature(baseFold(x));
+check('全角字母折成半角',       cw('Ａ'), 'a');
+// baseFold 会先剥掉首尾标点，所以末尾那个 ％ 在 cjk-width 之前就没了。
+// 用夹在中间的写法才测得到全角数字与全角百分号本身。
+check('全角数字与百分号',       cw('１６％浓度'), '16%浓度');
+check('末尾全角百分号由 baseFold 剥掉', cw('１６％'), '16');
+check('阿尔法 → α',             cw('阿尔法螺旋'), 'α螺旋');
+check('alpha- → α-',            cw('alpha-螺旋'), 'α-螺旋');
+check('全角连字符折成半角',     cw('β－折叠'), 'β-折叠');
+check('中文句末标点去掉',       cw('半胱氨酸。'), '半胱氨酸');
+check('三字母码 → 中文名',      cn('cys'), '半胱氨酸');
+check('中文别名归一',           cn('甲硫氨酸'), '蛋氨酸');
+check('门冬氨酸 → 天冬氨酸',    cn('门冬氨酸'), '天冬氨酸');
+
+console.log('== 生化的非等价：不该折的没被放过 ==');
+// 这一组是重点。折宽一格，错答就被判成对——学生看到的是一个理直气壮的满分。
+check('alphabet 不被当成 alpha 前缀', cw('alphabet'), 'alphabet');
+check('谷胺酸（错别字）不等于谷氨酸', cn('谷胺酸') === cn('谷氨酸'), false);
+// 单字母码故意不折（见 chem-nomenclature.js）：C/N/P/S/K 同时是元素符号，
+// 第 1 题问的是氮、alt 写着 N，全局折的话天冬酰胺会变成那道题的正确答案。
+check('单字母 N 不折成天冬酰胺',      cn('N') === cn('天冬酰胺'), false);
+check('单字母 C 不折成半胱氨酸',      cn('C') === cn('半胱氨酸'), false);
+check('缬氨酸不等于亮氨酸',           cn('缬氨酸') === cn('亮氨酸'), false);
+check('Val 不等于 Leu',               cn('val') === cn('leu'), false);
 
 console.log(`== 小结: ${pass} 通过, ${fail} 失败 ==`);
 process.exit(fail === 0 ? 0 : 1);

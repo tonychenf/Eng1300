@@ -14,11 +14,18 @@ UPDATE exam_parsing_notes
 
 -- 加上状态判断：已经发布的不再重写，重复部署时这条是 0 行写入。
 -- D1 免费版每天 10 万行写入，整套题库重写一次约 5700 行，很快就会撞上。
-UPDATE questions SET status = '已发布' WHERE status NOT IN ('已发布', '存疑');
+-- 答案没确认的题不在这条放行里（§6.4.10、B14）。这不是多加一道门：
+-- 这个脚本本来就只是"把存疑记录标为已处理"的批量捷径，而"AI 生成的答案绝不能
+-- 自动发布"是硬约束，一条批量 SQL 不该能绕过它。
+UPDATE questions SET status = '已发布'
+ WHERE status NOT IN ('已发布', '存疑') AND answer_state = '已确认';
 
+-- 只发布**真有题放行了**的内容组。一章 34 道题全是待核时，把它标成"已发布"
+-- 会让后台显示一个已发布、点进去一道题都没上线的章节——没有任何地方报错。
 UPDATE exams
    SET status = '已发布', published_at = datetime('now')
- WHERE status != '已发布';
+ WHERE status != '已发布'
+   AND EXISTS (SELECT 1 FROM questions q WHERE q.exam_id = exams.exam_id AND q.status = '已发布');
 
 -- 被解析存疑记录点名的题目不在这里单独处理：种子生成时就已按记录里的题号
 -- 标成"存疑"（见 scripts/build-seed-sql.mjs），上面那条 UPDATE 会跳过它们。

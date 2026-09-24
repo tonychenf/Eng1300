@@ -6,11 +6,15 @@
 import { enSpelling } from './en-spelling.js';
 import { choice } from './choice.js';
 import { trimCase } from './trim-case.js';
+import { cjkWidth } from './cjk-width.js';
+import { chemNomenclature } from './chem-nomenclature.js';
 
 export const NORMALIZERS = {
   'en-spelling': enSpelling,
   'choice': choice,
   'trim-case': trimCase,
+  'cjk-width': cjkWidth,
+  'chem-nomenclature': chemNomenclature,
 };
 
 /**

@@ -1,5 +1,7 @@
 import { Hono } from 'hono';
 import { validateAssets } from '../lib/stem-assets.js';
+import { ANSWER_CONFIRMED, isAnswerState, isAnswerSource } from '../lib/pickable.js';
+import { shapeContentGroup, ORDER_BY_RECENT } from '../lib/content-group.js';
 
 export const bankRouter = new Hono();
 
@@ -33,7 +35,17 @@ bankRouter.get('/stats', async (c) => {
     `SELECT COUNT(*) AS n FROM exam_parsing_notes WHERE resolved = 0`
   ).first();
 
-  return c.json({ byCourse, byType, byTag, unresolvedNotes: pending?.n || 0 });
+  // §6.4.10：缺答案题数按学科分开数——它是内容建设进度，混在一起看不出哪一科卡着。
+  const { results: answers } = await c.env.DB.prepare(
+    `SELECT s.code AS subject_code, s.name AS subject_name,
+            SUM(CASE WHEN q.answer_state = '缺答案' THEN 1 ELSE 0 END) AS no_answer,
+            SUM(CASE WHEN q.answer_state = '待核' THEN 1 ELSE 0 END) AS unreviewed,
+            SUM(CASE WHEN q.answer_state = '已确认' THEN 1 ELSE 0 END) AS confirmed
+       FROM questions q JOIN subjects s ON s.subject_id = q.subject_id
+      GROUP BY s.subject_id ORDER BY s.sort_order, s.subject_id`
+  ).all();
+
+  return c.json({ byCourse, byType, byTag, byAnswerState: answers, unresolvedNotes: pending?.n || 0 });
 });
 
 // 试卷列表，支持按课程/状态筛选
@@ -47,17 +59,19 @@ bankRouter.get('/exams', async (c) => {
   const where = conds.length ? `WHERE ${conds.join(' AND ')}` : '';
 
   const { results } = await c.env.DB.prepare(
-    `SELECT e.exam_id, e.course_code, co.course_name, e.title, e.year, e.month,
-            e.status, e.created_at, e.published_at,
+    `SELECT e.exam_id, e.course_code, co.course_name, e.title, e.label, e.order_key, e.meta,
+            e.year, e.month, e.status, e.created_at, e.published_at,
             (SELECT COUNT(*) FROM questions q WHERE q.exam_id = e.exam_id) AS question_count,
             (SELECT COUNT(*) FROM questions q WHERE q.exam_id = e.exam_id AND q.reviewed = 1) AS reviewed_count,
+            (SELECT COUNT(*) FROM questions q WHERE q.exam_id = e.exam_id
+               AND q.answer_state <> '${ANSWER_CONFIRMED}') AS missing_answer_count,
             (SELECT COUNT(*) FROM exam_parsing_notes p WHERE p.exam_id = e.exam_id AND p.resolved = 0) AS open_notes
      FROM exams e JOIN courses co ON co.course_code = e.course_code
      ${where}
-     ORDER BY e.course_code, e.year DESC, e.month DESC`
+     ${ORDER_BY_RECENT}`
   ).bind(...binds).all();
 
-  return c.json({ exams: results });
+  return c.json({ exams: results.map(shapeContentGroup) });
 });
 
 // 整卷详情：全部 section、题目、考点标签、存疑记录
@@ -96,11 +110,12 @@ bankRouter.get('/exams/:examId', async (c) => {
       })),
   }));
 
-  return c.json({ exam, sections: shaped, parsingNotes: notes });
+  return c.json({ exam: shapeContentGroup(exam), sections: shaped, parsingNotes: notes });
 });
 
 // 校对：修改单题
 bankRouter.patch('/questions/:questionId', async (c) => {
+  const me = c.get('user');
   const questionId = c.req.param('questionId');
   const body = await c.req.json().catch(() => ({}));
   const existing = await c.env.DB.prepare('SELECT * FROM questions WHERE question_id = ?')
@@ -121,9 +136,43 @@ bankRouter.patch('/questions/:questionId', async (c) => {
     fields.push('options = ?');
     binds.push(body.options ? JSON.stringify(body.options) : null);
   }
+  // answerState 与 status 可能在同一次请求里一起改（"录完答案顺手发布"），
+  // 所以先算出这次改完之后答案状态是什么，再拿它去卡 status。
+  // 只看库里的旧值会把这种请求误拒，只看 body 又会漏掉单独改 status 的请求。
+  let nextAnswerState = existing.answer_state;
+  if ('answerState' in body) {
+    if (!isAnswerState(body.answerState)) {
+      return c.json({ error: 'invalid_answer_state', message: `答案状态只能是 缺答案 / 待核 / 已确认，收到 ${JSON.stringify(body.answerState)}` }, 400);
+    }
+    nextAnswerState = body.answerState;
+    fields.push('answer_state = ?'); binds.push(nextAnswerState);
+    // 留痕（§6.4.10）：确认时记下是谁、什么时候；退回未确认时把留痕清掉，
+    // 免得下次看到一个早就作废的"某某已确认"。
+    if (nextAnswerState === ANSWER_CONFIRMED) {
+      fields.push('answer_reviewed_by = ?', "answer_reviewed_at = datetime('now')");
+      binds.push(me?.username || `user:${me?.id ?? '?'}`);
+    } else {
+      fields.push('answer_reviewed_by = NULL', 'answer_reviewed_at = NULL');
+    }
+  }
+  if ('answerSource' in body) {
+    if (!isAnswerSource(body.answerSource)) {
+      return c.json({ error: 'invalid_answer_source', message: `答案来源只能是 OFFICIAL / MANUAL / AI，收到 ${JSON.stringify(body.answerSource)}` }, 400);
+    }
+    fields.push('answer_source = ?'); binds.push(body.answerSource);
+  }
   if ('status' in body) {
     if (!['草稿', '已发布', '存疑'].includes(body.status)) {
       return c.json({ error: 'invalid_status' }, 400);
+    }
+    // §6.4.10 的硬约束：答案没经人工确认的题不能发布。
+    // AI 生成的答案自动上线 = 所有答对的学生被判错，而没有任何地方会报错。
+    if (body.status === '已发布' && nextAnswerState !== ANSWER_CONFIRMED) {
+      return c.json({
+        error: 'answer_not_confirmed',
+        message: `这道题的答案状态是「${nextAnswerState ?? '未设置'}」，确认之后才能发布`,
+        answerState: nextAnswerState ?? null,
+      }, 422);
     }
     fields.push('status = ?'); binds.push(body.status);
   }
@@ -249,10 +298,23 @@ bankRouter.post('/exams/:examId/publish', async (c) => {
     }
   }
 
-  // 标记为存疑的题目不随整卷发布
+  // N6（§6.4.10、B14）：答案没确认的题扣下不发。
+  //
+  // 为什么是扣下而不是整卷拒绝：分章上线是明确允许的（§12 的风险条目——
+  // 核完一章发一章），而生化一章 34 道题不可能同时核完。存疑的题本来就是这么处理的。
+  // 但**扣下必须说出来**：界面上看到"已发布"而实际只发了 30/34，
+  // 又没有任何地方提示，那是最糟的一种"成功"。
+  const { results: noAnswer } = await c.env.DB.prepare(
+    `SELECT question_id, ord, answer_state FROM questions
+      WHERE exam_id = ? AND status != '存疑' AND answer_state <> ?
+      ORDER BY ord`
+  ).bind(examId, ANSWER_CONFIRMED).all();
+
+  // 标记为存疑、以及答案未确认的题目不随整卷发布
   await c.env.DB.prepare(
-    `UPDATE questions SET status = '已发布' WHERE exam_id = ? AND status != '存疑'`
-  ).bind(examId).run();
+    `UPDATE questions SET status = '已发布'
+      WHERE exam_id = ? AND status != '存疑' AND answer_state = ?`
+  ).bind(examId, ANSWER_CONFIRMED).run();
   await c.env.DB.prepare(
     `UPDATE exams SET status = '已发布', published_at = datetime('now') WHERE exam_id = ?`
   ).bind(examId).run();
@@ -263,7 +325,17 @@ bankRouter.post('/exams/:examId/publish', async (c) => {
      FROM questions WHERE exam_id = ?`
   ).bind(examId).first();
 
-  return c.json({ ok: true, published: counts?.published || 0, held: counts?.held || 0 });
+  return c.json({
+    ok: true,
+    published: counts?.published || 0,
+    held: counts?.held || 0,
+    heldNoAnswer: noAnswer.length,
+    noAnswerQuestions: noAnswer.slice(0, 20),
+    message: noAnswer.length
+      ? `已发布 ${counts?.published || 0} 道；另有 ${noAnswer.length} 道答案未确认被扣下（第` +
+        `${noAnswer.slice(0, 10).map((q) => q.ord).join('、')}${noAnswer.length > 10 ? '…' : ''}题）`
+      : undefined,
+  });
 });
 
 // 撤回发布

@@ -96,8 +96,14 @@ check "有生效中的评价标准" "$(jq -r '.currentRubric.version' /tmp/n3-pa
 check "四类提示词都在" "$(jq -r '[.prompts[] | select(.missing != true)] | length' /tmp/n3-pack.json)" "4"
 check "英语的提示词是自己的，不是继承的" \
   "$(jq -r '[.prompts[] | select(.fromGlobal == true)] | length' /tmp/n3-pack.json)" "0"
-check "归一化器注册表暴露给界面" \
-  "$(jq -r '.availableNormalizers | sort | join(",")' /tmp/n3-pack.json)" "choice,en-spelling,trim-case"
+# 原来这条把注册表的全部名字写死比对，每加一个能力就红一次，而红了之后正确的做法
+# 永远是改期望值——这种断言不提供信号。界面要的其实是两件事：
+# 列表非空（不然管理员点不出任何归一化器），以及**它与代码里的注册表一致**
+# （前端拿到一个后端不认的名字，保存时才报 unknown_normalizer）。
+AVAIL=$(jq -r '.availableNormalizers | sort | join(",")' /tmp/n3-pack.json)
+check "归一化器列表不是空的" "$([ -n "$AVAIL" ] && echo 有 || echo 无)" "有"
+check "界面拿到的列表与代码里的注册表一致" "$AVAIL" \
+  "$(node -e "import('$ROOT_DIR/src/normalizers/index.js').then(m=>console.log(Object.keys(m.NORMALIZERS).sort().join(',')))")"
 check "不存在的学科返回 404" \
   "$(adm -o /dev/null -w '%{http_code}' "$BASE/admin/subjects/99999/pack")" "404"
 
@@ -157,8 +163,8 @@ echo "== 判分读的是声明的归一化器 =="
 exec_sql "INSERT INTO courses (course_code, course_name, subject_id) VALUES ('NRM','归一化器测试课', $ENG);
   INSERT INTO exams (exam_id, course_code, title, year, month) VALUES ('nrm-e','NRM','t',2026,4);
   INSERT INTO sections (section_id, exam_id, type, ord) VALUES ('nrm-s','nrm-e','完形填空',1);
-  INSERT INTO questions (question_id,section_id,exam_id,course_code,section_type,ord,question_type,answer,status,subject_id)
-    VALUES ('nrm-q','nrm-s','nrm-e','NRM','完形填空',1,'fill_text','traveled','已发布',$ENG);
+  INSERT INTO questions (question_id,section_id,exam_id,course_code,section_type,ord,question_type,answer,status,answer_state,answer_source,subject_id)
+    VALUES ('nrm-q','nrm-s','nrm-e','NRM','完形填空',1,'fill_text','traveled','已发布','已确认','MANUAL',$ENG);
   INSERT INTO knowledge_points (tag_id,name,subject_id) VALUES ('nrm-kp','归一化器测试考点',$ENG);
   INSERT INTO question_knowledge_points (question_id,tag_id) VALUES ('nrm-q','nrm-kp');"
 exec_sql "INSERT OR IGNORE INTO user_subject_grants (user_id,subject_id) VALUES ($SID,$ENG);"
@@ -263,8 +269,8 @@ echo "== 题型校验：CHECK 去掉了，校验挪到发布路径 =="
 exec_sql "INSERT INTO courses (course_code, course_name, subject_id) VALUES ('PKT','能力包测试课', $ENG);
   INSERT INTO exams (exam_id, course_code, title, year, month) VALUES ('pk-e','PKT','t',2026,4);
   INSERT INTO sections (section_id, exam_id, type, ord) VALUES ('pk-s','pk-e','完形填空',1);
-  INSERT INTO questions (question_id,section_id,exam_id,course_code,section_type,ord,question_type,answer,subject_id)
-    VALUES ('pk-q1','pk-s','pk-e','PKT','完形填空',1,'no_such_type','a',$ENG);"
+  INSERT INTO questions (question_id,section_id,exam_id,course_code,section_type,ord,question_type,answer,answer_state,answer_source,subject_id)
+    VALUES ('pk-q1','pk-s','pk-e','PKT','完形填空',1,'no_such_type','a','已确认','MANUAL',$ENG);"
 # 先确认它确实入库了：CHECK 已经不在表上了，校验靠的是发布那一关
 check "未声明的题型能写进库（CHECK 确实去掉了）" "$(one "SELECT COUNT(*) FROM questions WHERE question_id='pk-q1';")" "1"
 CODE=$(adm -o /tmp/n3-pub.json -w '%{http_code}' -X POST "$BASE/admin/bank/exams/pk-e/publish")

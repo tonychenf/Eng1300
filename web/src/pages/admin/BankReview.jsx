@@ -40,7 +40,13 @@ export default function BankReview() {
     setError(''); setNotice('');
     try {
       const r = await post(`/admin/bank/exams/${examId}/publish`);
-      setNotice(`已发布 ${r.published} 题${r.held ? `，${r.held} 题因标记存疑暂不发布` : ''}`);
+      // 扣下多少题必须说出来。界面显示"已发布"而实际只发了一部分，
+      // 又没有任何提示，是最糟的一种"成功"（§6.4.10）。
+      setNotice(
+        `已发布 ${r.published} 题` +
+        (r.held ? `，${r.held} 题因标记存疑暂不发布` : '') +
+        (r.heldNoAnswer ? `，${r.heldNoAnswer} 题因答案未确认暂不发布` : '')
+      );
       await load();
     } catch (e) { setError(e.message); }
   }
@@ -66,7 +72,7 @@ export default function BankReview() {
         <Link className="small" to="/admin/bank">← 返回试卷列表</Link>
         <div className="spread" style={{ marginTop: 8 }}>
           <div>
-            <h1>{exam.title}</h1>
+            <h1>{exam.label || exam.title}</h1>
             <p>
               {exam.course_name}（{exam.course_code}） · 共 {allQuestions.length} 题 ·
               已校对 {reviewedCount} 题
@@ -82,13 +88,14 @@ export default function BankReview() {
       {data.parsingNotes.length > 0 ? (
         <div className="card card-pad" style={{ marginBottom: 16 }}>
           <div className="spread" style={{ marginBottom: 10 }}>
-            <h2 style={{ fontSize: 16 }}>解析存疑</h2>
+            <h2 style={{ fontSize: 16 }}>待处理记录</h2>
             <span className={`badge ${openNotes ? 'danger' : 'ok'}`}>
               {openNotes ? `${openNotes} 条待处理` : '全部已处理'}
             </span>
           </div>
           <p className="tiny muted" style={{ marginTop: 0 }}>
-            这些是解析时无法确定的地方，逐条核对原卷后勾掉；全部处理完才能发布整卷。
+            「解析存疑」是解析时拿不准的地方，核对原卷后勾掉；「原题有误」是原始资料本身错了，
+            下面写着订正前后，确认订正无误后勾掉。全部处理完才能发布整卷。
           </p>
           <div className="stack">
             {data.parsingNotes.map((n) => (
@@ -100,7 +107,16 @@ export default function BankReview() {
                 />
                 <span className={`small${n.resolved ? ' faint' : ''}`}
                   style={n.resolved ? { textDecoration: 'line-through' } : undefined}>
+                  <span className={`badge ${n.note_kind === '原题有误' ? 'warn' : 'gray'}`}
+                    style={{ marginRight: 6 }}>{n.note_kind || '解析存疑'}</span>
                   {n.note}
+                  {n.corrected_from ? (
+                    <span className="tiny faint" style={{ display: 'block', marginTop: 4 }}>
+                      订正前：{n.corrected_from}<br />
+                      订正后：{n.corrected_to}
+                      {n.corrected_by ? `（${n.corrected_by}）` : ''}
+                    </span>
+                  ) : null}
                 </span>
               </label>
             ))}
@@ -149,6 +165,8 @@ export default function BankReview() {
                       <strong className="small">第 {q.ord} 题</strong>
                       <span className="row" style={{ gap: 6 }}>
                         {q.reviewed ? <span className="badge ok">已校对</span> : null}
+                        {q.answer_state && q.answer_state !== '已确认'
+                          ? <span className="badge warn">{q.answer_state}</span> : null}
                         <StatusBadge status={q.status} />
                       </span>
                     </div>
@@ -185,6 +203,8 @@ function QuestionEditor({ question, tagLibrary, onClose, onSaved }) {
     answer: question.answer || '',
     answerExplanation: question.answer_explanation || '',
     status: question.status,
+    answerState: question.answer_state || '已确认',
+    answerSource: question.answer_source || 'OFFICIAL',
     reviewed: Boolean(question.reviewed),
     knowledgePoints: question.knowledgePoints,
   });
@@ -294,12 +314,43 @@ function QuestionEditor({ question, tagLibrary, onClose, onSaved }) {
           </datalist>
         </div>
 
+        {/* 答案状态与题目状态是两个维度（§6.4.10）：
+            前者说答案能不能拿来判分，后者说校对到哪一步。
+            答案没确认的题，后端会拒绝把它发布——这里先把选项禁掉，
+            免得点了保存才被 422 弹回来。 */}
+        <div className="field">
+          <label htmlFor="answerState">答案状态</label>
+          <select id="answerState" className="input" value={form.answerState}
+            onChange={(e) => set('answerState', e.target.value)}>
+            <option value="缺答案">缺答案（还没有标准答案）</option>
+            <option value="待核">待核（答案来自 AI，未经人工确认）</option>
+            <option value="已确认">已确认（经人工确认，可发布可抽题）</option>
+          </select>
+          {question.answer_reviewed_by ? (
+            <p className="tiny faint" style={{ marginTop: 4 }}>
+              上次确认：{question.answer_reviewed_by} · {question.answer_reviewed_at}
+            </p>
+          ) : null}
+        </div>
+
+        <div className="field">
+          <label htmlFor="answerSource">答案来源</label>
+          <select id="answerSource" className="input" value={form.answerSource}
+            onChange={(e) => set('answerSource', e.target.value)}>
+            <option value="OFFICIAL">官方答案</option>
+            <option value="MANUAL">人工录入</option>
+            <option value="AI">AI 生成</option>
+          </select>
+        </div>
+
         <div className="field">
           <label htmlFor="status">题目状态</label>
           <select id="status" className="input" value={form.status}
             onChange={(e) => set('status', e.target.value)}>
             <option value="草稿">草稿</option>
-            <option value="已发布">已发布</option>
+            <option value="已发布" disabled={form.answerState !== '已确认'}>
+              已发布{form.answerState !== '已确认' ? '（答案确认后才能选）' : ''}
+            </option>
             <option value="存疑">存疑（不随整卷发布）</option>
           </select>
         </div>

@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import { shapeContentGroup } from '../lib/content-group.js';
 import { masteryTier } from '../lib/mastery.js';
 import { loadPacksForCourses } from '../lib/subject-pack.js';
 
@@ -92,7 +93,9 @@ adminStatsRouter.get('/overview', async (c) => {
        (SELECT COUNT(*) FROM answer_records WHERE is_correct IS NOT NULL) AS answers,
        (SELECT COUNT(*) FROM wrong_items WHERE corrected = 0) AS wrong_open,
        (SELECT COUNT(*) FROM questions WHERE status = '已发布') AS questions_live,
-       (SELECT COUNT(*) FROM questions WHERE status = '存疑') AS questions_held`
+       (SELECT COUNT(*) FROM questions WHERE status = '存疑') AS questions_held,
+       (SELECT COUNT(*) FROM questions WHERE answer_state = '缺答案') AS questions_no_answer,
+       (SELECT COUNT(*) FROM questions WHERE answer_state = '待核') AS questions_unreviewed`
   ).first();
   return c.json({ overview: row });
 });
@@ -120,7 +123,7 @@ adminStatsRouter.get('/export/bank', async (c) => {
   const where = conds.length ? `WHERE ${conds.join(' AND ')}` : '';
 
   const { results: exams } = await c.env.DB.prepare(
-    `SELECT * FROM exams e ${where} ORDER BY e.course_code, e.year, e.month`
+    `SELECT * FROM exams e ${where} ORDER BY e.course_code, e.order_key`
   ).bind(...binds).all();
 
   const out = [];
@@ -139,7 +142,7 @@ adminStatsRouter.get('/export/bank', async (c) => {
     ).bind(e.exam_id).all();
 
     out.push({
-      ...e,
+      ...shapeContentGroup(e),
       parsingNotes: notes,
       sections: sections.map((s) => ({
         ...s,

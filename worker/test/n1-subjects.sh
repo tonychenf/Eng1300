@@ -144,7 +144,16 @@ curl -s -o /tmp/n1-enc.json "$BASE/s/english/courses" -H "Authorization: Bearer 
 curl -s -o /tmp/n1-bic.json "$BASE/s/biochem/courses" -H "Authorization: Bearer $STU"
 WANT_EN=$(one "SELECT COUNT(*) FROM courses co JOIN subjects s ON s.subject_id=co.subject_id WHERE s.code='english';")
 check "english 的课程数与库里一致" "$(jq -r '.courses | length' /tmp/n1-enc.json)" "$WANT_EN"
-check "biochem 名下没有 english 的课程" "$(jq -r '.courses | length' /tmp/n1-bic.json)" "0"
+# 原来这条断的是"biochem 名下一门课都没有"。那时生化还没有课程行，
+# 所以它测的是"生化是空的"，不是"两科没串"——N6 给生化建了课程行，它当场变红。
+# 改成断两边的课程码没有交集，并且加一条"生化确实有课"，
+# 否则交集为空这件事又会因为一边是空集而自动成立。
+WANT_BI=$(one "SELECT COUNT(*) FROM courses co JOIN subjects s ON s.subject_id=co.subject_id WHERE s.code='biochem';")
+check "biochem 的课程数与库里一致" "$(jq -r '.courses | length' /tmp/n1-bic.json)" "$WANT_BI"
+check "生化确实有课（否则下一条是空断言）" "$([ "${WANT_BI:-0}" -ge 1 ] && echo 有 || echo 无)" "有"
+check "两科的课程码没有交集" \
+  "$(jq -r --argjson en "$(jq -c '[.courses[].course_code]' /tmp/n1-enc.json)" \
+     '[.courses[].course_code] | map(select(. as $c | $en | index($c))) | length' /tmp/n1-bic.json)" "0"
 check "english 课程列表里确实是 13000" \
   "$(jq -r '[.courses[].course_code] | index("13000") != null' /tmp/n1-enc.json)" "true"
 

@@ -6,7 +6,8 @@ React 18 + Vite 前端，部署在 workers.dev。
 
 **改造的需求与架构见 `docs/跨学科学习平台-需求文档.md`。** 里程碑进度：
 N0（独立部署基线）、N1（学科骨架）、N2（学科权限）、N3（能力包）、N4（英语迁入验证）已完成，
-N5（得分单元与判分骨架）、N5b（富媒体题干）已完成。N6（生化导入管线）起未开工。
+N5（得分单元与判分骨架）、N5b（富媒体题干）已完成。N6（生化导入管线）进行中：
+docx 导入器、生化归一化器、内容组织维度与答案状态已落地，生化题库尚未导入线上。
 
 文档分三层，不要在一层里写另一层的内容：
 
@@ -61,6 +62,8 @@ in use，同时提示一个已删除的构建临时路径，很容易把注意�
 | ui-items | 8786 | — |
 | n5b-assets | 8785 | 8896 |
 | ui-rich | 8784 | — |
+| n6-content | 8783 | — |
+| ui-n6 | 8782 | — |
 
 **LibreOffice 不可用**（连最小 docx 都报 source file could not be loaded），
 生成 Word 后没法转 PDF 看版式。只能做 schema 校验加读回正文核对，版式要如实
@@ -68,6 +71,9 @@ in use，同时提示一个已删除的构建临时路径，很容易把注意�
 
 **不要用 `sleep` 链式等待**，用 Bash 工具的 `run_in_background`。也不要在
 bash 正在执行某个脚本时去编辑它——会在毫不相干的行报语法错误。
+**回归跑起来之后也不要 `vite build`**：`emptyOutDir` 会清空 `worker/public`，
+而 `[assets]` 指着它，正在跑的 `wrangler dev` 当场重载，表现是某一套从中间开始
+成片 `实际 000`，单独重跑又全绿（见 `docs/开发踩坑记录.md` 第十二节附）。
 
 ---
 
@@ -75,23 +81,29 @@ bash 正在执行某个脚本时去编辑它——会在毫不相干的行报语
 
 ```bash
 # 全套回归（推送前必跑）
-cd worker && for s in m2-smoke m3-smoke m4-smoke m5-smoke m6-acceptance n1-subjects n2-grants n3-pack n3-rebuild n4-parity n5-items n5b-assets db-isolation; do
+cd worker && for s in m2-smoke m3-smoke m4-smoke m5-smoke m6-acceptance n1-subjects n2-grants n3-pack n3-rebuild n4-parity n5-items n5b-assets n6-content db-isolation; do
   echo "=== $s ==="; bash test/$s.sh 2>&1 | grep -E "FAIL|小结" || echo "  !! 没有小结"
 done
 node test/quota-degrade.mjs && node test/essay-parse.mjs && node test/normalizers.test.mjs \
-  && node test/grade-items.test.mjs && node test/rich-text.test.mjs
+  && node test/grade-items.test.mjs && node test/rich-text.test.mjs && node test/docx-import.test.mjs
 
 # 浏览器实测（手机/平板/PC 三种宽度）
 cd worker && bash test/ui-smoke.sh      # 单课程界面（蓝本遗留）
 cd worker && bash test/ui-subjects.sh   # 学科选择、切换、导航带学科码
 cd worker && bash test/ui-items.sh      # 多单元作答控件（一空一框、逐空标红）
 cd worker && bash test/ui-rich.sh       # 富媒体题干（图 + KaTeX 公式，三种宽度）
+cd worker && bash test/ui-n6.sh         # 后台：内容组显示名、缺答案/待核、发布门
 
 # 注意：上面这些脚本共用 worker/.wrangler，每个都会 rm -rf 它，
 # 所以不能并行跑——并行会把另一套正在用的本地库删掉。
 
-# 重新生成题库种子
+# 重新生成题库种子（默认只生成英语，流水线导的也是它）
 node scripts/build-seed-sql.mjs
+# 生成别的学科的种子（n6-content.sh 用这条现生成生化的）
+SEED_SUBJECT_DIR=data/subjects/biochem node scripts/build-seed-sql.mjs /tmp/seed-bio
+
+# 从原始资料导题面（只写 imported/，不碰 groups/）
+node scripts/import-subject.mjs biochem
 
 # 构建前端（产物进 worker/public，由 Worker 静态托管）
 cd web && npx vite build
@@ -303,6 +315,9 @@ CHECK 和主键，所以只能先清空引用它的行再拆表。
 回填语句一律带 `WHERE 该列 IS NULL` 自限：管理员改过的值不会被冲掉，上次部署补了列
 没填上值的库这次会补齐，所以不需要门闩（门闩那条规矩针对的是**会删数据**的动作）。
 **回填不出来的行要让部署当场失败**，而不是把一个读不到判分策略的学科放上线。
+**"算得出来"要按行判，不是按列判**：`exams.order_key` 的回填是 `year*100+month`，
+对英语成立，对没有年月的学科会算出 0——而 0 是个合法排序键，那一章会静默排到最前面。
+所以回填语句自己带 `AND year > 0 AND month > 0`，算不出的行留空，交给回填后检查点名。
 
 **题库资源要排在 vite 之后拷。** `vite.config.js` 的 `emptyOutDir: true` 会在每次
 构建时清空 `worker/public`，所以 `node scripts/build-bank-assets.mjs` 必须跑在
@@ -324,6 +339,28 @@ HTML 页面。**断言"图能取到"时只看 200 等于没测**——要看 `co
 **KaTeX 是唯一引入的前端库。** 引它的理由只有一个：公式排版没法手写，不引理科就
 上不了。它会往 `worker/public/assets/` 里放约 1.8MB 字体（woff2/woff/ttf 三套），
 只有真渲染公式时才会被浏览器取。
+
+**`CHECK` 和 `NOT NULL` 都改不动，凡是想动它们的需求都要换个形状。** SQLite 的
+`ALTER TABLE` 只有 RENAME / ADD COLUMN / DROP COLUMN，改约束必须重建表，而
+`questions`（五张子表）和 `exams`（两张）都重建不了。所以：§6.4.10 要给
+`questions.status` 加 `缺答案`/`待核` 两格，实际是**单开一列 `answer_state`**；
+§6.4.2 要 `exams.year/month` 放宽为可空，实际是**保持 NOT NULL，没有年月的学科写 0**。
+配套的三条不变量不要拆（完整经过见 `docs/开发踩坑记录.md` 第十二节）：
+
+- `answer_state` **不加 CHECK**——这一列存在的理由就是上一条 CHECK 动不了，
+  合法取值在 `worker/src/lib/pickable.js`，三个入口各校验一次。
+- **抽题判据只有一处**：`pickableSql(alias)`，七处查询都引它
+  （组卷三、练习三、题型清单一）。判据写严不写松：`= '已确认'`，不是
+  `IS NULL OR = '已确认'`——漏填一行时前者是"抽不到题"（吵），后者是
+  "把没人核过的答案发给学员"（静）。
+- **假值 0 只存在于 `exams` 表里**，出口只有 `lib/content-group.js` 的
+  `shapeContentGroup` 一个函数，界面一律显示 `label`。
+  写 `{year} 年 {month} 月` 的地方生化会显示成"0 年 0 月"。
+
+**加一行数据让断言变红时，先看懂再改期望值。** 0013 给生化建课程行之后
+`m2-smoke` 的"普通用户可读课程列表"从 1 变成 2——不是计数过时了，是
+`/api/courses` 是蓝本留下的唯一一个不带学科过滤的列表接口，生化一进来
+只授权英语的学员就能看到它。加课程行只是把一个一直都在的越权照了出来。
 
 **`alt` 必填不是无障碍客套话。** AI 看不到图，四类教学 AI 调用喂进去的都是题干文本。
 alt 空着，模型会照着残缺信息一本正经地编一段解析——不报错，但结果是错的。

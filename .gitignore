@@ -1,0 +1,4 @@
+# 导入器的产出。它只有题面、没有答案，是给人拿去和 groups/ 下那份人工整理的
+# 比对用的中间产物（见 scripts/import-subject.mjs 的抬头）。
+# 提交进来的话，仓库里会同时躺着两份题面，而没有任何地方说哪份是准的。
+data/subjects/*/imported/

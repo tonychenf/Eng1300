@@ -9,6 +9,7 @@
 //            要求时才算候选，少一题就凑不满，被扣下的存疑题会带着整篇一起落选。
 //   QUESTION 单题抽。生化的填空、选择没有篇章语境，整篇抽反而抽不出题。
 import { toTemplateItem, filterToSql } from './template-filter.js';
+import { pickableSql } from './pickable.js';
 
 const RECENT_DEFAULT = 3;
 
@@ -37,7 +38,7 @@ async function candidateSections(db, courseCode, item) {
             COUNT(q.question_id) AS published_count
        FROM sections s
        JOIN exams e ON e.exam_id = s.exam_id
-       JOIN questions q ON q.section_id = s.section_id AND q.status = '已发布' AND (${f.sql})
+       JOIN questions q ON q.section_id = s.section_id AND ${pickableSql('q')} AND (${f.sql})
       WHERE e.course_code = ? AND e.status = '已发布'
       GROUP BY s.section_id
      HAVING published_count = ?`
@@ -57,7 +58,7 @@ async function candidateQuestions(db, courseCode, item) {
        FROM questions q
        JOIN sections s ON s.section_id = q.section_id
        JOIN exams e ON e.exam_id = q.exam_id
-      WHERE q.course_code = ? AND q.status = '已发布' AND e.status = '已发布'
+      WHERE q.course_code = ? AND ${pickableSql('q')} AND e.status = '已发布'
         AND (s.passage_text IS NULL OR s.passage_text = '')
         AND (${f.sql})
       ORDER BY q.question_id`
@@ -105,7 +106,7 @@ async function sectionTags(db, sectionIds) {
     `SELECT q.section_id, x.tag_id
        FROM questions q
        JOIN question_knowledge_points x ON x.question_id = q.question_id
-      WHERE q.section_id IN (${holes}) AND q.status = '已发布'`
+      WHERE q.section_id IN (${holes}) AND ${pickableSql('q')}`
   ).bind(...sectionIds).all();
   const map = new Map(sectionIds.map((id) => [id, new Set()]));
   for (const r of results) map.get(r.section_id)?.add(r.tag_id);
@@ -225,7 +226,7 @@ export async function planPaper(db, { courseCode, userId, difficulty = '随机',
 
       const { results: qs } = await db.prepare(
         `SELECT question_id FROM questions
-          WHERE section_id = ? AND status = '已发布' ORDER BY ord`
+          WHERE section_id = ? AND ${pickableSql('')} ORDER BY ord`
       ).bind(picked.section_id).all();
       part.questions = qs.map((q) => ({ questionId: q.question_id, sectionId: picked.section_id }));
     } else {

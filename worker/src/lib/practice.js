@@ -7,6 +7,7 @@
 //   单考点 —— 把某个考点下的题全部做一遍
 import { tagWeight } from './mastery.js';
 import { typeInClause } from './subject-pack.js';
+import { pickableSql } from './pickable.js';
 
 // 强化阶段避免重复的窗口：最近这么多道题里出现过的题不再出
 const RECENT_WINDOW_DEFAULT = 20;
@@ -35,7 +36,7 @@ function inClause(values) {
 export async function scopeTags(db, scope) {
   const { courseCode, sectionTypes, knowledgePoints } = scope;
   const t = practiceTypeCond(scope);
-  const conds = ["q.course_code = ?", "q.status = '已发布'", t.sql];
+  const conds = ["q.course_code = ?", pickableSql('q'), t.sql];
   const binds = [courseCode, ...t.binds];
   if (sectionTypes?.length) {
     conds.push(`q.section_type IN (${inClause(sectionTypes)})`);
@@ -62,7 +63,7 @@ export async function scopeQuestionCount(db, scope) {
   const tags = await scopeTags(db, scope);
   if (!tags.length) return 0;
   const t = practiceTypeCond(scope);
-  const conds = ["q.course_code = ?", "q.status = '已发布'", t.sql];
+  const conds = ["q.course_code = ?", pickableSql('q'), t.sql];
   const binds = [scope.courseCode, ...t.binds];
   if (scope.sectionTypes?.length) {
     conds.push(`q.section_type IN (${inClause(scope.sectionTypes)})`);
@@ -116,7 +117,7 @@ async function askedQuestions(db, attemptId) {
  */
 async function pickForTag(db, { userId, tagId, scope, excludeIds, recentIds }) {
   const t = practiceTypeCond(scope);
-  const conds = ["q.course_code = ?", "q.status = '已发布'", t.sql, 'x.tag_id = ?'];
+  const conds = ["q.course_code = ?", pickableSql('q'), t.sql, 'x.tag_id = ?'];
   const binds = [scope.courseCode, ...t.binds, tagId];
   if (scope.sectionTypes?.length) {
     conds.push(`q.section_type IN (${inClause(scope.sectionTypes)})`);

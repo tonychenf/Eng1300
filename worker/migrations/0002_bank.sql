@@ -33,6 +33,23 @@ CREATE TABLE IF NOT EXISTS exams (
   exam_id TEXT PRIMARY KEY,
   course_code TEXT NOT NULL REFERENCES courses(course_code),
   title TEXT NOT NULL,
+  -- N6（§6.4.2）：内容组之间真正的结构性差异只有一件事——怎么排序。
+  -- order_key 是唯一参与逻辑的字段（英语 year*100+month，生化章节号），
+  -- label 是显示名，meta 是展示与筛选用的 JSON。排序、分页、"最近 N 个内容组"
+  -- 对所有学科是同一条 SQL，不按 subjects.content_group_kind 分支。
+  --
+  -- 为什么不写成 NOT NULL：线上那张表是 N0 建的，补列只能走 ensure-columns.sh，
+  -- 而 ALTER TABLE ADD COLUMN 的 NOT NULL 必须配一个默认值。给 order_key 配
+  -- DEFAULT 0 的话，忘了写 order_key 的内容组会静默排到最前面。所以这里也留空，
+  -- 两边形状一致（**新库与线上库结构分叉是 0002 那条老坑的根因**），
+  -- "不许为空"由 ensure-columns.sh 的回填后检查和种子生成器各把一道。
+  order_key INTEGER,
+  label TEXT,
+  meta TEXT,
+  -- §6.4.2 说 year/month 放宽为可空。**这一条做不到**：SQLite 改不了 NOT NULL，
+  -- 而 exams 有 sections/questions 两张子表引用，重建就要先清空题库（N3 那次事故
+  -- 就是这么清掉线上题库的）。所以没有年月的学科写 0，并且**读出去的那一刻映射回
+  -- null**（见 lib/content-group.js）——0 只存在于这张表里，任何界面都看不到它。
   year INTEGER NOT NULL,
   month INTEGER NOT NULL,
   source_file TEXT,
@@ -80,6 +97,19 @@ CREATE TABLE IF NOT EXISTS questions (
   status TEXT NOT NULL DEFAULT '草稿'
     CHECK (status IN ('草稿', '已发布', '存疑')),
   reviewed INTEGER NOT NULL DEFAULT 0,
+  -- N6（§6.4.10）：答案状态。**文档说的是给 status 加两格（缺答案 / 待核），
+  -- 这里改成单开一列**，因为 status 上那条三值 CHECK 去不掉：去 CHECK 要重建
+  -- questions，而它有五张子表引用，重建就要先清空题库——正是 N3 那次事故。
+  -- 两处语义的分工：status 说"这道题校对到哪一步了"，answer_state 说"它的答案
+  -- 能不能拿来判分"。抽题两个都要看（见 lib/pickable.js）。
+  --
+  -- 取值：缺答案 / 待核 / 已确认。**故意不加 CHECK**——这一列存在的理由就是
+  -- 上一条 CHECK 加不进去也去不掉，再种一个一模一样的雷没有道理。
+  -- 合法值在 lib/pickable.js 里，入口（种子生成、导入器、后台接口）各校验一次。
+  answer_state TEXT,
+  answer_source TEXT,          -- OFFICIAL / MANUAL / AI
+  answer_reviewed_by TEXT,     -- 谁确认的这个答案
+  answer_reviewed_at TEXT,
   -- 冗余自 courses.subject_id。题型校验、报告分层都要按学科过滤，
   -- 每次都 join 一次 courses 只为拿这一个值不划算。
   -- 写入方负责保持一致（种子生成器从 courses 现取）。
@@ -119,6 +149,13 @@ CREATE TABLE IF NOT EXISTS exam_parsing_notes (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   exam_id TEXT NOT NULL REFERENCES exams(exam_id),
   note TEXT NOT NULL,
+  -- N6（§6.4.10）：区分"解析可能错了"与"原始资料本身就错了"。
+  -- 两者处理方式不同：前者对着原件核对改解析，后者人工订正并留痕。
+  note_kind TEXT,              -- 解析存疑 / 原题有误
+  corrected_from TEXT,         -- 订正前原文
+  corrected_to TEXT,           -- 订正后
+  corrected_by TEXT,           -- 订正人（导入器自动订正的写管线名）
+  corrected_at TEXT,
   resolved INTEGER NOT NULL DEFAULT 0,
   resolved_at TEXT
 );

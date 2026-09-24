@@ -479,10 +479,23 @@ jobs:
               CODE=$(curl -sS -m 20 -o /dev/null -w '%{http_code}' "$WORKER_URL/api/s/nosuchsubject" \
                 -H "Authorization: Bearer $TOKEN" || echo 000)
               check "不存在的学科返回 404" "$CODE" "404"
-              # 学科隔离：生化名下不能冒出英语的课程
-              BIO_COURSES=$(curl -sS -m 20 "$WORKER_URL/api/s/biochem/courses" \
-                -H "Authorization: Bearer $TOKEN" | jq -r '.courses | length')
-              check "生化学科名下没有英语的课程" "$BIO_COURSES" "0"
+              # 学科隔离：生化名下不能冒出英语的课程。
+              # 原来断的是"生化名下一门课都没有"——N6 给生化建了课程行之后那就成了
+              # 测"生化是空的"。改成断两边课程码没有交集。
+              curl -sS -m 20 -o /tmp/bio-courses.json "$WORKER_URL/api/s/biochem/courses" \
+                -H "Authorization: Bearer $TOKEN"
+              curl -sS -m 20 -o /tmp/en-courses.json "$WORKER_URL/api/s/english/courses" \
+                -H "Authorization: Bearer $TOKEN"
+              check "生化学科名下没有英语的课程" \
+                "$(jq -r --argjson en "$(jq -c '[.courses[].course_code]' /tmp/en-courses.json)" \
+                   '[.courses[].course_code] | map(select(. as $c | $en | index($c))) | length' /tmp/bio-courses.json)" "0"
+              # N6：生化的题库还没导入线上（答案是 AI 生成的待核状态）。
+              # 这条盯的是"别把一个没内容的学科报成可用"——ready 误判成 true 的话，
+              # 学员点进去会看到一个空的练习页，而没有任何地方报错。
+              check "生化学科还没有可抽题（ready=false）" \
+                "$(echo "$SUBJ" | jq -r '.subjects[] | select(.code=="biochem") | .ready')" "false"
+              check "看板能按学科报答案进度（N6 的新字段上线了）" \
+                "$(echo "$STATS" | jq -r 'has("byAnswerState")')" "true"
 
               # ---- N2 学科权限 ----
               # 迁移里那段"给既有学员补授权"在线上到底生效没有，只有这几条能证明。

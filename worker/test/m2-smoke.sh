@@ -92,8 +92,10 @@ ADMIN=$(curl -s -X POST "$BASE/auth/login" -H 'Content-Type: application/json' \
   -d '{"username":"admin","password":"adminpass123"}' | jq -r '.token')
 check "超级管理员登录拿到token" "$([ -n "$ADMIN" ] && [ "$ADMIN" != "null" ] && echo yes)" "yes"
 
+# 建号时就开通英语：N6 给生化建了课程行之后，/api/courses 按授权过滤，
+# 没有授权的学员看到的是空列表（这是对的，N2 的规矩）。
 STU_PASS=$(curl -s -X POST "$BASE/admin/users" -H "Authorization: Bearer $ADMIN" \
-  -H 'Content-Type: application/json' -d '{"username":"T001"}' | jq -r '.initialPassword')
+  -H 'Content-Type: application/json' -d '{"username":"T001","subjects":["english"]}' | jq -r '.initialPassword')
 STU=$(curl -s -X POST "$BASE/auth/login" -H 'Content-Type: application/json' \
   -d "{\"username\":\"T001\",\"password\":\"$STU_PASS\"}" | jq -r '.token')
 
@@ -160,6 +162,16 @@ echo "== 课程与已发布计数 =="
 curl -s "$BASE/courses" -H "Authorization: Bearer $STU" > /tmp/courses.json
 check "普通用户可读课程列表" "$(jq '.courses | length' /tmp/courses.json)" "1"
 check "课程已发布题数与发布结果一致" "$(jq -r '.courses[] | select(.course_code=="13000") | .published_questions' /tmp/courses.json)" "$EXPECT_PUB"
+# 生化的课程行在库里（0013 建的），但这个学员只授权了英语，不该看到它。
+# 这个接口是蓝本留下的、唯一不带学科过滤的一个，生化课程一进来就会漏。
+check "课程列表不含未授权学科的课" \
+  "$(jq -r '[.courses[].course_code] | index("biochem-main") // "无"' /tmp/courses.json)" "无"
+NOGRANT_PASS=$(curl -s -X POST "$BASE/admin/users" -H "Authorization: Bearer $ADMIN" \
+  -H 'Content-Type: application/json' -d '{"username":"T099"}' | jq -r '.initialPassword')
+NOGRANT=$(curl -s -X POST "$BASE/auth/login" -H 'Content-Type: application/json' \
+  -d "{\"username\":\"T099\",\"password\":\"$NOGRANT_PASS\"}" | jq -r '.token')
+check "没有任何授权的学员看到空课程列表" \
+  "$(curl -s "$BASE/courses" -H "Authorization: Bearer $NOGRANT" | jq '.courses | length')" "0"
 
 echo "== AI 配置 =="
 curl -s -X PUT "$BASE/admin/ai/settings/TUTORING" -H "Authorization: Bearer $ADMIN" \

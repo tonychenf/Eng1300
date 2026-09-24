@@ -43,6 +43,18 @@ SPECS=(
   "attempts|pending_manual|INTEGER NOT NULL DEFAULT 0"
   "subject_question_types|answer_shape|TEXT"
   "subject_question_types|grading_strategy|TEXT"
+  "exams|order_key|INTEGER"
+  "exams|label|TEXT"
+  "exams|meta|TEXT"
+  "questions|answer_state|TEXT"
+  "questions|answer_source|TEXT"
+  "questions|answer_reviewed_by|TEXT"
+  "questions|answer_reviewed_at|TEXT"
+  "exam_parsing_notes|note_kind|TEXT"
+  "exam_parsing_notes|corrected_from|TEXT"
+  "exam_parsing_notes|corrected_to|TEXT"
+  "exam_parsing_notes|corrected_by|TEXT"
+  "exam_parsing_notes|corrected_at|TEXT"
 )
 
 # 补完列还要**回填**：新库从建表语句和种子里就带着值，旧库补出来的列全是 NULL，
@@ -52,6 +64,16 @@ SPECS=(
 #   - 管理员在后台改过的值不会被冲掉（那些行不是 NULL）
 #   - 上一次部署补了列却没填上值（中途失败）的库，这次会被补齐
 # 门闩那条规矩针对的是会删数据的动作，这里一行都不删。
+# questions.answer_state 回填成"已确认"的依据：库里现有的题全是英语真题，
+# 答案来自官方答案页（§6.4.10 的 OFFICIAL）。这不是"读不到就当合法"——
+# 这一列是这次才加的，旧行没有它不代表答案可疑，而是这个维度以前不存在。
+# 生化那批题由种子显式写 缺答案 / 待核，不经过这里。
+#
+# exams.order_key 回填成 year*100+month，**但只填年月是真的那些行**。
+# 没有年月的学科（生化按章节）在库里把 year/month 写成 0，照着算会得到 order_key=0，
+# 而 0 是个合法的排序键——那一章会静默排到所有内容组的最前面，不报错。
+# 算不出来就留空，让下面的 REQUIRED 检查把它点名、让部署当场失败：
+# 章节号只有导入那份数据的人知道，脚本猜不出来，也不该猜。
 backfill_sql() {
   case "$1.$2" in
     subject_question_types.answer_shape) cat <<'SQL'
@@ -74,6 +96,27 @@ UPDATE subject_question_types SET grading_strategy = CASE type_code
   END WHERE grading_strategy IS NULL;
 SQL
       ;;
+    exams.order_key) cat <<'SQL'
+UPDATE exams SET order_key = year * 100 + month
+ WHERE order_key IS NULL AND year > 0 AND month > 0;
+SQL
+      ;;
+    exams.label) cat <<'SQL'
+UPDATE exams SET label = title WHERE label IS NULL;
+SQL
+      ;;
+    questions.answer_state) cat <<'SQL'
+UPDATE questions SET answer_state = '已确认' WHERE answer_state IS NULL;
+SQL
+      ;;
+    questions.answer_source) cat <<'SQL'
+UPDATE questions SET answer_source = 'OFFICIAL' WHERE answer_source IS NULL;
+SQL
+      ;;
+    exam_parsing_notes.note_kind) cat <<'SQL'
+UPDATE exam_parsing_notes SET note_kind = '解析存疑' WHERE note_kind IS NULL;
+SQL
+      ;;
     *) return 1 ;;
   esac
 }
@@ -84,6 +127,11 @@ SQL
 REQUIRED=(
   "subject_question_types|answer_shape"
   "subject_question_types|grading_strategy"
+  "exams|order_key"
+  "exams|label"
+  "questions|answer_state"
+  "questions|answer_source"
+  "exam_parsing_notes|note_kind"
 )
 
 added=0
@@ -123,7 +171,16 @@ for spec in "${REQUIRED[@]}"; do
   left="$(null_count "$TABLE" "$COL")"
   [ "$left" = "0" ] && continue
   echo "  !! $TABLE.$COL 还有 $left 行是空的，回填对照表里没有它们："
-  d1 --command "SELECT subject_id, type_code FROM $TABLE WHERE $COL IS NULL;" 2>&1 | tail -20
+  # 打印哪几行没填上。每张表的"身份列"不一样，写死 subject_id/type_code 的话
+  # 这条查询在别的表上会直接报错，而报错会盖掉真正的原因。
+  case "$TABLE" in
+    subject_question_types) IDCOLS="subject_id, type_code" ;;
+    exams)                  IDCOLS="exam_id, course_code" ;;
+    questions)              IDCOLS="question_id, exam_id" ;;
+    exam_parsing_notes)     IDCOLS="id, exam_id" ;;
+    *)                      IDCOLS="rowid" ;;
+  esac
+  d1 --command "SELECT $IDCOLS FROM $TABLE WHERE $COL IS NULL LIMIT 20;" 2>&1 | tail -25
   problems=$((problems+1))
 done
 [ "$problems" = "0" ] || { echo "补列：有 $problems 个列没填全，中止部署"; exit 1; }

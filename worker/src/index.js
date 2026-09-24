@@ -12,7 +12,8 @@ import { adminSubjectsRouter } from './routes/admin-subjects.js';
 import { adminGrantsRouter } from './routes/admin-grants.js';
 import { adminPackRouter } from './routes/admin-pack.js';
 import { subjectRouter } from './routes/subject.js';
-import { accessibleSubjectFilter, writeGrantWithAudit, upsertGrantStmt } from './lib/access.js';
+import { accessibleSubjectFilter, accessibleCourseFilter, writeGrantWithAudit, upsertGrantStmt } from './lib/access.js';
+import { pickableSql } from './lib/pickable.js';
 
 const app = new Hono();
 app.use('/api/*', cors());
@@ -140,9 +141,12 @@ app.get('/api/me/subjects', requireAuth, async (c) => {
   const acc = accessibleSubjectFilter(me);
   const { results } = await c.env.DB.prepare(
     `SELECT s.code, s.name, s.description, s.sort_order, s.content_group_kind,
+            -- 学员侧的"这科有多少题能练"，判据必须与抽题同源（见 lib/pickable.js）：
+            -- 按 status 数出来的是"看起来有题"，缺答案的题也算在内，
+            -- 症状是学科卡片写着几百道、点进去练习报"没有可练的题"。
             (SELECT COUNT(*) FROM questions q
                JOIN courses co ON co.course_code = q.course_code
-              WHERE co.subject_id = s.subject_id AND q.status = '已发布') AS published_questions,
+              WHERE co.subject_id = s.subject_id AND ${pickableSql('q')}) AS published_questions,
             (SELECT COUNT(*) FROM attempts a
                JOIN courses co ON co.course_code = a.course_code
               WHERE co.subject_id = s.subject_id AND a.user_id = ?1
@@ -174,13 +178,19 @@ app.get('/api/me/subjects', requireAuth, async (c) => {
 });
 
 // 课程列表（用户端选课用）
+//
+// N6：加了学科过滤。蓝本只有一个学科，这里就没过滤；生化的课程行一进来，
+// 只授权了英语的学员在这个接口上就能看到生化——**这是 N2 那类越权**，
+// 不是"多显示一行"。管理员走 accessibleCourseFilter 的 1 = 1 分支，不受影响。
 app.get('/api/courses', requireAuth, async (c) => {
+  const f = accessibleCourseFilter(c.get('user'), 'co');
   const { results } = await c.env.DB.prepare(
     `SELECT co.course_code, co.course_name, co.time_limit_minutes, co.total_score,
             (SELECT COUNT(*) FROM exams e WHERE e.course_code = co.course_code AND e.status = '已发布') AS published_exams,
-            (SELECT COUNT(*) FROM questions q WHERE q.course_code = co.course_code AND q.status = '已发布') AS published_questions
-     FROM courses co ORDER BY co.course_code`
-  ).all();
+            (SELECT COUNT(*) FROM questions q WHERE q.course_code = co.course_code
+              AND ${pickableSql('q')}) AS published_questions
+     FROM courses co WHERE ${f.sql} ORDER BY co.course_code`
+  ).bind(...f.binds).all();
   return c.json({ courses: results });
 });
 

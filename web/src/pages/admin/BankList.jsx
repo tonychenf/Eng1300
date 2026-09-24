@@ -54,17 +54,24 @@ export default function BankList() {
           <table className="table responsive">
             <thead>
               <tr>
-                <th>试卷</th><th>课程</th><th>题量</th><th>已校对</th>
-                <th>存疑</th><th>状态</th><th></th>
+                <th>内容组</th><th>课程</th><th>题量</th><th>已校对</th>
+                <th>缺答案</th><th>存疑</th><th>状态</th><th></th>
               </tr>
             </thead>
             <tbody>
               {exams.map((e) => (
                 <tr key={e.exam_id}>
-                  <td data-label="试卷">{e.year} 年 {e.month} 月</td>
+                  {/* 显示名一律走 label（§6.4.2）：生化的内容组是教材章节，没有年月。
+                      拼 "{year} 年 {month} 月" 的话生化会显示成 "0 年 0 月"。 */}
+                  <td data-label="内容组">{e.label || e.title}</td>
                   <td data-label="课程">{e.course_name}</td>
                   <td data-label="题量">{e.question_count}</td>
                   <td data-label="已校对">{e.reviewed_count} / {e.question_count}</td>
+                  <td data-label="缺答案">
+                    {e.missing_answer_count > 0
+                      ? <span className="badge warn">{e.missing_answer_count}</span>
+                      : <span className="faint">—</span>}
+                  </td>
                   <td data-label="存疑">
                     {e.open_notes > 0
                       ? <span className="badge danger">{e.open_notes}</span>
