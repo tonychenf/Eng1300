@@ -124,11 +124,18 @@ const server = http.createServer((req, res) => {
       content = '这不是 JSON，故意的';
     } else if (req.url.startsWith('/wrongshape/')) {
       // 合法 JSON、字段名也对，就是数量不对（少给一项）。
-      const n = Number(promptText.match(/正好是\s*(\d+)/)?.[1]
-        || promptText.match(/共\s*(\d+)\s*条/)?.[1] || 2);
-      content = JSON.stringify(promptText.includes('blanks')
-        ? { blanks: Array.from({ length: Math.max(0, n - 1) }, (_, i) => `少一个${i}`) }
-        : { points: Array.from({ length: Math.max(0, n - 1) }, (_, i) => `少一个${i}`) });
+      if (promptText.includes('请给出正确选项')) {
+        // 选择题的"形状不对"另有一种：字段对、是个字母，但**不是这道题的选项**。
+        // 真实模型偶尔会回一个题面里根本没有的字母，而它长得完全合法——
+        // 只有"这个字母在不在本题选项里"那道校验拦得住。
+        content = JSON.stringify({ choice: 'Z' });
+      } else {
+        const n = Number(promptText.match(/正好是\s*(\d+)/)?.[1]
+          || promptText.match(/共\s*(\d+)\s*条/)?.[1] || 2);
+        content = JSON.stringify(promptText.includes('blanks')
+          ? { blanks: Array.from({ length: Math.max(0, n - 1) }, (_, i) => `少一个${i}`) }
+          : { points: Array.from({ length: Math.max(0, n - 1) }, (_, i) => `少一个${i}`) });
+      }
     } else {
       content = reply(promptText);
     }

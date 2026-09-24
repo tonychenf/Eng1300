@@ -163,6 +163,11 @@ WRONG=$(gen)
 check "形状不对时不算生成成功" "$(echo "$WRONG" | jq -r '.generated')" "0"
 check "逐题报出是哪些题没生成" \
   "$(echo "$WRONG" | jq -r '[.failures[] | select(.reason=="ai_bad_shape")] | length > 0')" "true"
+# 选择题那 13 道收到的是一个合法但不属于本题的字母（替身回 Z）。
+# 它和"数量对不上"不是一回事：Z 长得完全合法，只有"这个字母在不在本题选项里"
+# 那道校验拦得住。不单断一条的话，把那道校验删掉测试照样全绿（验过）。
+check "选项字母不属于本题时也算形状不对" \
+  "$(echo "$WRONG" | jq -r '[.failures[] | select(.message | test("而这道题的选项是"))] | length')" "13"
 check "形状不对的题仍是缺答案" \
   "$(one "SELECT COUNT(*) FROM questions WHERE exam_id='biochem-ch01' AND answer_state<>'缺答案';")" "0"
 check "半个答案都没写进得分单元" \
