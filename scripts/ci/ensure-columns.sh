@@ -23,17 +23,70 @@ D1_NAME="${D1_NAME:-$(grep -E '^database_name' wrangler.toml | head -1 | sed -E 
 FLAGS=""; [ "$MODE" = "--remote" ] && FLAGS="--yes"
 d1() { npx wrangler d1 execute "$D1_NAME" "$MODE" $FLAGS "$@"; }
 
-has_table() {
-  d1 --json --command "SELECT 1 AS x FROM sqlite_master WHERE type='table' AND name='$1'" 2>/dev/null \
-    | jq -r '.[0].results[0].x // empty'
+# 一张表查一次列清单，缓存起来。
+#
+# 原来是"有没有这张表"一次查询、"有没有这一列"再一次查询，逐列来。
+# N6 把清单从 5 列加到 17 列之后，光这两件事就是三十几次 d1 调用，
+# 每次要起一个 node 进程——本地测试这一步从几十秒涨到十几分钟，
+# 线上每次部署多花好几分钟。列清单本来一次就能全拿到。
+declare -A TABLE_COLS
+load_cols() {
+  local t="$1" out
+  [ -n "${TABLE_COLS[$t]+x}" ] && return
+  out=$(d1 --json --command "SELECT name FROM pragma_table_info('$t')" 2>/dev/null \
+        | jq -r '.[0].results[]?.name' 2>/dev/null)
+  # 表不存在和表没有列在 pragma 上是一个结果（都是空），而后者不存在，
+  # 所以空就当"这张表还没有"。
+  if [ -z "$out" ]; then TABLE_COLS[$t]=""; else TABLE_COLS[$t]="|$(printf '%s' "$out" | tr '\n' '|')|"; fi
 }
+has_table() { load_cols "$1"; [ -n "${TABLE_COLS[$1]}" ] && echo 1; }
 has_column() {
-  d1 --json --command "SELECT COUNT(*) AS c FROM pragma_table_info('$1') WHERE name='$2'" 2>/dev/null \
-    | jq -r '.[0].results[0].c // 0'
+  load_cols "$1"
+  case "${TABLE_COLS[$1]}" in *"|$2|"*) echo 1 ;; *) echo 0 ;; esac
 }
+# 所有目标列的 NULL 行数，**一张表一次查回来**。
+#
+# 逐列查的话，17 个列光这一项就是十几次 d1 调用，每次都要起一个 node 进程
+# （本地 4.5 秒、线上更久）。
+#
+# 为什么不是拼成一条 UNION ALL 全查回来：**D1 的 workerd 把 compound SELECT
+# 的分支数卡得很低**，实测 5 条能过、10 条报 `too many terms in compound SELECT`
+# （标准 SQLite 的默认上限是 500）。而且它报的是错误对象、不是非零退出码，
+# jq 取不到 results 就静静返回空——症状是每一列都"读不到空值行数"。
+# 改成一张表一条 SELECT、每个目标列一个 SUM，就没有分支数这回事了。
+declare -A NULLS
+refresh_nulls() {
+  NULLS=()
+  local -A want=()
+  local spec t rest c
+  for spec in "${SPECS[@]}" "${REQUIRED[@]}"; do
+    t="${spec%%|*}"; rest="${spec#*|}"; c="${rest%%|*}"
+    [ -n "${TABLE_COLS[$t]:-}" ] || continue
+    case "${TABLE_COLS[$t]}" in *"|$c|"*) ;; *) continue ;; esac
+    case " ${want[$t]:-} " in *" $c "*) ;; *) want[$t]="${want[$t]:-} $c" ;; esac
+  done
+  local sel k v
+  for t in "${!want[@]}"; do
+    sel=""
+    for c in ${want[$t]}; do
+      [ -n "$sel" ] && sel="$sel, "
+      # 空表上 SUM 返回 NULL 而不是 0，套一层 COALESCE——
+      # 不套的话"这张表还没有数据"会被读成"读不到"，然后当成故障。
+      sel="$sel COALESCE(SUM(CASE WHEN $c IS NULL THEN 1 ELSE 0 END), 0) AS $c"
+    done
+    while IFS='=' read -r k v; do
+      [ -n "$k" ] && NULLS["$t.$k"]="$v"
+    done < <(d1 --json --command "SELECT $sel FROM $t" 2>/dev/null \
+             | jq -r '.[0].results[0]? // {} | to_entries[] | "\(.key)=\(.value)"')
+  done
+}
+# 取缓存里的值。**取不到就让调用方停下，不回落成 0**——0 的意思是"这一列填满了"，
+# 正好是合法结果，回落等于把"我没读到"伪装成"没问题"。
+# 这里只能打印加退出码：调用点都写在 $( ) 里，那是子 shell，exit 杀不掉外面的脚本。
 null_count() {
-  d1 --json --command "SELECT COUNT(*) AS c FROM $1 WHERE $2 IS NULL" 2>/dev/null \
-    | jq -r '.[0].results[0].c // 0'
+  local v="${NULLS[$1.$2]:-}"
+  [ -n "$v" ] || { echo "  !! 读不到 $1.$2 的空值行数" >&2; return 1; }
+  printf '%s' "$v"
 }
 
 # 表｜列｜类型（ADD COLUMN 的类型部分，不能带 NOT NULL 无默认值）
@@ -134,6 +187,14 @@ REQUIRED=(
   "exam_parsing_notes|note_kind"
 )
 
+# 先在**主 shell** 里把用到的表的列清单读出来。
+# 这一步不能省，也不能挪进下面的循环：下面的 has_table / has_column 都写在 $( ) 里，
+# 那是子 shell——子 shell 读得到父 shell 的变量，但它写进缓存的东西回不来，
+# 于是"缓存"会在每次调用里重新查一遍，等于没缓存（我就是这么白跑了一轮 3 分钟）。
+for t in $(printf '%s\n' "${SPECS[@]}" "${REQUIRED[@]}" | cut -d'|' -f1 | sort -u); do
+  load_cols "$t"
+done
+
 added=0
 for spec in "${SPECS[@]}"; do
   TABLE="${spec%%|*}"; rest="${spec#*|}"
@@ -147,28 +208,39 @@ for spec in "${SPECS[@]}"; do
   echo "  ++ 给 $TABLE 加列 $COL $TYPE"
   d1 --command "ALTER TABLE $TABLE ADD COLUMN $COL $TYPE;" >/dev/null 2>&1 || { echo "  !! 加列失败"; exit 1; }
   # 加完立刻回读确认。ALTER 成功但列没出现是不会报错的那类失败。
+  # 回读前要把缓存扔掉，否则读到的是加列之前那份，这条检查就永远通不过。
+  unset "TABLE_COLS[$TABLE]"; load_cols "$TABLE"
   [ "$(has_column "$TABLE" "$COL")" != "0" ] || { echo "  !! 加完仍读不到 $TABLE.$COL"; exit 1; }
   added=$((added+1))
 done
-filled=0
+refresh_nulls
+declare -A BEFORE_NULLS
+for k in "${!NULLS[@]}"; do BEFORE_NULLS[$k]="${NULLS[$k]}"; done
+
+did_backfill=0
 for spec in "${SPECS[@]}"; do
   TABLE="${spec%%|*}"; rest="${spec#*|}"; COL="${rest%%|*}"
   SQL="$(backfill_sql "$TABLE" "$COL")" || continue
   [ -n "$(has_table "$TABLE")" ] || continue
   [ "$(has_column "$TABLE" "$COL")" != "0" ] || continue
-  before="$(null_count "$TABLE" "$COL")"
+  before="$(null_count "$TABLE" "$COL")" || { echo "  !! 中止：$TABLE.$COL 的空值行数读不到"; exit 1; }
   [ "$before" = "0" ] && { echo "  -- $TABLE.$COL 没有待回填的行"; continue; }
   echo "  ++ 回填 $TABLE.$COL（$before 行）"
   d1 --command "$SQL" >/dev/null 2>&1 || { echo "  !! 回填失败"; exit 1; }
-  after="$(null_count "$TABLE" "$COL")"
-  filled=$((filled + before - after))
+  did_backfill=1
+done
+# 回填完再整体查一次。逐列查"填了几行"要多十几次调用，而这个数只用来打印小结。
+[ "$did_backfill" = "1" ] && refresh_nulls
+filled=0
+for k in "${!BEFORE_NULLS[@]}"; do
+  filled=$((filled + BEFORE_NULLS[$k] - ${NULLS[$k]:-${BEFORE_NULLS[$k]}}))
 done
 
 problems=0
 for spec in "${REQUIRED[@]}"; do
   TABLE="${spec%%|*}"; COL="${spec##*|}"
   [ -n "$(has_table "$TABLE")" ] || continue
-  left="$(null_count "$TABLE" "$COL")"
+  left="$(null_count "$TABLE" "$COL")" || { echo "  !! 中止：$TABLE.$COL 的空值行数读不到"; exit 1; }
   [ "$left" = "0" ] && continue
   echo "  !! $TABLE.$COL 还有 $left 行是空的，回填对照表里没有它们："
   # 打印哪几行没填上。每张表的"身份列"不一样，写死 subject_id/type_code 的话
