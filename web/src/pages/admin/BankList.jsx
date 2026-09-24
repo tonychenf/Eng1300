@@ -48,6 +48,12 @@ export default function BankList() {
         </div>
       </div>
 
+      <p className="small" style={{ marginBottom: 12 }}>
+
+        <Link className="btn ghost sm" to="/admin/bank/import">上传题库</Link>
+
+      </p>
+
       {error ? <Alert>{error}</Alert> : null}
       {!exams ? <Loading /> : exams.length === 0 ? <Empty>没有符合条件的试卷</Empty> : (
         <div className="card" style={{ overflowX: 'auto' }}>

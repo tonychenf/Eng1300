@@ -28,7 +28,10 @@ export async function api(path, options = {}) {
   const headers = { ...(options.headers || {}) };
   const token = getToken();
   if (token) headers.Authorization = `Bearer ${token}`;
-  if (options.body !== undefined && typeof options.body !== 'string') {
+  // raw=true 的请求直接发二进制 body（上传原始资料）。不加这个判断的话，
+  // 下面会把一个 File 对象 JSON.stringify 成 "{}" 发出去——服务端收到空 body，
+  // 报的是"没有收到文件内容"，而浏览器这边看起来文件明明选上了。
+  if (!options.raw && options.body !== undefined && typeof options.body !== 'string') {
     headers['Content-Type'] = 'application/json';
     options = { ...options, body: JSON.stringify(options.body) };
   }
@@ -51,3 +54,6 @@ export const get = (path) => api(path);
 export const post = (path, body) => api(path, { method: 'POST', body: body ?? {} });
 export const put = (path, body) => api(path, { method: 'PUT', body: body ?? {} });
 export const patch = (path, body) => api(path, { method: 'PATCH', body: body ?? {} });
+/** 发二进制 body，不做 JSON 序列化。上传 docx 等原始资料用。 */
+export const postRaw = (path, body) =>
+  api(path, { method: 'POST', body, raw: true, headers: { 'Content-Type': 'application/octet-stream' } });

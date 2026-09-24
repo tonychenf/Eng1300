@@ -22,6 +22,7 @@ import SubjectMembers from './pages/admin/SubjectMembers.jsx';
 import UserSubjects from './pages/admin/UserSubjects.jsx';
 import SubjectPack from './pages/admin/SubjectPack.jsx';
 import BankList from './pages/admin/BankList.jsx';
+import BankImport from './pages/admin/BankImport.jsx';
 import BankReview from './pages/admin/BankReview.jsx';
 import Users from './pages/admin/Users.jsx';
 import AISettings from './pages/admin/AISettings.jsx';
@@ -145,6 +146,9 @@ export default function App() {
               <Route path="subjects/:id/pack" element={<SubjectPack />} />
               <Route path="users/:id/subjects" element={<UserSubjects />} />
               <Route path="bank" element={<BankList />} />
+              {/* 必须排在 bank/:examId 前面，否则 "import" 会被当成一个内容组 id，
+                  表现是点"上传题库"进到一个空的校对页。 */}
+              <Route path="bank/import" element={<BankImport />} />
               <Route path="bank/:examId" element={<BankReview />} />
               <Route path="students" element={<Students />} />
               <Route path="export" element={<Export />} />
