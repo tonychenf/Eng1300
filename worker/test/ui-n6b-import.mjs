@@ -5,12 +5,22 @@
 // 只断"页面渲染出来了"的话，按钮禁用逻辑写错、上传发出去是个空 body、
 // AI 那步的结果没显示，全都测不到。
 import { chromium } from 'playwright';
+import { readFileSync } from 'node:fs';
+import { basename } from 'node:path';
 
 const BASE = process.env.UI_BASE;
 const CHROME = '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
 const USER = process.env.UI_USER;
 const PASS = process.env.UI_PASS;
 const DOCX = process.env.UI_DOCX;
+// **不要把路径直接交给 setInputFiles。** Playwright 1.49 传非 ASCII 路径时
+// 一个文件都不塞进去，而且不抛错（实测：同一份文件复制成 ASCII 名就正常）。
+// 题库原件全是中文名，踩上去的表现是「选了文件但按钮还是点不了」——
+// 看起来完全像页面的 bug，我照这个方向查了一个小时。
+// 改用 buffer 形式：文件名仍是中文，走的还是页面真正会遇到的那条路。
+const DOCX_BYTES = readFileSync(DOCX);
+const DOCX_NAME = basename(DOCX);
+const DOCX_MIME = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
 
 let pass = 0, fail = 0;
 const check = (desc, got, want) => {
@@ -52,7 +62,14 @@ try {
     await page.fill('#imp-gid', gid);
     await page.fill('#imp-label', `浏览器实测 ${label}`);
     await page.fill('#imp-order', String(width));
-    await page.setInputFiles('#imp-file', DOCX);
+    await page.setInputFiles('#imp-file',
+      { name: DOCX_NAME, mimeType: DOCX_MIME, buffer: DOCX_BYTES });
+    // 先断「文件真的进去了」再断按钮。少了这一条，测试助手静默失灵
+    // 就会伪装成页面的 bug，而红的那条断言指的是完全无辜的地方。
+    check(`${label}｜文件真的进了 input`, await page.evaluate(() => {
+      const f = document.querySelector('#imp-file').files;
+      return f.length === 1 ? f[0].name : `files=${f.length}`;
+    }), DOCX_NAME);
     // 红的时候要说得出**是哪个字段还没满足**。页面自己把这句算好了（"还差：…"），
     // 直接把它带进断言，省得下一个人对着"期望 false 实际 true"去猜。
     const stillMissing = await page.locator('text=还差：').count()

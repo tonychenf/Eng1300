@@ -75,4 +75,12 @@ echo "  三种宽度各传一章：内容组 $N 个，题 $Q 道，状态不对�
 [ "$N" = "3" ] && [ "$Q" = "102" ] && [ "$BAD" = "0" ] || {
   echo "  FAIL 库里的结果与界面说的对不上"; RC=1; }
 
+# 中文文件名要一路原样存下来：浏览器 File.name → 查询串（百分号编码）→ 服务端
+# 解码 → content_group_sources.filename。这条链上任何一段编码错了，
+# 留下来的都是一串乱码或者空——而上传本身照样成功，界面上看不出来。
+FNAME=$(basename "$DOCX")
+FN=$(one "SELECT COUNT(*) FROM content_group_sources WHERE filename = '$FNAME';")
+echo "  留存里文件名对得上的：$FN 条（应为 3，文件名 $FNAME）"
+[ "$FN" = "3" ] || { echo "  FAIL 中文文件名没原样存下来"; RC=1; }
+
 exit $RC
