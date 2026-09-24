@@ -261,3 +261,49 @@ export function validateItems(rows, { openWeightCap = 0.3, defaultStrategy = nul
   }
   return problems;
 }
+
+/**
+ * 输入类单元（填空的空、多选的选项）里，哪些组没有可用的标准答案。
+ * 返回问题清单，空数组表示都有答案。
+ *
+ * **判据必须和判分器一致，不能自己另立一套**：
+ * - EXACT 的 `acceptedForms` 在 answer 与 alt_answers 都折不出写法时抛
+ *   `item_without_answer`（graders/exact.js）；
+ * - SET 允许整组共用 `params.pool`，组里各单元可以都不写 answer（graders/set.js）。
+ * 所以按 group_key 归组之后，一组里"有任一单元带 answer/alt_answers"或"带 pool"
+ * 就算有答案。归组规则照抄 groupItems：group_key 为空的单元自成一组。
+ *
+ * **只查输入单元。** 判定单元（采分点/步骤）可以是开放采分点，也可以交给 AI 判，
+ * 那时没有字面答案是正常的；什么算"缺"没人定过口径，所以不查——
+ * 照着猜一个填上去，等于把一个没人拍过板的判据悄悄上线（§6.4.4 空着那几格同理）。
+ *
+ * 不走 toItem：这里要能对**库里任意一行**给出结论，包括 toItem 会直接抛错的坏行。
+ * 坏行也当成"缺答案"报出来，比整个接口 500 有用。
+ */
+export function inputGroupsWithoutAnswer(rows, where = '题目') {
+  const groups = new Map();
+  for (const r of rows || []) {
+    const kind = String(r?.item_kind || '');
+    if (!INPUT_KINDS.includes(kind)) continue;
+    const ord = r?.item_ord;
+    const gk = r?.group_key === undefined || r?.group_key === null || r?.group_key === ''
+      ? `#${ord}` : `g:${r.group_key}`;
+    if (!groups.has(gk)) groups.set(gk, { ords: [], ok: false });
+    const g = groups.get(gk);
+    g.ords.push(ord);
+    if (String(r.answer ?? '').trim()) g.ok = true;
+    let alt = [];
+    try { alt = r.alt_answers ? JSON.parse(r.alt_answers) : []; } catch { alt = []; }
+    if (Array.isArray(alt) && alt.some((x) => String(x ?? '').trim())) g.ok = true;
+    let params = {};
+    try { params = r.params ? JSON.parse(r.params) : {}; } catch { params = {}; }
+    if (Array.isArray(params?.pool) && params.pool.length) g.ok = true;
+  }
+  const problems = [];
+  for (const [key, g] of groups) {
+    if (g.ok) continue;
+    problems.push(`${where} 的${g.ords.length > 1 ? `单元组 ${key}（第 ${g.ords.join('、')} 空）`
+      : `第 ${g.ords[0]} 空`}没有标准答案，判分时会抛 item_without_answer`);
+  }
+  return problems;
+}

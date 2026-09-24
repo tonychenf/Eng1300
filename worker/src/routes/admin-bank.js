@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { validateAssets } from '../lib/stem-assets.js';
 import { ANSWER_CONFIRMED, isAnswerState, isAnswerSource } from '../lib/pickable.js';
 import { shapeContentGroup, ORDER_BY_RECENT } from '../lib/content-group.js';
+import { inputGroupsWithoutAnswer } from '../lib/question-items.js';
 
 export const bankRouter = new Hono();
 
@@ -99,6 +100,34 @@ bankRouter.get('/exams/:examId', async (c) => {
     `SELECT * FROM exam_parsing_notes WHERE exam_id = ? ORDER BY id`
   ).bind(examId).all();
 
+  // 得分单元（N5）。**不带上它，一题多空的答案在校对页就是看不见的**：
+  // questions.answer 只有单答案题才填，填空题的答案逐空存在 question_items 里。
+  // 生化第 1 章 34 道题有 21 道属于后者，界面上一律显示"答案：—"，
+  // 看起来像"AI 没生成答案"，其实是这个接口根本没查这张表。
+  const { results: itemRows } = await c.env.DB.prepare(
+    `SELECT i.* FROM question_items i
+       JOIN questions q ON q.question_id = i.question_id
+      WHERE q.exam_id = ? ORDER BY i.question_id, i.item_ord`
+  ).bind(examId).all();
+  const itemsBy = new Map();
+  for (const r of itemRows) {
+    if (!itemsBy.has(r.question_id)) itemsBy.set(r.question_id, []);
+    const j = (raw, fallback) => {
+      if (raw === null || raw === undefined || raw === '') return fallback;
+      try { return JSON.parse(raw); } catch { return fallback; }
+    };
+    itemsBy.get(r.question_id).push({
+      ord: r.item_ord,
+      kind: r.item_kind,
+      strategy: r.grading_strategy,
+      groupKey: r.group_key,
+      answer: r.answer,
+      altAnswers: j(r.alt_answers, []),
+      weight: r.weight,
+      params: j(r.params, {}),
+    });
+  }
+
   const shaped = sections.map((s) => ({
     ...s,
     questions: questions
@@ -107,6 +136,7 @@ bankRouter.get('/exams/:examId', async (c) => {
         ...q,
         options: q.options ? JSON.parse(q.options) : null,
         knowledgePoints: q.tag_names ? q.tag_names.split('||') : [],
+        items: itemsBy.get(q.question_id) || [],
       })),
   }));
 
@@ -178,10 +208,88 @@ bankRouter.patch('/questions/:questionId', async (c) => {
   }
   if ('reviewed' in body) { fields.push('reviewed = ?'); binds.push(body.reviewed ? 1 : 0); }
 
+  // ---- 得分单元的答案（N5 之后，一题多空的答案在这里，不在 questions.answer）----
+  //
+  // 上面那个 `answer` 字段对填空题是**装饰**：判分读的是 question_items.answer。
+  // 不让改这里的话，校对页看得见答案却改不动，而在"参考答案"框里改完还会以为改好了。
+  const existingItems = (await c.env.DB.prepare(
+    'SELECT * FROM question_items WHERE question_id = ? ORDER BY item_ord'
+  ).bind(questionId).all()).results || [];
+
+  const itemWrites = [];
+  if ('items' in body) {
+    if (!Array.isArray(body.items)) {
+      return c.json({ error: 'invalid_items', message: 'items 要是数组' }, 400);
+    }
+    const byOrd = new Map(existingItems.map((r) => [Number(r.item_ord), r]));
+    for (const patchItem of body.items) {
+      const ord = Number(patchItem?.ord);
+      if (!byOrd.has(ord)) {
+        // 不认识的序号就报错，不静默跳过：跳过的话调用方以为改成功了，
+        // 而库里一个字没动——这正是"读不到值就抛错"要拦的那类事。
+        return c.json({
+          error: 'unknown_item_ord',
+          message: `这道题没有第 ${JSON.stringify(patchItem?.ord)} 个得分单元（有 ${
+            [...byOrd.keys()].join('、') || '（无）'}）`,
+        }, 400);
+      }
+      const row = byOrd.get(ord);
+      if ('answer' in patchItem) {
+        const v = patchItem.answer === null ? null : String(patchItem.answer);
+        itemWrites.push(['answer', v, ord]);
+        row.answer = v;
+      }
+      if ('altAnswers' in patchItem) {
+        if (patchItem.altAnswers !== null && !Array.isArray(patchItem.altAnswers)) {
+          return c.json({
+            error: 'invalid_alt_answers',
+            message: `第 ${ord} 个单元的 altAnswers 要是数组或 null`,
+          }, 400);
+        }
+        const arr = Array.isArray(patchItem.altAnswers)
+          ? patchItem.altAnswers.map((x) => String(x)).filter((x) => x.trim()) : [];
+        const v = arr.length ? JSON.stringify(arr) : null;
+        itemWrites.push(['alt_answers', v, ord]);
+        row.alt_answers = v;
+      }
+    }
+  }
+
+  // §6.4.10 的硬约束往前挪一步：**确认**的时候就要求答案真的在。
+  //
+  // 发布那道关只看 answer_state，所以"确认了但空还是空的"能一路发到学员面前，
+  // 判分时 acceptedForms 抛 item_without_answer——学员看到的是一次失败的交卷。
+  // existingItems 已经就地带上了这次要写的值，所以"补上答案顺手确认"是允许的。
+  if (nextAnswerState === ANSWER_CONFIRMED) {
+    const missing = inputGroupsWithoutAnswer(existingItems, '这道题');
+    if (missing.length) {
+      // 两种走到这里的情形，说法不一样，否则第二种会让人一头雾水：
+      //   ① 正在确认 → "答案还不全，确认不了"
+      //   ② 这道题本来就是已确认，这次要把某个空清空 → 拦的是"确认态下留一个空答案"，
+      //      而请求里根本没有 answerState，报"确认不了"会让人以为自己按错了按钮。
+      const confirming = 'answerState' in body;
+      return c.json({
+        error: 'item_answer_missing',
+        message: confirming
+          ? `答案还不全，确认不了：${missing.join('；')}`
+          : '这道题的答案状态是「已确认」，清空答案会留下一个"确认过但没有答案"的题——'
+            + `判分时会抛 item_without_answer。要改答案请把状态一并退回「待核」。（${missing.join('；')}）`,
+        problems: missing,
+        confirming,
+      }, 422);
+    }
+  }
+
   if (fields.length) {
     binds.push(questionId);
     await c.env.DB.prepare(`UPDATE questions SET ${fields.join(', ')} WHERE question_id = ?`)
       .bind(...binds).run();
+  }
+
+  for (const [col, val, ord] of itemWrites) {
+    await c.env.DB.prepare(
+      `UPDATE question_items SET ${col} = ? WHERE question_id = ? AND item_ord = ?`
+    ).bind(val, questionId, ord).run();
   }
 
   // 考点标签整体替换
@@ -294,6 +402,37 @@ bankRouter.post('/exams/:examId/publish', async (c) => {
         error: 'asset_contract_failed',
         message: `有 ${problems.length} 处题目资源不合契约，发布被拒`,
         problems: problems.slice(0, 20),
+      }, 422);
+    }
+  }
+
+  // 输入单元没有标准答案的题，判分时 acceptedForms 会抛 item_without_answer——
+  // 和上面题型那道关是同一类事：**学员看到的是一次失败的交卷**，而题库里看不出问题。
+  // 这里整卷拒绝而不是扣下：answer_state 已确认、空却是空的，是一对矛盾的状态，
+  // 扣下等于把矛盾藏起来。校对页的确认那一步已经拦了一道，这是给别的入口
+  // （种子、上传、直接改库）留的后手。
+  const { results: pubItems } = await c.env.DB.prepare(
+    `SELECT q.question_id, q.ord, i.item_ord, i.item_kind, i.group_key, i.answer,
+            i.alt_answers, i.params
+       FROM questions q JOIN question_items i ON i.question_id = q.question_id
+      WHERE q.exam_id = ? AND q.status != '存疑' AND q.answer_state = ?
+      ORDER BY q.ord, i.item_ord`
+  ).bind(examId, ANSWER_CONFIRMED).all();
+  if (pubItems.length) {
+    const byQ = new Map();
+    for (const r of pubItems) {
+      if (!byQ.has(r.question_id)) byQ.set(r.question_id, { ord: r.ord, rows: [] });
+      byQ.get(r.question_id).rows.push(r);
+    }
+    const itemProblems = [];
+    for (const [, q] of byQ) {
+      itemProblems.push(...inputGroupsWithoutAnswer(q.rows, `第${q.ord}题`));
+    }
+    if (itemProblems.length) {
+      return c.json({
+        error: 'item_answer_missing',
+        message: `有 ${itemProblems.length} 处得分单元标着「已确认」却没有标准答案，发布被拒`,
+        problems: itemProblems.slice(0, 20),
       }, 422);
     }
   }

@@ -422,6 +422,123 @@ check "再跑一次补列是空操作" \
   "$(bash "$ROOT_DIR/../scripts/ci/ensure-columns.sh" --local 2>&1 | grep -c '本次新增 0 列')" "1"
 
 echo
+echo "== 校对页看得见、改得动逐空答案（N5 之后 questions.answer 对填空题是装饰）=="
+# 用户报的就是这件事：生化导进来了，校对页每道填空题都写着"答案：—"，
+# 看起来像 AI 一道都没生成。其实答案在 question_items 里，而那个接口没查这张表。
+adm "$BASE/admin/bank/exams/biochem-ch01" > /tmp/n6-detail.json
+QJ='[.sections[].questions[]]'
+check "详情接口把得分单元带出来了" \
+  "$(jq -r "$QJ | map(.items | length) | add" /tmp/n6-detail.json)" "82"
+
+# 期望值从**数据文件**算，不从接口自己算——用接口的 X 去对接口的 X 是恒等式。
+BIO_JSON="$ROOT_DIR/../data/subjects/biochem/groups/biochem-ch01.json"
+WANT_SHOWN=$(jq '[.sections[].questions[]
+  | select((.answer // "" | tostring | length > 0)
+        or ([.items[]? | select((.answer // "" | tostring | length) > 0)] | length > 0)
+        or ([.items[]? | select(.params.pool != null and (.params.pool | length) > 0)] | length > 0))]
+  | length' "$BIO_JSON")
+GOT_SHOWN=$(jq -r "$QJ | map(select((.answer // \"\" | tostring | length > 0)
+      or ([.items[] | select((.answer // \"\" | tostring | length) > 0)] | length > 0)
+      or ([.items[] | select(.params.pool != null and (.params.pool | length) > 0)] | length > 0)))
+  | length" /tmp/n6-detail.json)
+check "能显示出答案的题数与题库文件一致（共 $WANT_SHOWN 道）" "$GOT_SHOWN" "$WANT_SHOWN"
+check "而且不是一道都没有（这条红了就说明又退回'答案：—'）" \
+  "$([ "${GOT_SHOWN:-0}" -ge 20 ] && echo 够多 || echo 太少)" "够多"
+
+Q1='.sections[].questions[] | select(.question_id=="biochem-ch01-q01")'
+check "第 1 题第 1 空的标准答案读得到" \
+  "$(jq -r "$Q1 | .items[] | select(.ord==1) | .answer" /tmp/n6-detail.json)" "氮"
+check "别名也读得到" \
+  "$(jq -r "$Q1 | .items[] | select(.ord==1) | .altAnswers | join(\",\")" /tmp/n6-detail.json)" "N,氮元素"
+check "params 是对象不是字符串" \
+  "$(jq -r "$Q1 | .items[] | select(.ord==2) | .params | type" /tmp/n6-detail.json)" "object"
+
+echo
+echo "== 逐空答案改得动 =="
+admj -X PATCH "$BASE/admin/bank/questions/biochem-ch01-q01" \
+  -d '{"items":[{"ord":1,"answer":"氮（改过）","altAnswers":["N"]}]}' > /tmp/n6-patch.json
+check "改逐空答案成功" "$(jq -r '.ok' /tmp/n6-patch.json)" "true"
+check "库里真的改了" \
+  "$(one "SELECT answer FROM question_items WHERE question_id='biochem-ch01-q01' AND item_ord=1;")" "氮（改过）"
+check "别名也跟着改了" \
+  "$(one "SELECT alt_answers FROM question_items WHERE question_id='biochem-ch01-q01' AND item_ord=1;")" '["N"]'
+# 不认识的序号要报错，不能静默跳过——静默跳过时调用方以为改成功了，库里一个字没动
+check "改不存在的空被拒" \
+  "$(admj -X PATCH "$BASE/admin/bank/questions/biochem-ch01-q01" \
+      -d '{"items":[{"ord":99,"answer":"x"}]}' | jq -r '.error')" "unknown_item_ord"
+check "altAnswers 不是数组被拒" \
+  "$(admj -X PATCH "$BASE/admin/bank/questions/biochem-ch01-q01" \
+      -d '{"items":[{"ord":1,"altAnswers":"N"}]}' | jq -r '.error')" "invalid_alt_answers"
+# 改回去，后面的断言按原值算
+admj -X PATCH "$BASE/admin/bank/questions/biochem-ch01-q01" \
+  -d '{"items":[{"ord":1,"answer":"氮","altAnswers":["N","氮元素"]}]}' > /dev/null
+
+echo
+echo "== 确认那一步要求答案真的在（§6.4.10 往前挪一步）=="
+# 发布那道关只看 answer_state，所以"确认了但空是空的"能一路发到学员面前，
+# 判分时才抛 item_without_answer——学员看到的是一次失败的交卷。
+# 起点要自己摆好：上面那段补列回填把**所有**题都刷成了已确认（第 414 行那条断言），
+# 所以这里不能假设 q01 还是待核。先退回待核，再清空——否则清空那一步会撞上
+# 下面这道门本身（已确认的题不许把答案清掉），什么都没清成，后面三条全假绿。
+admj -X PATCH "$BASE/admin/bank/questions/biochem-ch01-q01" -d '{"answerState":"待核"}' > /dev/null
+check "起点已退回待核" \
+  "$(one "SELECT answer_state FROM questions WHERE question_id='biochem-ch01-q01';")" "待核"
+# answer 和 altAnswers 都要清——只清 answer 的话第 1 空还留着别名，那一组仍算有答案
+admj -X PATCH "$BASE/admin/bank/questions/biochem-ch01-q01" \
+  -d '{"items":[{"ord":1,"answer":null,"altAnswers":[]},{"ord":2,"answer":null,"altAnswers":[]}]}' > /dev/null
+check "两个空真的清空了" \
+  "$(one "SELECT COUNT(*) FROM question_items WHERE question_id='biochem-ch01-q01' AND (answer IS NOT NULL OR alt_answers IS NOT NULL);")" "0"
+CONF=$(admj -X PATCH "$BASE/admin/bank/questions/biochem-ch01-q01" -d '{"answerState":"已确认"}')
+check "空是空的时候确认不了" "$(echo "$CONF" | jq -r '.error')" "item_answer_missing"
+check "并且点名是哪几个空" "$(echo "$CONF" | jq -r '.problems | length')" "2"
+check "报的是'确认不了'那一种说法" "$(echo "$CONF" | jq -r '.confirming')" "true"
+check "被拒之后答案状态没变" \
+  "$(one "SELECT answer_state FROM questions WHERE question_id='biochem-ch01-q01';")" "待核"
+# 反过来：已确认的题不许把答案清掉，而且要说清楚是这一种，不是"你确认不了"
+admj -X PATCH "$BASE/admin/bank/questions/biochem-ch01-q01" \
+  -d '{"answerState":"已确认","items":[{"ord":1,"answer":"氮"},{"ord":2,"answer":"16"}]}' > /dev/null
+CLR=$(admj -X PATCH "$BASE/admin/bank/questions/biochem-ch01-q01" \
+  -d '{"items":[{"ord":1,"answer":null,"altAnswers":[]}]}')
+check "已确认的题不许把答案清空" "$(echo "$CLR" | jq -r '.error')" "item_answer_missing"
+check "并且说的是另一种情形（没在确认）" "$(echo "$CLR" | jq -r '.confirming')" "false"
+check "被拒之后答案还在" \
+  "$(one "SELECT answer FROM question_items WHERE question_id='biochem-ch01-q01' AND item_ord=1;")" "氮"
+# 退回待核就能清——门拦的是"确认态下留空答案"，不是"不许改答案"
+admj -X PATCH "$BASE/admin/bank/questions/biochem-ch01-q01" \
+  -d '{"answerState":"待核","items":[{"ord":1,"answer":null,"altAnswers":[]},{"ord":2,"answer":null,"altAnswers":[]}]}' > /dev/null
+check "退回待核之后清得动" \
+  "$(one "SELECT COUNT(*) FROM question_items WHERE question_id='biochem-ch01-q01' AND answer IS NOT NULL;")" "0"
+# 补答案和确认放在同一次请求里要能过——只看库里的旧值会把这种请求误拒
+OK1=$(admj -X PATCH "$BASE/admin/bank/questions/biochem-ch01-q01" \
+  -d '{"answerState":"已确认","items":[{"ord":1,"answer":"氮","altAnswers":["N","氮元素"]},{"ord":2,"answer":"16"}]}')
+check "补上答案顺手确认，一次请求就能过" "$(echo "$OK1" | jq -r '.ok')" "true"
+check "确认留痕记了是谁" \
+  "$(one "SELECT answer_reviewed_by FROM questions WHERE question_id='biochem-ch01-q01';")" "admin"
+
+# **判据要和判分器一致**：SET 那道题整组共用 params.pool，逐空 answer 本来就是空的，
+# 不能因为"answer 为空"就拦住——那是我自己另立的一套，比判分器严。
+POOLQ=$(sql "SELECT DISTINCT question_id AS q FROM question_items
+             WHERE params LIKE '%\"pool\"%' AND question_id LIKE 'biochem-%' LIMIT 1;" \
+        | jq -r '.[0].results[0].q // empty')
+check "找得到一道候选池题（否则下一条测了个寂寞）" \
+  "$([ -n "$POOLQ" ] && echo 有 || echo 无)" "有"
+check "候选池题没有逐空答案，但确认放行" \
+  "$(admj -X PATCH "$BASE/admin/bank/questions/$POOLQ" -d '{"answerState":"已确认"}' | jq -r '.ok')" "true"
+
+echo
+echo "== 发布那道后手（给种子/上传/直接改库留的）=="
+# 绕过接口直接把已确认题的空清空，模拟"从别的入口进来的矛盾状态"
+npx wrangler d1 execute "$D1_NAME" --local --command \
+  "UPDATE question_items SET answer=NULL, alt_answers=NULL WHERE question_id='biochem-ch01-q01';" >/dev/null 2>&1
+# 前面已经有几道题发出去了，所以判据是"**没有新增**"，不是"总数为 0"。
+# 写死 0 的话这条测的是前面发了几道，不是这次发布有没有被拦住。
+PUB_BEFORE=$(one "SELECT COUNT(*) FROM questions WHERE exam_id='biochem-ch01' AND status='已发布';")
+PUB=$(admj -X POST "$BASE/admin/bank/exams/biochem-ch01/publish")
+check "已确认却没答案时整卷发布被拒" "$(echo "$PUB" | jq -r '.error')" "item_answer_missing"
+check "发布被拒时已发布题数没有增加（发布前 $PUB_BEFORE 道）" \
+  "$(one "SELECT COUNT(*) FROM questions WHERE exam_id='biochem-ch01' AND status='已发布';")" "$PUB_BEFORE"
+
+echo
 echo "== 服务还活着 =="
 # 中间任何一步把 workerd 弄崩了，后面的断言会以"实际 000"成片变红，
 # 而真正的原因在 dev 日志里。这一条把它挑明。

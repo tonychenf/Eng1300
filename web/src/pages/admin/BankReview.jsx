@@ -174,7 +174,7 @@ export default function BankReview() {
                       {(q.stem || '（无题干）').slice(0, 120)}
                     </div>
                     <div className="row tiny faint" style={{ marginTop: 6 }}>
-                      <span>答案：{q.answer || '—'}</span>
+                      <span>答案：{answerSummary(q)}</span>
                       {q.knowledgePoints.map((k) => <span key={k} className="tag">{k}</span>)}
                     </div>
                   </button>
@@ -196,6 +196,24 @@ export default function BankReview() {
   );
 }
 
+// 列表里那一行的答案摘要。
+//
+// 一题多空的答案在 question_items 里，questions.answer 是空的——直接显示后者
+// 会让整章 21 道填空题都写着"答案：—"，看起来像 AI 一道都没生成。
+// 候选池那类（SET）没有逐空答案，显示池本身，否则同样是一片"—"。
+function answerSummary(q) {
+  const items = q.items || [];
+  if (!items.length) return q.answer || '—';
+  const pool = items.find((it) => Array.isArray(it.params?.pool) && it.params.pool.length);
+  if (pool) return `候选池：${pool.params.pool.slice(0, 6).join('、')}${pool.params.pool.length > 6 ? '…' : ''}`;
+  const parts = items
+    .map((it) => String(it.answer ?? '').trim())
+    .filter(Boolean);
+  if (!parts.length) return '—';
+  const text = parts.join(' / ');
+  return text.length > 60 ? `${text.slice(0, 60)}…` : text;
+}
+
 function QuestionEditor({ question, tagLibrary, onClose, onSaved }) {
   const [form, setForm] = useState({
     stem: question.stem || '',
@@ -207,6 +225,15 @@ function QuestionEditor({ question, tagLibrary, onClose, onSaved }) {
     answerSource: question.answer_source || 'OFFICIAL',
     reviewed: Boolean(question.reviewed),
     knowledgePoints: question.knowledgePoints,
+    items: (question.items || []).map((it) => ({
+      ord: it.ord,
+      kind: it.kind,
+      strategy: it.strategy,
+      groupKey: it.groupKey,
+      params: it.params || {},
+      answer: it.answer ?? '',
+      altAnswers: (it.altAnswers || []).join('、'),
+    })),
   });
   const [newTag, setNewTag] = useState('');
   const [busy, setBusy] = useState(false);
@@ -221,6 +248,11 @@ function QuestionEditor({ question, tagLibrary, onClose, onSaved }) {
       await patch(`/admin/bank/questions/${question.question_id}`, {
         ...form,
         options: form.options.length ? form.options : null,
+        items: form.items.map((it) => ({
+          ord: it.ord,
+          answer: it.answer === '' ? null : it.answer,
+          altAnswers: it.altAnswers.split(/[、,，]/).map((x) => x.trim()).filter(Boolean),
+        })),
       });
       await onSaved();
     } catch (e) {
@@ -279,11 +311,53 @@ function QuestionEditor({ question, tagLibrary, onClose, onSaved }) {
           </div>
         ) : null}
 
-        <div className="field">
-          <label htmlFor="answer">参考答案</label>
-          <textarea id="answer" className="textarea" style={{ minHeight: 60 }} value={form.answer}
-            onChange={(e) => set('answer', e.target.value)} />
-        </div>
+        {form.items.length ? (
+          <div className="field">
+            <label>逐空答案（判分读的是这里）</label>
+            <p className="tiny faint" style={{ marginTop: 0, marginBottom: 8 }}>
+              这道题有 {form.items.length} 个得分单元。上面的「参考答案」对它不起作用——
+              判分逐空比对这一栏。同组的空（无序并列）按一组判，改哪个都算这一组的。
+            </p>
+            <div className="stack">
+              {form.items.map((it, i) => (
+                <div key={it.ord} className="card card-pad" style={{ padding: 10 }}>
+                  <div className="row tiny muted" style={{ marginBottom: 6, gap: 6 }}>
+                    <strong>第 {it.ord} 空</strong>
+                    <span className="tag">{it.kind}</span>
+                    {it.strategy ? <span className="tag">{it.strategy}</span> : null}
+                    {it.groupKey ? <span className="tag">组 {it.groupKey}</span> : null}
+                  </div>
+                  {Array.isArray(it.params?.pool) && it.params.pool.length ? (
+                    <p className="tiny faint" style={{ marginTop: 0, marginBottom: 6 }}>
+                      候选池（答案来自这里，不必逐空填）：{it.params.pool.join('、')}
+                      {it.params.requiredCount ? `　取 ${it.params.requiredCount} 个` : ''}
+                    </p>
+                  ) : null}
+                  <input className="input" value={it.answer}
+                    placeholder="标准答案"
+                    onChange={(e) => {
+                      const next = [...form.items];
+                      next[i] = { ...next[i], answer: e.target.value };
+                      set('items', next);
+                    }} />
+                  <input className="input" value={it.altAnswers} style={{ marginTop: 6 }}
+                    placeholder="也接受的写法，用顿号隔开"
+                    onChange={(e) => {
+                      const next = [...form.items];
+                      next[i] = { ...next[i], altAnswers: e.target.value };
+                      set('items', next);
+                    }} />
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="field">
+            <label htmlFor="answer">参考答案</label>
+            <textarea id="answer" className="textarea" style={{ minHeight: 60 }} value={form.answer}
+              onChange={(e) => set('answer', e.target.value)} />
+          </div>
+        )}
 
         <div className="field">
           <label htmlFor="expl">解析</label>
