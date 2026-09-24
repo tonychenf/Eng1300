@@ -34,7 +34,11 @@ try {
     await page.fill('#username', USER);
     await page.fill('#password', PASS);
     await page.click('button[type="submit"]');
-    await page.waitForURL(/\/admin/, { timeout: 15000 });
+    // 不能等 /\/admin/：当前就在 /admin/login 上，这个模式当场就匹配，
+    // waitForURL 立刻返回，于是下一句 goto 跑在令牌落进 localStorage 之前，
+    // Guard 把它弹回登录页——症状是"等不到 .grid-cards"，看着像页面坏了。
+    await page.waitForURL((u) => u.pathname.startsWith('/admin') && !u.pathname.includes('login'),
+      { timeout: 15000 });
 
     // ── 看板：缺答案与待核分开显示（§6.4.10） ──
     await page.goto(`${BASE}/admin`, { waitUntil: 'networkidle' });
@@ -52,7 +56,14 @@ try {
     check(`${label}｜列表里有生化那一章的章节名`, listText.includes(BIO_LABEL), true);
     // 这一条是反面断言：后端把 0 映射成 null 了，但界面上任何一处拼年月都会在这里露出来
     check(`${label}｜列表里没有「0 年 0 月」`, /0\s*年\s*0\s*月/.test(listText), false);
-    check(`${label}｜列表有「缺答案」这一列`, listText.includes('缺答案'), true);
+    // 不能断表格文本里有"缺答案"三个字：窄屏下 .table.responsive 把 thead 藏了，
+    // 列名由 CSS 的 ::before 从 data-label 渲染出来，不进 innerText——
+    // 于是这条在手机/平板上永远是 false，而列其实是在的。
+    // 断单元格本身：每一行都要有这一列，比"页面上出现过这三个字"也更严。
+    const rows = await page.locator('table.table tbody tr').count();
+    check(`${label}｜每一行都有「缺答案」这一列`,
+      await page.locator('table.table td[data-label="缺答案"]').count(), rows);
+    check(`${label}｜列表确实有行（否则上一条是空断言）`, rows > 0, true);
     check(`${label}｜列表不横向滚动`, await noHScroll(page), true);
 
     // ── 校对页：待核徽标 + 发布门 ──

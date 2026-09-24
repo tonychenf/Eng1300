@@ -68,10 +68,18 @@ UI_PASS=$(curl -s -X POST "$BASE/admin/users" -H "Authorization: Bearer $ADMIN" 
   -H 'Content-Type: application/json' -d '{"username":"UI001","subjects":["english"]}' | jq -r '.initialPassword')
 [ -n "$UI_PASS" ] && [ "$UI_PASS" != null ] || { echo "建学员账号失败"; exit 1; }
 
-# 前置确认：库里确实只有一门课，否则这套用例测的就不是它想测的东西
-N=$(curl -s "$BASE/courses" -H "Authorization: Bearer $ADMIN" | jq '.courses | length')
+# 前置确认：**这个学员眼里**只有一门课，否则这套用例测的就不是它想测的东西。
+#
+# 原来是拿 ADMIN 的令牌问的。N6 给生化建了课程行之后管理员看到两门课，
+# 这一套就整个跳过了——而它驱动界面用的是 UI001，那个账号只授权了英语、
+# 眼里仍然只有一门课。**问错了人，于是丢掉了一整套浏览器覆盖，还不报错。**
+# 界面显不显示课程选择器本来就取决于"你能看到几门"，所以问学员才是对的。
+UI_TOKEN=$(curl -s -X POST "$BASE/auth/login" -H 'Content-Type: application/json' \
+  -d "$(jq -n --arg p "$UI_PASS" '{username:"UI001",password:$p}')" | jq -r '.token')
+[ -n "$UI_TOKEN" ] && [ "$UI_TOKEN" != null ] || { echo "学员登录失败"; exit 1; }
+N=$(curl -s "$BASE/courses" -H "Authorization: Bearer $UI_TOKEN" | jq '.courses | length')
 if [ "$N" != "1" ]; then
-  echo "库里有 $N 门课，本用例只在单课程下成立，跳过。"; exit 0
+  echo "这个学员眼里有 $N 门课，本用例只在单课程下成立，跳过。"; exit 0
 fi
 
 echo "== 浏览器检查 =="
