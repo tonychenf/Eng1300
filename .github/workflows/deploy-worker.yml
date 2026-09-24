@@ -479,6 +479,21 @@ jobs:
                 "$(echo "$STATS" | jq -r '[.byType[] | select(.course_code == "biochem-main") | .published] | add // 0')" "0"
               check "生化 34 道全是待核" \
                 "$(echo "$STATS" | jq -r '.byAnswerState[] | select(.subject_code == "biochem") | .unreviewed')" "34"
+
+              # N6b：上传接口与原文留存接口在线上挂上了没有。
+              # 两条都是只读（第一条连 body 都不发），不花写入额度。
+              #
+              # 第二条的判据是**路由挂上了**，不是状态码：路由没挂时 Hono 回的是
+              # 纯文本 404，jq 取不到 error；挂上了回的是带 error 码的 JSON。
+              # 两种都是 404，只看状态码区分不了——而"整个功能没部署上去"
+              # 恰好长得和"这个内容组不存在"一模一样。
+              CODE=$(curl -sS -m 20 -o /dev/null -w '%{http_code}' -X POST \
+                "$WORKER_URL/api/admin/bank/import?subjectCode=biochem&groupId=x1&label=a&orderKey=1" \
+                || echo 000)
+              check "未登录传不进题库" "$CODE" "401"
+              ERR=$(curl -sS -m 20 "$WORKER_URL/api/admin/bank/import/no-such-group/source" \
+                -H "Authorization: Bearer $TOKEN" | jq -r '.error // "路由没挂"' || echo 取不到)
+              check "原文留存接口已上线" "$ERR" "not_found"
               # 被解析存疑记录点名的题目不参与组卷，所以可抽题数少于总题数。
               # 不写死具体数字：存疑记录一旦人工核对放行，这个数就会变。
               PUBLISHED_Q=$(echo "$STATS" | jq -r '[.byType[].published] | add // 0')
