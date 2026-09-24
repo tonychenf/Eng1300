@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { requireAuth } from '../lib/auth.js';
 import { requireCourseAccess, requireAttemptAccess, accessibleCourseFilter } from '../lib/access.js';
 import { gradeQuestion } from '../lib/grade.js';
+import { loadItemRows } from '../lib/question-items.js';
 import { masteryTier, masteryWrites, tagsOfQuestion } from '../lib/mastery.js';
 import { nextQuestion, scopeTags, scopeQuestionCount } from '../lib/practice.js';
 import { loadPackByCourse, settingInt as packSettingInt, typeInClause } from '../lib/subject-pack.js';
@@ -208,6 +209,9 @@ practiceRouter.get('/practice/:id/next', async (c) => {
       .bind(pick.stage, a.attempt_id).run();
   }
 
+  // 多单元题要一空一个输入框。没有得分单元的题这里是空数组，前端照旧渲染一个框。
+  const items = (await loadItemRows(c.env.DB, [q.question_id])).get(q.question_id) || [];
+
   return c.json({
     stage: pick.stage,
     ord,
@@ -217,6 +221,9 @@ practiceRouter.get('/practice/:id/next', async (c) => {
       questionType: q.question_type,
       stem: q.stem,
       options: q.options ? JSON.parse(q.options) : null,
+      items: items.map((it) => ({
+        ord: it.item_ord, kind: it.item_kind, weight: it.weight, groupKey: it.group_key ?? null,
+      })),
       sectionType: q.section_type,
       passageTitle: q.passage_title,
       passageText: q.passage_text,
@@ -253,18 +260,23 @@ practiceRouter.post('/practice/:id/answer', async (c) => {
 
   // 练习不计分，只判对错。哪些题型能进练习由学科声明，上面抽题时已经按它过滤过了。
   const gradePack = await loadPackByCourse(c.env.DB, a.course_code);
-  const g = gradeQuestion(gradePack, q, body.answer, 0);
+  // 得分单元（一题多空、采分点）与判分走同一段代码，练习这条路只是不计分。
+  const items = (await loadItemRows(c.env.DB, [questionId])).get(questionId) || [];
+  const g = gradeQuestion(gradePack, q, body.answer, 0, { items });
   const isCorrect = g.isCorrect;
 
   const tagIds = await tagsOfQuestion(c.env.DB, questionId);
   const writes = [
     c.env.DB.prepare(
-      `INSERT INTO answer_records (attempt_id, question_id, user_answer, is_correct, score, answered_at)
-       VALUES (?, ?, ?, ?, 0, datetime('now'))
+      `INSERT INTO answer_records
+         (attempt_id, question_id, user_answer, is_correct, score, score_rate, item_results, answered_at)
+       VALUES (?, ?, ?, ?, 0, ?, ?, datetime('now'))
        ON CONFLICT(attempt_id, question_id) DO UPDATE SET
          user_answer = excluded.user_answer, is_correct = excluded.is_correct,
+         score_rate = excluded.score_rate, item_results = excluded.item_results,
          answered_at = excluded.answered_at`
-    ).bind(a.attempt_id, questionId, body.answer ?? null, isCorrect),
+    ).bind(a.attempt_id, questionId, body.answer ?? null, isCorrect,
+           g.scoreRate, g.itemResults ? JSON.stringify(g.itemResults) : null),
   ];
   if (isCorrect !== null) {
     writes.push(...(await masteryWrites(c.env.DB, a.user_id, a.course_code,
@@ -282,6 +294,11 @@ practiceRouter.post('/practice/:id/answer', async (c) => {
 
   return c.json({
     isCorrect,
+    // 多单元题要能逐项标红，所以把得分率与逐项结果一起给前端。
+    // 没有得分单元的题这两个字段是 0/1 和 null，前端走原来那条"整题对错"的显示路径。
+    scoreRate: g.scoreRate,
+    itemResults: g.itemResults,
+    items: items.map((r) => ({ ord: r.item_ord, kind: r.item_kind, answer: r.answer })),
     correctAnswer: q.answer,
     explanation: q.answer_explanation,
     knowledgePoints: names.map((n) => n.name),

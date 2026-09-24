@@ -6,7 +6,7 @@ React 18 + Vite 前端，部署在 workers.dev。
 
 **改造的需求与架构见 `docs/跨学科学习平台-需求文档.md`。** 里程碑进度：
 N0（独立部署基线）、N1（学科骨架）、N2（学科权限）、N3（能力包）、N4（英语迁入验证）已完成，
-N5（得分单元与判分骨架）做到判分骨架，分值归属与多单元作答控件未完成。
+N5（得分单元与判分骨架）已完成。N5b（富媒体题干）起未开工。
 
 文档分三层，不要在一层里写另一层的内容：
 
@@ -58,6 +58,7 @@ in use，同时提示一个已删除的构建临时路径，很容易把注意�
 | n3-rebuild | 不起服务 | — |
 | n4-parity | 8789 | 8897 |
 | n5-items | 8788 | — |
+| ui-items | 8786 | — |
 
 **LibreOffice 不可用**（连最小 docx 都报 source file could not be loaded），
 生成 Word 后没法转 PDF 看版式。只能做 schema 校验加读回正文核对，版式要如实
@@ -81,6 +82,7 @@ node test/quota-degrade.mjs && node test/essay-parse.mjs && node test/normalizer
 # 浏览器实测（手机/平板/PC 三种宽度）
 cd worker && bash test/ui-smoke.sh      # 单课程界面（蓝本遗留）
 cd worker && bash test/ui-subjects.sh   # 学科选择、切换、导航带学科码
+cd worker && bash test/ui-items.sh      # 多单元作答控件（一空一框、逐空标红）
 
 # 注意：上面这些脚本共用 worker/.wrangler，每个都会 rm -rf 它，
 # 所以不能并行跑——并行会把另一套正在用的本地库删掉。

@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { planPaper } from '../lib/paper.js';
 import { gradeQuestion } from '../lib/grade.js';
+import { loadItemRows } from '../lib/question-items.js';
 import { loadPackByCourse, settingInt as packSettingInt } from '../lib/subject-pack.js';
 import { requireAuth } from '../lib/auth.js';
 import { requireCourseAccess, requireAttemptAccess, accessibleCourseFilter } from '../lib/access.js';
@@ -55,7 +56,8 @@ async function loadPaper(db, attemptId, { withAnswers = true, withCorrect = fals
             q.question_id, q.question_type, q.stem, q.options,
             s.section_id, s.type AS section_type, s.passage_title, s.passage_text, s.writing_prompt,
             ${withCorrect ? 'q.answer AS correct_answer, q.answer_explanation,' : ''}
-            r.user_answer, r.is_correct, r.score, r.ai_judged, r.ai_comment
+            r.user_answer, r.is_correct, r.score, r.ai_judged, r.ai_comment,
+            r.score_rate, r.item_results
        FROM attempt_questions aq
        JOIN questions q ON q.question_id = aq.question_id
        JOIN sections s ON s.section_id = aq.section_id
@@ -63,6 +65,10 @@ async function loadPaper(db, attemptId, { withAnswers = true, withCorrect = fals
       WHERE aq.attempt_id = ?
       ORDER BY aq.ord`
   ).bind(attemptId).all();
+
+  // 多单元题要一空一个输入框，所以整卷的得分单元一次读好带给前端。
+  // 没有得分单元的题这里拿到空数组，前端照旧渲染一个输入框。
+  const itemRows = await loadItemRows(db, results.map((r) => r.question_id));
 
   const sections = [];
   for (const row of results) {
@@ -85,6 +91,12 @@ async function loadPaper(db, attemptId, { withAnswers = true, withCorrect = fals
       questionType: row.question_type,
       stem: row.stem,
       options: row.options ? JSON.parse(row.options) : null,
+      // 作答控件要知道这道题有几个空、每个空是什么形态。标准答案不在这里给——
+      // 那是判分完之后（withCorrect）才能看的东西。
+      items: (itemRows.get(row.question_id) || []).map((it) => ({
+        ord: it.item_ord, kind: it.item_kind, weight: it.weight,
+        groupKey: it.group_key ?? null,
+      })),
     };
     if (withAnswers) q.userAnswer = row.user_answer ?? null;
     if (withCorrect) {
@@ -92,6 +104,13 @@ async function loadPaper(db, attemptId, { withAnswers = true, withCorrect = fals
       q.explanation = row.answer_explanation;
       q.isCorrect = row.is_correct;
       q.score = row.score;
+      q.scoreRate = row.score_rate;
+      q.itemResults = row.item_results ? JSON.parse(row.item_results) : null;
+      // 逐项的标准答案只在报告里给
+      for (const it of q.items) {
+        const src = (itemRows.get(row.question_id) || []).find((x) => x.item_ord === it.ord);
+        it.answer = src ? src.answer : null;
+      }
       q.aiJudged = Boolean(row.ai_judged);
       q.aiComment = row.ai_comment;
     }
@@ -114,27 +133,40 @@ async function submitAttempt(db, attempt, { auto = false }) {
       WHERE aq.attempt_id = ? ORDER BY aq.ord`
   ).bind(attempt.attempt_id).all();
 
+  // 得分单元一次读好：一题多空、采分点都在这张表里，逐题读就是 51 次往返。
+  const itemRows = await loadItemRows(db, rows.map((r) => r.question_id));
+
   const bySection = new Map();
   const writes = [];
+  const graded = new Map();
   let objective = 0;
   let pendingAi = 0;
+  let pendingManual = 0;
   let unreviewed = 0;
 
   for (const row of rows) {
-    const g = gradeQuestion(pack, row, row.user_answer, row.score_per_question);
+    // 判一次，后面掌握度、错题本都复用这一次的结果。原来这三处各调一次，
+    // 同一道题判三遍——多空题以后还要带着得分单元判，那就是三倍的活。
+    const g = gradeQuestion(pack, row, row.user_answer, row.score_per_question,
+      { items: itemRows.get(row.question_id) || [] });
+    graded.set(row.question_id, g);
     if (g.score !== null) objective += g.score;
     // 蓝本这里写死 === 'essay'。改读题型声明：哪些题型要 AI 判分由学科自己说了算，
     // 生化的名词解释和问答都要 AI，而它们不叫 essay。
     if (pack.typeOf(row.question_type).needsAi) pendingAi++;
+    else if (g.pendingManual) pendingManual++;
     else if (g.needsAiReview) unreviewed++;
 
     writes.push(
       db.prepare(
-        `INSERT INTO answer_records (attempt_id, question_id, user_answer, is_correct, score, answered_at)
-         VALUES (?, ?, ?, ?, ?, datetime('now'))
+        `INSERT INTO answer_records
+           (attempt_id, question_id, user_answer, is_correct, score, score_rate, item_results, answered_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))
          ON CONFLICT(attempt_id, question_id) DO UPDATE SET
-           is_correct = excluded.is_correct, score = excluded.score`
-      ).bind(attempt.attempt_id, row.question_id, row.user_answer ?? null, g.isCorrect, g.score)
+           is_correct = excluded.is_correct, score = excluded.score,
+           score_rate = excluded.score_rate, item_results = excluded.item_results`
+      ).bind(attempt.attempt_id, row.question_id, row.user_answer ?? null, g.isCorrect, g.score,
+             g.scoreRate, g.itemResults ? JSON.stringify(g.itemResults) : null)
     );
 
     let sec = bySection.get(row.section_ord);
@@ -159,38 +191,39 @@ async function submitAttempt(db, attempt, { auto = false }) {
     db.prepare(
       `UPDATE attempts SET status = '已交卷', submitted_at = datetime('now'),
               duration_seconds = CAST(strftime('%s','now') - strftime('%s', started_at) AS INTEGER),
-              objective_score = ?, total_score = ?, section_scores = ?, pending_ai = ?
+              objective_score = ?, total_score = ?, section_scores = ?, pending_ai = ?,
+              pending_manual = ?
         WHERE attempt_id = ? AND status = '进行中'`
-    ).bind(objective, objective, JSON.stringify(sectionScores), pendingAi, attempt.attempt_id)
+    ).bind(objective, objective, JSON.stringify(sectionScores), pendingAi, pendingManual,
+           attempt.attempt_id)
   );
 
   // 掌握度与练习共用一套推进逻辑：按题号顺序逐题推进，连对次数才算得准。
   // 原来那条聚合 SQL 只累计对错次数，连对次数一直留 0，M4 的加权抽题要用它。
-  const graded = rows.filter((r) => !pack.typeOf(r.question_type).needsAi);
-  if (graded.length) {
-    const holes = graded.map(() => '?').join(',');
+  const ruleGraded = rows.filter((r) => !pack.typeOf(r.question_type).needsAi);
+  if (ruleGraded.length) {
+    const holes = ruleGraded.map(() => '?').join(',');
     const { results: tagRows } = await db.prepare(
       `SELECT question_id, tag_id FROM question_knowledge_points
         WHERE question_id IN (${holes})`
-    ).bind(...graded.map((r) => r.question_id)).all();
+    ).bind(...ruleGraded.map((r) => r.question_id)).all();
     const byQuestion = new Map();
     for (const t of tagRows) {
       if (!byQuestion.has(t.question_id)) byQuestion.set(t.question_id, []);
       byQuestion.get(t.question_id).push(t.tag_id);
     }
-    const entries = graded
+    const entries = ruleGraded
       .map((r) => ({
         tagIds: byQuestion.get(r.question_id) || [],
-        isCorrect: gradeQuestion(pack, r, r.user_answer, r.score_per_question).isCorrect,
+        isCorrect: graded.get(r.question_id).isCorrect,
       }))
       .filter((e) => e.tagIds.length && e.isCorrect !== null);
     writes.push(...(await masteryWrites(db, attempt.user_id, attempt.course_code, entries)));
 
     // 错题本：判分时就落库，不等 AI（PRD §10.3 的主链路不依赖 AI）
-    const wbEntries = graded.map((r) => ({
-      questionId: r.question_id,
-      isCorrect: gradeQuestion(pack, r, r.user_answer, r.score_per_question).isCorrect,
-    }));
+    const wbEntries = ruleGraded
+      .filter((r) => graded.get(r.question_id).isCorrect !== null)
+      .map((r) => ({ questionId: r.question_id, isCorrect: graded.get(r.question_id).isCorrect }));
     writes.push(...(await wrongbookWrites(db, attempt.user_id, attempt.course_code, wbEntries, {
       attemptId: attempt.attempt_id, source: 'EXAM',
     })));
@@ -221,8 +254,12 @@ examRouter.post('/exams/generate', async (c) => {
       courseCode, userId: me.id, difficulty, recentAvoid,
     });
   } catch (e) {
-    if (e.code === 'insufficient_questions') {
-      return c.json({ error: 'insufficient_questions', message: e.message }, 422);
+    // 题库不够、模板配错，都是"这套卷组不出来"而不是"服务器坏了"。
+    // 让它们各自带着错误码回 422：500 只会给管理员一句"服务器错误"，
+    // 而这几种情况恰恰是他自己在后台改一下就能解决的。
+    if (['insufficient_questions', 'unsupported_filter', 'bad_filter',
+      'bad_template', 'score_mode_not_implemented'].includes(e.code)) {
+      return c.json({ error: e.code, message: e.message }, 422);
     }
     throw e;
   }
@@ -235,32 +272,41 @@ examRouter.post('/exams/generate', async (c) => {
     ).bind(attemptId, me.id, courseCode, difficulty, course.time_limit_minutes),
   ];
 
-  // 题号按模板顺序重排为 1..N
+  // 题号按模板顺序重排为 1..N。
+  //
+  // **卷面总分从这些行现加**（§6.4.7），不再算"题数 × 每题分"：分值归属定成
+  // "题目给相对权重、模板给绝对分"之后，一道题在本卷值多少分只由 attempt_questions
+  // 那一行说了算。乘法在同一部分每题同分时碰巧也对，但 FROM_QUESTION 一开口子就错，
+  // 而错了不会报错——卷面总分和逐题分值加起来对不上，谁也不会去核。
   let ord = 0;
+  const rows = [];
   const preview = [];
-  for (const sec of plan.sections) {
-    const { results: qs } = await c.env.DB.prepare(
-      `SELECT question_id FROM questions
-        WHERE section_id = ? AND status = '已发布' ORDER BY ord`
-    ).bind(sec.sectionId).all();
-
-    for (const q of qs) {
+  for (const part of plan.parts) {
+    const from = rows.length;
+    for (const q of part.questions) {
       ord++;
-      writes.push(
-        c.env.DB.prepare(
-          `INSERT INTO attempt_questions
-             (attempt_id, ord, question_id, section_id, section_ord, score_per_question)
-           VALUES (?, ?, ?, ?, ?, ?)`
-        ).bind(attemptId, ord, q.question_id, sec.sectionId, sec.sectionOrd, sec.scorePerQuestion)
-      );
+      rows.push({
+        ord, questionId: q.questionId, sectionId: q.sectionId,
+        sectionOrd: part.ord, score: part.scorePerQuestion,
+      });
     }
+    const mine = rows.slice(from);
     preview.push({
-      sectionOrd: sec.sectionOrd,
-      sectionType: sec.sectionType,
-      questionCount: qs.length,
-      scorePerQuestion: sec.scorePerQuestion,
-      totalScore: qs.length * sec.scorePerQuestion,
+      sectionOrd: part.ord,
+      sectionType: part.label,
+      questionCount: mine.length,
+      scorePerQuestion: part.scorePerQuestion,
+      totalScore: mine.reduce((n, r) => n + r.score, 0),
     });
+  }
+  for (const r of rows) {
+    writes.push(
+      c.env.DB.prepare(
+        `INSERT INTO attempt_questions
+           (attempt_id, ord, question_id, section_id, section_ord, score_per_question)
+         VALUES (?, ?, ?, ?, ?, ?)`
+      ).bind(attemptId, r.ord, r.questionId, r.sectionId, r.sectionOrd, r.score)
+    );
   }
 
   await c.env.DB.batch(writes);
@@ -271,7 +317,7 @@ examRouter.post('/exams/generate', async (c) => {
     difficulty,
     timeLimitMinutes: course.time_limit_minutes,
     questionCount: ord,
-    totalScore: preview.reduce((n, p) => n + p.totalScore, 0),
+    totalScore: Math.round(rows.reduce((n, r) => n + r.score, 0) * 100) / 100,
     knowledgePointCount: plan.knowledgePointCount,
     sections: preview,
     warnings: plan.warnings,

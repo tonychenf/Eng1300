@@ -24,7 +24,7 @@ check() {
 
 sql()  { npx wrangler d1 execute "$D1_NAME" --local --json --command "$1" 2>/dev/null; }
 exec_sql() { npx wrangler d1 execute "$D1_NAME" --local --command "$1" >/dev/null 2>&1; }
-one()  { sql "$1" | jq -r '.[0].results[0] | to_entries[0].value // empty'; }
+one()  { sql "$1" | jq -r '.[0].results[0] // {} | to_entries[0].value // empty'; }
 adm()  { curl -s -H "Authorization: Bearer $ADMIN" "$@"; }
 admj() { curl -s -H "Authorization: Bearer $ADMIN" -H 'Content-Type: application/json' "$@"; }
 
@@ -48,6 +48,16 @@ VARS
 for m in migrations/*.sql; do
   npx wrangler d1 execute "$D1_NAME" --local --file="$m" >/dev/null 2>&1 || { echo "执行 $m 失败"; exit 1; }
 done
+npx wrangler d1 execute "$D1_NAME" --local --file=seed/000-knowledge-points.sql >/dev/null 2>&1
+# 四套真题：13000 的组卷模板要 10 题一篇的「段落大意与句子补全」，
+# 2015-04 那篇被扣下一道存疑题只剩 9 道，凑不满。少导的话组卷会直接失败，
+# 而失败信息看着像"模板配错了"。
+for EXAM in 00015-2015-04 00015-2016-04 00015-2019-10 13000-2026-04; do
+  F=$(ls seed/*"$EXAM".sql 2>/dev/null | head -1)
+  [ -n "$F" ] || { echo "找不到 $EXAM 的种子，先跑 node scripts/build-seed-sql.mjs"; exit 1; }
+  npx wrangler d1 execute "$D1_NAME" --local --file="$F" >/dev/null 2>&1 || { echo "导入 $F 失败"; exit 1; }
+done
+npx wrangler d1 execute "$D1_NAME" --local --file=sql/publish-all.sql >/dev/null 2>&1
 
 echo
 echo "== 得分单元与结构化模板的表结构 =="
@@ -164,6 +174,18 @@ ADMIN=$(curl -s -X POST "$BASE/auth/login" -H 'Content-Type: application/json' \
   -d '{"username":"admin","password":"admin12345"}' | jq -r '.token')
 [ "$ADMIN" != "null" ] && [ -n "$ADMIN" ] || { echo "管理员登录失败"; exit 1; }
 BIO=$(one "SELECT subject_id FROM subjects WHERE code='biochem';")
+ENG=$(one "SELECT subject_id FROM subjects WHERE code='english';")
+curl -s -o /dev/null -X POST "$BASE/admin/users" -H "Authorization: Bearer $ADMIN" \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"N501","password":"student12345","subjects":["english"]}'
+STU=$(curl -s -X POST "$BASE/auth/login" -H 'Content-Type: application/json' \
+  -d '{"username":"N501","password":"student12345"}' | jq -r '.token')
+[ "$STU" != "null" ] && [ -n "$STU" ] || { echo "学员登录失败"; exit 1; }
+stu()  { curl -s -H "Authorization: Bearer $STU" "$@"; }
+stuj() { curl -s -H "Authorization: Bearer $STU" -H 'Content-Type: application/json' "$@"; }
+gen_exam() {
+  stuj -X POST "$BASE/exams/generate" -d '{"courseCode":"13000","difficulty":"随机"}'
+}
 
 echo
 echo "== 后台能改这两个维度，且改错了当场拒绝 =="
@@ -219,6 +241,190 @@ check "档次没写描述被拒（AI 没有落档依据）" \
 check "答对阈值缺失被拒" "$(put_rubric 'del(.mastery.correctThreshold)')" "400"
 check "答对阈值超出 0～1 被拒" "$(put_rubric '.mastery.correctThreshold = 2')" "400"
 check "开放采分点权重上限超出 0～1 被拒" "$(put_rubric '.essay.openWeightCap = 1.5')" "400"
+
+echo
+echo "== 组卷筛选器：按题型筛与按篇章类型筛必须是一回事 =="
+# 新的 candidateSections 用 q.section_type 筛，旧的用 s.type。两者在数据上一致
+# 才谈得上"行为没变"；不一致时组卷会悄悄换一批篇章，没有任何地方会报错。
+check "没有题目的 section_type 与所属篇章的 type 对不上" \
+  "$(one 'SELECT COUNT(*) FROM questions q JOIN sections s ON s.section_id=q.section_id WHERE q.section_type <> s.type;')" "0"
+
+echo
+echo "== 分值归属：卷面总分从 attempt_questions 现加（B19）=="
+G1=$(gen_exam); A1=$(echo "$G1" | jq -r '.attemptId')
+[ "$A1" != "null" ] && [ -n "$A1" ] || { echo "组卷失败：$(echo "$G1" | head -c 200)"; exit 1; }
+# 期望值从库里现加，不写死 100——改了模板这条不该跟着红
+check "接口给的总分等于逐题分值之和" "$(echo "$G1" | jq -r '.totalScore')" \
+  "$(one "SELECT CAST(SUM(score_per_question) AS INT) FROM attempt_questions WHERE attempt_id='$A1';")"
+G2=$(gen_exam); A2=$(echo "$G2" | jq -r '.attemptId')
+check "同一模板再组一次，总分不变" "$(echo "$G2" | jq -r '.totalScore')" "$(echo "$G1" | jq -r '.totalScore')"
+check "题数也不变" "$(echo "$G2" | jq -r '.questionCount')" "$(echo "$G1" | jq -r '.questionCount')"
+
+# B19 的核心：总分不随题目空数浮动。给卷子里的一道填空题挂三个空，再组一份卷。
+QF=$(one "SELECT aq.question_id FROM attempt_questions aq JOIN questions q ON q.question_id=aq.question_id
+          WHERE aq.attempt_id='$A1' AND q.question_type='fill_text' ORDER BY aq.ord LIMIT 1;")
+check "卷子里确实有填空题（否则下面几条是空断言）" "$([ -n "$QF" ] && echo 有 || echo 无)" "有"
+for i in 1 2 3; do
+  exec_sql "INSERT OR REPLACE INTO question_items
+    (question_id, item_ord, subject_id, item_kind, answer, weight)
+    VALUES ('$QF', $i, $ENG, 'BLANK', '空${i}答案', 1);"
+done
+G3=$(gen_exam)
+check "题目从 1 个空变成 3 个空之后，卷面总分仍然不变" \
+  "$(echo "$G3" | jq -r '.totalScore')" "$(echo "$G1" | jq -r '.totalScore')"
+
+echo
+echo "== 多单元题端到端：一空一框、逐空判、部分分开关 =="
+# 在 A2 这份卷上作答（它的题目与 A1 未必相同，所以单独取一道带空的题）
+QA=$(one "SELECT question_id FROM attempt_questions WHERE attempt_id='$A2' AND question_id='$QF';")
+if [ -z "$QA" ]; then
+  # A2 没抽到那道题就临时把空挂到 A2 的一道填空题上
+  QA=$(one "SELECT aq.question_id FROM attempt_questions aq JOIN questions q ON q.question_id=aq.question_id
+            WHERE aq.attempt_id='$A2' AND q.question_type='fill_text' ORDER BY aq.ord LIMIT 1;")
+  for i in 1 2 3; do
+    exec_sql "INSERT OR REPLACE INTO question_items
+      (question_id, item_ord, subject_id, item_kind, answer, weight)
+      VALUES ('$QA', $i, $ENG, 'BLANK', '空${i}答案', 1);"
+  done
+fi
+check "取到一道挂了空的题" "$(one "SELECT COUNT(*) FROM question_items WHERE question_id='$QA';")" "3"
+QSCORE=$(one "SELECT score_per_question FROM attempt_questions WHERE attempt_id='$A2' AND question_id='$QA';")
+check "取回作答页时带上了这道题的三个空" \
+  "$(stu "$BASE/attempts/$A2" | jq -r --arg q "$QA" '[.sections[].questions[] | select(.questionId==$q)][0].items | length')" "3"
+# 三个空答对两个
+stuj -o /dev/null -X PUT "$BASE/attempts/$A2/answers" \
+  -d "$(jq -n --arg q "$QA" '{questionId:$q,answer:"{\"1\":\"空1答案\",\"2\":\"空2答案\",\"3\":\"写错了\"}"}')"
+stu -o /dev/null -X POST "$BASE/attempts/$A2/submit"
+R2=$(stu "$BASE/attempts/$A2/report")
+QR2=$(echo "$R2" | jq -c --arg q "$QA" '[.sections[].questions[] | select(.questionId==$q)][0]')
+# 英语不给部分分（rubric.grading.partialCredit=false），三个空对两个＝整题 0 分
+check "不给部分分的学科：三空对二判 0 分" "$(echo "$QR2" | jq -r '.score')" "0"
+check "得分率也记 0" "$(echo "$QR2" | jq -r '.scoreRate')" "0"
+check "逐空结果照样留着（学生要看到错在哪一空）" "$(echo "$QR2" | jq -r '[.itemResults[].items[]] | length')" "3"
+check "第 3 空记未命中" "$(echo "$QR2" | jq -r '[.itemResults[].items[] | select(.ord==3)][0].hit')" "0"
+check "第 1 空记命中" "$(echo "$QR2" | jq -r '[.itemResults[].items[] | select(.ord==1)][0].hit')" "1"
+check "逐空结果落了库" "$(one "SELECT COUNT(*) FROM answer_records
+  WHERE attempt_id='$A2' AND question_id='$QA' AND item_results IS NOT NULL;")" "1"
+
+# 把英语改成给部分分，同样的作答应当拿 2/3——这一对才证明开关真的在起作用
+RUB=$(adm "$BASE/admin/subjects/$ENG/pack" | jq -c '.currentRubric.payload | fromjson')
+admj -o /dev/null -X PUT "$BASE/admin/subjects/$ENG/pack/rubric" \
+  -d "$(jq -n --argjson p "$(echo "$RUB" | jq -c '.grading.partialCredit = true')" '{payload:$p}')"
+A3=$(gen_exam | jq -r '.attemptId')
+QB=$(one "SELECT aq.question_id FROM attempt_questions aq JOIN question_items i ON i.question_id=aq.question_id
+          WHERE aq.attempt_id='$A3' LIMIT 1;")
+if [ -z "$QB" ]; then
+  QB=$(one "SELECT aq.question_id FROM attempt_questions aq JOIN questions q ON q.question_id=aq.question_id
+            WHERE aq.attempt_id='$A3' AND q.question_type='fill_text' ORDER BY aq.ord LIMIT 1;")
+  for i in 1 2 3; do
+    exec_sql "INSERT OR REPLACE INTO question_items
+      (question_id, item_ord, subject_id, item_kind, answer, weight)
+      VALUES ('$QB', $i, $ENG, 'BLANK', '空${i}答案', 1);"
+  done
+fi
+BSCORE=$(one "SELECT score_per_question FROM attempt_questions WHERE attempt_id='$A3' AND question_id='$QB';")
+stuj -o /dev/null -X PUT "$BASE/attempts/$A3/answers" \
+  -d "$(jq -n --arg q "$QB" '{questionId:$q,answer:"{\"1\":\"空1答案\",\"2\":\"空2答案\",\"3\":\"写错了\"}"}')"
+stu -o /dev/null -X POST "$BASE/attempts/$A3/submit"
+QR3=$(stu "$BASE/attempts/$A3/report" | jq -c --arg q "$QB" '[.sections[].questions[] | select(.questionId==$q)][0]')
+# 期望值从该题在本卷的分值现算：得分率 2/3 × 分值，保留两位
+# 期望值从该题在本卷的分值现算，并且两边都换算成整数比，免得 1 与 1.0 判不相等
+WANT=$(python3 -c "print(round(round(2/3, 6) * $BSCORE * 1000))")
+check "改成给部分分之后，同一份作答拿到 2/3 的分" \
+  "$(echo "$QR3" | jq -r '(.score * 1000) | round')" "$WANT"
+check "得分率是 2/3" "$(echo "$QR3" | jq -r '.scoreRate')" "0.666667"
+# 得分率 0.667 达不到默认阈值 1.0，按 B13 仍记"答错"
+check "部分得分仍按答错记（阈值 1.0）" "$(echo "$QR3" | jq -r '.isCorrect')" "0"
+admj -o /dev/null -X PUT "$BASE/admin/subjects/$ENG/pack/rubric" \
+  -d "$(jq -n --argjson p "$RUB" '{payload:$p}')"
+
+echo
+echo "== 结构化组卷模板 =="
+TPL_N=$(one "SELECT COUNT(*) FROM exam_template_items WHERE course_code='13000';")
+# ① 认不出的筛选条件要当场拒绝，不能悄悄当成"没有条件"去全库抽题
+exec_sql "INSERT INTO exam_template_items (course_code, ord, label, filter, question_count, score_per_question, pick_unit)
+  VALUES ('13000', 90, '瞎写的条件', '{\"chapters\":[1]}', 1, 1, 'QUESTION');"
+BAD=$(stuj -o /tmp/n5-badfilter.json -w '%{http_code}' -X POST "$BASE/exams/generate" -d '{"courseCode":"13000"}')
+check "认不出的筛选条件让组卷失败" "$BAD" "422"
+check "错误码点名是筛选条件的问题" "$(jq -r '.error' /tmp/n5-badfilter.json)" "unsupported_filter"
+check "报错里说清楚是哪个键" "$(jq -r '.message' /tmp/n5-badfilter.json | grep -c chapters)" "1"
+exec_sql "DELETE FROM exam_template_items WHERE course_code='13000' AND ord=90;"
+# ② FROM_QUESTION 还没实现，要报错而不是悄悄按模板分算
+exec_sql "INSERT INTO exam_template_items (course_code, ord, label, filter, question_count, score_mode, score_per_question, pick_unit)
+  VALUES ('13000', 91, '题目自带分值', '{}', 1, 'FROM_QUESTION', 1, 'QUESTION');"
+BAD2=$(stuj -o /tmp/n5-badmode.json -w '%{http_code}' -X POST "$BASE/exams/generate" -d '{"courseCode":"13000"}')
+check "FROM_QUESTION 让组卷失败" "$BAD2" "422"
+check "错误码点名是配分方式" "$(jq -r '.error' /tmp/n5-badmode.json)" "score_mode_not_implemented"
+exec_sql "DELETE FROM exam_template_items WHERE course_code='13000' AND ord=91;"
+# ③ 单题抽。英语的单选全挂在带原文的篇章下，而单题抽本来就该跳过这类题
+#    （§6.4.9 的 requires_context），所以拿真实题库测不出来——这里自己造两篇：
+#    一篇没有原文（3 道单选 + 1 道填空），一篇有原文（2 道单选），两篇同一种篇章类型。
+#    只从没有原文的那篇里抽、且只抽单选，两条才都测得到。
+EX=$(one "SELECT exam_id FROM exams WHERE course_code='13000' AND status='已发布' LIMIT 1;")
+exec_sql "INSERT INTO sections (section_id, exam_id, type, ord, passage_title, passage_text)
+  VALUES ('n5-sec-free', '$EX', 'N5单题抽', 90, '无原文', NULL),
+         ('n5-sec-ctx',  '$EX', 'N5单题抽', 91, '有原文', '这是一段必须连着读的原文');"
+for i in 1 2 3; do
+  exec_sql "INSERT INTO questions (question_id, section_id, exam_id, course_code, section_type, ord,
+    question_type, stem, options, answer, status, subject_id)
+    VALUES ('n5-free-$i', 'n5-sec-free', '$EX', '13000', 'N5单题抽', $i, 'single_choice',
+            '构造题 $i', '[\"A. 甲\",\"B. 乙\"]', 'A', '已发布', $ENG);"
+done
+exec_sql "INSERT INTO questions (question_id, section_id, exam_id, course_code, section_type, ord,
+  question_type, stem, answer, status, subject_id)
+  VALUES ('n5-free-fill', 'n5-sec-free', '$EX', '13000', 'N5单题抽', 4, 'fill_text',
+          '构造填空', 'x', '已发布', $ENG);"
+for i in 1 2; do
+  exec_sql "INSERT INTO questions (question_id, section_id, exam_id, course_code, section_type, ord,
+    question_type, stem, options, answer, status, subject_id)
+    VALUES ('n5-ctx-$i', 'n5-sec-ctx', '$EX', '13000', 'N5单题抽', $i, 'single_choice',
+            '离开原文读不懂的题 $i', '[\"A. 甲\",\"B. 乙\"]', 'A', '已发布', $ENG);"
+done
+check "构造了 5 道单选，其中 2 道依赖原文" "$(one "
+  SELECT COUNT(*) FROM questions q JOIN sections s ON s.section_id=q.section_id
+   WHERE q.section_type='N5单题抽' AND q.question_type='single_choice'
+     AND s.passage_text IS NOT NULL AND s.passage_text <> '';")" "2"
+exec_sql "INSERT INTO exam_template_items (course_code, ord, label, filter, question_count, score_per_question, pick_unit)
+  VALUES ('13000', 92, '单题抽的选择题',
+          '{\"questionTypes\":[\"single_choice\"],\"sectionTypes\":[\"N5单题抽\"]}', 3, 2, 'QUESTION');"
+G4=$(gen_exam); A4=$(echo "$G4" | jq -r '.attemptId')
+check "单题抽的部分出现在卷面上" "$(echo "$G4" | jq -r '[.sections[] | select(.sectionOrd==92)] | length')" "1"
+check "这一部分正好 3 题" "$(echo "$G4" | jq -r '[.sections[] | select(.sectionOrd==92)][0].questionCount')" "3"
+check "总分 = 原来 + 3×2" "$(echo "$G4" | jq -r '.totalScore')" \
+  "$(python3 -c "print(int($(echo "$G1" | jq -r '.totalScore')) + 6)")"
+# 单题抽不该抽到依赖原文的题（§6.4.9 requires_context 落地前按"所属篇章有没有原文"判断）
+check "单题抽出来的题都不依赖原文" "$(one "
+  SELECT COUNT(*) FROM attempt_questions aq JOIN sections s ON s.section_id=aq.section_id
+   WHERE aq.attempt_id='$A4' AND aq.section_ord=92
+     AND s.passage_text IS NOT NULL AND s.passage_text <> '';")" "0"
+check "抽出来的确实都是单选" "$(one "
+  SELECT COUNT(*) FROM attempt_questions aq JOIN questions q ON q.question_id=aq.question_id
+   WHERE aq.attempt_id='$A4' AND aq.section_ord=92 AND q.question_type <> 'single_choice';")" "0"
+check "抽出来的三道正好是那三道无原文的单选" "$(one "
+  SELECT COUNT(*) FROM attempt_questions WHERE attempt_id='$A4' AND section_ord=92
+     AND question_id IN ('n5-free-1','n5-free-2','n5-free-3');")" "3"
+# 上面那条在"两条规则都失效"时仍有一成概率蒙对（候选题都没挂考点，多选几道是随机的）。
+# 下面两条把它钉死：候选池按规则算只有 3 道，多要一道就该组不出卷。
+#   要 4 道 → 题型筛选若失效（构造填空也算进来）就会有 4 道候选，于是能组出卷
+#   要 5 道 → 原文规则若失效（两道依赖原文的也算进来）就会有 5 道候选，于是能组出卷
+exec_sql "UPDATE exam_template_items SET question_count = 4 WHERE course_code='13000' AND ord=92;"
+check "要 4 道时组不出卷（题型筛选把构造填空挡在外面）" \
+  "$(stuj -o /dev/null -w '%{http_code}' -X POST "$BASE/exams/generate" -d '{"courseCode":"13000"}')" "422"
+exec_sql "UPDATE exam_template_items SET question_count = 5 WHERE course_code='13000' AND ord=92;"
+check "要 5 道时组不出卷（依赖原文的两道不参与单题抽）" \
+  "$(stuj -o /dev/null -w '%{http_code}' -X POST "$BASE/exams/generate" -d '{"courseCode":"13000"}')" "422"
+exec_sql "DELETE FROM exam_template_items WHERE course_code='13000' AND ord=92;"
+exec_sql "DELETE FROM attempt_questions WHERE question_id LIKE 'n5-free-%' OR question_id LIKE 'n5-ctx-%';"
+exec_sql "DELETE FROM questions WHERE section_id IN ('n5-sec-free','n5-sec-ctx');"
+exec_sql "DELETE FROM sections WHERE section_id IN ('n5-sec-free','n5-sec-ctx');"
+check "模板恢复原样" "$(one "SELECT COUNT(*) FROM exam_template_items WHERE course_code='13000';")" "$TPL_N"
+
+echo
+# 服务中途死掉的话，上面会塌出一串看不懂的断言失败（期望 422 实际 000 之类）。
+# wrangler dev 自己崩过一次（它的日志里是一条空的 ProxyController 错误），
+# 所以这里显式断一条：跑完之后服务还活着。塌掉时至少能一眼看出是服务没了，
+# 而不是去逐条查那些断言。
+check "跑完之后服务还活着" "$(curl -s -o /dev/null -w '%{http_code}' -m 5 "$BASE/health")" "200"
 
 echo
 echo "== 小结: $PASS 通过, $FAIL 失败 =="

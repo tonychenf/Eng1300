@@ -40,6 +40,7 @@ null_count() {
 SPECS=(
   "answer_records|item_results|TEXT"
   "answer_records|score_rate|REAL"
+  "attempts|pending_manual|INTEGER NOT NULL DEFAULT 0"
   "subject_question_types|answer_shape|TEXT"
   "subject_question_types|grading_strategy|TEXT"
 )

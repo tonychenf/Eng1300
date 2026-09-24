@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { get, post } from '../api.js';
 import { Alert, Loading } from '../components/ui.jsx';
-import { Question } from '../components/questions.jsx';
+import { Question, hasAnswer } from '../components/questions.jsx';
 
 const STAGE_HINT = {
   摸底: '每个考点先来一道，快速找出薄弱面',
@@ -178,7 +178,7 @@ export default function PracticeRun() {
                   </button>
                 ) : (
                   <button className="btn" onClick={submit}
-                    disabled={busy || !String(answer).trim()}>
+                    disabled={busy || !hasAnswer(q, answer)}>
                     {busy ? '提交中…' : '提交答案'}
                   </button>
                 )}

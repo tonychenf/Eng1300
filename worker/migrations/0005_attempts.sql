@@ -18,7 +18,10 @@ CREATE TABLE IF NOT EXISTS attempts (
   total_score REAL,
   objective_score REAL,          -- 客观题得分，交卷即出，不依赖 AI
   section_scores TEXT,           -- JSON
-  pending_ai INTEGER NOT NULL DEFAULT 0  -- 还有多少题等着 AI 批改
+  pending_ai INTEGER NOT NULL DEFAULT 0,  -- 还有多少题等着 AI 批改
+  -- N5：MANUAL 判分策略的出口（§6.4.4）。本期没有阅卷界面，但主链路要认得它——
+  -- 不认的话人工判分的题会被当成"已判完的 0 分"，成绩单上看不出少了一块。
+  pending_manual INTEGER NOT NULL DEFAULT 0
 );
 CREATE INDEX IF NOT EXISTS idx_attempts_user ON attempts(user_id, course_code, started_at DESC);
 

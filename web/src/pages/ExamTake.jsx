@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { get, post, put } from '../api.js';
 import { Alert, Loading } from '../components/ui.jsx';
-import { Question, OptionBank, sharedOptionsOf } from '../components/questions.jsx';
+import { Question, OptionBank, sharedOptionsOf, hasAnswer } from '../components/questions.jsx';
 
 const WARN_AT = 5 * 60; // 剩 5 分钟提醒一次
 
@@ -30,6 +30,8 @@ export default function ExamTake() {
   const [submitting, setSubmitting] = useState(false);
 
   const timers = useRef({});
+  // 还没发出去的作答（输入框的 600ms 防抖期内）。交卷前要把它们补发掉。
+  const pending = useRef({});
   const submittedRef = useRef(false);
 
   const load = useCallback(async () => {
@@ -53,10 +55,31 @@ export default function ExamTake() {
     }
   }, [data, attemptId, navigate]);
 
+  // 把防抖期里还没发出去的作答一次性补发。逐条发而不是并发一把梭：
+  // 这里最多也就几条，串行简单可靠，出错了还能把失败那条报出来。
+  const flushPending = useCallback(async () => {
+    for (const id of Object.values(timers.current)) clearTimeout(id);
+    const left = Object.entries(pending.current);
+    pending.current = {};
+    for (const [questionId, answer] of left) {
+      try {
+        await put(`/attempts/${attemptId}/answers`, { questionId, answer });
+      } catch (e) {
+        // 已经交过卷了就不用再补，其余错误要让人看见——丢答案比交不上卷更糟
+        if (e.code !== 'already_submitted') setError('有答案没能保存：' + e.message);
+      }
+    }
+  }, [attemptId]);
+
   const doSubmit = useCallback(async (auto) => {
     if (submittedRef.current) return;
     submittedRef.current = true;
     setSubmitting(true);
+    // 输入框的保存是停 600ms 才发的。**交卷前必须先把还欠着的那几条发出去**，
+    // 否则"填完最后一个空立刻点交卷"会把那个空丢掉——界面上它是填了的，
+    // 服务端收到的是空，判分判错，而没有任何地方报错。
+    // 多空题让这件事更容易撞上：一道题要连着敲好几个框，最后一下离交卷最近。
+    await flushPending();
     try {
       await post(`/attempts/${attemptId}/submit`);
     } catch (e) {
@@ -69,7 +92,7 @@ export default function ExamTake() {
       }
     }
     navigate(`/app/${subjectCode}/exam/${attemptId}/report`, { replace: true, state: { auto } });
-  }, [attemptId, navigate]);
+  }, [attemptId, navigate, flushPending]);
 
   // 本地每秒走一格；真正的时间以服务端为准，回到页面时重新对时
   useEffect(() => {
@@ -104,10 +127,12 @@ export default function ExamTake() {
   function save(questionId, answer, immediate) {
     setAnswers((a) => ({ ...a, [questionId]: answer }));
     clearTimeout(timers.current[questionId]);
+    pending.current[questionId] = answer;
     const send = async () => {
       setSaving(true);
       try {
         await put(`/attempts/${attemptId}/answers`, { questionId, answer });
+        if (pending.current[questionId] === answer) delete pending.current[questionId];
         setError('');
       } catch (e) {
         if (e.code === 'already_submitted') {
@@ -122,7 +147,8 @@ export default function ExamTake() {
     else timers.current[questionId] = setTimeout(send, 600);
   }
 
-  // 离开页面前把还在等待的输入立刻写出去
+  // 卸载时只清定时器。真正要紧的是交卷前把欠的补上（见 doSubmit 里的 flushPending）；
+  // 卸载时再发请求赶不上页面销毁，发了也白发。
   useEffect(() => () => {
     for (const id of Object.values(timers.current)) clearTimeout(id);
   }, []);
@@ -135,7 +161,7 @@ export default function ExamTake() {
   const section = sections[secIndex];
   const shared = sharedOptionsOf(section);
   const all = sections.flatMap((s) => s.questions);
-  const answeredCount = all.filter((q) => String(answers[q.questionId] ?? '').trim()).length;
+  const answeredCount = all.filter((q) => hasAnswer(q, answers[q.questionId])).length;
   const unanswered = all.length - answeredCount;
 
   function confirmSubmit() {
@@ -175,7 +201,7 @@ export default function ExamTake() {
 
         <nav className="sec-nav">
           {sections.map((s, i) => {
-            const done = s.questions.filter((q) => String(answers[q.questionId] ?? '').trim()).length;
+            const done = s.questions.filter((q) => hasAnswer(q, answers[q.questionId])).length;
             return (
               <button key={s.sectionOrd} className={i === secIndex ? 'active' : undefined}
                 onClick={() => { setSecIndex(i); setOpenPassage(false); window.scrollTo(0, 0); }}>
