@@ -453,15 +453,32 @@ jobs:
               fi
 
               STATS=$(curl -sS -m 20 "$WORKER_URL/api/admin/bank/stats" -H "Authorization: Bearer $TOKEN" || echo '{}')
-              EXAMS=$(echo "$STATS" | jq -r '[.byCourse[].exam_count] | add // 0')
-              check "题库已导入 20 套真题" "$EXAMS" "20"
-              QUESTIONS=$(echo "$STATS" | jq -r '[.byType[].total] | add // 0')
-              check "题库已导入 1020 道题" "$QUESTIONS" "1020"
+              # 这三条原来写的是全库总数（20 套 / 1020 题 / 1 门课），那是英语独占时代的
+              # 数字。多一个学科就红一次，而红了之后正确的做法永远是改数字——
+              # 这种断言不提供信号。按**学科**算，英语那几个数才是稳定的。
+              EXAMS=$(echo "$STATS" | jq -r '[.byCourse[] | select(.course_code == "13000") | .exam_count] | add // 0')
+              check "英语题库已导入 20 套真题" "$EXAMS" "20"
+              QUESTIONS=$(echo "$STATS" | jq -r '[.byType[] | select(.course_code == "13000") | .total] | add // 0')
+              check "英语题库已导入 1020 道题" "$QUESTIONS" "1020"
 
-              COURSES=$(echo "$STATS" | jq -r '.byCourse | length')
-              check "00015 与 13000 已合并为一门课程" "$COURSES" "1"
-              PUBLISHED_EXAMS=$(echo "$STATS" | jq -r '[.byCourse[].published_exams] | add // 0')
-              check "20 套试卷全部已发布" "$PUBLISHED_EXAMS" "20"
+              # 真正要守的性质是"00015 不再作为独立课程存在"，不是"课程总数是 1"。
+              # 后者在加第二个学科的课程行之后自动为假，而 00015 有没有被并掉与它无关。
+              check "00015 不再是独立课程" \
+                "$(echo "$STATS" | jq -r '[.byCourse[].course_code] | index("00015") // "无"')" "无"
+              PUBLISHED_EXAMS=$(echo "$STATS" | jq -r '[.byCourse[] | select(.course_code == "13000") | .published_exams] | add // 0')
+              check "英语 20 套试卷全部已发布" "$PUBLISHED_EXAMS" "20"
+
+              # 生化这一章现在真的在库里了（之前流水线只导英语，GitHub 里有、库里没有）。
+              # 三条一起断：进来了、题数对、而且**一道都没被放行**——
+              # 答案是 AI 生成的待核状态，看得见、录得了答案，但抽不到也发不出。
+              BIO=$(echo "$STATS" | jq -r '[.byCourse[] | select(.course_code == "biochem-main")] | length')
+              check "生化的内容组已导入" "$BIO" "1"
+              check "生化第 1 章 34 道题" \
+                "$(echo "$STATS" | jq -r '[.byType[] | select(.course_code == "biochem-main") | .total] | add // 0')" "34"
+              check "生化一道题都没被放行" \
+                "$(echo "$STATS" | jq -r '[.byType[] | select(.course_code == "biochem-main") | .published] | add // 0')" "0"
+              check "生化 34 道全是待核" \
+                "$(echo "$STATS" | jq -r '.byAnswerState[] | select(.subject_code == "biochem") | .unreviewed')" "34"
               # 被解析存疑记录点名的题目不参与组卷，所以可抽题数少于总题数。
               # 不写死具体数字：存疑记录一旦人工核对放行，这个数就会变。
               PUBLISHED_Q=$(echo "$STATS" | jq -r '[.byType[].published] | add // 0')
