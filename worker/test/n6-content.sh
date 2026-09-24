@@ -331,46 +331,50 @@ check "学员这时能抽到生化的题了" \
 echo
 echo "== 后台上传的内容组不会被种子清掉（N6b） =="
 # 把一套英语真题临时标成"后台上传的"，再重新导入它自己的那个种子文件。
-# 两件事要同时成立：
-#   ① 种子的 DELETE 只清 origin='SEED'，所以它的题一道都不该少；
-#   ② INSERT 会撞主键、整个文件导入失败——id 撞车该停下来让人看，不该悄悄合并。
-# 不加 ① 的后果是"下一次部署把管理员录好的整章连同学生作答一起抹了"，
-# 而 DELETE 删不到行不报错，日志里一片正常。
 UP_EX=$(one "SELECT exam_id FROM exams WHERE course_code='13000' ORDER BY exam_id LIMIT 1;")
 UP_BEFORE=$(one "SELECT COUNT(*) FROM questions WHERE exam_id='$UP_EX';")
+UP_TITLE=$(one "SELECT label FROM exams WHERE exam_id='$UP_EX';")
 check "挑中的这套真题确实有题（否则下面是空断言）" \
   "$([ "${UP_BEFORE:-0}" -ge 10 ] && echo 有 || echo 无)" "有"
 check "现有内容组的来源都是种子" \
   "$(one "SELECT COUNT(*) FROM exams WHERE origin <> 'SEED';")" "0"
-exec_sql "UPDATE exams SET origin='UPLOAD' WHERE exam_id='$UP_EX';"
-UP_SEED=$(ls seed/*"$UP_EX".sql 2>/dev/null | head -1)
-npx wrangler d1 execute "$D1_NAME" --local --file="$UP_SEED" >/dev/null 2>&1
-check "种子重导时撞主键、整体失败" "$?" "1"
-check "标成上传的内容组还在" "$(one "SELECT COUNT(*) FROM exams WHERE exam_id='$UP_EX';")" "1"
-check "它的题一道都没少" "$(one "SELECT COUNT(*) FROM questions WHERE exam_id='$UP_EX';")" "$UP_BEFORE"
-exec_sql "UPDATE exams SET origin='SEED' WHERE exam_id='$UP_EX';"
-# 先摘掉这套卷子的作答引用再做正面对照。
-#
-# 前面的 B14 段组过三次卷，attempt_questions 里留下了指向这套题的行，
-# 而种子的清理段要 DELETE FROM questions——**workerd 是强制外键的**，删不动，
-# 报的是一句光秃秃的 "FOREIGN KEY constraint failed"，不说是哪张表。
-# 所以这里不是护栏挡住了重导，是这套卷子在这个时点上本来就重导不了。
-# 摘掉引用之后再对照，测的才是护栏本身。
-#
-# **这件事本身是个隐患**：题库内容一变就要重导，而学生只要做过这套卷子就删不动。
-# 记在 docs/开发踩坑记录.md 第十三节，单独排期处理，不在这一条断言里糊过去。
+
+# ① 先摘掉这套卷子的作答引用。
+# 前面的 B14 段组过三次卷，attempt_questions 里留着指向这些题的行，而 workerd
+# **强制外键**——不摘的话，护栏被拿掉之后 DELETE 也会被外键拦住，数据照样在，
+# 下面三条就都成了恒真的。**我第一版就是这样：把护栏整个删掉做变异验证，
+# 仍然 104/0**，那三条断言其实什么都没测。
+# （种子的清理段删不动被作答过的题，这件事本身是隐患，记在踩坑记录第十三节。）
 exec_sql "DELETE FROM answer_records WHERE question_id IN (SELECT question_id FROM questions WHERE exam_id='$UP_EX');
   DELETE FROM attempt_questions WHERE question_id IN (SELECT question_id FROM questions WHERE exam_id='$UP_EX');
   DELETE FROM wrong_items WHERE question_id IN (SELECT question_id FROM questions WHERE exam_id='$UP_EX');"
-# 正面对照：护栏不能把正常的重导也挡死。红的时候要说得出为什么——
-# 只报"期望 0 实际 1"的话，下一个人得自己把这一步重放一遍才知道是哪句 SQL 失败。
+
+# ② 打两个记号再导：origin 标成 UPLOAD，label 换成哨兵值。
+# 光断"行还在不在"分不出"没被删"和"删了又插回来"——插回来的那一行 origin 会变成
+# SEED、label 会变回种子里的标题。要断的是**这一行没被动过**。
+exec_sql "UPDATE exams SET origin='UPLOAD', label='__上传哨兵__' WHERE exam_id='$UP_EX';"
+UP_SEED=$(ls seed/*"$UP_EX".sql 2>/dev/null | head -1)
+npx wrangler d1 execute "$D1_NAME" --local --file="$UP_SEED" >/tmp/n6-collide.log 2>&1
+check "种子重导时撞主键、整体失败" "$?" "1"
+check "内容组还带着 UPLOAD 标记（不是删了又插回来）" \
+  "$(one "SELECT origin FROM exams WHERE exam_id='$UP_EX';")" "UPLOAD"
+check "哨兵 label 没被冲掉" \
+  "$(one "SELECT label FROM exams WHERE exam_id='$UP_EX';")" "__上传哨兵__"
+check "它的题一道都没少" "$(one "SELECT COUNT(*) FROM questions WHERE exam_id='$UP_EX';")" "$UP_BEFORE"
+
+# ③ 正面对照：护栏不能把正常的重导也挡死。红的时候要说得出为什么——
+# 只报"期望 0 实际 1"的话，下一个人得把整套重放一遍才知道是哪句 SQL 失败。
+exec_sql "UPDATE exams SET origin='SEED' WHERE exam_id='$UP_EX';"
 npx wrangler d1 execute "$D1_NAME" --local --file="$UP_SEED" >/tmp/n6-reimport.log 2>&1
 REIMPORT_RC=$?
 check "改回种子之后重导又能成功" "$REIMPORT_RC" "0"
 [ "$REIMPORT_RC" = "0" ] || {
   echo "     （重导失败，报错如下）"
-  grep -oE '"(error|message|cause)"[^,}]*' /tmp/n6-reimport.log | head -4 | sed 's/^/       /'
+  sed 's/\x1b\[[0-9;]*m//g' /tmp/n6-reimport.log | grep -E "ERROR" | head -3 | sed 's/^/       /'
 }
+# 这一条让正面对照也不至于空转：重导要真的把数据换过一遍，哨兵才会消失。
+check "重导之后哨兵被换回种子里的标题" \
+  "$(one "SELECT label FROM exams WHERE exam_id='$UP_EX';")" "$UP_TITLE"
 
 echo
 echo "== 旧库模拟：新列补得上、回填对得上 =="
