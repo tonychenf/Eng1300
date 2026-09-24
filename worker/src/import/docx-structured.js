@@ -5,8 +5,8 @@
 //
 // 这一段的每一条规则都对应 §4.2 里一条真实的资料形态，注释里标了是哪一条。
 // 拿不准的一律写进 parsingNotes 并**写明题号**，不自己猜着填。
-import { readZip, entryText } from './lib/zip.mjs';
-import { parseParagraphs, parseNumbering, applyNumbering } from './lib/ooxml.mjs';
+import { readZip, entryText } from './zip.js';
+import { parseParagraphs, parseNumbering, applyNumbering } from './ooxml.js';
 
 function fail(code, message) {
   const err = new Error(`${code}: ${message}`);
@@ -244,6 +244,10 @@ export async function importDocx(buf, { subjectCode, courseCode, groupId, chapte
   };
 
   return {
+    // 解析出来的段落纯文本，按原顺序。**上传接口留它、丢原件**（§N6b）：
+    // 校对时要能对着看"原文这一段到底怎么写的"，而原件本身不落盘。
+    // 题目里回写的 sourcePara 就是这个数组的下标。
+    paragraphs: paras.map((p) => `${p.number || ''}${p.text || ''}`),
     group: {
       groupId,
       subjectCode,

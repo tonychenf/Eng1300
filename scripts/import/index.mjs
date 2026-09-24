@@ -3,14 +3,12 @@
 // 英语走的是 pdf-ocr-llm（扫描件 → OCR → LLM 结构化），那条链路在蓝本时代就跑完了，
 // 产物已经在 data/subjects/english/groups/ 里；这里不重建它，只登记它存在过，
 // 免得有人以为"英语没有管线"。
-import { importDocx } from './docx-structured.mjs';
+//
+// 解析器本身在 worker/src/import/ 下——后台上传接口也要用它，而那边跑在 Worker 里。
+// 这个文件只留命令行才需要的东西：**哪个学科的原始资料在盘上的什么位置**。
+import { PIPELINES, resolvePipeline as resolveByName } from '../../worker/src/import/index.js';
 
-export const PIPELINES = {
-  'docx-structured': {
-    name: 'docx 结构化提取',
-    run: importDocx,
-  },
-};
+export { PIPELINES };
 
 // 学科 → 用哪条管线、以及这条管线要的参数
 export const SUBJECT_IMPORTS = {
@@ -45,13 +43,15 @@ export function resolvePipeline(subjectCode) {
     err.code = 'unknown_subject';
     throw err;
   }
-  const pipeline = PIPELINES[cfg.pipeline];
-  if (!pipeline) {
-    const err = new Error(
-      `pipeline_not_implemented: 学科 ${subjectCode} 用的管线 ${cfg.pipeline} 本仓库没有实现` +
-      `${cfg.note ? '：' + cfg.note : ''}`);
-    err.code = 'pipeline_not_implemented';
-    throw err;
+  let pipeline;
+  try {
+    pipeline = resolveByName(cfg.pipeline);
+  } catch (e) {
+    // 把"这个学科用的管线没实现"说清楚，而不是只报管线名——
+    // 命令行的使用者是按学科码来的。
+    e.message = `学科 ${subjectCode} 用的管线 ${cfg.pipeline} 本仓库没有实现` +
+      `${cfg.note ? '：' + cfg.note : ''}`;
+    throw e;
   }
   return { cfg, pipeline };
 }

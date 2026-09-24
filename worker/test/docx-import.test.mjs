@@ -10,9 +10,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { readZip } from '../../scripts/import/lib/zip.mjs';
-import { parseParagraphs, parseNumbering, applyNumbering } from '../../scripts/import/lib/ooxml.mjs';
-import { importDocx } from '../../scripts/import/docx-structured.mjs';
+import { readZip } from '../src/import/zip.js';
+import { parseParagraphs, parseNumbering, applyNumbering } from '../src/import/ooxml.js';
+import { importDocx } from '../src/import/docx-structured.js';
 import { resolvePipeline } from '../../scripts/import/index.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');

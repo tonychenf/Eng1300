@@ -3,6 +3,7 @@ import { cors } from 'hono/cors';
 import bcrypt from 'bcryptjs';
 import { signToken, requireAuth, requireSuperAdmin, isQuotaError, bestEffortWrite } from './lib/auth.js';
 import { bankRouter } from './routes/admin-bank.js';
+import { importRouter } from './routes/admin-import.js';
 import { aiRouter } from './routes/admin-ai.js';
 import { examRouter } from './routes/exam.js';
 import { practiceRouter } from './routes/practice.js';
@@ -321,6 +322,7 @@ admin.route('/', adminGrantsRouter);
 admin.route('/', adminPackRouter);
 admin.route('/subjects', adminSubjectsRouter);
 admin.route('/bank', bankRouter);
+admin.route('/bank', importRouter);   // POST /bank/import、GET /bank/import/:examId/source
 admin.route('/ai', aiRouter);
 admin.route('/stats', adminStatsRouter);
 app.route('/api/admin', admin);
