@@ -53,7 +53,11 @@ try {
     await page.fill('#imp-label', `浏览器实测 ${label}`);
     await page.fill('#imp-order', String(width));
     await page.setInputFiles('#imp-file', DOCX);
-    check(`${label}｜填完之后"试解析"能点了`, await dryBtn.isDisabled(), false);
+    // 红的时候要说得出**是哪个字段还没满足**。页面自己把这句算好了（"还差：…"），
+    // 直接把它带进断言，省得下一个人对着"期望 false 实际 true"去猜。
+    const stillMissing = await page.locator('text=还差：').count()
+      ? (await page.locator('text=还差：').first().innerText()) : '（页面说没缺）';
+    check(`${label}｜填完之后"试解析"能点了｜${stillMissing}`, await dryBtn.isDisabled(), false);
     // 还没试解析，不许直接入库——解析结果没人看过就落库，正是这个页面要防的
     check(`${label}｜没试解析前"确认入库"点不了`, await commitBtn.isDisabled(), true);
 
