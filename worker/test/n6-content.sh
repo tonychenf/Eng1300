@@ -53,6 +53,13 @@ VARS
 for m in migrations/*.sql; do
   npx wrangler d1 execute "$D1_NAME" --local --file="$m" >/dev/null 2>&1 || { echo "执行 $m 失败"; exit 1; }
 done
+# 先重新生成英语的种子。**这一套测的是种子 SQL 本身的语义**（清理段只清 SEED、
+# 内容组带 origin），而 worker/seed/ 是构建产物、不进 git——改了生成器不重新生成的话，
+# 这里导进去的是上一次留下的旧 SQL，断言照样跑、照样绿，测的却是旧行为。
+# 我就是这么让 origin 那四条断言"通过"了一轮的。
+SEED_SUBJECT_DIR="$ROOT_DIR/../data/subjects/english" \
+  node ../scripts/build-seed-sql.mjs >/dev/null 2>&1 \
+  || { echo "英语种子生成失败"; exit 1; }
 npx wrangler d1 execute "$D1_NAME" --local --file=seed/english-000-knowledge-points.sql >/dev/null 2>&1
 for EXAM in 00015-2015-04 00015-2016-04 00015-2019-10 13000-2026-04; do
   F=$(ls seed/*"$EXAM".sql 2>/dev/null | head -1)
@@ -320,6 +327,30 @@ check "确认过的三道进去了" "$(echo "$PUB2" | jq -r '.published')" "3"
 check "其余的还是扣着" "$(echo "$PUB2" | jq -r '.heldNoAnswer')" "$((EXPECT_HELD_NO_ANSWER - 3))"
 check "学员这时能抽到生化的题了" \
   "$(stu "$BASE/practice/scope?courseCode=biochem-main" | jq -r '.questionCount')" "3"
+
+echo
+echo "== 后台上传的内容组不会被种子清掉（N6b） =="
+# 把一套英语真题临时标成"后台上传的"，再重新导入它自己的那个种子文件。
+# 两件事要同时成立：
+#   ① 种子的 DELETE 只清 origin='SEED'，所以它的题一道都不该少；
+#   ② INSERT 会撞主键、整个文件导入失败——id 撞车该停下来让人看，不该悄悄合并。
+# 不加 ① 的后果是"下一次部署把管理员录好的整章连同学生作答一起抹了"，
+# 而 DELETE 删不到行不报错，日志里一片正常。
+UP_EX=$(one "SELECT exam_id FROM exams WHERE course_code='13000' ORDER BY exam_id LIMIT 1;")
+UP_BEFORE=$(one "SELECT COUNT(*) FROM questions WHERE exam_id='$UP_EX';")
+check "挑中的这套真题确实有题（否则下面是空断言）" \
+  "$([ "${UP_BEFORE:-0}" -ge 10 ] && echo 有 || echo 无)" "有"
+check "现有内容组的来源都是种子" \
+  "$(one "SELECT COUNT(*) FROM exams WHERE origin <> 'SEED';")" "0"
+exec_sql "UPDATE exams SET origin='UPLOAD' WHERE exam_id='$UP_EX';"
+UP_SEED=$(ls seed/*"$UP_EX".sql 2>/dev/null | head -1)
+npx wrangler d1 execute "$D1_NAME" --local --file="$UP_SEED" >/dev/null 2>&1
+check "种子重导时撞主键、整体失败" "$?" "1"
+check "标成上传的内容组还在" "$(one "SELECT COUNT(*) FROM exams WHERE exam_id='$UP_EX';")" "1"
+check "它的题一道都没少" "$(one "SELECT COUNT(*) FROM questions WHERE exam_id='$UP_EX';")" "$UP_BEFORE"
+exec_sql "UPDATE exams SET origin='SEED' WHERE exam_id='$UP_EX';"
+check "改回种子之后重导又能成功" \
+  "$(npx wrangler d1 execute "$D1_NAME" --local --file="$UP_SEED" >/dev/null 2>&1; echo $?)" "0"
 
 echo
 echo "== 旧库模拟：新列补得上、回填对得上 =="

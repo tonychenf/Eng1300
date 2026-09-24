@@ -46,6 +46,10 @@ CREATE TABLE IF NOT EXISTS exams (
   order_key INTEGER,
   label TEXT,
   meta TEXT,
+  -- N6b：这个内容组是哪来的。SEED = 仓库里的种子文件导的，UPLOAD = 后台传的。
+  -- **种子导入的 DELETE 只清 SEED 的**：不区分的话，下一次部署会把管理员在后台
+  -- 上传并录好答案的整章连同学生的作答记录一起清掉——不报错，日志里也看不出来。
+  origin TEXT,
   -- §6.4.2 说 year/month 放宽为可空。**这一条做不到**：SQLite 改不了 NOT NULL，
   -- 而 exams 有 sections/questions 两张子表引用，重建就要先清空题库（N3 那次事故
   -- 就是这么清掉线上题库的）。所以没有年月的学科写 0，并且**读出去的那一刻映射回

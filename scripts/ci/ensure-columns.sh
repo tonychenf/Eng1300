@@ -99,6 +99,7 @@ SPECS=(
   "exams|order_key|INTEGER"
   "exams|label|TEXT"
   "exams|meta|TEXT"
+  "exams|origin|TEXT"
   "questions|answer_state|TEXT"
   "questions|answer_source|TEXT"
   "questions|answer_reviewed_by|TEXT"
@@ -158,6 +159,10 @@ SQL
 UPDATE exams SET label = title WHERE label IS NULL;
 SQL
       ;;
+    exams.origin) cat <<'SQL'
+UPDATE exams SET origin = 'SEED' WHERE origin IS NULL;
+SQL
+      ;;
     questions.answer_state) cat <<'SQL'
 UPDATE questions SET answer_state = '已确认' WHERE answer_state IS NULL;
 SQL
@@ -182,6 +187,7 @@ REQUIRED=(
   "subject_question_types|grading_strategy"
   "exams|order_key"
   "exams|label"
+  "exams|origin"
   "questions|answer_state"
   "questions|answer_source"
   "exam_parsing_notes|note_kind"

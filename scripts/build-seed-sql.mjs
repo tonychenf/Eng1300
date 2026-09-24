@@ -257,24 +257,34 @@ for (const file of files) {
   const lines = [];
 
   // 幂等：重复导入时先清掉这套卷的旧数据，避免主键冲突或残留
+  // 幂等清理**只清种子自己导过的内容组**（origin='SEED'）。
+  //
+  // 后台上传的那些（origin='UPLOAD'）不属于种子：清掉它们等于把管理员录好的答案
+  // 和学生已有的作答记录一起抹了，而 DELETE 删不到行是不报错的——下一次部署
+  // 整章消失，日志里一片正常。这是本项目已经踩过一次的那类事故（第十节）。
+  //
+  // 万一 id 真撞上了（一个 UPLOAD 的内容组占了种子文件的 exam_id），
+  // 下面的 INSERT INTO exams 会撞主键、整个文件导入失败、部署当场红——
+  // 这是对的：id 撞车该停下来让人看，不该悄悄合并。
+  const seedOnly = `AND ${q(g.groupId)} NOT IN (SELECT exam_id FROM exams WHERE origin = 'UPLOAD')`;
   lines.push(
-    `DELETE FROM question_knowledge_points WHERE question_id IN (SELECT question_id FROM questions WHERE exam_id = ${q(g.groupId)});`,
+    `DELETE FROM question_knowledge_points WHERE question_id IN (SELECT question_id FROM questions WHERE exam_id = ${q(g.groupId)}) ${seedOnly};`,
     // 资源行跟着题一起清。不清的话重导之后会留下指向已删题目的孤儿行，
     // 而外键在 D1 上默认不强制，不会有任何地方报错。
-    `DELETE FROM question_assets WHERE question_id IN (SELECT question_id FROM questions WHERE exam_id = ${q(g.groupId)});`,
-    `DELETE FROM question_items WHERE question_id IN (SELECT question_id FROM questions WHERE exam_id = ${q(g.groupId)});`,
-    `DELETE FROM questions WHERE exam_id = ${q(g.groupId)};`,
-    `DELETE FROM sections WHERE exam_id = ${q(g.groupId)};`,
-    `DELETE FROM exam_parsing_notes WHERE exam_id = ${q(g.groupId)};`,
-    `DELETE FROM exams WHERE exam_id = ${q(g.groupId)};`
+    `DELETE FROM question_assets WHERE question_id IN (SELECT question_id FROM questions WHERE exam_id = ${q(g.groupId)}) ${seedOnly};`,
+    `DELETE FROM question_items WHERE question_id IN (SELECT question_id FROM questions WHERE exam_id = ${q(g.groupId)}) ${seedOnly};`,
+    `DELETE FROM questions WHERE exam_id = ${q(g.groupId)} ${seedOnly};`,
+    `DELETE FROM sections WHERE exam_id = ${q(g.groupId)} ${seedOnly};`,
+    `DELETE FROM exam_parsing_notes WHERE exam_id = ${q(g.groupId)} ${seedOnly};`,
+    `DELETE FROM exams WHERE exam_id = ${q(g.groupId)} ${seedOnly};`
   );
 
   lines.push(
     `INSERT INTO exams (exam_id, course_code, title, label, order_key, meta, year, month, ` +
-      `source_file, status) VALUES (` +
+      `source_file, status, origin) VALUES (` +
       `${q(g.groupId)}, ${q(courseCode)}, ${q(g.title)}, ${q(g.label)}, ${n(g.orderKey)}, ` +
       `${q(g.meta)}, ${n(g.year)}, ${n(g.month)}, ` +
-      `${q(d.sourceFile)}, ${q(d.status || '待校对')});`
+      `${q(d.sourceFile)}, ${q(d.status || '待校对')}, 'SEED');`
   );
 
   for (const s of d.sections) {
