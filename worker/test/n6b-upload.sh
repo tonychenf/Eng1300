@@ -193,8 +193,23 @@ check "返回里说清楚还要人工确认" "$(echo "$OK" | jq -r '.message' | 
 # 硬约束：AI 生成的答案绝不能自动发布（§6.4.10）
 check "生成完仍然一道都抽不到" \
   "$(one "SELECT COUNT(*) FROM questions WHERE exam_id='biochem-ch01' AND status='已发布' AND answer_state='已确认';")" "0"
-check "整卷发布也发不出去" \
-  "$(curl -s -X POST "$BASE/admin/bank/exams/biochem-ch01/publish" -H "Authorization: Bearer $ADMIN" | jq -r '.published')" "0"
+# 发布这一关分两层，两层都要过一遍。
+# 先直接发：这时会被"存疑记录没处理完"先挡下来——**挡是对的，但挡它的不是答案那道门**，
+# 所以只断"一道都没发出去"，不断具体错误码。
+curl -s -o /dev/null -X POST "$BASE/admin/bank/exams/biochem-ch01/publish" -H "Authorization: Bearer $ADMIN"
+check "直接发：一道都没进已发布" \
+  "$(one "SELECT COUNT(*) FROM questions WHERE exam_id='biochem-ch01' AND status='已发布';")" "0"
+# 再把存疑记录都处理掉，逼到答案那道门跟前——这才是这一条要验的硬约束：
+# AI 生成的答案绝不能自动发布（§6.4.10）。
+for nid in $(sql "SELECT id FROM exam_parsing_notes WHERE exam_id='biochem-ch01';" | jq -r '.[0].results[].id'); do
+  curl -s -o /dev/null -X PATCH "$BASE/admin/bank/notes/$nid" -H "Authorization: Bearer $ADMIN" \
+    -H 'Content-Type: application/json' -d '{"resolved":true}'
+done
+PUB=$(curl -s -X POST "$BASE/admin/bank/exams/biochem-ch01/publish" -H "Authorization: Bearer $ADMIN")
+check "存疑处理完了，AI 的答案仍然发不出去" "$(echo "$PUB" | jq -r '.published')" "0"
+check "34 道全被答案那道门扣下" "$(echo "$PUB" | jq -r '.heldNoAnswer')" "34"
+check "库里确认：一道都没进已发布" \
+  "$(one "SELECT COUNT(*) FROM questions WHERE exam_id='biochem-ch01' AND status='已发布';")" "0"
 # 再跑一次：已经有答案的题不该被重复生成
 AGAIN=$(gen)
 check "再跑一次没有缺答案的题了" "$(echo "$AGAIN" | jq -r '.generated')" "0"
