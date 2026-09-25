@@ -16,6 +16,7 @@ import { Hono } from 'hono';
 import { resolvePipeline } from '../import/index.js';
 import { ITEM_KINDS } from '../lib/question-items.js';
 import { resolveSettings } from '../lib/ai.js';
+import { purposeForMedia, purposeMeta } from '../lib/ai-purposes.js';
 import { generateAnswers, targetItems } from '../lib/ai-answer.js';
 
 export const importRouter = new Hono();
@@ -234,10 +235,18 @@ importRouter.post('/exams/:examId/ai-answers', async (c) => {
     ).bind(exam.course_code).first();
   if (!subject) return bad(c, 422, 'subject_not_found', '这个内容组挂不到任何学科上');
 
-  const settings = await resolveSettings(c.env, 'PARSING');
+  // 原始资料是图片还是文字，决定用哪一档 AI 配置（§6.4.3、N7d）。
+  // 管线自己声明 mediaKind，这里不按学科硬判——同一个学科将来既有扫描件又有 docx 时，
+  // 按学科判就说不清该用哪一档。
+  let mediaKind = 'text';
+  try { mediaKind = resolvePipeline(subject.ingest_pipeline)?.mediaKind || 'text'; } catch { /* 管线没实现也不影响补答案 */ }
+  const wantPurpose = purposeForMedia(mediaKind);
+  const settings = await resolveSettings(c.env, wantPurpose);
   if (!settings) {
+    const meta = purposeMeta(wantPurpose);
     return bad(c, 422, 'ai_not_configured',
-      '还没有配置解析 AI。去后台「AI 配置」里填接口地址、模型与 Key（三项都可自由填写）。');
+      `还没有配置「${meta?.label || wantPurpose}」。去后台「AI 配置」里填接口地址、模型与 Key` +
+      '（三项都可自由填写）。');
   }
 
   const { results: rows } = await db.prepare(
@@ -271,19 +280,29 @@ importRouter.post('/exams/:examId/ai-answers', async (c) => {
       ORDER BY subject_id DESC LIMIT 1`
   ).bind(subject.subject_id).first();
 
-  const { generated, failures } = await generateAnswers(c.env, {
-    questions, subjectId: subject.subject_id, prompt,
+  const { generated, failures, withoutExplanation } = await generateAnswers(c.env, {
+    questions, subjectId: subject.subject_id, prompt, purpose: wantPurpose,
   });
 
   // 落库：一律 待核 + 来源 AI。**绝不自动发布**（§6.4.10 的硬约束）。
   const byId = new Map(questions.map((q) => [q.questionId, q]));
   const st = [];
   for (const g of generated) {
-    st.push(db.prepare(
-      `UPDATE questions SET answer = ?, answer_state = '待核', answer_source = 'AI',
-              answer_reviewed_by = NULL, answer_reviewed_at = NULL
-        WHERE question_id = ?`
-    ).bind(g.answer, g.questionId));
+    // 解析为空时**不要覆盖**已有的 answer_explanation：校对时人工写过一段，
+    // 重跑一次 AI 就把它抹掉，属于"这次失败改变了用户要的结果"。
+    if (g.explanation) {
+      st.push(db.prepare(
+        `UPDATE questions SET answer = ?, answer_explanation = ?, answer_state = '待核',
+                answer_source = 'AI', answer_reviewed_by = NULL, answer_reviewed_at = NULL
+          WHERE question_id = ?`
+      ).bind(g.answer, g.explanation, g.questionId));
+    } else {
+      st.push(db.prepare(
+        `UPDATE questions SET answer = ?, answer_state = '待核', answer_source = 'AI',
+                answer_reviewed_by = NULL, answer_reviewed_at = NULL
+          WHERE question_id = ?`
+      ).bind(g.answer, g.questionId));
+    }
     if (g.items) {
       const targets = targetItems(byId.get(g.questionId));
       g.items.forEach((val, i) => {
@@ -301,10 +320,17 @@ importRouter.post('/exams/:examId/ai-answers', async (c) => {
     generated: generated.length,
     attempted: questions.length,
     failures,
+    // 用的是哪一档配置要报出来。回落时（比如没配文字解析、沿用了图片解析那档）
+    // 管理员以为在用自己配的模型，而时延、账单、效果都来自另一个——三者对不上又没线索。
+    mediaKind,
+    purpose: settings._usedPurpose || wantPurpose,
+    purposeFellBack: Boolean(settings._fallback),
+    withoutExplanation,
     // 说清楚这些答案还不能用。界面上要显眼——"AI 生成完了"很容易被读成"可以发布了"。
     message: `生成了 ${generated.length} 道的候选答案，全部落在「待核」——` +
       `逐题人工确认之后才能发布。` +
-      (failures.length ? `另有 ${failures.length} 道没生成出来，仍是缺答案。` : ''),
+      (failures.length ? `另有 ${failures.length} 道没生成出来，仍是缺答案。` : '') +
+      (withoutExplanation.length ? `其中 ${withoutExplanation.length} 道只有答案、没有解析。` : ''),
   });
 });
 

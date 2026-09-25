@@ -453,3 +453,25 @@ h1, h2, h3 { margin: 0; line-height: 1.35; }
 .math-inline { display: inline-block; max-width: 100%; overflow-x: auto; vertical-align: middle; }
 /* 块级公式可能比屏幕宽（长推导），让它自己滚，别把整页带出去 */
 .math-block { display: block; max-width: 100%; overflow-x: auto; margin: 8px 0; }
+
+/* 一次性口令弹窗（N7a）。
+   为什么非得是弹窗：重置按钮在表格每一行，而口令原先渲染在表格上方的横幅里，
+   学员一多，点下面那行的重置，口令出现在滚动区外——看起来像什么都没发生，
+   而口令只显示这一次，刷新就没了，等于把那个账号锁死。
+   用原生 <dialog>：焦点收拢、Esc 关闭、背景遮罩都是浏览器给的，不必自己实现。 */
+.pw-dialog {
+  border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 0; max-width: 460px; width: calc(100vw - 32px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, .25); color: var(--ink);
+}
+.pw-dialog::backdrop { background: rgba(15, 20, 30, .45); }
+.pw-dialog .pw-body { padding: 20px; }
+.pw-code {
+  display: flex; align-items: center; gap: 10px; margin: 12px 0;
+  padding: 12px 14px; border: 1px dashed var(--line); border-radius: 8px;
+  background: #f7f8fa;
+}
+.pw-code code {
+  flex: 1; font-size: 20px; letter-spacing: .5px; word-break: break-all;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}

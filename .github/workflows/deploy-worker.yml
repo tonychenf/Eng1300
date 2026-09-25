@@ -192,6 +192,15 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: bash scripts/ci/rebuild-legacy-schema.sh --remote
 
+      # ai_settings.purpose 的 CHECK 要放宽一档（N7d 的「文字解析 AI」）。
+      # CHECK 改不动，只能重建表；这张表没有子表引用，重建是干净的。
+      # 自带门闩（n7d-ai-purposes），做过就不再做——它会删表，不能每次重新判断。
+      # 必须排在迁移之前：迁移里的 INSERT 一旦写 TEXT_PARSING，旧 CHECK 会把整步顶掉。
+      - name: Widen ai_settings purposes for the text-parsing config
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: bash scripts/ci/rebuild-ai-purposes.sh --remote
+
       # 补列必须排在迁移**之前**。两条理由，第二条是部署 #48 用失败换来的：
       #   1. 线上那些表是早先的部署建的，迁移里的 CREATE TABLE IF NOT EXISTS
       #      不会给它们加列（0002 那条老坑），只能靠这一步。

@@ -111,7 +111,7 @@ children.push(
   new Paragraph({
     alignment: AlignmentType.CENTER,
     spacing: { after: 160 },
-    children: [new TextRun({ text: '自考英语真题练习', size: 52, bold: true, color: INK, font: '等线' })],
+    children: [new TextRun({ text: 'XLearn', size: 52, bold: true, color: INK, font: '等线' })],
   }),
   new Paragraph({
     alignment: AlignmentType.CENTER,
@@ -121,7 +121,7 @@ children.push(
   new Paragraph({
     alignment: AlignmentType.CENTER,
     spacing: { after: 80 },
-    children: [new TextRun({ text: '英语(二) / 英语(专升本)　课程代码 13000', size: 21, color: MUTED, font: '等线' })],
+    children: [new TextRun({ text: '跨学科自适应学习平台', size: 21, color: MUTED, font: '等线' })],
   }),
   new Paragraph({
     alignment: AlignmentType.CENTER,
@@ -142,7 +142,7 @@ children.push(
 // ────────────────────────── 一、开始使用 ──────────────────────────
 children.push(
   H1('一、开始使用'),
-  P('这个系统用来练习自考英语（二）/英语（专升本）的历年真题。它做三件事：按真题结构随机组一套新卷让你模考，按你的掌握情况出题让你专项练习，把你做错的题收起来反复订正。'),
+  P('XLearn 是一个跨学科的自适应学习平台，登录后先选学科。它做三件事：按学科的考纲结构随机组一套新卷让你模考，按你的掌握情况出题让你专项练习，把你做错的题收起来反复订正。'),
 
   H2('1.1 打开网址'),
   PRuns([
@@ -152,7 +152,7 @@ children.push(
   P('页面会自动适应屏幕宽度，手机上竖屏使用即可，不需要安装任何应用。'),
 
   H2('1.2 登录'),
-  STEP('打开网址后进入登录页，页面标题是"自考英语真题练习"。'),
+  STEP('打开网址后进入登录页，页面标题是"XLearn"。登录后先选学科。'),
   STEP('输入老师发给你的用户名和密码。'),
   STEP('点"登录"，进入首页。'),
   NOTE('密码连续输错 5 次，账号会被锁定 10 分钟，这段时间内即使输对也进不去。等 10 分钟后再试，或者联系老师帮你重置。'),
@@ -187,8 +187,10 @@ children.push(
   H1('三、模拟考试'),
   P('模考是完整地按真题结构做一整套卷子，限时、不给即时反馈，交卷后一次性出成绩。想检验自己现在大概能考多少分，用这个。'),
 
-  H2('3.1 试卷构成'),
-  P('每套卷子固定 51 题、满分 100 分、限时 150 分钟，七个部分的题量与分值如下：'),
+  H2('3.1 试卷构成（以英语为例）'),
+  P('每个学科的卷子结构不同，下面这张表是英语（二）/英语（专升本）课程代码 13000 的。'
+    + '其他学科的题量与分值以你在组卷页看到的为准。'),
+  P('英语每套卷子固定 51 题、满分 100 分、限时 150 分钟，七个部分的题量与分值如下：'),
   SPACER(60),
   table(
     [3200, 1500, 2100, 2200],
@@ -362,8 +364,8 @@ children.push(
 );
 
 const doc = new Document({
-  creator: '自考英语真题练习',
-  title: '自考英语真题练习 学员使用手册',
+  creator: 'XLearn',
+  title: 'XLearn 学员使用手册',
   description: '面向学员的功能使用说明',
   numbering: {
     config: [
@@ -395,6 +397,6 @@ const doc = new Document({
 });
 
 Packer.toBuffer(doc).then((buf) => {
-  fs.writeFileSync('自考英语真题练习-学员使用手册.docx', buf);
+  fs.writeFileSync('XLearn-学员使用手册.docx', buf);
   console.log('已生成，', buf.length, '字节');
 });

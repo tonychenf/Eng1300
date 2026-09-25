@@ -195,6 +195,44 @@ check "确认留痕是空的（没人确认过）" \
 check "50 个空都填上了" \
   "$(one "SELECT COUNT(*) FROM question_items i JOIN questions q ON q.question_id=i.question_id WHERE q.exam_id='biochem-ch01' AND i.item_kind='BLANK' AND i.answer IS NOT NULL;")" "50"
 check "返回里说清楚还要人工确认" "$(echo "$OK" | jq -r '.message' | grep -c '待核')" "1"
+
+# ③之一 N7c：解析要和答案一起生成。三处（报告页、错题本、练习页）都读 answer_explanation，
+# 之前它一直是空的。替身**只在提示词真的要了 explanation 时**才回，
+# 所以这几条同时守着"提示词里还要着解析"这件事——去掉那句，替身就不回，这里立刻红。
+check "解析也一并落库了" \
+  "$(one "SELECT COUNT(*) FROM questions WHERE exam_id='biochem-ch01' AND answer_explanation IS NOT NULL AND answer_explanation <> '';")" "34"
+check "没有一道是只有答案没解析的" "$(echo "$OK" | jq -r '.withoutExplanation | length')" "0"
+# 太短的解析当成没有：模型经常回一句"因为答案是A"，占着位置让人以为有解析了
+check "解析不是一两个字的敷衍" \
+  "$(one "SELECT COUNT(*) FROM questions WHERE exam_id='biochem-ch01' AND LENGTH(answer_explanation) < 8;")" "0"
+
+# ③之二 N7d：文字型资料该走「文字解析 AI」。现在只配了图片解析那档，所以是回落——
+# **回落必须报出来**，否则管理员以为在用自己配的模型，而时延与账单来自另一个。
+check "报出了这份资料是文字型" "$(echo "$OK" | jq -r '.mediaKind')" "text"
+check "文字型走文字解析那一档" "$(echo "$OK" | jq -r '.purpose')" "PARSING"
+check "并且说明这是回落（那一档没配）" "$(echo "$OK" | jq -r '.purposeFellBack')" "true"
+
+# 单独配上文字解析那档之后，就不该再回落了
+curl -s -o /dev/null -X PUT "$BASE/admin/ai/settings/TEXT_PARSING" -H "Authorization: Bearer $ADMIN" \
+  -H 'Content-Type: application/json' \
+  -d "{\"baseUrl\":\"http://127.0.0.1:$STUB_PORT/v1\",\"apiKey\":\"stub\",\"model\":\"text-stub\"}"
+exec_sql_n6b() { npx wrangler d1 execute "$D1_NAME" --local --command "$1" >/dev/null 2>&1; }
+exec_sql_n6b "UPDATE questions SET answer_state='缺答案', answer=NULL WHERE exam_id='biochem-ch01';"
+OK2=$(gen)
+check "配上文字解析之后用的就是它" "$(echo "$OK2" | jq -r '.purpose')" "TEXT_PARSING"
+check "不再标记为回落" "$(echo "$OK2" | jq -r '.purposeFellBack')" "false"
+check "换了一档照样全部生成" "$(echo "$OK2" | jq -r '.generated')" "34"
+# 新档要真的能存进库——ai_settings.purpose 上有 CHECK，没放宽的话这一行插不进去，
+# 而接口会回 500 而不是保存成功
+check "新档真的落库了" \
+  "$(one "SELECT model FROM ai_settings WHERE purpose='TEXT_PARSING' AND subject_id=0;")" "text-stub"
+check "三档都列得出来" \
+  "$(curl -s "$BASE/admin/ai/settings" -H "Authorization: Bearer $ADMIN" | jq -r '.settings | keys | join(",")')" \
+  "PARSING,TEXT_PARSING,TUTORING"
+check "不认识的用途被拒" \
+  "$(curl -s -X PUT "$BASE/admin/ai/settings/NOPE" -H "Authorization: Bearer $ADMIN" \
+      -H 'Content-Type: application/json' -d '{"baseUrl":"x","apiKey":"y","model":"z"}' | jq -r '.error')" \
+  "invalid_purpose"
 # 硬约束：AI 生成的答案绝不能自动发布（§6.4.10）
 check "生成完仍然一道都抽不到" \
   "$(one "SELECT COUNT(*) FROM questions WHERE exam_id='biochem-ch01' AND status='已发布' AND answer_state='已确认';")" "0"

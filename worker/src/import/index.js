@@ -14,10 +14,15 @@ export const PIPELINES = {
   'docx-structured': {
     name: 'docx 结构化提取',
     accepts: '.docx',
+    // 喂给模型的是文字还是图片。决定生成答案时用哪一档 AI 配置
+    // （lib/ai-purposes.js 的 purposeForMedia）。写在管线上而不是按学科硬判：
+    // 同一个学科将来同时有扫描件和 docx 时，按学科判就说不清了。
+    mediaKind: 'text',
     run: importDocx,
   },
   // 'pdf-ocr-llm'：蓝本时代跑完的链路（扫描 PDF → OCR → LLM 结构化），
   // 产物已在 data/subjects/english/groups/，本仓库不重跑它，所以这里没有实现。
+  // 真要实现，它的 mediaKind 是 'image'，答案生成会自动走「图片解析 AI」那一档。
 };
 
 /** 按管线名取。认不出就抛错，不回落到某个"默认管线"——那会拿错误的解析器去读文件。 */

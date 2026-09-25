@@ -4,6 +4,7 @@
 // 约 2/3 的结构化请求会把 token 全部消耗在内部推理上、返回空对象，延迟也从 3 秒
 // 涨到 15 秒以上。因此这里对所有教学类调用强制带 enable_thinking: false。
 
+import { purposeChain } from './ai-purposes.js';
 import { decryptSecret } from './crypto.js';
 
 const DEFAULT_MAX_TOKENS = 2000;
@@ -26,13 +27,20 @@ export async function loadAISettings(env, purpose, subjectId = 0) {
   return { ...row, apiKey };
 }
 
-// 教学 AI 未单独配置时回退到解析 AI 的配置（PRD §5.4）
-export async function resolveSettings(env, purpose) {
-  const primary = await loadAISettings(env, purpose);
-  if (primary?.base_url && primary?.apiKey) return primary;
-  if (purpose === 'TUTORING') {
-    const fallback = await loadAISettings(env, 'PARSING');
-    if (fallback?.base_url && fallback?.apiKey) return { ...fallback, _fallback: true };
+/**
+ * 按回落链取配置：自己没配就往下找（链在 lib/ai-purposes.js）。
+ *
+ * **回落必须说得出来。** 返回里带上 `_usedPurpose`：管理员在「文字解析 AI」那栏
+ * 什么都没填时，实际跑的是图片解析那档——不报出来的话，他会以为自己配的模型在跑，
+ * 而账单、时延、效果全来自另一个模型，三者都对不上又找不到原因。
+ * `_fallback` 保留给既有调用方，语义不变（用的不是自己那一档）。
+ */
+export async function resolveSettings(env, purpose, subjectId = 0) {
+  for (const code of purposeChain(purpose)) {
+    const cfg = await loadAISettings(env, code, subjectId);
+    if (cfg?.base_url && cfg?.apiKey) {
+      return { ...cfg, _usedPurpose: code, _fallback: code !== purpose };
+    }
   }
   return null;
 }

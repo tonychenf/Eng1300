@@ -1,15 +1,16 @@
+import { PURPOSE_CODES, isPurpose } from '../lib/ai-purposes.js';
 import { Hono } from 'hono';
 import { encryptSecret, decryptSecret, maskSecret } from '../lib/crypto.js';
 import { chat, ocrImage, loadAISettings } from '../lib/ai.js';
 
 export const aiRouter = new Hono();
 
-const PURPOSES = ['PARSING', 'TUTORING'];
+// 合法取值的唯一定义在 lib/ai-purposes.js，这里不再抄一份
 
 // 读取两套配置（Key 一律脱敏，明文永不下发）
 aiRouter.get('/settings', async (c) => {
   const out = {};
-  for (const purpose of PURPOSES) {
+  for (const purpose of PURPOSE_CODES) {
     // 这个界面管的是**全局**那份（subject_id = 0）。学科级覆盖在能力包界面里。
     const row = await c.env.DB.prepare('SELECT * FROM ai_settings WHERE purpose = ? AND subject_id = 0')
       .bind(purpose).first();
@@ -35,7 +36,7 @@ aiRouter.get('/settings', async (c) => {
 // 保存一套配置。apiKey 留空表示"保持原有 Key 不变"
 aiRouter.put('/settings/:purpose', async (c) => {
   const purpose = c.req.param('purpose');
-  if (!PURPOSES.includes(purpose)) return c.json({ error: 'invalid_purpose' }, 400);
+  if (!isPurpose(purpose)) return c.json({ error: 'invalid_purpose' }, 400);
   if (!c.env.ENCRYPTION_KEY) return c.json({ error: 'encryption_key_missing' }, 500);
 
   const body = await c.req.json().catch(() => ({}));
@@ -69,7 +70,7 @@ aiRouter.put('/settings/:purpose', async (c) => {
 // 连通性测试：文本能力必测；解析 AI 额外测图片理解
 aiRouter.post('/settings/:purpose/test', async (c) => {
   const purpose = c.req.param('purpose');
-  if (!PURPOSES.includes(purpose)) return c.json({ error: 'invalid_purpose' }, 400);
+  if (!isPurpose(purpose)) return c.json({ error: 'invalid_purpose' }, 400);
 
   const cfg = await loadAISettings(c.env, purpose);
   if (!cfg?.base_url || !cfg?.apiKey) {

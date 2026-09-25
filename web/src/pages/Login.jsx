@@ -41,12 +41,16 @@ export default function Login({ admin = false }) {
     <div className="auth-wrap">
       <div className="auth-brand">
         <div>
-          <h1 style={{ fontSize: 30 }}>自考英语真题练习</h1>
+          <h1 style={{ fontSize: 30 }}>XLearn</h1>
           <p style={{ opacity: .8, maxWidth: 420, marginTop: 12 }}>
-            按真题结构组卷、限时作答、错题解析与能力评估，帮你把每一分都拿稳。
+            跨学科自适应学习平台。按考纲结构组卷、限时作答、错题解析与能力评估，
+            帮你把每一分都拿稳。
           </p>
         </div>
-        <p className="tiny" style={{ opacity: .55 }}>英语(二)/英语(专升本) · 课程代码 13000</p>
+        {/* 这里原先写死「英语(二)/英语(专升本) · 课程代码 13000」。
+            平台现在是多学科的，登录页在选学科之前，说不出具体是哪一门——
+            写死任何一门，对另一门的学员就是错的。 */}
+        <p className="tiny" style={{ opacity: .55 }}>登录后选择学科</p>
       </div>
 
       <div className="auth-panel">

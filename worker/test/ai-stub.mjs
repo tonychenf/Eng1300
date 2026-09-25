@@ -50,19 +50,27 @@ function reply(promptText) {
   // N6b：给上传进来的题生成候选答案。**数量从提示词里现读**，不写死——
   // 写死 6 的话，换一道 4 空的题就会被形状校验拒掉，而那正是这条链路要测的东西，
   // 分不清"校验起作用了"和"替身答错了"。
+  //
+  // N7c：答案和解析是同一次调用要的，所以替身也一起回。**只在提示词真的要了
+  // explanation 时才回**——写死成总是回的话，"忘了在提示词里要解析"这个 bug
+  // 就被替身盖住了，线上换成真模型才会发现一片空解析。
+  const wantsExpl = promptText.includes('explanation');
+  const EXPL = '替身解析：这里本该说清楚为什么选它，长度要够过下限。';
+  const withExpl = (o) => JSON.stringify(wantsExpl ? { ...o, explanation: EXPL } : o);
+
   if (promptText.includes('请给出正确选项')) {
     const m = promptText.match(/^\s*([A-Z])\s*[.、．]/m);
-    return JSON.stringify({ choice: m ? m[1] : 'A' });
+    return withExpl({ choice: m ? m[1] : 'A' });
   }
   if (promptText.includes('blanks 的长度必须正好是')) {
     const n = Number(promptText.match(/正好是\s*(\d+)/)?.[1] || 1);
-    return JSON.stringify({ blanks: Array.from({ length: n }, (_, i) => `替身第${i + 1}空`) });
+    return withExpl({ blanks: Array.from({ length: n }, (_, i) => `替身第${i + 1}空`) });
   }
   if (promptText.includes('每条是一句可独立判定命中与否的要点')) {
     const n = Number(promptText.match(/共\s*(\d+)\s*条/)?.[1] || 1);
-    return JSON.stringify({ points: Array.from({ length: n }, (_, i) => `替身采分点${i + 1}`) });
+    return withExpl({ points: Array.from({ length: n }, (_, i) => `替身采分点${i + 1}`) });
   }
-  if (promptText.includes('下面是一道简答题')) return JSON.stringify({ answer: '替身参考答案' });
+  if (promptText.includes('下面是一道简答题')) return withExpl({ answer: '替身参考答案' });
 
   // 连通性自测：后台"测试连接"发的探针，不属于任何一类功能
   if (promptText.includes('回复两个字')) return JSON.stringify({ ok: true });

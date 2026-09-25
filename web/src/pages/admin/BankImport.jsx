@@ -259,7 +259,20 @@ function AiReport({ data }) {
       <p className="small">
         生成 {data.generated} / {data.attempted} 道，全部落在「待核」。
         {data.failures?.length ? ` 另有 ${data.failures.length} 道没生成出来，仍是「缺答案」。` : ''}
+        {data.withoutExplanation?.length
+          ? ` 其中 ${data.withoutExplanation.length} 道只有答案、没有解析，校对时可以补。` : ''}
       </p>
+      {/* 实际用的是哪一档配置要显眼。回落时管理员以为在用自己配的模型，
+          而时延、账单、效果都来自另一个——不说出来，这三样对不上时没有任何线索。 */}
+      {data.purpose ? (
+        <p className="tiny faint">
+          用的是{data.purpose === 'PARSING' ? '「图片解析 AI」' : '「文字解析 AI」'}
+          （这份资料是{data.mediaKind === 'image' ? '图片型' : '文字型'}）
+          {data.purposeFellBack
+            ? '　⚠ 这一档没配，沿用了上一档的配置——视觉模型做纯文字活通常更贵更慢，建议单独配一个。'
+            : ''}
+        </p>
+      ) : null}
       {data.failures?.length ? (
         <div style={{ overflowX: 'auto', marginTop: 8 }}>
           <table className="table responsive">

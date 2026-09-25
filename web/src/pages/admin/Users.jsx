@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { get, patch, post } from '../../api.js';
 import { Alert, Loading, PageHead } from '../../components/ui.jsx';
@@ -47,25 +47,7 @@ export default function Users() {
 
       {error ? <div style={{ marginBottom: 12 }}><Alert>{error}</Alert></div> : null}
       {credential ? (
-        <div style={{ marginBottom: 16 }}>
-          <Alert kind="success">
-            <div><strong>{credential.username}</strong> 的密码：
-              <code className="mono" style={{ fontSize: 15 }}>{credential.password}</code>
-            </div>
-            <div className="tiny" style={{ marginTop: 4 }}>
-              密码只在此处显示一次，请立即复制转交，页面刷新后无法找回。
-            </div>
-            {/* 新建的账号默认没有任何学科授权，什么都打不开。忘了这一步不会报错——
-                学员只会看到"管理员尚未为你开通任何学科"，然后来问。这里直接给入口。 */}
-            {credential.id ? (
-              <div className="tiny" style={{ marginTop: 6 }}>
-                这个账号还没有任何学科权限，
-                <Link to={`/admin/users/${credential.id}/subjects`}>去开通学科</Link>
-                {' '}之后才能使用。
-              </div>
-            ) : null}
-          </Alert>
-        </div>
+        <PasswordDialog cred={credential} onClose={() => setCredential(null)} />
       ) : null}
 
       <form className="card card-pad" style={{ marginBottom: 16 }} onSubmit={create}>
@@ -117,5 +99,75 @@ export default function Users() {
         </div>
       )}
     </>
+  );
+}
+
+// 一次性口令弹窗（N7a）。
+//
+// 这段的全部意义是**让管理员不可能错过它**。原先是表格上方的一条横幅，
+// 而重置按钮在表格每一行：学员一多，点下面那行的重置，口令渲染在滚动区外，
+// 管理员看到的是"点了没反应"，然后刷新页面——口令只生成一次、不可找回，
+// 那个账号就此登不进去，只能再重置一次，再错过一次。
+//
+// 所以用原生 <dialog> 的模态形态：它会把焦点收进来、Esc 可关、背景遮罩由浏览器画。
+// 关闭按钮写成"我已记下并转交"，因为这件事没做完，重置就等于没做。
+function PasswordDialog({ cred, onClose }) {
+  const ref = useRef(null);
+  const [copied, setCopied] = useState('');
+
+  useEffect(() => {
+    const el = ref.current;
+    if (el && !el.open) el.showModal();
+  }, []);
+
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(cred.password);
+      setCopied('已复制到剪贴板');
+    } catch {
+      // http 或旧浏览器下 clipboard 不可用。不要假装成功——
+      // 管理员以为复制到了，粘贴出来是空的，口令就丢了。
+      setCopied('这个浏览器不让自动复制，请手动选中上面的口令');
+    }
+  }
+
+  return (
+    <dialog ref={ref} className="pw-dialog" onClose={onClose}>
+      <div className="pw-body">
+        <h2 style={{ fontSize: 18, marginTop: 0, marginBottom: 6 }}>
+          {cred.id ? '账号已创建' : '密码已重置'}
+        </h2>
+        <p className="small" style={{ marginTop: 0 }}>
+          <strong>{cred.username}</strong> 的{cred.id ? '初始' : '新'}密码是：
+        </p>
+
+        <div className="pw-code">
+          <code>{cred.password}</code>
+          <button className="btn ghost sm" type="button" onClick={copy}>复制</button>
+        </div>
+        {copied ? <p className="tiny" style={{ marginTop: -4 }}>{copied}</p> : null}
+
+        <p className="small" style={{ color: 'var(--warn)' }}>
+          <strong>请把这串口令转交给 {cred.username} 本人。</strong>
+          它只显示这一次，关掉之后任何人都查不回来——包括你。真丢了只能再重置一次。
+        </p>
+
+        {/* 新建的账号默认没有任何学科授权，什么都打不开。忘了这一步不会报错——
+            学员只会看到"管理员尚未为你开通任何学科"，然后来问。这里直接给入口。 */}
+        {cred.id ? (
+          <p className="small">
+            这个账号还没有任何学科权限，
+            <Link to={`/admin/users/${cred.id}/subjects`}>去开通学科</Link>
+            {' '}之后学员才能用。
+          </p>
+        ) : null}
+
+        <div className="row" style={{ justifyContent: 'flex-end', marginTop: 16 }}>
+          <button className="btn" type="button" onClick={() => ref.current?.close()}>
+            我已记下并转交
+          </button>
+        </div>
+      </div>
+    </dialog>
   );
 }

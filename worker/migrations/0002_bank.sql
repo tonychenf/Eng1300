@@ -174,9 +174,13 @@ CREATE TABLE IF NOT EXISTS exam_templates (
   PRIMARY KEY (course_code, ord)
 );
 
--- 两套 AI 配置：PARSING(题库解析) / TUTORING(教学)
+-- 三档 AI 配置。合法取值的唯一定义在 worker/src/lib/ai-purposes.js，
+-- 这里的 CHECK 必须和它一致，由 worker/test/ai-purposes.test.mjs 对齐。
+-- 注意：**不要把旧的取值清单抄进注释**。线上 D1 的 sqlite_master.sql 保留注释，
+-- 而旧结构的检测就是按 DDL 文本判的，抄进注释会让它永远认为这张表是旧的
+-- （踩过一次，见 docs/开发踩坑记录.md 第十节）。
 CREATE TABLE IF NOT EXISTS ai_settings (
-  purpose TEXT NOT NULL CHECK (purpose IN ('PARSING', 'TUTORING')),
+  purpose TEXT NOT NULL CHECK (purpose IN ('PARSING', 'TEXT_PARSING', 'TUTORING')),
   -- N3：0 表示全局兜底，>0 表示某个学科的覆盖。取值时先按学科找，找不到回落到 0。
   -- 故意不加外键：0 不是任何学科的 id，加了外键这一行就插不进去。
   subject_id INTEGER NOT NULL DEFAULT 0,

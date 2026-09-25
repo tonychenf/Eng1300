@@ -41,24 +41,46 @@ export function shapeOf(question) {
   return { kind: 'TEXT', count: 1 };
 }
 
+// 解析（answer_explanation）和答案一起要，不另跑一轮：同一道题问两次，
+// 第二次拿不到第一次的上下文，容易解释出另一个答案来；而且调用次数翻倍。
+const EXPL_RULE =
+  '同时给出解析，写进 explanation 字段：说清楚为什么是这个答案，' +
+  '**面向做错的学生**，两到四句，不要复述题干。';
+
 function askFor(question, shape) {
   const stem = question.stem || '';
   const opts = (question.options || []).join('\n');
   switch (shape.kind) {
     case 'CHOICE':
       return `下面是一道单项选择题，请给出正确选项。\n题干：${stem}\n选项：\n${opts}\n\n` +
-        '只输出 JSON：{"choice":"A"}，choice 必须是上面选项里出现过的那个字母。';
+        '只输出 JSON：{"choice":"A","explanation":"…"}，choice 必须是上面选项里出现过的那个字母。'
+        + EXPL_RULE;
     case 'BLANKS':
       return `下面是一道填空题，题干里的 ＿ 表示要填的空，共 ${shape.count} 个。\n` +
-        `题干：${stem}\n\n只输出 JSON：{"blanks":["第1空","第2空",...]}，` +
-        `blanks 的长度必须正好是 ${shape.count}，顺序与题干里的空一致。每一项只写答案本身，不要解释。`;
+        `题干：${stem}\n\n只输出 JSON：{"blanks":["第1空","第2空",...],"explanation":"…"}，` +
+        `blanks 的长度必须正好是 ${shape.count}，顺序与题干里的空一致。每一项只写答案本身。`
+        + EXPL_RULE;
     case 'POINTS':
       return `下面是一道主观题，评分按采分点命中计。\n题干：${stem}\n\n` +
-        `只输出 JSON：{"points":["采分点1","采分点2",...]}，共 ${shape.count} 条，` +
-        '每条是一句可独立判定命中与否的要点，不要写成一整段话。';
+        `只输出 JSON：{"points":["采分点1","采分点2",...],"explanation":"…"}，共 ${shape.count} 条，` +
+        '每条是一句可独立判定命中与否的要点，不要写成一整段话。' + EXPL_RULE;
     default:
-      return `下面是一道简答题。\n题干：${stem}\n\n只输出 JSON：{"answer":"参考答案"}。`;
+      return `下面是一道简答题。\n题干：${stem}\n\n` +
+        '只输出 JSON：{"answer":"参考答案","explanation":"…"}。' + EXPL_RULE;
   }
+}
+
+/**
+ * 解析是**可缺的**，答案不是。
+ *
+ * 判据还是那条：这次失败改变了用户要的那个结果吗。答案错了，全班做对的人被判错；
+ * 解析没生成，学员少看一段话，题照样判得对。所以解析缺失不作废整道题——
+ * 但要单独记账报出来，否则就成了"静默为空"，界面上看不出哪些题没有解析。
+ */
+function shapeExplanation(data) {
+  const v = String(data?.explanation ?? '').trim();
+  // 太短的基本是"因为答案是A"这类废话，当成没有，免得占着位置让人以为有解析了
+  return v.length >= 8 ? v : '';
 }
 
 /** 把 AI 的返回对到题目的形状上。对不上就抛错——由调用方按题记账，不写半个答案。 */
@@ -74,7 +96,7 @@ export function shapeAnswer(data, question, shape) {
     // 必须是这道题真有的选项。回一个 E 而题目只有 A-D，是明确的错答，不是"也许对"。
     const labels = (question.options || []).map((o) => String(o).trim().slice(0, 1).toUpperCase());
     if (labels.length && !labels.includes(v)) bad(`回了 ${v}，而这道题的选项是 ${labels.join('/')}`);
-    return { answer: v, items: null };
+    return { answer: v, items: null, explanation: shapeExplanation(data) };
   }
   if (shape.kind === 'BLANKS') {
     const arr = data?.blanks;
@@ -82,7 +104,7 @@ export function shapeAnswer(data, question, shape) {
     if (arr.length !== shape.count) bad(`要 ${shape.count} 个空，收到 ${arr.length} 个`);
     const vals = arr.map((x) => String(x ?? '').trim());
     if (vals.some((x) => !x)) bad('有空的项');
-    return { answer: null, items: vals };
+    return { answer: null, items: vals, explanation: shapeExplanation(data) };
   }
   if (shape.kind === 'POINTS') {
     const arr = data?.points;
@@ -90,11 +112,11 @@ export function shapeAnswer(data, question, shape) {
     if (arr.length !== shape.count) bad(`要 ${shape.count} 个采分点，收到 ${arr.length} 个`);
     const vals = arr.map((x) => String(x ?? '').trim());
     if (vals.some((x) => !x)) bad('有空的采分点');
-    return { answer: null, items: vals };
+    return { answer: null, items: vals, explanation: shapeExplanation(data) };
   }
   const v = String(data?.answer ?? '').trim();
   if (!v) bad('answer 是空的');
-  return { answer: v, items: null };
+  return { answer: v, items: null, explanation: shapeExplanation(data) };
 }
 
 /**
@@ -102,25 +124,30 @@ export function shapeAnswer(data, question, shape) {
  * 返回 { generated, failures }，**不抛错**：题面已经在库里了，
  * 生成不出来的题留在缺答案就好——这次失败没有改变调用方要的那个结果。
  */
-export async function generateAnswers(env, { questions, subjectId, prompt }) {
+export async function generateAnswers(env, { questions, subjectId, prompt, purpose = 'TEXT_PARSING' }) {
   const failures = [];
   const generated = [];
+  // 答案生成出来了、解析没有的题。单独一栏报出来，不混进 failures——
+  // 混进去的话"这道题还要重跑"和"这道题只是少段解析"就分不开了。
+  const withoutExplanation = [];
   await mapLimit(questions, ANSWER_GEN_CONCURRENCY, async (q) => {
     const shape = shapeOf(q);
     try {
       const { data } = await chatJSON(env, {
-        purpose: 'PARSING',
+        purpose,
         feature: 'answer_generate',
         messages: [
           { role: 'system', content: prompt?.system_prompt || DEFAULT_SYSTEM },
           { role: 'user', content: askFor(q, shape) },
         ],
       });
-      generated.push({ questionId: q.questionId, shape: shape.kind, ...shapeAnswer(data, q, shape) });
+      const shaped = shapeAnswer(data, q, shape);
+      if (!shaped.explanation) withoutExplanation.push({ questionId: q.questionId, ord: q.ord });
+      generated.push({ questionId: q.questionId, shape: shape.kind, ...shaped });
     } catch (e) {
       failures.push({ questionId: q.questionId, ord: q.ord, reason: e.code || 'ai_failed',
         message: String(e.message || e).slice(0, 200) });
     }
   });
-  return { generated, failures };
+  return { generated, failures, withoutExplanation };
 }

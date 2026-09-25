@@ -67,6 +67,7 @@ in use，同时提示一个已删除的构建临时路径，很容易把注意�
 | ui-n6 | 8782 | — |
 | n6b-upload | 8780 | 8895 |
 | ui-n6b | 8779 | 8894 |
+| n7d-ai-purposes | 不起服务 | — |
 
 **LibreOffice 不可用**（连最小 docx 都报 source file could not be loaded），
 生成 Word 后没法转 PDF 看版式。只能做 schema 校验加读回正文核对，版式要如实
@@ -91,11 +92,12 @@ bash 正在执行某个脚本时去编辑它——会在毫不相干的行报语
 
 ```bash
 # 全套回归（推送前必跑）
-cd worker && for s in m2-smoke m3-smoke m4-smoke m5-smoke m6-acceptance n1-subjects n2-grants n3-pack n3-rebuild n4-parity n5-items n5b-assets n6-content n6b-upload db-isolation; do
+cd worker && for s in m2-smoke m3-smoke m4-smoke m5-smoke m6-acceptance n1-subjects n2-grants n3-pack n3-rebuild n4-parity n5-items n5b-assets n6-content n6b-upload n7d-ai-purposes db-isolation; do
   echo "=== $s ==="; bash test/$s.sh 2>&1 | grep -E "FAIL|小结" || echo "  !! 没有小结"
 done
 node test/quota-degrade.mjs && node test/essay-parse.mjs && node test/normalizers.test.mjs \
-  && node test/grade-items.test.mjs && node test/rich-text.test.mjs && node test/docx-import.test.mjs
+  && node test/grade-items.test.mjs && node test/rich-text.test.mjs && node test/docx-import.test.mjs \
+  && node test/ai-purposes.test.mjs
 
 # 浏览器实测（手机/平板/PC 三种宽度）
 cd worker && bash test/ui-smoke.sh      # 单课程界面（蓝本遗留）

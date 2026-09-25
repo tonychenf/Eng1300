@@ -2,18 +2,27 @@ import { useEffect, useState } from 'react';
 import { get, post, put } from '../../api.js';
 import { Alert, Loading, PageHead } from '../../components/ui.jsx';
 
+// 三档的分工按**喂给模型的是什么**分，不按学科分。
+// 合法取值与回落链的唯一定义在 worker/src/lib/ai-purposes.js，这里只是配套的界面文案。
 const PURPOSES = [
   {
     key: 'PARSING',
-    title: '解析 AI',
-    desc: '两件事都用它：把上传的真题图片转成文字（需要支持图片输入），'
-      + '以及给「上传题库」传进来的题生成候选答案。改这里就是改题目解析用的接口，'
-      + '地址、模型、Key 三项都可自由填写。',
+    title: '图片解析 AI',
+    desc: '处理图片型原始资料：扫描件、拍照的卷子——把图转成文字再结构化。'
+      + '**必须支持图片输入**。只传 docx 这类文字资料的话，这一档可以不配。',
+  },
+  {
+    key: 'TEXT_PARSING',
+    title: '文字解析 AI',
+    desc: '处理文字型原始资料（docx、纯文本），并给「上传题库」传进来的题'
+      + '生成候选答案与解析。不需要读图，所以可以用便宜得多的纯文本模型。'
+      + '留空则沿用「图片解析 AI」——能跑，但视觉模型做纯文字活通常更贵更慢。',
   },
   {
     key: 'TUTORING',
     title: '教学 AI',
-    desc: '用于批改主观题、生成错题解析与学习建议。留空则复用解析 AI 的配置。',
+    desc: '批改主观题、生成错题解析与学习建议。'
+      + '留空则依次沿用「文字解析 AI」「图片解析 AI」。',
   },
 ];
 
@@ -49,7 +58,7 @@ export default function AISettings() {
               <tbody>
                 {usage.byPurpose.map((r) => (
                   <tr key={r.purpose}>
-                    <td data-label="用途">{r.purpose === 'PARSING' ? '解析 AI' : '教学 AI'}</td>
+                    <td data-label="用途">{PURPOSES.find((p) => p.key === r.purpose)?.title || r.purpose}</td>
                     <td data-label="调用">{r.calls}</td>
                     <td data-label="成功">{r.ok_calls || 0}</td>
                     <td data-label="输入 token">{r.tokens_in || 0}</td>
