@@ -70,6 +70,16 @@ done
 curl -s -o /dev/null -X POST "$BASE/setup" -H 'X-Setup-Token: test-setup-uin6' \
   -H 'Content-Type: application/json' -d '{"username":"admin","password":"adminpass123"}'
 
+# 账号列表里得有一批学员，重置口令那段才测得到它要测的东西：
+# 表格够长、按钮在下面、原先的横幅会被顶出视口。只有 admin 一行的话，
+# 「最后一行」就是 admin 自己——重置它等于把下一个宽度的登录搞挂（踩过）。
+ADMIN_TOKEN=$(curl -s -X POST "$BASE/auth/login" -H 'Content-Type: application/json' \
+  -d '{"username":"admin","password":"adminpass123"}' | jq -r '.token')
+for i in $(seq 1 8); do
+  curl -s -o /dev/null -X POST "$BASE/admin/users" -H "Authorization: Bearer $ADMIN_TOKEN" \
+    -H 'Content-Type: application/json' -d "{\"username\":\"T70$i\"}"
+done
+
 echo "== 浏览器检查 =="
 UI_BASE="http://127.0.0.1:$PORT" UI_USER=admin UI_PASS=adminpass123 \
   UI_BIO_GROUP=biochem-ch01 UI_BIO_LABEL="$BIO_LABEL" UI_UNREVIEWED="$UNREVIEWED" \

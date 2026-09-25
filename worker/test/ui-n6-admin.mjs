@@ -90,6 +90,48 @@ try {
     check(`${label}｜确认之后「已发布」能选了`, await publishOpt.isDisabled(), false);
     check(`${label}｜校对页不横向滚动`, await noHScroll(page), true);
 
+    // ── 重置密码的一次性口令（N7a）──
+    //
+    // 这一段要证明的就一件事：**口令不可能被错过**。原先它是表格上方的一条横幅，
+    // 而重置按钮在每一行，学员一多就渲染在滚动区外，管理员看到的是"点了没反应"，
+    // 刷新之后口令永久丢失、那个账号登不进去。
+    // 所以断的不是"页面上有这段文字"，而是"它挡在眼前、且是模态的"。
+    await page.goto(`${BASE}/admin/users`, { waitUntil: 'networkidle' });
+    const userRows = page.locator('table.table tbody tr');
+    check(`${label}｜账号列表打得开`, await userRows.count() >= 8, true);
+    // 故意挑**最后一行**：那正是原先会把口令顶出视口的位置。
+    // 但绝不能挑到 admin 自己——重置它，下一个宽度就登不进来了（第一版就是这么挂的，
+    // 而且挂在"下一轮登录超时"上，看起来和口令弹窗毫无关系）。所以先断一句。
+    const lastRow = userRows.last();
+    const lastName = (await lastRow.locator('td').first().innerText()).trim();
+    check(`${label}｜最后一行是学员不是管理员（重置 admin 会让下一轮登录挂掉）`,
+      lastName.startsWith('T'), true);
+    await lastRow.scrollIntoViewIfNeeded();
+    page.once('dialog', (d) => d.accept());          // confirm("确认重置…")
+    await lastRow.locator('button', { hasText: '重置密码' }).click();
+
+    const dlg = page.locator('dialog.pw-dialog');
+    await dlg.waitFor({ state: 'visible', timeout: 10000 });
+    check(`${label}｜口令弹窗自己弹出来了`, await dlg.isVisible(), true);
+    // 模态才会拦住后续操作；非模态的 <dialog> 一样 visible，所以这条要单独断
+    check(`${label}｜而且是模态的（挡住背后的页面）`,
+      await page.evaluate(() => document.querySelector('dialog.pw-dialog')?.matches(':modal')), true);
+    const shown = await dlg.locator('.pw-code code').innerText();
+    check(`${label}｜口令是一串非空的字符`, shown.trim().length >= 8, true);
+    check(`${label}｜明说了要转交给本人`,
+      (await dlg.innerText()).includes('转交'), true);
+    check(`${label}｜明说了只显示这一次`,
+      (await dlg.innerText()).includes('只显示这一次'), true);
+    check(`${label}｜有复制按钮`, await dlg.locator('button', { hasText: '复制' }).count(), 1);
+    // 弹窗在视口内——这是整件事的要害，横幅版本恰恰就败在这里
+    const dlgBox = await dlg.boundingBox();
+    const vp = page.viewportSize();
+    check(`${label}｜弹窗落在视口里（横幅版本就是败在这）`,
+      Boolean(dlgBox) && dlgBox.y >= 0 && dlgBox.y < vp.height, true);
+    await dlg.locator('button', { hasText: '我已记下并转交' }).click();
+    await dlg.waitFor({ state: 'hidden', timeout: 5000 });
+    check(`${label}｜点完就关`, await dlg.count() === 0 || !(await dlg.isVisible()), true);
+
     await ctx.close();
   }
 } finally {
