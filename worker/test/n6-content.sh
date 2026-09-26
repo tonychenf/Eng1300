@@ -539,6 +539,25 @@ check "发布被拒时已发布题数没有增加（发布前 $PUB_BEFORE 道）
   "$(one "SELECT COUNT(*) FROM questions WHERE exam_id='biochem-ch01' AND status='已发布';")" "$PUB_BEFORE"
 
 echo
+echo "== 看板要报得出 §6.4.10 被破坏（已发布却没确认答案）=="
+# 这个数是线上验证唯一还盯着生化的断言，所以它必须真的会变。
+# 分开看 status 和 answer_state 都正常，交叉起来才是"把没人核过的答案发给了学员"。
+stat() { adm "$BASE/admin/bank/stats" | jq -r '.publishedWithoutConfirmedAnswer'; }
+# 先把库恢复成一致状态：上面那段把 q01 的空清了又没确认，先让它别干扰
+exec_sql "UPDATE questions SET status='草稿' WHERE exam_id='biochem-ch01' AND answer_state<>'已确认';"
+check "一致的时候是 0" "$(stat)" "0"
+# 造一条违例：把一道已发布的题退回待核。绕过接口直接改库——
+# 接口那两道门（确认门、发布门）本来就该拦住这种状态，这里模拟的是
+# 它们被绕过之后（种子、直接改库、将来某个新入口）看板还报不报得出来。
+VIOL=$(one "SELECT question_id FROM questions WHERE exam_id='biochem-ch01' AND status='已发布' LIMIT 1;")
+check "找得到一道已发布的题（否则下一条测了个寂寞）" \
+  "$([ -n "$VIOL" ] && echo 有 || echo 无)" "有"
+exec_sql "UPDATE questions SET answer_state='待核' WHERE question_id='$VIOL';"
+check "出现违例时报得出来" "$(stat)" "1"
+exec_sql "UPDATE questions SET answer_state='已确认' WHERE question_id='$VIOL';"
+check "改回去之后又是 0" "$(stat)" "0"
+
+echo
 echo "== 服务还活着 =="
 # 中间任何一步把 workerd 弄崩了，后面的断言会以"实际 000"成片变红，
 # 而真正的原因在 dev 日志里。这一条把它挑明。

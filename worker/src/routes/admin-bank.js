@@ -46,7 +46,18 @@ bankRouter.get('/stats', async (c) => {
       GROUP BY s.subject_id ORDER BY s.sort_order, s.subject_id`
   ).all();
 
-  return c.json({ byCourse, byType, byTag, byAnswerState: answers, unresolvedNotes: pending?.n || 0 });
+  // §6.4.10 的硬约束在看板上的落点：**已发布但答案没确认的题，永远应该是 0**。
+  // 分开数 status 和 answer_state 看不出这件事——两栏各自都正常，
+  // 交叉起来才是"把没人核过的答案发给了学员"。线上验证就断这一个数。
+  const leak = await c.env.DB.prepare(
+    `SELECT COUNT(*) AS n FROM questions WHERE status = '已发布' AND answer_state <> '已确认'`
+  ).first();
+
+  return c.json({
+    byCourse, byType, byTag, byAnswerState: answers,
+    unresolvedNotes: pending?.n || 0,
+    publishedWithoutConfirmedAnswer: leak?.n || 0,
+  });
 });
 
 // 试卷列表，支持按课程/状态筛选

@@ -477,17 +477,27 @@ jobs:
               PUBLISHED_EXAMS=$(echo "$STATS" | jq -r '[.byCourse[] | select(.course_code == "13000") | .published_exams] | add // 0')
               check "英语 20 套试卷全部已发布" "$PUBLISHED_EXAMS" "20"
 
-              # 生化这一章现在真的在库里了（之前流水线只导英语，GitHub 里有、库里没有）。
-              # 三条一起断：进来了、题数对、而且**一道都没被放行**——
-              # 答案是 AI 生成的待核状态，看得见、录得了答案，但抽不到也发不出。
+              # 生化在库里，而且题数不为 0。
+              #
+              # 这里原先断的是"一道都没被放行""34 道全是待核"——那是 N6 刚导进来
+              # 那一刻的快照。人工核完第 1 章、把它发布之后，这两条就开始拦正常操作，
+              # 而红了之后唯一能做的是改数字。和上面"20 套 / 1020 题"是同一个毛病：
+              # **把某一时刻的状态当成不变量**，这种断言不提供信号。
+              #
+              # 真正的不变量是 §6.4.10：**已发布的题，答案必须是已确认的**。
+              # 它与发到第几章无关，永远该是 0，下面单独断一条。
               BIO=$(echo "$STATS" | jq -r '[.byCourse[] | select(.course_code == "biochem-main")] | length')
               check "生化的内容组已导入" "$BIO" "1"
-              check "生化第 1 章 34 道题" \
-                "$(echo "$STATS" | jq -r '[.byType[] | select(.course_code == "biochem-main") | .total] | add // 0')" "34"
-              check "生化一道题都没被放行" \
-                "$(echo "$STATS" | jq -r '[.byType[] | select(.course_code == "biochem-main") | .published] | add // 0')" "0"
-              check "生化 34 道全是待核" \
-                "$(echo "$STATS" | jq -r '.byAnswerState[] | select(.subject_code == "biochem") | .unreviewed')" "34"
+              BIO_TOTAL=$(echo "$STATS" | jq -r '[.byType[] | select(.course_code == "biochem-main") | .total] | add // 0')
+              check "生化的题在库里（$BIO_TOTAL 道）" "$(( BIO_TOTAL > 0 ))" "1"
+
+              # §6.4.10 的硬约束。分开看 status 和 answer_state 都正常，
+              # 交叉起来才是"把没人核过的答案发给了学员"——所以看板专门算了这个数。
+              check "没有一道已发布的题是答案未确认的（§6.4.10 硬约束）" \
+                "$(echo "$STATS" | jq -r '.publishedWithoutConfirmedAnswer')" "0"
+              BIO_PUB=$(echo "$STATS" | jq -r '[.byType[] | select(.course_code == "biochem-main") | .published] | add // 0')
+              BIO_CONFIRMED=$(echo "$STATS" | jq -r '.byAnswerState[] | select(.subject_code == "biochem") | .confirmed')
+              echo "     （生化 $BIO_TOTAL 道，已确认 $BIO_CONFIRMED 道，已发布 $BIO_PUB 道）"
 
               # N6b：上传接口与原文留存接口在线上挂上了没有。
               # 两条都是只读（第一条连 body 都不发），不花写入额度。
@@ -530,11 +540,15 @@ jobs:
               check "生化学科名下没有英语的课程" \
                 "$(jq -r --argjson en "$(jq -c '[.courses[].course_code]' /tmp/en-courses.json)" \
                    '[.courses[].course_code] | map(select(. as $c | $en | index($c))) | length' /tmp/bio-courses.json)" "0"
-              # N6：生化的题库还没导入线上（答案是 AI 生成的待核状态）。
-              # 这条盯的是"别把一个没内容的学科报成可用"——ready 误判成 true 的话，
-              # 学员点进去会看到一个空的练习页，而没有任何地方报错。
-              check "生化学科还没有可抽题（ready=false）" \
-                "$(echo "$SUBJ" | jq -r '.subjects[] | select(.code=="biochem") | .ready')" "false"
+              # ready 盯的是"别把一个没内容的学科报成可用"——误判成 true 的话，
+              # 学员点进去看到一个空的练习页，而没有任何地方报错。
+              # 但它不该写死成 false：第 1 章人工核完发布之后 ready 本来就该是 true。
+              # 改成**两个不同来源互相对照**：ready 来自 /api/me/subjects，
+              # 已发布题数来自 /api/admin/bank/stats，两者必须说同一件事。
+              # 同源的话（拿 ready 去对 ready）就是恒等式，什么都验不到。
+              BIO_READY=$(echo "$SUBJ" | jq -r '.subjects[] | select(.code=="biochem") | .ready')
+              check "生化的 ready 与它有没有已发布的题对得上" \
+                "$BIO_READY" "$([ "${BIO_PUB:-0}" -gt 0 ] && echo true || echo false)"
               check "看板能按学科报答案进度（N6 的新字段上线了）" \
                 "$(echo "$STATS" | jq -r 'has("byAnswerState")')" "true"
 
