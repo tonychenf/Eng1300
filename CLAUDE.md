@@ -73,6 +73,8 @@ in use，同时提示一个已删除的构建临时路径，很容易把注意�
 | n6b-upload | 8780 | 8895 |
 | ui-n6b | 8779 | 8894 |
 | n7d-ai-purposes | 不起服务 | — |
+| cr-h2-publish | 不起服务 | — |
+| cr-auth-limits | 8778（自带本地库目录 `.wrangler-cr-auth`） | — |
 
 **LibreOffice 不可用**（连最小 docx 都报 source file could not be loaded），
 生成 Word 后没法转 PDF 看版式。只能做 schema 校验加读回正文核对，版式要如实
@@ -97,12 +99,12 @@ bash 正在执行某个脚本时去编辑它——会在毫不相干的行报语
 
 ```bash
 # 全套回归（推送前必跑）
-cd worker && for s in m2-smoke m3-smoke m4-smoke m5-smoke m6-acceptance n1-subjects n2-grants n3-pack n3-rebuild n4-parity n5-items n5b-assets n6-content n6b-upload n7d-ai-purposes db-isolation; do
+cd worker && for s in m2-smoke m3-smoke m4-smoke m5-smoke m6-acceptance n1-subjects n2-grants n3-pack n3-rebuild n4-parity n5-items n5b-assets n6-content n6b-upload n7d-ai-purposes db-isolation cr-h2-publish cr-auth-limits; do
   echo "=== $s ==="; bash test/$s.sh 2>&1 | grep -E "FAIL|小结" || echo "  !! 没有小结"
 done
 node test/quota-degrade.mjs && node test/essay-parse.mjs && node test/normalizers.test.mjs \
   && node test/grade-items.test.mjs && node test/rich-text.test.mjs && node test/docx-import.test.mjs \
-  && node test/ai-purposes.test.mjs
+  && node test/ai-purposes.test.mjs && node test/auth-guard.test.mjs
 
 # 浏览器实测（手机/平板/PC 三种宽度）
 cd worker && bash test/ui-smoke.sh      # 单课程界面（蓝本遗留）
@@ -227,6 +229,13 @@ Qwen3-8B 是推理模型，所有结构化调用必须带 `enable_thinking: fals
 推送到 `claude/eng1300-multidisciplinary-platform-ozri7n` 会自动触发
 `.github/workflows/deploy-worker.yml`。顺序是：迁移 → 部署 → 写密钥 → 导题库 →
 放行 → 初始化账号 → 线上验证。
+
+**「放行」只放回重导前就是已发布的章节**（`sql/republish-reseeded.sql`，CR-H2）。
+导题库那一步导某章之前先查它是不是已发布，是的话在同一次导入里记 `republish:<章节>`
+标记，放行处理完就删——导到一半失败时标记还在，下次部署接着放。**不要再把
+`publish-all.sql` 接回部署**：它每次都放出所有已确认的题、清掉所有存疑，撤回的章节
+会被放回去，上传内容的存疑会被清零。它只给本地测试造数据用。
+通过题库文件新加的章节，部署不发布，由管理员在后台点「发布」（用户 2026-09-27 确认）。
 
 线上验证里有一条"写入已恢复（AI 配置 N 秒前刚落库）"是写入哨兵。**额度用尽时
 读接口全都正常，只有写会失败**，所以其余十几条读类断言全绿也说明不了站点能用。
@@ -403,6 +412,19 @@ alt 空着，模型会照着残缺信息一本正经地编一段解析——不�
 **中间件验过的值，接口原样拿来用，不要自己再读一遍。** 收 `courseCode` 的接口从
 `c.get('courseCode')` 取（`requireCourseAccess` 放进去的），不要自己读请求体。第一版中间件
 读网址、接口读请求体，两处各写一门课就绕过了授权（CR-H1，踩坑记录第十五节）。
+缺课程码由中间件统一 400（CR-M5）；唯一允许不带的错题本列表用 `optionalCourseAccess`。
+
+**登录失败计数的键是「用户名|来源 IP」**（CR-M3，IP 取 `CF-Connecting-IP`）。清某个账号的锁
+要按前缀清，用 `substr` 比前缀，**不用 `LIKE`**——用户名里的下划线是 LIKE 的通配符。
+流水线清 admin 锁定跑的是 `sql/clear-admin-lockout.sql`，测试跑同一份。
+
+**令牌带版本号 `tv`**（CR-M2）。`users.token_version` 在重置 / 修改密码、停用时加一，旧令牌随之失效；
+要让某人所有会话下线就给它加一。不带 `tv` 的令牌按 0 算，所以上线那一刻没人被踢。
+
+**本地测试不能并行，哪怕库目录分开了。** `cr-auth-limits` 用 `--persist-to` 自带库目录，
+但 `wrangler dev` 的打包产物固定写在 `worker/.wrangler/tmp`；别的套件开头 `rm -rf .wrangler`
+会把它删掉，正在跑的服务当场卡死（dev 日志：`Could not resolve .../.wrangler/tmp/bundle-…`）。
+真并行要把这个目录也隔开（CR-M9，踩坑记录第十六节）。
 
 ---
 
