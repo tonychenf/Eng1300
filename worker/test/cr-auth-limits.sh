@@ -99,5 +99,39 @@ check "错题本列表不带课程码仍然可用" "$(code "$STU" "/wrongbook")"
 check "带课程码的正常请求不受影响" "$(code "$STU" "/practice/section-types?courseCode=13000")" "200"
 
 echo
+echo "== M1：组卷限流，阈值是系统参数 =="
+# 默认值是和用户商定的数（每分钟 3 份、24 小时 30 份），迁移 0015 写入
+check "默认每分钟上限已由迁移写入" "$(one "SELECT value FROM system_settings WHERE key='limit.exam_per_minute';")" "3"
+check "默认 24 小时上限已由迁移写入" "$(one "SELECT value FROM system_settings WHERE key='limit.exam_per_day';")" "30"
+gen() {
+  curl -s -o /tmp/cr-auth-gen.json -w '%{http_code}' -X POST "$BASE/exams/generate" \
+    -H "Authorization: Bearer $1" -H 'Content-Type: application/json' -d '{"courseCode":"13000"}'
+}
+exams_of() { one "SELECT COUNT(*) FROM attempts WHERE user_id=$1 AND mode='EXAM';"; }
+# 把每分钟上限调小来测，免得为了撞线真组几十份卷；阈值从这里现取，不在断言里写死
+PER_MIN=2
+sql "UPDATE system_settings SET value='$PER_MIN' WHERE key='limit.exam_per_minute';" >/dev/null
+BEFORE=$(exams_of "$SID")
+C1=$(gen "$STU"); C2=$(gen "$STU"); C3=$(gen "$STU")
+check "上限以内照常组卷" "$C1 $C2" "201 201"
+check "一分钟内第 $((PER_MIN + 1)) 份被拒：429" "$C3" "429"
+check "  错误码是 rate_limited" "$(jq -r '.error' /tmp/cr-auth-gen.json)" "rate_limited"
+check "  提示里的上限就是系统参数里的数" \
+  "$(jq -r '.message' /tmp/cr-auth-gen.json | grep -c "每分钟最多 $PER_MIN 份")" "1"
+check "被拒的那次没有建出考试记录" "$(exams_of "$SID")" "$((BEFORE + PER_MIN))"
+ADMIN_ID=$(one "SELECT id FROM users WHERE username='admin';")
+A1=$(gen "$ADMIN"); A2=$(gen "$ADMIN"); A3=$(gen "$ADMIN")
+check "管理员不受限（一分钟内连组 3 份）" "$A1 $A2 $A3" "201 201 201"
+# 24 小时上限：每分钟放宽，24 小时上限调到刚好等于已组份数
+sql "UPDATE system_settings SET value='100' WHERE key='limit.exam_per_minute';" >/dev/null
+DONE=$(one "SELECT COUNT(*) FROM attempts WHERE user_id=$SID AND mode='EXAM' AND started_at > datetime('now','-1 day');")
+sql "UPDATE system_settings SET value='$DONE' WHERE key='limit.exam_per_day';" >/dev/null
+check "24 小时内已组 $DONE 份、上限也是 $DONE：再组被拒" "$(gen "$STU")" "429"
+check "  提示说的是 24 小时上限" \
+  "$(jq -r '.message' /tmp/cr-auth-gen.json | grep -c "24 小时内最多组 $DONE 份")" "1"
+sql "UPDATE system_settings SET value='3' WHERE key='limit.exam_per_minute';" >/dev/null
+sql "UPDATE system_settings SET value='30' WHERE key='limit.exam_per_day';" >/dev/null
+
+echo
 echo "== 小结: $PASS 通过, $FAIL 失败 =="
 [ "$FAIL" -eq 0 ]

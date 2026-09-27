@@ -5,7 +5,8 @@ import { loadItemRows } from '../lib/question-items.js';
 import { loadAssetRows } from '../lib/stem-assets.js';
 import { loadPackByCourse, settingInt as packSettingInt } from '../lib/subject-pack.js';
 import { requireAuth } from '../lib/auth.js';
-import { requireCourseAccess, requireAttemptAccess, accessibleCourseFilter } from '../lib/access.js';
+import { requireCourseAccess, requireAttemptAccess, accessibleCourseFilter, isAdmin } from '../lib/access.js';
+import { examRateLimited } from '../lib/rate-limit.js';
 import { masteryWrites } from '../lib/mastery.js';
 import { wrongbookWrites } from '../lib/wrongbook.js';
 
@@ -253,6 +254,11 @@ examRouter.post('/exams/generate', async (c) => {
   if (!course) return c.json({ error: 'not_found', message: '课程不存在' }, 404);
 
   const examPack = await loadPackByCourse(c.env.DB, courseCode);
+  // 限流排在组卷之前：超限的请求连读题库都不必（CR-M1，见 lib/rate-limit.js）
+  if (!isAdmin(me)) {
+    const limited = await examRateLimited(c.env.DB, me.id, examPack.subjectId);
+    if (limited) return c.json(limited, 429);
+  }
   const recentAvoid = await packSettingInt(c.env.DB, examPack.subjectId, 'exam.recent_passage_avoid');
 
   let plan;
