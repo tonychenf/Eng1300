@@ -336,8 +336,8 @@ jobs:
           # 试错几次就足以让整条流水线登不进去，所以每次部署先把 admin 的失败计数
           # 清掉。只清 admin：学员账号被锁由管理员在后台重置密码解决，那个接口
           # 本身就会一并清掉锁定记录。
-          npx wrangler d1 execute "$D1_NAME" --remote --yes \
-            --command "DELETE FROM login_attempts WHERE username = 'admin';"
+          # 计数按「用户名|来源 IP」记（CR-M3），清哪些行见这个文件
+          npx wrangler d1 execute "$D1_NAME" --remote --yes --file=sql/clear-admin-lockout.sql
 
       - name: Get admin token
         env:

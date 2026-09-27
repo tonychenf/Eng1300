@@ -21,6 +21,19 @@ app.use('/api/*', cors());
 
 const MAX_LOGIN_FAILURES = 5;
 const LOCK_MINUTES = 10;
+// 建号与登录共用一条用户名规则：不合规则的名字不可能是真账号
+const USERNAME_RULE = /^[A-Za-z0-9_]{3,20}$/;
+
+// 登录失败计数的键：「用户名|来源 IP」（CR-M3）。
+// 第一版只按用户名计：学号 T001–T010 能猜、管理员叫 admin，任何人每 10 分钟对每个账号
+// 各试 5 次错密码，就能让全班一直登不进去——包括管理员。现在别人在他的 IP 上把你锁住，
+// 你从自己的 IP 照常能登。IP 取 Cloudflare 给的 CF-Connecting-IP，客户端伪造不了；
+// 取不到时退回同一个桶，和第一版一样按用户名锁，不会更松。
+// 代价：分散在很多 IP 上猜同一个账号的人，比以前宽松（每个 IP 各 5 次）。用户已确认接受。
+// 表结构不动：主键还是 username 这一列，只是里面存的是拼起来的键；清某个账号的锁要按前缀清。
+function loginKey(c, username) {
+  return `${username}|${c.req.header('CF-Connecting-IP') || 'unknown'}`;
+}
 
 function randomPassword() {
   const bytes = crypto.getRandomValues(new Uint8Array(9));
@@ -51,10 +64,15 @@ app.post('/api/auth/login', async (c) => {
   const body = await c.req.json().catch(() => ({}));
   const { username, password } = body;
   if (!username || !password) return c.json({ error: 'invalid_request' }, 400);
+  // 不合用户名规则的直接拒，不记失败次数：这种名字不可能是真账号，记下来只是白花写入额度
+  if (typeof username !== 'string' || !USERNAME_RULE.test(username)) {
+    return c.json({ error: 'invalid_credentials' }, 401);
+  }
+  const key = loginKey(c, username);
 
   // 限流检查：锁定期内直接拒绝，不消耗密码校验
   const attempt = await c.env.DB.prepare('SELECT * FROM login_attempts WHERE username = ?')
-    .bind(username).first();
+    .bind(key).first();
   if (attempt?.locked_until) {
     const locked = await c.env.DB.prepare(
       "SELECT datetime('now') < ? AS still_locked"
@@ -81,7 +99,7 @@ app.post('/api/auth/login', async (c) => {
          fail_count = excluded.fail_count,
          locked_until = excluded.locked_until,
          last_failed_at = excluded.last_failed_at`
-    ).bind(username, fails, lockedUntil, lockedUntil || '+0 minutes').run()
+    ).bind(key, fails, lockedUntil, lockedUntil || '+0 minutes').run()
       // 额度用尽时计不了失败次数，限流会暂时失效；但密码本来就是错的，
       // 该返回 401 就返回 401，不要变成一句看不懂的 503。
       .catch((err) => { if (!isQuotaError(err)) throw err; });
@@ -93,7 +111,7 @@ app.post('/api/auth/login', async (c) => {
 
   // 这两条都是记账，密码已经验过了，写不进去也得放人进来
   await bestEffortWrite(
-    c.env.DB.prepare('DELETE FROM login_attempts WHERE username = ?').bind(username).run(),
+    c.env.DB.prepare('DELETE FROM login_attempts WHERE username = ?').bind(key).run(),
     '清除登录失败计数'
   );
   await bestEffortWrite(
@@ -220,7 +238,7 @@ admin.post('/users', async (c) => {
   const body = await c.req.json().catch(() => ({}));
   const { username } = body;
   if (!username) return c.json({ error: 'username_required' }, 400);
-  if (!/^[A-Za-z0-9_]{3,20}$/.test(username)) {
+  if (!USERNAME_RULE.test(username)) {
     return c.json({ error: 'invalid_username', message: '用户名需为3-20位字母、数字或下划线' }, 400);
   }
   const password = body.password || randomPassword();
@@ -279,7 +297,7 @@ admin.post('/users', async (c) => {
 
 admin.post('/users/:id/reset-password', async (c) => {
   const id = Number(c.req.param('id'));
-  const user = await c.env.DB.prepare('SELECT id FROM users WHERE id = ?').bind(id).first();
+  const user = await c.env.DB.prepare('SELECT id, username FROM users WHERE id = ?').bind(id).first();
   if (!user) return c.json({ error: 'not_found' }, 404);
   const body = await c.req.json().catch(() => ({}));
   const password = body.password || randomPassword();
@@ -288,8 +306,13 @@ admin.post('/users/:id/reset-password', async (c) => {
   // "账号可能被别人用了"——只改密码不废令牌，对方手里那个还能用满 8 小时。
   await c.env.DB.prepare('UPDATE users SET password_hash = ?, token_version = token_version + 1 WHERE id = ?')
     .bind(passwordHash, id).run();
-  await c.env.DB.prepare('DELETE FROM login_attempts WHERE username = (SELECT username FROM users WHERE id = ?)')
-    .bind(id).run();
+  // 失败计数按「用户名|IP」记（CR-M3），这个账号在所有 IP 上的锁一起清。
+  // 用 substr 比前缀而不是 LIKE：用户名里的下划线在 LIKE 里是通配符，T_01 会顺带清掉 TX01 的锁。
+  // 等号那一条清的是 M3 之前按纯用户名记下的旧行。
+  await c.env.DB.prepare(
+    `DELETE FROM login_attempts
+      WHERE username = ? OR substr(username, 1, length(?) + 1) = ? || '|'`
+  ).bind(user.username, user.username, user.username).run();
   return c.json({ newPassword: password });
 });
 

@@ -167,5 +167,35 @@ LEGACY=$(node --input-type=module -e "
 check "上线前签发、不带版本号的令牌照常可用" "$(code "$LEGACY" /me)" "200"
 
 echo
+echo "== M3：登录锁定按「用户名 + 来源 IP」计，别人锁不住你 =="
+# 第一版只按用户名计：学号能猜，任何人对着一个账号连错 5 次，这个人就 10 分钟登不进去
+login_code() {   # 用户名 密码 来源 IP → HTTP 码
+  curl -s -o /dev/null -w '%{http_code}' -X POST "$BASE/auth/login" -H 'Content-Type: application/json' \
+    -H "CF-Connecting-IP: $3" -d "{\"username\":\"$1\",\"password\":\"$2\"}"
+}
+IP_A=203.0.113.10; IP_B=203.0.113.20
+curl -s -o /dev/null -X POST "$BASE/admin/users" -H "Authorization: Bearer $ADMIN" \
+  -H 'Content-Type: application/json' -d '{"username":"S103","password":"student12345","subjects":["english"]}'
+S103=$(one "SELECT id FROM users WHERE username='S103';")
+for i in 1 2 3 4 5; do login_code S103 wrongpass9 "$IP_A" >/dev/null; done
+check "IP-A 连错 5 次后，正确密码也被拒" "$(login_code S103 student12345 "$IP_A")" "429"
+# 这条同时证明本地服务真的认了我们带的 CF-Connecting-IP——认不了的话下面几条测的就不是 IP
+check "  锁住的是「S103|IP-A」这一对" \
+  "$(one "SELECT username FROM login_attempts WHERE locked_until IS NOT NULL AND username LIKE 'S103%';")" "S103|$IP_A"
+check "同一账号从 IP-B 用正确密码照常能登录" "$(login_code S103 student12345 "$IP_B")" "200"
+NEWPW=$(curl -s -X POST "$BASE/admin/users/$S103/reset-password" -H "Authorization: Bearer $ADMIN" | jq -r '.newPassword')
+check "管理员重置密码清掉了这个账号在所有 IP 上的计数" \
+  "$(one "SELECT COUNT(*) FROM login_attempts WHERE username = 'S103' OR substr(username, 1, 5) = 'S103|';")" "0"
+check "  IP-A 随即能用新密码登录" "$(login_code S103 "$NEWPW" "$IP_A")" "200"
+BEFORE=$(one "SELECT COUNT(*) FROM login_attempts;")
+check "用户名不合规则：401" "$(login_code 'no such user!' whatever1 "$IP_A")" "401"
+check "  不合规则的登录不写失败计数（不给人白刷写入额度）" "$(one "SELECT COUNT(*) FROM login_attempts;")" "$BEFORE"
+# 流水线「Clear admin lockout」一步执行的就是 sql/clear-admin-lockout.sql
+for i in 1 2 3 4 5; do login_code admin wrongpass9 "$IP_A" >/dev/null; done
+check "admin 在 IP-A 被锁" "$(login_code admin admin12345 "$IP_A")" "429"
+npx wrangler d1 execute "$D1_NAME" --local --persist-to "$PERSIST" --file=sql/clear-admin-lockout.sql >/dev/null 2>&1
+check "跑完流水线清锁那一步，admin 在 IP-A 能登录" "$(login_code admin admin12345 "$IP_A")" "200"
+
+echo
 echo "== 小结: $PASS 通过, $FAIL 失败 =="
 [ "$FAIL" -eq 0 ]
