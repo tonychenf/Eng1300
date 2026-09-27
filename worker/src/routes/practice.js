@@ -91,7 +91,8 @@ practiceRouter.get('/practice/section-types', async (c) => {
 practiceRouter.post('/practice/start', async (c) => {
   const me = c.get('user');
   const body = await c.req.json().catch(() => ({}));
-  const { courseCode } = body;
+  // 课程码只取授权中间件验过的那个，不自己读 body（CR-H1，见 lib/access.js 的 courseCodeOf）
+  const courseCode = c.get('courseCode');
   if (!courseCode) return c.json({ error: 'invalid_request', message: '缺少 courseCode' }, 400);
 
   const course = await c.env.DB.prepare('SELECT * FROM courses WHERE course_code = ?')
@@ -129,7 +130,8 @@ practiceRouter.post('/practice/start', async (c) => {
 practiceRouter.post('/practice/drill', async (c) => {
   const me = c.get('user');
   const body = await c.req.json().catch(() => ({}));
-  const { courseCode, tagId } = body;
+  const courseCode = c.get('courseCode');   // 同上，CR-H1
+  const { tagId } = body;
   if (!courseCode || !tagId) {
     return c.json({ error: 'invalid_request', message: '缺少 courseCode 或 tagId' }, 400);
   }

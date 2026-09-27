@@ -38,8 +38,13 @@ studyRouter.get('/wrongbook', async (c) => {
   const limit = Math.min(Number(c.req.query('limit')) || 50, 200);
   const offset = Number(c.req.query('offset')) || 0;
 
-  const conds = ['w.user_id = ?'];
-  const binds = [me.id];
+  // 不带 courseCode 时这是跨学科聚合（C 类），要和 /wrongbook/filters 一样按授权滤行。
+  // 第一版漏了这一处：撤销授权后，带课程码请求是 403，不带课程码却把那个学科的错题
+  // 连同题干、答案、解析原样列出来（CR-H1 评估时本地复现）。带课程码时中间件已经拦过，
+  // 这条过滤恒真，所以不分支——两套 SQL 分支是"其中一套悄悄写错了也没人知道"的温床。
+  const acc = accessibleCourseFilter(me, 'w');
+  const conds = ['w.user_id = ?', acc.sql];
+  const binds = [me.id, ...acc.binds];
   if (courseCode) { conds.push('w.course_code = ?'); binds.push(courseCode); }
   if (sectionType) { conds.push('q.section_type = ?'); binds.push(sectionType); }
   if (!includeCorrected) conds.push('w.corrected = 0');
@@ -343,7 +348,8 @@ studyRouter.get('/assessment', async (c) => {
 studyRouter.post('/ai/assessment', async (c) => {
   const me = c.get('user');
   const body = await c.req.json().catch(() => ({}));
-  const courseCode = body.courseCode;
+  // 课程码只取授权中间件验过的那个，不自己读 body（CR-H1，见 lib/access.js 的 courseCodeOf）
+  const courseCode = c.get('courseCode');
   if (!courseCode) return c.json({ error: 'invalid_request', message: '缺少 courseCode' }, 400);
 
   const { results: masteryRows } = await c.env.DB.prepare(

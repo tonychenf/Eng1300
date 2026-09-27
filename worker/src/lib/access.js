@@ -73,15 +73,29 @@ async function subjectOfAttempt(db, attemptId, userId) {
 // 请求里的 courseCode 可能在 query 也可能在 body。
 // body 读两次是安全的：Hono 4 的 HonoRequest 有 bodyCache，json() 走的是缓存过的 text，
 // 中间件读过之后 handler 再读拿的是同一份。
+//
+// **两处都有就必须一致；接口只许用这里验过的值**（requireCourseAccess 放进 c.get('courseCode')）。
+// 第一版是"query 有就用 query"，而收 body 的四个接口（组卷、开练习、专项练习、AI 评估）
+// 自己读 body：网址写有授权的课、请求体写没授权的课，这里查的是前者、接口用的是后者，
+// 只授权生化的学员照样建出了英语的考试和练习（CR-H1，本地复现过）。
+// body 里的 courseCode 不是字符串（比如写成数字 13000）时，第一版把它当成"没传"，
+// 于是连检查都跳过了；现在当场拒绝，不让它以"缺参数"的身份混过去。
 async function courseCodeOf(c) {
-  const q = c.req.query('courseCode');
-  if (q) return q;
+  const fromQuery = c.req.query('courseCode') || null;
+  let fromBody = null;
   const m = c.req.method;
   if (m === 'POST' || m === 'PUT' || m === 'PATCH') {
     const body = await c.req.json().catch(() => null);
-    if (body && typeof body.courseCode === 'string') return body.courseCode;
+    const v = body?.courseCode;
+    if (v !== undefined && v !== null && typeof v !== 'string') {
+      return { error: 'invalid_request', message: 'courseCode 必须是字符串' };
+    }
+    fromBody = v || null;
   }
-  return null;
+  if (fromQuery && fromBody && fromQuery !== fromBody) {
+    return { error: 'course_code_mismatch', message: '网址参数与请求体里的 courseCode 不一致' };
+  }
+  return { courseCode: fromQuery || fromBody };
 }
 
 /**
@@ -93,7 +107,9 @@ async function courseCodeOf(c) {
  */
 export async function requireCourseAccess(c, next) {
   const user = c.get('user');
-  const courseCode = await courseCodeOf(c);
+  const got = await courseCodeOf(c);
+  if (got.error) return c.json({ error: got.error, message: got.message }, 400);
+  const { courseCode } = got;
   if (!courseCode) return next();
 
   const subject = await subjectOfCourse(c.env.DB, courseCode);
@@ -107,6 +123,7 @@ export async function requireCourseAccess(c, next) {
   if (!r.ok) return c.json({ error: r.code, message: r.message }, 403);
 
   c.set('subject', subject);
+  c.set('courseCode', courseCode);
   await next();
 }
 

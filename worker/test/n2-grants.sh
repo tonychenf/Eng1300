@@ -147,6 +147,16 @@ CODE=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$BASE/practice/start" \
   -H "Authorization: Bearer $STU" -H 'Content-Type: application/json' -d '{"courseCode":"13000"}')
 check "开练习被拒" "$CODE" "403"
 
+# 请求体里的课程码写成数字（CR-H1）：第一版的中间件只认字符串，认不出就当成"没传"，
+# 连授权检查都跳过了——后面查课程恰好会失败，所以没建出东西，但检查本身是跳过的。
+for EP in /exams/generate /practice/start /practice/drill /ai/assessment; do
+  CODE=$(curl -s -o /tmp/n2-num.json -w '%{http_code}' -X POST "$BASE$EP" \
+    -H "Authorization: Bearer $STU" -H 'Content-Type: application/json' \
+    -d '{"courseCode":13000,"tagId":"any"}')
+  check "课程码写成数字被拒（$EP）" "$CODE" "400"
+done
+check "  错误码是 invalid_request" "$(jq -r '.error' /tmp/n2-num.json)" "invalid_request"
+
 echo
 echo "== 开通后恢复正常 =="
 curl -s -o /dev/null -X PUT "$BASE/admin/users/$SID/subjects" -H "Authorization: Bearer $ADMIN" \
@@ -163,6 +173,53 @@ check "可以组卷了" "$CODE" "201"
 ATT=$(jq -r '.attemptId' /tmp/n2-gen.json)
 check "拿到 attempt" "$([ -n "$ATT" ] && [ "$ATT" != "null" ] && echo yes || echo no)" "yes"
 check "可以取卷" "$(sget "/attempts/$ATT")" "200"
+
+echo
+echo "== 课程码只认一个来源（CR-H1）=="
+# 第一版的中间件"网址里有就用网址的"，而收请求体的四个接口只读请求体：网址写有授权的课、
+# 请求体写没授权的课，中间件查前者、接口用后者，只授权生化的学员照样建出了英语的考试和练习。
+# 攻击目标选英语，是因为本套测试里只有英语有题：换成没题的学科，第一版也只会因为没题 422，
+# "绕过去了"这件事在库里看不出来。
+curl -s -o /dev/null -X POST "$BASE/admin/users" -H "Authorization: Bearer $ADMIN" \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"S020","password":"student12345","subjects":["biochem"]}'
+S020=$(one "SELECT id FROM users WHERE username='S020';")
+BIOSTU=$(curl -s -X POST "$BASE/auth/login" -H 'Content-Type: application/json' \
+  -d '{"username":"S020","password":"student12345"}' | jq -r '.token')
+check "S020 只授权了生化" \
+  "$(one "SELECT group_concat(s.code) FROM user_subject_grants g JOIN subjects s ON s.subject_id=g.subject_id WHERE g.user_id=$S020;")" "biochem"
+# 专项练习要一个英语里真有已发布题的考点，否则第一版在那条路径上也只会 422
+DRILL_TAG=$(one "SELECT x.tag_id FROM question_knowledge_points x JOIN questions q ON q.question_id=x.question_id
+                  WHERE q.course_code='13000' AND q.status='已发布' GROUP BY x.tag_id ORDER BY COUNT(*) DESC LIMIT 1;")
+echo "     专项练习用的英语考点：$DRILL_TAG（已发布题 $(one "SELECT COUNT(*) FROM question_knowledge_points x
+  JOIN questions q ON q.question_id=x.question_id WHERE x.tag_id='$DRILL_TAG' AND q.status='已发布';") 道）"
+for EP in /exams/generate /practice/start /practice/drill /ai/assessment; do
+  CODE=$(curl -s -o /tmp/n2-mis.json -w '%{http_code}' -X POST "$BASE$EP?courseCode=biochem-main" \
+    -H "Authorization: Bearer $BIOSTU" -H 'Content-Type: application/json' \
+    -d "{\"courseCode\":\"13000\",\"tagId\":\"$DRILL_TAG\"}")
+  check "网址与请求体的课程码不一致被拒（$EP）" "$CODE" "400"
+  check "  错误码是 course_code_mismatch（$EP）" "$(jq -r '.error' /tmp/n2-mis.json)" "course_code_mismatch"
+done
+check "只授权生化的学员名下没有英语的会话" \
+  "$(one "SELECT COUNT(*) FROM attempts WHERE user_id=$S020 AND course_code='13000';")" "0"
+
+# 正常请求不能被误伤：两处都写、写的是同一门课，照常放行。
+# 这一步顺带给 S001 留下一个进行中的英语练习，下面「进行中的练习不漏行」要靠它才测得到东西。
+CODE=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$BASE/practice/start?courseCode=13000" \
+  -H "Authorization: Bearer $STU" -H 'Content-Type: application/json' -d '{"courseCode":"13000"}')
+check "网址与请求体一致时照常放行" "$CODE" "201"
+
+# 造错题：交一份故意答错的卷子。下面「错题本不漏行」两条要靠它——学员一道错题都没有时，
+# 过滤不过滤结果都是 0，断言就成了装饰（第一版的「筛选项」那条就是这样一直空转的）。
+curl -s -o /tmp/n2-genw.json -X POST "$BASE/exams/generate" \
+  -H "Authorization: Bearer $STU" -H 'Content-Type: application/json' -d '{"courseCode":"13000"}'
+ATTW=$(jq -r '.attemptId' /tmp/n2-genw.json)
+for QID in $(sql "SELECT question_id FROM attempt_questions WHERE attempt_id='$ATTW' ORDER BY ord LIMIT 3;" \
+             | jq -r '.[0].results[].question_id'); do
+  curl -s -o /dev/null -X PUT "$BASE/attempts/$ATTW/answers" -H "Authorization: Bearer $STU" \
+    -H 'Content-Type: application/json' -d "{\"questionId\":\"$QID\",\"answer\":\"Z\"}"
+done
+curl -s -o /dev/null -X POST "$BASE/attempts/$ATTW/submit" -H "Authorization: Bearer $STU"
 
 echo
 echo "== 撤销之后：403 类接口 =="
@@ -188,12 +245,20 @@ echo "== 撤销之后：跨学科聚合接口不能漏行 =="
 HAVE=$(one "SELECT COUNT(*) FROM attempts WHERE user_id=$SID;")
 check "库里确实有这个学员的作答记录（否则下面几条测了个空）" "$([ "$HAVE" -gt 0 ] && echo yes || echo no)" "yes"
 echo "     （库里 $HAVE 条作答记录，全部属于已撤销的英语学科）"
+WRONG=$(one "SELECT COUNT(*) FROM wrong_items WHERE user_id=$SID;")
+check "库里确实有这个学员的错题（否则错题本那两条测了个空）" "$([ "${WRONG:-0}" -gt 0 ] && echo yes || echo no)" "yes"
+ACTIVE=$(one "SELECT COUNT(*) FROM attempts WHERE user_id=$SID AND mode='PRACTICE' AND status='进行中';")
+check "库里确实有这个学员进行中的练习（否则那条测了个空）" "$([ "${ACTIVE:-0}" -gt 0 ] && echo yes || echo no)" "yes"
 sget "/history" /tmp/n2-hist.json >/dev/null
 check "历史记录不再列出已撤销学科的作答" "$(jq -r '.attempts | length' /tmp/n2-hist.json)" "0"
 sget "/practice/active" /tmp/n2-act.json >/dev/null
 check "不再提示已撤销学科里进行中的练习" "$(jq -r '.active // "null"' /tmp/n2-act.json)" "null"
 sget "/wrongbook/filters" /tmp/n2-flt.json >/dev/null
 check "错题本筛选项不含已撤销学科的题型" "$(jq -r '.sectionTypes | length' /tmp/n2-flt.json)" "0"
+# 不带课程码的错题本列表（CR-H1）：带课程码是 403、筛选项也滤了，第一版唯独这里漏了，
+# 撤销之后把那个学科的错题连同题干、答案、解析原样列出来
+sget "/wrongbook" /tmp/n2-wb.json >/dev/null
+check "错题本不带课程码时也不列出已撤销学科的错题" "$(jq -r '.total' /tmp/n2-wb.json)" "0"
 
 echo
 echo "== 授权的三种失效状态要分得开 =="

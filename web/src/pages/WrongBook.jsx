@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { get } from '../api.js';
 import { Alert, Empty, Loading, PageHead } from '../components/ui.jsx';
 import { optionLetter, optionText } from '../components/questions.jsx';
@@ -15,24 +15,32 @@ export default function WrongBook() {
   const [open, setOpen] = useState(null);
   const [error, setError] = useState('');
 
-  // 依赖里必须带 subjectCourses：切学科时组件不会重新挂载（在路由树里位置没变），
-  // 依赖写空数组的话这段不会重跑，courseCode 会一直停在上一个学科的课程上。
+  // 课程码只从本学科的课程里取，取定之前不发请求（CR-H1）。第一版初始是空串、
+  // 挂载时就发了一次：不带课程码的 /wrongbook 是跨学科的，会先把别的学科的错题拉回来，
+  // 再和随后那次带课程码的请求竞速——后到的那份留在页面上。
+  // 依赖里必须带 subjectCourses：切学科时课程码要跟着换成新学科的，
+  // 否则会停在上一个学科的课程上。
   useEffect(() => {
-    if (subjectCourses.length === 1) setCourseCode(subjectCourses[0].course_code);
+    setCourseCode((cur) => (subjectCourses.some((c) => c.course_code === cur)
+      ? cur : subjectCourses[0]?.course_code || ''));
     get('/wrongbook/filters').then(setFilters).catch(() => {});
   }, [subjectCourses]);
 
-  const load = useCallback(() => {
-    const qs = new URLSearchParams();
-    if (courseCode) qs.set('courseCode', courseCode);
+  const ready = subjectCourses.some((c) => c.course_code === courseCode);
+
+  useEffect(() => {
+    if (!ready) { setData(null); return undefined; }
+    let stale = false;
+    const qs = new URLSearchParams({ courseCode });
     if (sectionType) qs.set('sectionType', sectionType);
     if (tag) qs.set('knowledgePoint', tag);
     if (showCorrected) qs.set('includeCorrected', '1');
     setData(null);
-    get(`/wrongbook?${qs}`).then(setData).catch((e) => setError(e.message));
-  }, [courseCode, sectionType, tag, showCorrected]);
-
-  useEffect(() => { load(); }, [load]);
+    get(`/wrongbook?${qs}`)
+      .then((d) => { if (!stale) setData(d); })
+      .catch((e) => { if (!stale) setError(e.message); });
+    return () => { stale = true; };
+  }, [ready, courseCode, sectionType, tag, showCorrected]);
 
   return (
     <>
@@ -44,7 +52,7 @@ export default function WrongBook() {
           {subjectCourses.length > 1 ? (
             <select className="input" style={{ width: 'auto', minWidth: 160 }}
               value={courseCode} onChange={(e) => setCourseCode(e.target.value)}>
-              <option value="">全部课程</option>
+              {/* 没有「全部课程」：不带课程码的 /wrongbook 是跨学科的，不是"本学科全部" */}
               {subjectCourses.map((c) => (
                 <option key={c.course_code} value={c.course_code}>{c.course_name}</option>
               ))}
@@ -74,7 +82,7 @@ export default function WrongBook() {
         </div>
       </div>
 
-      {!data ? <Loading /> : data.items.length === 0 ? (
+      {!subjectCourses.length ? <Empty>本学科还没有开设课程</Empty> : !data ? <Loading /> : data.items.length === 0 ? (
         <Empty>{showCorrected ? '还没有错题记录' : '没有待订正的错题，做几套题试试'}</Empty>
       ) : (
         <>

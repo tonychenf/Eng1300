@@ -243,7 +243,8 @@ async function submitAttempt(db, attempt, { auto = false }) {
 examRouter.post('/exams/generate', async (c) => {
   const me = c.get('user');
   const body = await c.req.json().catch(() => ({}));
-  const courseCode = body.courseCode;
+  // 课程码只取授权中间件验过的那个，不自己读 body（CR-H1，见 lib/access.js 的 courseCodeOf）
+  const courseCode = c.get('courseCode');
   const difficulty = DIFFICULTIES.includes(body.difficulty) ? body.difficulty : '随机';
   if (!courseCode) return c.json({ error: 'invalid_request', message: '缺少 courseCode' }, 400);
 

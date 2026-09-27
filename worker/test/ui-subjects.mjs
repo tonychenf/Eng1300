@@ -77,6 +77,30 @@ try {
     const brand = await page.locator('.nav-brand').innerText();
     check('切换后标题显示新学科', brand.includes('生物化学'), 'true');
 
+    // 错题本只按本学科的课程取数（CR-H1）。第一版挂载时先发一次不带课程码的请求——
+    // 那是跨学科的列表，会先把别的学科的错题拉回来，还和随后带课程码的那次竞速。
+    const wrongbookCodes = async (path) => {
+      const codes = [];
+      const onReq = (r) => {
+        const u = new URL(r.url());
+        if (u.pathname === '/api/wrongbook') codes.push(u.searchParams.get('courseCode'));
+      };
+      page.on('request', onReq);
+      await page.goto(`${BASE}${path}`, { waitUntil: 'networkidle' });
+      await page.getByText('没有待订正的错题').waitFor({ timeout: 15000 });
+      page.off('request', onReq);
+      return codes;
+    };
+    for (const [path, want, label] of [
+      ['/app/english/wrongbook', '13000', '英语'],
+      ['/app/biochem/wrongbook', 'biochem-main', '生化'],
+    ]) {
+      const codes = await wrongbookCodes(path);
+      console.log(`       ${label}错题页发出的错题本请求（课程码）：${JSON.stringify(codes)}`);
+      check(`${label}错题页确实请求了错题本（否则下一条测了个空）`, codes.length > 0, 'true');
+      check(`${label}错题页的请求全部带本学科的课程码`, codes.every((c) => c === want), 'true');
+    }
+
     // 不存在的学科：要给一句人话，不是白屏
     await page.goto(`${BASE}/app/nosuchsubject`, { waitUntil: 'networkidle' });
     const body = await page.locator('body').innerText();
