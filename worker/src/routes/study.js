@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { requireAuth } from '../lib/auth.js';
-import { requireCourseAccess, requireAttemptAccess, accessibleCourseFilter } from '../lib/access.js';
+import { requireCourseAccess, optionalCourseAccess, requireAttemptAccess, accessibleCourseFilter } from '../lib/access.js';
 import { masteryTier } from '../lib/mastery.js';
 import { gradeEssay, analyzeWrong, assessAbility } from '../lib/tutor.js';
 import { loadAssetRows } from '../lib/stem-assets.js';
@@ -19,7 +19,8 @@ studyRouter.use('/ai/*', requireAuth);
 
 // 学科访问控制（N2，见 lib/access.js 顶部注释）。
 // /wrongbook/filters 是跨学科聚合，不挂 403 类中间件，在 handler 里过滤行。
-studyRouter.use('/wrongbook', requireCourseAccess);
+// 错题本列表是唯一允许不带课程码的 A 类接口：不带时跨学科聚合、在 handler 里按授权滤行
+studyRouter.use('/wrongbook', optionalCourseAccess);
 studyRouter.use('/assessment', requireCourseAccess);
 studyRouter.use('/ai/assessment', requireCourseAccess);
 studyRouter.use('/ai/attempts/:id/*', requireAttemptAccess);

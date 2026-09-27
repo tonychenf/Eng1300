@@ -19,16 +19,21 @@ export async function requireAuth(c, next) {
   const header = c.req.header('Authorization') || '';
   const token = header.startsWith('Bearer ') ? header.slice(7) : null;
   if (!token) return c.json({ error: 'unauthorized' }, 401);
+  // 只有"令牌本身不成立"（验签失败、过期、格式坏）才算未登录（CR-M5）。
+  // 第一版把验签、查库、next() 整段包在一个 try 里、一律回 401：查库偶发出错也成了
+  // "未登录"，而前端收到 401 会清掉登录状态——数据库抖一下，在线的人全被踢回登录页。
+  // 查库的错误往上抛，由 app.onError 回 500（额度用尽是 503），前端不会因此登出。
+  let payload;
   try {
-    const { payload } = await jwtVerify(token, secretKey(c.env));
-    const user = await c.env.DB.prepare('SELECT * FROM users WHERE id = ?')
-      .bind(Number(payload.sub)).first();
-    if (!user || user.disabled) return c.json({ error: 'unauthorized' }, 401);
-    c.set('user', { id: user.id, username: user.username, role: user.role });
-    await next();
+    ({ payload } = await jwtVerify(token, secretKey(c.env)));
   } catch {
     return c.json({ error: 'unauthorized' }, 401);
   }
+  const user = await c.env.DB.prepare('SELECT * FROM users WHERE id = ?')
+    .bind(Number(payload.sub)).first();
+  if (!user || user.disabled) return c.json({ error: 'unauthorized' }, 401);
+  c.set('user', { id: user.id, username: user.username, role: user.role });
+  await next();
 }
 
 export async function requireSuperAdmin(c, next) {

@@ -102,16 +102,30 @@ async function courseCodeOf(c) {
  * A 类：按 courseCode 判。用于组卷、开练习、按课程查错题本与评估。
  *
  * 学科停用时也拦——停用的语义就是"学员侧不可见、不可进入"（§6.1）。
- * 拿不到 courseCode 的请求放行：那是参数缺失，由 handler 自己报 400，
- * 在这里拦会把"少传参数"说成"没权限"，把人引到错误的方向。
+ *
+ * **拿不到 courseCode 就当场 400**（CR-M5）。第一版是"拿不到就放行，由 handler 报 400"，
+ * 理由是不想把"少传参数"说成"没权限"——400 本来就说的是缺参数，这个顾虑不成立；
+ * 而放行的代价是：哪个接口忘了自己报 400（/practice/section-types 就忘了，缺参数时 500），
+ * 或者给课程码写了个默认值，检查就整个没做。唯一允许不带的是错题本列表，
+ * 它不带时是跨学科聚合、按授权滤行，用 optionalCourseAccess 显式声明。
  */
-export async function requireCourseAccess(c, next) {
-  const user = c.get('user');
-  const got = await courseCodeOf(c);
-  if (got.error) return c.json({ error: got.error, message: got.message }, 400);
-  const { courseCode } = got;
-  if (!courseCode) return next();
+function courseAccess({ optional }) {
+  return async function courseAccessMiddleware(c, next) {
+    const user = c.get('user');
+    const got = await courseCodeOf(c);
+    if (got.error) return c.json({ error: got.error, message: got.message }, 400);
+    const { courseCode } = got;
+    if (!courseCode) {
+      if (optional) return next();
+      return c.json({ error: 'invalid_request', message: '缺少 courseCode' }, 400);
+    }
+    return checkCourse(c, next, user, courseCode);
+  };
+}
+export const requireCourseAccess = courseAccess({ optional: false });
+export const optionalCourseAccess = courseAccess({ optional: true });
 
+async function checkCourse(c, next, user, courseCode) {
   const subject = await subjectOfCourse(c.env.DB, courseCode);
   if (!subject) {
     return c.json({ error: 'course_not_found', message: `没有课程「${courseCode}」` }, 404);
