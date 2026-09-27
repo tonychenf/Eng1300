@@ -126,8 +126,12 @@ app.post('/api/me/password', requireAuth, async (c) => {
     return c.json({ error: 'invalid_credentials', message: '当前密码不正确' }, 401);
   }
   const hash = await bcrypt.hash(newPassword, 10);
-  await c.env.DB.prepare('UPDATE users SET password_hash = ? WHERE id = ?').bind(hash, me.id).run();
-  return c.json({ ok: true });
+  // 改密码让这个账号所有旧的登录令牌作废（CR-M2），包括别人手里偷去的那个；
+  // 本人这次的会话换发一个新令牌，前端存下它，本人不会被踢出去。
+  await c.env.DB.prepare('UPDATE users SET password_hash = ?, token_version = token_version + 1 WHERE id = ?')
+    .bind(hash, me.id).run();
+  const fresh = await c.env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(me.id).first();
+  return c.json({ ok: true, token: await signToken(c.env, fresh) });
 });
 
 // 我能访问的学科。登录后的第一屏（学科选择页）就靠它。
@@ -280,7 +284,9 @@ admin.post('/users/:id/reset-password', async (c) => {
   const body = await c.req.json().catch(() => ({}));
   const password = body.password || randomPassword();
   const passwordHash = await bcrypt.hash(password, 10);
-  await c.env.DB.prepare('UPDATE users SET password_hash = ? WHERE id = ?')
+  // 版本号加一：这个账号所有旧的登录令牌立即作废（CR-M2）。重置密码最常见的理由就是
+  // "账号可能被别人用了"——只改密码不废令牌，对方手里那个还能用满 8 小时。
+  await c.env.DB.prepare('UPDATE users SET password_hash = ?, token_version = token_version + 1 WHERE id = ?')
     .bind(passwordHash, id).run();
   await c.env.DB.prepare('DELETE FROM login_attempts WHERE username = (SELECT username FROM users WHERE id = ?)')
     .bind(id).run();
@@ -294,8 +300,11 @@ admin.patch('/users/:id/status', async (c) => {
   if (user.role === 'SUPER_ADMIN') return c.json({ error: 'cannot_disable_super_admin' }, 400);
   const body = await c.req.json().catch(() => ({}));
   const disabled = Boolean(body.disabled);
-  await c.env.DB.prepare('UPDATE users SET disabled = ? WHERE id = ?')
-    .bind(disabled ? 1 : 0, id).run();
+  // 停用时顺带废掉旧令牌（CR-M2）：之后重新启用，停用前发出去的令牌也不会复活
+  await c.env.DB.prepare(disabled
+    ? 'UPDATE users SET disabled = 1, token_version = token_version + 1 WHERE id = ?'
+    : 'UPDATE users SET disabled = 0 WHERE id = ?')
+    .bind(id).run();
   return c.json({ id, disabled });
 });
 

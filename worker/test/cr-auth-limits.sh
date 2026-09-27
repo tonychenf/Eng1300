@@ -133,5 +133,39 @@ sql "UPDATE system_settings SET value='3' WHERE key='limit.exam_per_minute';" >/
 sql "UPDATE system_settings SET value='30' WHERE key='limit.exam_per_day';" >/dev/null
 
 echo
+echo "== M2：重置 / 修改密码、停用之后，旧的登录令牌立即失效 =="
+# 第一版只看"账号在不在、停没停用"，重置密码后对方手里的令牌照样能用满 8 小时
+curl -s -o /dev/null -X POST "$BASE/admin/users" -H "Authorization: Bearer $ADMIN" \
+  -H 'Content-Type: application/json' -d '{"username":"S102","password":"student12345","subjects":["english"]}'
+S102=$(one "SELECT id FROM users WHERE username='S102';")
+T1=$(login S102 student12345)
+check "登录拿到的令牌可用" "$(code "$T1" /me)" "200"
+NEWPW=$(curl -s -X POST "$BASE/admin/users/$S102/reset-password" -H "Authorization: Bearer $ADMIN" | jq -r '.newPassword')
+check "管理员重置密码后，重置前的令牌立即失效" "$(code "$T1" /me)" "401"
+T2=$(login S102 "$NEWPW")
+check "用新密码登录的令牌可用" "$(code "$T2" /me)" "200"
+curl -s -o /tmp/cr-auth-pw.json -X POST "$BASE/me/password" -H "Authorization: Bearer $T2" \
+  -H 'Content-Type: application/json' -d "{\"currentPassword\":\"$NEWPW\",\"newPassword\":\"changed12345\"}"
+T3=$(jq -r '.token // empty' /tmp/cr-auth-pw.json)
+check "本人改密码，接口换发了新令牌" "$([ -n "$T3" ] && echo yes || echo no)" "yes"
+check "  新令牌可用（本人不会被踢出去）" "$(code "$T3" /me)" "200"
+check "  改密码前的令牌失效（别人偷去的那个也一样）" "$(code "$T2" /me)" "401"
+curl -s -o /dev/null -X PATCH "$BASE/admin/users/$S102/status" -H "Authorization: Bearer $ADMIN" \
+  -H 'Content-Type: application/json' -d '{"disabled":true}'
+check "停用后令牌失效" "$(code "$T3" /me)" "401"
+curl -s -o /dev/null -X PATCH "$BASE/admin/users/$S102/status" -H "Authorization: Bearer $ADMIN" \
+  -H 'Content-Type: application/json' -d '{"disabled":false}'
+check "重新启用后，停用前的令牌不会复活" "$(code "$T3" /me)" "401"
+check "重新启用后可以重新登录" "$(code "$(login S102 changed12345)" /me)" "200"
+# 上线前签发的令牌没有版本号，按 0 算——部署那一刻不能把所有在线的人踢下线。
+# S101 从没被重置过，版本号还是 0；用本套的 JWT_SECRET 现签一个不带 tv 的令牌
+LEGACY=$(node --input-type=module -e "
+  import { SignJWT } from 'jose';
+  console.log(await new SignJWT({ username: 'S101', role: 'USER' }).setProtectedHeader({ alg: 'HS256' })
+    .setSubject('$SID').setIssuedAt().setExpirationTime('8h')
+    .sign(new TextEncoder().encode('test-secret-cr-auth')));")
+check "上线前签发、不带版本号的令牌照常可用" "$(code "$LEGACY" /me)" "200"
+
+echo
 echo "== 小结: $PASS 通过, $FAIL 失败 =="
 [ "$FAIL" -eq 0 ]

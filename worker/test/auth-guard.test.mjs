@@ -72,5 +72,29 @@ const good = await signToken(env, student);
   check('  查库出错时不放行', r.nextCalled, false);
 }
 
+// ---- CR-M2：令牌版本号 ----
+{
+  // 签发之后库里的版本号被加了一（重置/修改密码、停用过）：旧令牌作废
+  const r = await run(good, dbReturning({ ...student, token_version: 1 }));
+  check('签发后密码被重置过（版本号 0 → 1）：旧令牌 401', r.res?.status, 401);
+  check('  版本号对不上时不放行', r.nextCalled, false);
+}
+{
+  const fresh = await signToken(env, { ...student, token_version: 3 });
+  const r = await run(fresh, dbReturning({ ...student, token_version: 3 }));
+  check('新签的令牌带着当前版本号：放行', r.nextCalled, true);
+}
+{
+  // 上线前签发的令牌没有 tv。按 0 算，部署那一刻不能把所有在线的人踢下线
+  const { SignJWT } = await import('jose');
+  const legacy = await new SignJWT({ username: 'T007', role: 'USER' })
+    .setProtectedHeader({ alg: 'HS256' }).setSubject('7').setIssuedAt().setExpirationTime('8h')
+    .sign(new TextEncoder().encode(env.JWT_SECRET));
+  check('上线前签发、不带版本号的令牌：版本号还是 0 时照常放行',
+    (await run(legacy, dbReturning(student))).nextCalled, true);
+  check('  这个账号之后被重置过密码：同样作废',
+    (await run(legacy, dbReturning({ ...student, token_version: 1 }))).res?.status, 401);
+}
+
 console.log(`\n== 小结: ${pass} 通过, ${fail} 失败 ==`);
 process.exit(fail === 0 ? 0 : 1);

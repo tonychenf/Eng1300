@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { post } from '../api.js';
+import { post, setToken } from '../api.js';
 import { Alert, PageHead } from '../components/ui.jsx';
 
 export default function ChangePassword() {
@@ -17,10 +17,13 @@ export default function ChangePassword() {
     }
     setBusy(true);
     try {
-      await post('/me/password', {
+      const r = await post('/me/password', {
         currentPassword: form.currentPassword,
         newPassword: form.newPassword,
       });
+      // 改密码会让这个账号所有旧的登录令牌作废（CR-M2），包括这一个；
+      // 服务端顺带换发了新令牌，存下它，否则下一个请求就被踢回登录页
+      if (r?.token) setToken(r.token);
       setForm({ currentPassword: '', newPassword: '', confirm: '' });
       setMsg({ kind: 'success', text: '密码已修改，下次登录请使用新密码' });
     } catch (err) {

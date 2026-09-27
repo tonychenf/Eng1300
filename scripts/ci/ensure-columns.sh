@@ -109,6 +109,8 @@ SPECS=(
   "exam_parsing_notes|corrected_to|TEXT"
   "exam_parsing_notes|corrected_by|TEXT"
   "exam_parsing_notes|corrected_at|TEXT"
+  # CR-M2：令牌版本号。带默认值，补列时旧行自动是 0，不用回填
+  "users|token_version|INTEGER NOT NULL DEFAULT 0"
 )
 
 # 补完列还要**回填**：新库从建表语句和种子里就带着值，旧库补出来的列全是 NULL，

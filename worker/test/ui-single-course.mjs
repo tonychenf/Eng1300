@@ -66,6 +66,31 @@ try {
       check('手机｜页面没有横向滚动', overflow, false);
     }
 
+    // 改完密码本人不能被踢出去（CR-M2）。改密码会让这个账号所有旧令牌作废，包括页面手里
+    // 这一个；服务端换发了新令牌，页面要存下它，否则下一个请求 401、被踢回登录页。
+    // 放在最后一轮：改完密码之后的几轮就登不进去了。
+    if (width === 1280) {
+      await page.goto(`${BASE}/app/password`, { waitUntil: 'networkidle' });
+      await page.fill('#cur', PASS);
+      await page.fill('#new', 'changed12345');
+      await page.fill('#confirm', 'changed12345');
+      await page.click('button[type="submit"]');
+      await page.waitForSelector('text=密码已修改', { timeout: 15000 });
+      check('PC｜改密码成功', true, true);
+      // 换个页面，逼页面用手里的令牌再发请求
+      await page.goto(`${BASE}/app/english/exam/new`, { waitUntil: 'networkidle' });
+      // 两种结局都要等得到：页面正常出来，或者被踢回登录页
+      await Promise.race([
+        page.waitForSelector('text=难度倾向', { timeout: 15000 }),
+        page.waitForURL(/\/login/, { timeout: 15000 }),
+      ]).catch(() => {});
+      check('PC｜改完密码仍在登录状态（没被踢回登录页）',
+        new URL(page.url()).pathname, '/app/english/exam/new');
+      // 题数是接口给的：拿得到说明页面手里的令牌是新的那个
+      check('PC｜改完密码后接口照常可用（页面拿到了题数）',
+        /可用\s*\d+\s*题/.test(await page.locator('body').innerText()), true);
+    }
+
     await ctx.close();
   }
 } finally {

@@ -6,8 +6,10 @@ function secretKey(env) {
   return new TextEncoder().encode(env.JWT_SECRET);
 }
 
+// tv = users.token_version（CR-M2）。重置/修改密码、停用时库里加一，这里签进去的旧值就对不上了。
+// 上线前签发的令牌没有 tv，按 0 算：部署那一刻不能把所有在线的人踢下线。
 export async function signToken(env, user) {
-  return new SignJWT({ username: user.username, role: user.role })
+  return new SignJWT({ username: user.username, role: user.role, tv: user.token_version ?? 0 })
     .setProtectedHeader({ alg: 'HS256' })
     .setSubject(String(user.id))
     .setIssuedAt()
@@ -32,6 +34,9 @@ export async function requireAuth(c, next) {
   const user = await c.env.DB.prepare('SELECT * FROM users WHERE id = ?')
     .bind(Number(payload.sub)).first();
   if (!user || user.disabled) return c.json({ error: 'unauthorized' }, 401);
+  // 令牌签发之后密码被重置/修改过、或账号被停用过：旧令牌作废（CR-M2）。
+  // 第一版只看"账号在不在、停没停用"，重置密码后对方手里的令牌照样能用满 8 小时。
+  if ((payload.tv ?? 0) !== (user.token_version ?? 0)) return c.json({ error: 'unauthorized' }, 401);
   c.set('user', { id: user.id, username: user.username, role: user.role });
   await next();
 }
