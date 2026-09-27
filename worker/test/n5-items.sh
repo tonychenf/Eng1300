@@ -58,6 +58,10 @@ for EXAM in 00015-2015-04 00015-2016-04 00015-2019-10 13000-2026-04; do
   npx wrangler d1 execute "$D1_NAME" --local --file="$F" >/dev/null 2>&1 || { echo "导入 $F 失败"; exit 1; }
 done
 npx wrangler d1 execute "$D1_NAME" --local --file=sql/publish-all.sql >/dev/null 2>&1
+# 本套连着组很多份卷测组卷模板与判分，会撞上组卷限流（CR-M1，默认每分钟 3 份）。
+# 限流本身在 cr-auth-limits.sh 测，这里把上限放开，免得后面的场景拿 429 代替了要测的 422
+npx wrangler d1 execute "$D1_NAME" --local --command \
+  "UPDATE system_settings SET value='1000' WHERE key IN ('limit.exam_per_minute', 'limit.exam_per_day');" >/dev/null 2>&1
 
 echo
 echo "== 得分单元与结构化模板的表结构 =="
