@@ -271,13 +271,14 @@ jobs:
           FORCE_SEED: ${{ inputs.force_seed && '1' || '0' }}
         run: bash scripts/ci/seed-if-changed.sh
 
-      - name: Publish the whole bank
+      - name: Put re-seeded chapters back online
         working-directory: worker
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
-          # 必须排在导入之后：seed 按试卷先删后插，会把状态重置回草稿
-          npx wrangler d1 execute "$D1_NAME" --remote --yes --file=sql/publish-all.sql
+          # 必须排在导入之后：种子按章节先删后插，会把状态冲回草稿。
+          # 只放回重导前就是已发布的章节（标记由导题库那一步记下），其余章节一律不碰（CR-H2）
+          npx wrangler d1 execute "$D1_NAME" --remote --yes --file=sql/republish-reseeded.sql
 
       - name: Wait for the worker to respond
         run: |
