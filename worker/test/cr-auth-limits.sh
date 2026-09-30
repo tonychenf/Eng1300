@@ -22,13 +22,13 @@ check() {
   if [ "$got" = "$want" ]; then PASS=$((PASS+1)); echo "  OK   $desc"
   else FAIL=$((FAIL+1)); echo "  FAIL $desc (期望 $want, 实际 $got)"; fi
 }
-# 本套用自己的本地库目录，自己收摊时不会删掉别的套件的库。**但仍然不能和别的套件并行**：
+# 本套用自己的本地库目录，自己收摊时不会删掉别的套件的库。**但光这样还不能和别的套件并行**：
 # wrangler dev 的打包产物固定写在 worker/.wrangler/tmp，别的套件开头 rm -rf .wrangler 会把它删掉，
 # 本套的服务当场卡死（dev 日志报 Could not resolve .../.wrangler/tmp/bundle-.../middleware-loader.entry.ts）。
-# 试过一次，就是这么卡住的；要真并行得把这个目录也隔开（CR-M9）。
+# 试过一次，就是这么卡住的。要并行就用 test/run-all.sh：它给每套一份自己的 worker 目录（CR-M9）。
 PERSIST="$ROOT_DIR/.wrangler-cr-auth"
-sql() { npx wrangler d1 execute "$D1_NAME" --local --persist-to "$PERSIST" --json --command "$1" 2>/dev/null; }
-one() { sql "$1" | jq -r '.[0].results[0] | to_entries[0].value // empty'; }
+D1_PERSIST="$PERSIST"
+source "$ROOT_DIR/test/lib/d1.sh"   # sql / one / exec_sql（读库失败会在 stderr 报出来）
 # 带令牌的请求，返回 HTTP 码，body 落到 $3
 code() { curl -s -o "${3:-/dev/null}" -w '%{http_code}' "$BASE$2" -H "Authorization: Bearer $1"; }
 login() {   # 用户名 密码 [来源 IP] → 令牌（失败时为空）

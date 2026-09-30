@@ -21,8 +21,7 @@ check() {
   if [ "$got" = "$want" ]; then PASS=$((PASS+1)); echo "  OK   $desc"
   else FAIL=$((FAIL+1)); echo "  FAIL $desc (期望 $want, 实际 $got)"; fi
 }
-sql()  { npx wrangler d1 execute "$D1_NAME" --local --json --command "$1" 2>/dev/null; }
-one()  { sql "$1" | jq -r '.[0].results[0] | to_entries[0].value // empty'; }
+source "$ROOT_DIR/test/lib/d1.sh"   # sql / one / exec_sql（读库失败会在 stderr 报出来）
 ddl()  { sql "SELECT sql FROM sqlite_master WHERE type='table' AND name='$1'" | jq -r '.[0].results[0].sql // empty'; }
 run()  { bash "$SCRIPT" --local 2>&1; }
 

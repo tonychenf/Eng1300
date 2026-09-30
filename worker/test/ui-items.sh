@@ -65,8 +65,7 @@ ATTEMPT=$(curl -s -X POST "$BASE/exams/generate" -H "Authorization: Bearer $STU"
   -H 'Content-Type: application/json' -d '{"courseCode":"13000"}' | jq -r '.attemptId')
 [ -n "$ATTEMPT" ] && [ "$ATTEMPT" != null ] || { echo "组卷失败"; exit 1; }
 
-sql() { npx wrangler d1 execute "$D1_NAME" --local --json --command "$1" 2>/dev/null; }
-one() { sql "$1" | jq -r '.[0].results[0] // {} | to_entries[0].value // empty'; }
+source test/lib/d1.sh   # sql / one / exec_sql（读库失败会在 stderr 报出来）
 # 挑一道**填空题**来挂空，不能随手挑第一题。
 # 第一题是阅读判断（single_choice），它的归一化器是 choice——只保留 A–Z，中文答案
 # 折完是空串，三个空一律判错，而判分不会报任何错。控件是渲染出来了，但这套用例

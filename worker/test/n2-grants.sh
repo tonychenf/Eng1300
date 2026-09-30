@@ -24,8 +24,7 @@ check() {
   else FAIL=$((FAIL+1)); echo "  FAIL $desc (期望 $want, 实际 $got)"; fi
 }
 
-sql() { npx wrangler d1 execute "$D1_NAME" --local --json --command "$1" 2>/dev/null; }
-one() { sql "$1" | jq -r '.[0].results[0] | to_entries[0].value // empty'; }
+source "$ROOT_DIR/test/lib/d1.sh"   # sql / one / exec_sql（读库失败会在 stderr 报出来）
 # 学员视角的 GET，返回 HTTP 码，body 落到 $2
 sget() { curl -s -o "${2:-/dev/null}" -w '%{http_code}' "$BASE$1" -H "Authorization: Bearer $STU"; }
 

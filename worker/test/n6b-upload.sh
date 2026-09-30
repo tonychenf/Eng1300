@@ -21,9 +21,7 @@ check() {
   if [ "$got" = "$want" ]; then PASS=$((PASS+1)); echo "  OK   $desc"
   else FAIL=$((FAIL+1)); echo "  FAIL $desc (期望 $want, 实际 $got)"; fi
 }
-sql() { npx wrangler d1 execute "$D1_NAME" --local --json --command "$1" 2>/dev/null; }
-one() { sql "$1" | jq -r '.[0].results[0] // {} | to_entries[0].value // empty'; }
-exec_sql() { npx wrangler d1 execute "$D1_NAME" --local --command "$1" >/dev/null 2>&1; }
+source "$ROOT_DIR/test/lib/d1.sh"   # sql / one / exec_sql（读库失败会在 stderr 报出来）
 
 cleanup() {
   if [ -n "${SERVER_PGID:-}" ]; then kill -9 -- "-$SERVER_PGID" 2>/dev/null || true; fi
@@ -218,8 +216,7 @@ check "并且说明这是回落（那一档没配）" "$(echo "$OK" | jq -r '.pu
 curl -s -o /dev/null -X PUT "$BASE/admin/ai/settings/TEXT_PARSING" -H "Authorization: Bearer $ADMIN" \
   -H 'Content-Type: application/json' \
   -d "{\"baseUrl\":\"http://127.0.0.1:$STUB_PORT/v1\",\"apiKey\":\"stub\",\"model\":\"text-stub\"}"
-exec_sql_n6b() { npx wrangler d1 execute "$D1_NAME" --local --command "$1" >/dev/null 2>&1; }
-exec_sql_n6b "UPDATE questions SET answer_state='缺答案', answer=NULL WHERE exam_id='biochem-ch01';"
+exec_sql "UPDATE questions SET answer_state='缺答案', answer=NULL WHERE exam_id='biochem-ch01';"
 OK2=$(gen)
 check "配上文字解析之后用的就是它" "$(echo "$OK2" | jq -r '.purpose')" "TEXT_PARSING"
 check "不再标记为回落" "$(echo "$OK2" | jq -r '.purposeFellBack')" "false"

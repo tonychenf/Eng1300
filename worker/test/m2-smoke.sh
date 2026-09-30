@@ -23,7 +23,7 @@ check() {
   else FAIL=$((FAIL+1)); echo "  FAIL $desc (期望 $want, 实际 $got)"; fi
 }
 
-sql() { npx wrangler d1 execute "$D1_NAME" --local --json --command "$1" 2>/dev/null; }
+source "$ROOT_DIR/test/lib/d1.sh"   # sql / one / exec_sql（读库失败会在 stderr 报出来）
 
 cleanup() {
   # wrangler dev 会派生 workerd 子进程，只杀 wrangler 本身杀不掉它，

@@ -33,7 +33,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-sql() { npx wrangler d1 execute "$D1_NAME" --local --json --command "$1" 2>/dev/null; }
+source "$ROOT_DIR/test/lib/d1.sh"   # sql / one / exec_sql（读库失败会在 stderr 报出来）
 
 echo "== 准备本地数据库 =="
 rm -rf .wrangler

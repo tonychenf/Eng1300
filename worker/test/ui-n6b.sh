@@ -65,8 +65,7 @@ RC=$?
 
 # 界面跑完之后回库里核一遍：界面说"入库了"不等于真入库了。
 echo "== 回库核对（界面说的和库里的要对得上） =="
-one() { npx wrangler d1 execute "$D1_NAME" --local --json --command "$1" 2>/dev/null \
-  | jq -r '.[0].results[0] // {} | to_entries[0].value // empty'; }
+source "$ROOT_DIR/test/lib/d1.sh"   # sql / one / exec_sql（读库失败会在 stderr 报出来）
 N=$(one "SELECT COUNT(*) FROM exams WHERE origin='UPLOAD';")
 Q=$(one "SELECT COUNT(*) FROM questions q JOIN exams e ON e.exam_id=q.exam_id WHERE e.origin='UPLOAD';")
 BAD=$(one "SELECT COUNT(*) FROM questions q JOIN exams e ON e.exam_id=q.exam_id

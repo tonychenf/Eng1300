@@ -36,9 +36,18 @@ N7（报告分层）起未开工。
 - 不要试图绕过代理，也不要关掉 TLS 校验。碰到 403 就照实说。
 - 只能看流水线日志来判断线上状态。
 
-**`wrangler dev` 启动要 100 秒以上**，因为它启动时要连几个被拒的
-cloudflare.com 地址，得重试到超时。测试脚本的就绪等待是 150 秒，等不到会带
-dev 日志尾部报错退出。不要把这个等待改短。
+**wrangler 有两处外呼，代理挂住时 `d1 execute` 会卡死。** 两处是用量统计上报和取 `Request.cf`
+（miniflare 的 setupCf），出站策略都拒绝。2026-09-30 实测（CR-M9，踩坑记录第二十节）：
+
+- 现在的代理是**立刻拒绝**：`wrangler dev` 3–5 秒就绪，一次 `d1 execute` 约 2.4 秒，设不设开关都一样；
+- 拿一个"只接连接、永远不回"的假代理模拟**挂住**：`wrangler dev` 也只要 6 秒（setupCf 有 3 秒超时）；
+  但 `d1 execute` 把结果打出来之后**进程不退出**，240 秒封顶被杀。设
+  `WRANGLER_SEND_METRICS=false CLOUDFLARE_CF_FETCH_ENABLED=false` 之后 2.3 秒；**只关一个照样挂住**。
+
+一轮回归要调几百次 `d1 execute`，代理哪天从"拒绝"变成"挂住"，不设开关就一轮都跑不完。
+`test/run-all.sh` 已经设了这两个变量；单独跑某一套时自己先 export。
+以前这里写的"`wrangler dev` 启动要 100 秒以上"现在复现不出来（代理行为或 wrangler 版本变了）。
+测试脚本的就绪等待仍是 150 秒、等不到带 dev 日志尾部报错退出——它是上限不是固定等待，不要改短。
 
 **杀服务要杀整个进程组。** `wrangler dev` 会派生 workerd 子进程真正监听端口，
 只杀 wrangler 本身杀不掉它，它会继续占着端口，下一轮起不来（报 Address already
@@ -77,6 +86,10 @@ in use，同时提示一个已删除的构建临时路径，很容易把注意�
 | cr-auth-limits | 8778（自带本地库目录 `.wrangler-cr-auth`） | — |
 | prod-e2e-local | 8777 | 8893 |
 
+端口表没有东西强制，所以 `test/run-all.sh` 开跑前会查一遍：各套 `PORT=` / `STUB_PORT=` 有没有重号、
+有没有上一轮残留的进程还占着（读 `/proc/net/tcp`——**本机没有 `ss`**，各套开头"等端口释放"那句
+`ss … || break` 其实从来没等过）。它还给每套分一个 wrangler 调试端口（9300 起），新套件别用 93xx。
+
 **LibreOffice 不可用**（连最小 docx 都报 source file could not be loaded），
 生成 Word 后没法转 PDF 看版式。只能做 schema 校验加读回正文核对，版式要如实
 告诉用户你没亲眼确认过。
@@ -88,26 +101,35 @@ in use，同时提示一个已删除的构建临时路径，很容易把注意�
 文件名照样是中文，覆盖面反而更大。**并且紧跟一条断言证明文件真的进了 input**：
 凡是"让页面进入某个状态"的测试助手，都要先断它真的做到了，再去断被测的行为。
 
+**浏览器实测要求 TMPDIR 不超过 61 个字符。** Chromium 在 TMPDIR 下建进程单例的 socket，
+Unix socket 路径最多 107 字节；超了每套都死在 `browserType.launch`，报的是
+"Target page, context or browser has been closed"，看不出和路径有关（实测 61 行、62 不行）。
+会话的草稿目录路径就超了，所以跑 `--ui` 时别把 TMPDIR 指到那里；`run-all.sh` 开跑前会拦。
+
 **不要用 `sleep` 链式等待**，用 Bash 工具的 `run_in_background`。也不要在
-bash 正在执行某个脚本时去编辑它——会在毫不相干的行报语法错误。
-**回归跑起来之后也不要 `vite build`**：`emptyOutDir` 会清空 `worker/public`，
+bash 正在执行某个脚本时去编辑它——会在毫不相干的行报语法错误（要换掉正在跑的脚本，
+写到别处再 `mv` 过去：`mv` 换的是目录项，正在跑的那个 bash 读的还是旧文件；`cp` 是原地改写）。
+**直接跑单套时，跑起来之后不要 `vite build`**：`emptyOutDir` 会清空 `worker/public`，
 而 `[assets]` 指着它，正在跑的 `wrangler dev` 当场重载，表现是某一套从中间开始
 成片 `实际 000`，单独重跑又全绿（见 `docs/开发踩坑记录.md` 第十二节附）。
+用 `test/run-all.sh` 跑的不受影响：它开跑时拍一份快照，各套用的是快照里的副本，
+这一轮测的就是开跑那一刻的版本——跑着回归的同时照常改代码、构建都行
+（`node_modules` 除外，它是软链，跑着的时候别 `npm install`）。
 
 ---
 
 ## 二、常用命令
 
 ```bash
-# 全套回归（推送前必跑）
-cd worker && for s in m2-smoke m3-smoke m4-smoke m5-smoke m6-acceptance n1-subjects n2-grants n3-pack n3-rebuild n4-parity n5-items n5b-assets n6-content n6b-upload n7d-ai-purposes db-isolation cr-h2-publish cr-auth-limits prod-e2e-local; do
-  echo "=== $s ==="; bash test/$s.sh 2>&1 | grep -E "FAIL|小结" || echo "  !! 没有小结"
-done
-node test/quota-degrade.mjs && node test/essay-parse.mjs && node test/normalizers.test.mjs \
-  && node test/grade-items.test.mjs && node test/rich-text.test.mjs && node test/docx-import.test.mjs \
-  && node test/ai-purposes.test.mjs && node test/auth-guard.test.mjs
+# 全套回归（推送前必跑）：服务端 19 套 + node 单测 8 个，4 路并行，每套在自己的沙箱里跑
+cd worker && bash test/run-all.sh           # 约 15 分钟（串行 45 分钟）；退出码非 0 就是没过
+cd worker && bash test/run-all.sh --ui      # 再加 6 套浏览器实测（改了前端时）
+cd worker && bash test/run-all.sh n5-items essay-parse.mjs   # 只重跑点名的几项
+cd worker && bash test/run-all.sh -j 1      # 串行，拿来和并行对照
+# 跑之前要有 worker/public（vite 产物 + 题库资源）和 worker/seed（种子），它开跑前会查。
+# 新加的测试文件要登记进 run-all.sh 开头的清单，漏了它拒绝开跑（漏登记的套件从来不会被跑到）。
 
-# 浏览器实测（手机/平板/PC 三种宽度）
+# 浏览器实测（手机/平板/PC 三种宽度），单独跑某一套：
 cd worker && bash test/ui-smoke.sh      # 单课程界面（蓝本遗留）
 cd worker && bash test/ui-subjects.sh   # 学科选择、切换、导航带学科码
 cd worker && bash test/ui-items.sh      # 多单元作答控件（一空一框、逐空标红）
@@ -115,8 +137,8 @@ cd worker && bash test/ui-rich.sh       # 富媒体题干（图 + KaTeX 公式�
 cd worker && bash test/ui-n6.sh         # 后台：内容组显示名、缺答案/待核、发布门
 cd worker && bash test/ui-n6b.sh        # 后台上传：选学科 → 试解析 → 入库 → 自动跑 AI
 
-# 注意：上面这些脚本共用 worker/.wrangler，每个都会 rm -rf 它，
-# 所以不能并行跑——并行会把另一套正在用的本地库删掉。
+# 注意：各套脚本直接跑时共用 worker/.wrangler，每个都会 rm -rf 它，所以不能自己开几个
+# 并行——会把另一套正在用的本地库和打包产物删掉。要并行只用 run-all.sh。
 
 # 重新生成题库种子（默认只生成英语，流水线导的也是它）
 node scripts/build-seed-sql.mjs
@@ -136,8 +158,13 @@ node scripts/build-bank-assets.mjs
 node scripts/build-user-manual.js
 ```
 
-`|| echo "!! 没有小结"` 这一句不能省：脚本可能在服务起不来时提前退出，没有它
-你会以为"没有 FAIL 就是通过了"。
+`run-all.sh` 按四条判一项过没过：退出码为 0、打出了小结、小结里 0 失败、没有出现
+"!! 读库命令失败"。没有小结的单独点名：脚本可能在服务起不来时提前退出，只看有没有 FAIL
+会以为"没有 FAIL 就是通过了"。读库失败的也单独点名，哪怕断言全绿——读库助手
+`test/lib/d1.sh` 在命令失败时往 stderr 打这一行，以前 `2>/dev/null` 把它吞了，
+"读库失败"和"库里就是空的"长得一模一样。有问题的套件会在汇总里贴出 dev 日志尾部：服务中途挂掉时
+断言全是"实际 000"，原因只在 dev 日志里，而各套 dev 日志在 /tmp 的固定路径、下一轮就被覆盖，
+执行器每套跑完立刻拷一份留在本轮目录。
 
 ---
 
@@ -225,8 +252,8 @@ JSON 示例，同样要想清楚：原样抄回来的那一份，会不会被当
 
 ### 提交前
 
-跑全套回归（见上一节命令）。`|| echo "!! 没有小结"` 那句不能省——脚本可能在服务
-起不来时提前退出（标准 §4.4）。
+跑 `bash test/run-all.sh`（改了前端加 `--ui`），看它的退出码和汇总表，不要只 grep 小结——
+脚本可能在服务起不来时提前退出（标准 §4.4），这种情况汇总表会标"没有小结"。
 
 ---
 
@@ -444,10 +471,13 @@ alt 空着，模型会照着残缺信息一本正经地编一段解析——不�
 **令牌带版本号 `tv`**（CR-M2）。`users.token_version` 在重置 / 修改密码、停用时加一，旧令牌随之失效；
 要让某人所有会话下线就给它加一。不带 `tv` 的令牌按 0 算，所以上线那一刻没人被踢。
 
-**本地测试不能并行，哪怕库目录分开了。** `cr-auth-limits` 用 `--persist-to` 自带库目录，
-但 `wrangler dev` 的打包产物固定写在 `worker/.wrangler/tmp`；别的套件开头 `rm -rf .wrangler`
-会把它删掉，正在跑的服务当场卡死（dev 日志：`Could not resolve .../.wrangler/tmp/bundle-…`）。
-真并行要把这个目录也隔开（CR-M9，踩坑记录第十六节）。
+**并行跑回归只用 `test/run-all.sh`（CR-M9）。** 自己开几个 `bash test/xxx.sh` 并行不行，哪怕库目录
+分开了：`wrangler dev` 的打包产物固定写在 `worker/.wrangler/tmp`，别的套件开头 `rm -rf .wrangler`
+会把它删掉，正在跑的服务当场卡死（踩坑记录第十六节）。run-all.sh 给每套一份 repo 的最小副本
+（worker 的源码/迁移/测试/种子/前端产物，加 `data/`、`scripts/`、`web/src`），只有 `node_modules` 软链。
+**`scripts/` 不能软链**：Node 按真实路径算 `import.meta.url`，从沙箱里调起的 `build-seed-sql.mjs`
+会顺着链接把种子写回原来的 `worker/seed`（踩坑记录第二十节）。
+以后给测试加了新的"会写"的位置（新的输出目录、新的固定端口），先想它在沙箱里是不是各用各的。
 
 ---
 

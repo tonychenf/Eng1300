@@ -71,8 +71,7 @@ ATTEMPT=$(curl -s -X POST "$BASE/exams/generate" -H "Authorization: Bearer $STU"
   -H 'Content-Type: application/json' -d '{"courseCode":"13000"}' | jq -r '.attemptId')
 [ -n "$ATTEMPT" ] && [ "$ATTEMPT" != null ] || { echo "组卷失败"; exit 1; }
 
-sql() { npx wrangler d1 execute "$D1_NAME" --local --json --command "$1" 2>/dev/null; }
-one() { sql "$1" | jq -r '.[0].results[0] // {} | to_entries[0].value // empty'; }
+source "$ROOT_DIR/test/lib/d1.sh"   # sql / one / exec_sql（读库失败会在 stderr 报出来）
 QID=$(one "SELECT question_id FROM attempt_questions WHERE attempt_id='$ATTEMPT' AND ord=1;")
 ENG=$(one "SELECT subject_id FROM subjects WHERE code='english';")
 ALT='腺嘌呤与胸腺嘧啶之间形成两个氢键'

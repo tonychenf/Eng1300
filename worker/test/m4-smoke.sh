@@ -32,7 +32,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-sql() { npx wrangler d1 execute "$D1_NAME" --local --json --command "$1" 2>/dev/null; }
+source "$ROOT_DIR/test/lib/d1.sh"   # sql / one / exec_sql（读库失败会在 stderr 报出来）
 
 # 循环里要反复查"这题的答案是什么""这题带不带某个考点"。每次都起一个 wrangler
 # 进程的话一轮测试要十几分钟，所以开跑前一次性导出到本地文件，之后用 jq 查。

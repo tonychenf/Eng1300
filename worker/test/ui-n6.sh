@@ -48,8 +48,7 @@ for f in "$BIO_SEED"/*.sql; do
 done
 npx wrangler d1 execute "$D1_NAME" --local --file=sql/publish-all.sql >/dev/null 2>&1
 
-sql() { npx wrangler d1 execute "$D1_NAME" --local --json --command "$1" 2>/dev/null; }
-one() { sql "$1" | jq -r '.[0].results[0] // {} | to_entries[0].value // empty'; }
+source "$ROOT_DIR/test/lib/d1.sh"   # sql / one / exec_sql（读库失败会在 stderr 报出来）
 BIO_LABEL=$(one "SELECT label FROM exams WHERE exam_id='biochem-ch01';")
 UNREVIEWED=$(one "SELECT COUNT(*) FROM questions WHERE answer_state='待核';")
 [ -n "$BIO_LABEL" ] || { echo "生化内容组没进库"; exit 1; }
