@@ -1,7 +1,8 @@
 name: 线上端到端实测
 
 # 拿探针账号在真实线上环境走完整条链路：组卷 → 逐题作答 → 交卷判分 →
-# 调真实 AI 服务商批改作文与分析错题 → 错题本 → 能力评估。
+# 调真实 AI 服务商批改作文与分析错题 → 错题本 → 能力评估；另有一段上传出题：
+# 传一份 4 道题的小 docx，让真实模型出答案和解析，核对落库后删掉（CR-M4）。
 #
 # 为什么单独一个流水线、且只能手动触发：
 #
@@ -35,8 +36,9 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     env:
-      # 首次部署后由 deploy-worker 流水线输出，填进来再用
-      WORKER_URL: ''
+      # 线上地址本来就是公开的（README 里写着）。以前这里一直空着，
+      # 所以 XLearn 复制过来之后这条流水线一次都没跑成过（#4、#5 都停在下一步）
+      WORKER_URL: https://xlearn.eng1300-79fe2787.workers.dev
     steps:
       - uses: actions/checkout@v4
 

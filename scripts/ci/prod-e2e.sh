@@ -1,13 +1,18 @@
 #!/usr/bin/env bash
-# 线上端到端实测：拿一个探针账号，真的组一次卷、答一遍、交卷、跑一次 AI，
-# 再看错题本与能力评估。
+# 线上端到端实测，两段：
+#   一、上传出题：管理员传一份 4 道题的小 docx，让 AI 出答案和解析，核对落库，然后删掉（CR-M4）
+#   二、英语作答：拿探针账号真的组一次卷、答一遍、交卷、跑一次 AI，再看错题本与能力评估
 #
 # 为什么非要在 GitHub Actions 里跑：开发沙箱的出站策略拒绝 workers.dev，
 # 本机连不上线上；而这条链路里的 AI 调用又连不上真实服务商，本地只能用替身。
 # 替身返回什么形状是我们自己写的，证明不了真实模型的输出扛不扛得住解析。
 #
+# 脚本本身由 worker/test/prod-e2e-local.sh 对本地服务 + 替身整个跑一遍（进全套回归）：
+# XLearn 复制过来之后它一次都没跑成过，就是因为平时没有任何东西会跑它。
+#
 # 需要：WORKER_URL、ADMIN_TOKEN。
 set -uo pipefail
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 PASS=0; FAIL=0
 ok()   { echo "  OK   $1"; PASS=$((PASS+1)); }
@@ -17,17 +22,96 @@ check(){ if [ "$2" = "$3" ]; then ok "$1"; else bad "$1（期望 $3，实际 $2�
 A=(-H "Authorization: Bearer $ADMIN_TOKEN")
 api() { curl -sS -m 60 "$@"; }
 
+echo "== 上传出题：AI 出答案与解析（真实服务商） =="
+# 管理员传一章 → AI 给每道题出候选答案和解析 → 落在待核（CR-M4）。这条链路以前只对本地替身
+# 跑过：替身按我们要的形状瞬间返回，真实模型的返回结构和时延它都证明不了。
+# 样本是生化第 1 章原件里摘的 4 道题，四种题型各一道（生成方法见 make-e2e-sample.mjs）。
+# 跑完删掉，线上不留测试章节。
+SAMPLE="$SCRIPT_DIR/fixtures/prod-e2e-sample.docx"
+GID=e2e-probe
+del_probe() {
+  curl -sS -m 30 -o /dev/null -w '%{http_code}' -X DELETE "$WORKER_URL/api/admin/bank/exams/$GID" "${A[@]}"
+}
+# 上次跑到一半断掉的话测试章节还在，这次上传会撞 id。先清一次；没有就是 404，不算错
+PRE=$(del_probe)
+case "$PRE" in
+  200) echo "  清掉了上次留下的测试章节" ;;
+  404) ;;
+  *)   bad "开跑前清不掉上次留下的测试章节（HTTP $PRE）" ;;
+esac
+# 中途失败也要收拾（正常路径下面会显式删一次并断言，这里只是兜底）
+trap 'del_probe >/dev/null 2>&1 || true' EXIT
+
+SETTINGS=$(api "$WORKER_URL/api/admin/ai/settings" "${A[@]}")
+if [ "$(echo "$SETTINGS" | jq -r '.settings.TEXT_PARSING.hasKey // false')" != "true" ]; then
+  # 没配的话会退回「图片解析」那档（OCR 模型）。先拦下来，不白花这几次调用的钱
+  bad "「文字解析 AI」没配，上传出题会退回图片解析那档——这一段不调 AI"
+else
+  echo "     文字解析的模型：$(echo "$SETTINGS" | jq -r '.settings.TEXT_PARSING.model')"
+  LABEL=$(jq -rn --arg s '线上实测探针（跑完自动删除）' '$s|@uri')
+  UP=$(curl -sS -m 60 -X POST \
+    "$WORKER_URL/api/admin/bank/import?subjectCode=biochem&groupId=$GID&label=$LABEL&orderKey=9999&filename=prod-e2e-sample.docx" \
+    "${A[@]}" -H 'Content-Type: application/octet-stream' --data-binary "@$SAMPLE")
+  check "样本上传成功" "$(echo "$UP" | jq -r '.ok // false')" "true"
+  # 4 道、2 个空是样本本身的内容（生成脚本里核过），线上解析出别的数就是 Worker 里解析走样了
+  check "解析出 4 道题、2 个空" "$(echo "$UP" | jq -r '"\(.questions)/\(.blanks)"')" "4/2"
+
+  T0=$(date +%s)
+  GEN=$(curl -sS -m 180 -X POST "$WORKER_URL/api/admin/bank/exams/$GID/ai-answers" "${A[@]}")
+  T1=$(date +%s)
+  # 时延是替身的盲区之一，打出来留档
+  echo "     AI 出答案耗时 $((T1 - T0)) 秒；原始返回：$(echo "$GEN" | head -c 400)"
+  check "用的是文字解析那一档，没有退回图片解析" \
+    "$(echo "$GEN" | jq -r '"\(.purpose)/\(.purposeFellBack)"')" "TEXT_PARSING/false"
+  check "4 道全部生成（生成/尝试）" "$(echo "$GEN" | jq -r '"\(.generated)/\(.attempted)"')" "4/4"
+  check "没有生成失败的题" "$(echo "$GEN" | jq -r '.failures | length')" "0"
+  [ "$(echo "$GEN" | jq -r '.failures | length')" = "0" ] \
+    || echo "     失败明细：$(echo "$GEN" | jq -c '.failures' | head -c 800)"
+  check "每道都带了解析" "$(echo "$GEN" | jq -r '.withoutExplanation | length')" "0"
+
+  # 回库核对：接口说"生成了"不等于库里真有，也不等于形状对
+  REV=$(api "$WORKER_URL/api/admin/bank/exams/$GID" "${A[@]}")
+  Q_ALL='[.sections[].questions[]]'
+  check "全部落在待核，没有一道直接当真" \
+    "$(echo "$REV" | jq -r "$Q_ALL | map(select(.answer_state != \"待核\")) | length")" "0"
+  check "来源都标成 AI" "$(echo "$REV" | jq -r "$Q_ALL | map(select(.answer_source != \"AI\")) | length")" "0"
+  check "解析都不是一两个字的敷衍" \
+    "$(echo "$REV" | jq -r "$Q_ALL | map(select((.answer_explanation // \"\") | length < 8)) | length")" "0"
+  check "填空题每个空都有答案" \
+    "$(echo "$REV" | jq -r "$Q_ALL | map(select(.question_type == \"fill_text\") | .items[] | select((.answer // \"\") == \"\")) | length")" "0"
+  check "选择题的答案是一个选项字母" \
+    "$(echo "$REV" | jq -r "$Q_ALL | map(select(.question_type == \"single_choice\") | (.answer // \"\")) | map(test(\"^[A-D]\$\")) | (length > 0 and all)")" "true"
+  # AI 出的内容打出来：好不好得人看，这里只能证明形状对
+  echo "$REV" | jq -r "$Q_ALL[] | \"     [\(.question_type)] 答案：\(if .question_type == \"fill_text\" then ([.items[].answer] | join(\" / \")) else (.answer // \"\") end | .[0:60])｜解析：\((.answer_explanation // \"\") | .[0:80])\""
+
+  CODE=$(del_probe)
+  check "测完删掉测试章节" "$CODE" "200"
+  check "删干净了：校对页取不到" \
+    "$(curl -sS -m 30 -o /dev/null -w '%{http_code}' "$WORKER_URL/api/admin/bank/exams/$GID" "${A[@]}")" "404"
+fi
+
 echo "== 探针账号 =="
 # 固定用 PROBE01，每次重置密码取一个新的随机密码——这样不必把任何口令写进
 # 仓库或 Secret，也不会污染 T001–T010 这些真学员的记录。
+# 要开通英语：N2 之后没有学科授权的学员组不了卷（403）。
 UID_=$(api "$WORKER_URL/api/admin/users" "${A[@]}" | jq -r '.users[] | select(.username=="PROBE01") | .id')
 if [ -z "$UID_" ]; then
-  R=$(api -X POST "$WORKER_URL/api/admin/users" "${A[@]}" -H 'Content-Type: application/json' -d '{"username":"PROBE01"}')
+  R=$(api -X POST "$WORKER_URL/api/admin/users" "${A[@]}" -H 'Content-Type: application/json' \
+    -d '{"username":"PROBE01","subjects":["english"]}')
   UID_=$(echo "$R" | jq -r '.user.id'); PW=$(echo "$R" | jq -r '.initialPassword')
-  echo "  已新建 PROBE01"
+  echo "  已新建 PROBE01（开通英语）"
 else
   PW=$(api -X POST "$WORKER_URL/api/admin/users/$UID_/reset-password" "${A[@]}" | jq -r '.newPassword')
   echo "  复用 PROBE01，已重置密码"
+  # 已经开通的不再写一遍：每写一次就多一条授权日志
+  G=$(api "$WORKER_URL/api/admin/users/$UID_/subjects" "${A[@]}")
+  EN_STATUS=$(echo "$G" | jq -r '.subjects[] | select(.code == "english") | .grant_status // "未开通"')
+  if [ "$EN_STATUS" != "ACTIVE" ]; then
+    EN_ID=$(echo "$G" | jq -r '.subjects[] | select(.code == "english") | .subject_id')
+    api -X POST "$WORKER_URL/api/admin/subjects/$EN_ID/members" "${A[@]}" -H 'Content-Type: application/json' \
+      -d '{"usernames":["PROBE01"],"note":"线上实测探针"}' >/dev/null
+    echo "  给 PROBE01 补开了英语（原来是 $EN_STATUS）"
+  fi
 fi
 [ -n "$PW" ] && [ "$PW" != null ] || { echo "::error::拿不到探针账号密码"; exit 1; }
 echo "::add-mask::$PW"
