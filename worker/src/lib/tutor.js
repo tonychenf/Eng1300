@@ -33,7 +33,7 @@ async function prompts(env, pack, feature) {
  * 权重和不等于 1 要当场拒绝：管理员把权重改成合计 1.2 之后，分数会整体虚高 20%，
  * 而批改照常"成功"，没有任何地方会报错。
  */
-function essayRubric(pack) {
+export function essayRubric(pack) {
   const r = pack.rubric.essay;
   if (r.type !== 'DIMENSION_WEIGHTED') {
     // 采分点命中式（POINT_HIT）的判分在 N5。分派不到就抛错，不退回维度加权——
@@ -87,6 +87,15 @@ export async function gradeEssay(env, pack, { prompt, essay }) {
     ],
   });
 
+  return { ...scoreEssayReply(data, R), rubricVersion: pack.rubricVersion };
+}
+
+/**
+ * 把模型的批改回复读成分数（gradeEssay 调完模型之后的全部处理）。
+ * 单独导出，是为了让 test/essay-parse.mjs 测的就是这一份，而不是抄一份去测——
+ * 抄来的那份和这里改一处忘一处，测试照样全绿。
+ */
+export function scoreEssayReply(data, R) {
   // 取维度分要宽容一点，但读不到必须报错，不能悄悄记 0 分。
   //
   // 线上实测踩到过：真实模型返回的 JSON 合法，键名却不是我们要的那套，维度
@@ -110,17 +119,27 @@ export async function gradeEssay(env, pack, { prompt, essay }) {
       `模型返回里找不到任何维度分，顶层键为 ${Object.keys(data).join(',') || '（空）'}`);
   }
   const scores = Object.fromEntries(R.keys.map((k) => [k, found[k] ?? 0]));
+  const comments = data.comments && typeof data.comments === 'object' ? data.comments : {};
+  const suggestions = Array.isArray(data.suggestions) ? data.suggestions : [];
+
+  // 模型把提示里的示例原样抄了回来（CR-M11）：示例里的维度分用 0 占位、评语和建议留空，
+  // 抄回来就是一个形状完全合法的"0 分"。线上实测 #6 作文拿了 0 分、状态却是"已批改"，
+  // 这是可能的原因之一；无论那次是不是，这种回复都不是批改结果。真的给 0 分会说理由——
+  // 提示词要了每个维度的评语——所以"分数全 0、评语和建议全空"一律当成没读懂，可重试，
+  // 不记成已批改。
+  const said = (v) => typeof v === 'string' && v.trim() !== '';
+  if (R.keys.every((k) => scores[k] === 0)
+      && !Object.values(comments).some(said) && !suggestions.some(said)) {
+    throw bad('ai_bad_shape',
+      '模型回的维度分全是 0、评语和建议全是空的，像是把提示里的示例原样抄了回来，不是批改结果。' +
+      `收到的前 200 字：${JSON.stringify(data).slice(0, 200)}`);
+  }
+
   // 加权那一步走判分器注册表里的 AI_DIMENSION，不在这儿另写一遍：
   // 两份实现改一处忘一处，同一篇作文在两个入口会出两个分，而两边都"成功"。
   const total = Math.round(dimensionRate(R.dims, scores, R.max) * R.full * 10) / 10;
 
-  return {
-    scores,
-    total,
-    rubricVersion: pack.rubricVersion,
-    comments: data.comments && typeof data.comments === 'object' ? data.comments : {},
-    suggestions: Array.isArray(data.suggestions) ? data.suggestions.slice(0, 3) : [],
-  };
+  return { scores, total, comments, suggestions: suggestions.slice(0, 3) };
 }
 
 /** 错题分析：错因 + 记忆要点 */

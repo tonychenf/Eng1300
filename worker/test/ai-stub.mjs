@@ -10,6 +10,7 @@
 //   /bad/v1/chat/completions  返回非法 JSON（验证重试后标记待重试）
 //   /fail/v1/chat/completions 返回 500
 //   /wrongshape/v1/chat/completions  返回**合法 JSON 但形状不对**
+//   /echo/v1/chat/completions  作文批改把提示里的 JSON 示例原样抄回来（CR-M11），别的照常回
 //
 // 最后那条是 N6b 加的，它测的东西和 /bad/ 不一样：/bad/ 是"解析不出来"，
 // 而真实服务商更常见的失败是"回了一个像模像样的 JSON，字段数对不上题"。
@@ -130,6 +131,14 @@ const server = http.createServer((req, res) => {
     let content;
     if (req.url.startsWith('/bad/')) {
       content = '这不是 JSON，故意的';
+    } else if (req.url.startsWith('/echo/')) {
+      // 模型把提示里的 JSON 示例原样抄回来（CR-M11）。作文批改的示例用 0 占位、评语留空，
+      // 抄回来是一个形状完全合法的"0 分"——线上实测 #6 作文拿了 0 分，这是可能的原因之一。
+      // 只对作文这么做，别的调用照常回：一次 AI 运行里只让作文这一处出事，看得清是谁拦住的。
+      const MARK = '只输出这个 JSON：';
+      content = promptText.includes('批改这篇自考英语作文') && promptText.includes(MARK)
+        ? promptText.slice(promptText.lastIndexOf(MARK) + MARK.length).trim()
+        : reply(promptText);
     } else if (req.url.startsWith('/wrongshape/')) {
       // 合法 JSON、字段名也对，就是数量不对（少给一项）。
       if (promptText.includes('请给出正确选项')) {

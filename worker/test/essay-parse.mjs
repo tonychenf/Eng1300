@@ -6,32 +6,30 @@
 //
 // 所以这几种形状要单独钉住：平铺、嵌在 scores 里、数字写成字符串、带单位、
 // 以及"一个维度都读不到"必须抛错而不是记 0。
+//
+// CR-M11 之前这里测的是把 gradeEssay 的取分段落**抄过来**的一份，抄来的那份和
+// tutor.js 改一处忘一处，测试照样全绿。现在直接测 tutor.js 导出的 scoreEssayReply。
 import assert from 'node:assert/strict';
+import { essayRubric, scoreEssayReply } from '../src/lib/tutor.js';
 
-// 把 gradeEssay 里的取分段落原样搬过来测——它依赖 chatJSON，整函数不好在
-// 无网络环境下调；这里测的是同一套判断逻辑。
-function extract(data) {
-  const nested = [data, data.scores, data.score, data.result, data.dimensions]
-    .filter((o) => o && typeof o === 'object');
-  const readDim = (k) => {
-    for (const obj of nested) {
-      const raw = obj[k];
-      if (raw === undefined || raw === null) continue;
-      const v = typeof raw === 'number' ? raw : Number(String(raw).match(/-?\d+(\.\d+)?/)?.[0]);
-      if (Number.isFinite(v)) return Math.max(0, Math.min(6, v));
-    }
-    return null;
-  };
-  const KEYS = ['content', 'language', 'vocabulary', 'coherence', 'length'];
-  const found = Object.fromEntries(KEYS.map((k) => [k, readDim(k)]));
-  if (KEYS.every((k) => found[k] === null)) {
-    const err = new Error('ai_bad_shape'); err.code = 'ai_bad_shape'; throw err;
-  }
-  const scores = Object.fromEntries(KEYS.map((k) => [k, found[k] ?? 0]));
-  const weighted = scores.content * 0.30 + scores.language * 0.25 +
-    scores.vocabulary * 0.15 + scores.coherence * 0.20 + scores.length * 0.10;
-  return { scores, total: Math.round((weighted / 6) * 30 * 10) / 10 };
-}
+// 英语作文的评分标准：五维、各 0–6 分、合成 30 分（与 0009 种子里的一致）
+const R = essayRubric({
+  code: 'english',
+  rubric: {
+    essay: {
+      type: 'DIMENSION_WEIGHTED', dimensionMax: 6, totalScore: 30,
+      dimensions: [
+        { key: 'content', name: '内容', weight: 0.30 },
+        { key: 'language', name: '语言', weight: 0.25 },
+        { key: 'vocabulary', name: '词汇', weight: 0.15 },
+        { key: 'coherence', name: '连贯', weight: 0.20 },
+        { key: 'length', name: '篇幅', weight: 0.10 },
+      ],
+    },
+  },
+});
+const extract = (data) => scoreEssayReply(data, R);
+const WHY = { content: '完全没有回应写作要求，属于跑题。' };
 
 let pass = 0;
 const t = (name, fn) => { fn(); console.log(`  OK   ${name}`); pass++; };
@@ -64,8 +62,30 @@ t('一个维度都读不到必须抛错，不能记 0 分', () => {
   assert.throws(() => extract({ 内容: 5, 语言: 5, 总分: 25 }), /ai_bad_shape/);
   assert.throws(() => extract({}), /ai_bad_shape/);
 });
-t('真零分仍然是零分，不误判为解析失败', () => {
-  assert.equal(extract({ content: 0, language: 0, vocabulary: 0, coherence: 0, length: 0 }).total, 0);
+
+// ---- CR-M11：模型把示例原样抄回来 ----
+// 用的就是 tutor.js 拼给模型的那段示例（R.jsonShape），不是手写一份"长得像"的：
+// 示例的写法哪天改了，这条跟着变，不会测一个模型根本收不到的形状。
+t('模型把提示里的示例原样抄回来：抛 ai_bad_shape，不记成已批改的 0 分', () => {
+  const echoed = JSON.parse(R.jsonShape);
+  assert.ok(Object.values(echoed).some((v) => v === 0), '（前提）示例里的维度分确实是用 0 占位的');
+  assert.throws(() => extract(echoed), /ai_bad_shape.*原样抄/);
+});
+t('只抄回一部分、分数全 0、没有评语：同样当没读懂', () => {
+  assert.throws(() => extract({ content: 0, comments: { content: '  ' } }), /原样抄/);
+});
+t('真零分带了评语：照样是 0 分，不误判为解析失败', () => {
+  const r = extract({ content: 0, language: 0, vocabulary: 0, coherence: 0, length: 0, comments: WHY });
+  assert.equal(r.total, 0);
+  assert.equal(r.comments.content, WHY.content);
+});
+t('真零分只给了建议、没给评语：也不算抄示例', () => {
+  assert.equal(extract({ content: 0, language: 0, vocabulary: 0, coherence: 0, length: 0,
+    suggestions: ['先读懂题目要求再动笔', '', ''] }).total, 0);
+});
+t('有分数时评语全空也不拦（只拦"全 0 且什么都没说"）', () => {
+  assert.equal(extract({ content: 3, language: 3, vocabulary: 3, coherence: 3, length: 3,
+    comments: { content: '', language: '' }, suggestions: ['', '', ''] }).total, 15);
 });
 
 console.log(`\n== 小结: ${pass} 通过, 0 失败 ==`);
