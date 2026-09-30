@@ -82,9 +82,8 @@ QNORM=$(one "SELECT normalizers FROM subject_question_types WHERE type_code='$QT
 echo "  挂空的题：第 $QORD 题（第 $QSEC 部分），题型 $QTYPE，归一化器 $QNORM"
 ENG=$(one "SELECT subject_id FROM subjects WHERE code='english';")
 for i in 1 2 3; do
-  npx wrangler d1 execute "$D1_NAME" --local --command \
-    "INSERT OR REPLACE INTO question_items (question_id, item_ord, subject_id, item_kind, answer, weight)
-     VALUES ('$QID', $i, $ENG, 'BLANK', '第${i}空标准答案', 1);" >/dev/null 2>&1
+  exec_sql "INSERT OR REPLACE INTO question_items (question_id, item_ord, subject_id, item_kind, answer, weight)
+     VALUES ('$QID', $i, $ENG, 'BLANK', '第${i}空标准答案', 1);"
 done
 N=$(one "SELECT COUNT(*) FROM question_items WHERE question_id='$QID';")
 [ "$N" = "3" ] || { echo "挂空失败，只挂上了 $N 个"; exit 1; }

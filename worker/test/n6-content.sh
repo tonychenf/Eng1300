@@ -414,8 +414,13 @@ check "answer_source 全部回填成 OFFICIAL" \
   "$(one "SELECT COUNT(*) FROM questions WHERE answer_source <> 'OFFICIAL';")" "0"
 check "note_kind 全部回填成解析存疑" \
   "$(one "SELECT COUNT(*) FROM exam_parsing_notes WHERE note_kind <> '解析存疑';")" "0"
-check "补完之后整套迁移还跑得过" \
-  "$(MIGOK=1; for m in migrations/*.sql; do npx wrangler d1 execute "$D1_NAME" --local --file="$m" >/dev/null 2>&1 || MIGOK=0; done; echo $MIGOK)" "1"
+# 红了要说得出是哪个迁移、报的什么（以前只出一个 0/1，得重跑才知道）
+MIG_BAD=""
+for m in migrations/*.sql; do
+  npx wrangler d1 execute "$D1_NAME" --local --file="$m" > /tmp/n6-remig.log 2>&1 \
+    || { MIG_BAD="$(basename "$m")：$(grep -v -e 'Proxy environment' -e '^[[:space:]]*$' /tmp/n6-remig.log | tail -3 | tr '\n' ' ' | cut -c1-240)"; break; }
+done
+check "补完之后整套迁移还跑得过" "${MIG_BAD:-全部跑过}" "全部跑过"
 check "再跑一次补列是空操作" \
   "$(bash "$ROOT_DIR/../scripts/ci/ensure-columns.sh" --local 2>&1 | grep -c '本次新增 0 列')" "1"
 
@@ -526,8 +531,7 @@ check "候选池题没有逐空答案，但确认放行" \
 echo
 echo "== 发布那道后手（给种子/上传/直接改库留的）=="
 # 绕过接口直接把已确认题的空清空，模拟"从别的入口进来的矛盾状态"
-npx wrangler d1 execute "$D1_NAME" --local --command \
-  "UPDATE question_items SET answer=NULL, alt_answers=NULL WHERE question_id='biochem-ch01-q01';" >/dev/null 2>&1
+exec_sql "UPDATE question_items SET answer=NULL, alt_answers=NULL WHERE question_id='biochem-ch01-q01';"
 # 前面已经有几道题发出去了，所以判据是"**没有新增**"，不是"总数为 0"。
 # 写死 0 的话这条测的是前面发了几道，不是这次发布有没有被拦住。
 PUB_BEFORE=$(one "SELECT COUNT(*) FROM questions WHERE exam_id='biochem-ch01' AND status='已发布';")

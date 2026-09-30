@@ -174,14 +174,13 @@ echo "== §13.1-③ 掌握度分档与蓝本一致 =="
 TAGS=$(sql "SELECT tag_id FROM knowledge_points WHERE subject_id=(SELECT subject_id FROM subjects WHERE code='english') ORDER BY tag_id LIMIT 6" | jq -r '.[0].results[].tag_id')
 CASES="0 0 0 null|3 0 3 correct|2 0 2 correct|1 3 0 wrong|3 1 1 correct|1 1 1 correct"
 idx=0; MIS=0; COVERED=""
-sql "DELETE FROM user_knowledge_mastery WHERE user_id=$SID" >/dev/null 2>&1
+exec_sql "DELETE FROM user_knowledge_mastery WHERE user_id=$SID"
 while IFS= read -r tag; do
   c=$(echo "$CASES" | cut -d'|' -f$((idx+1)))
   set -- $c
-  npx wrangler d1 execute "$D1_NAME" --local --command \
-    "INSERT OR REPLACE INTO user_knowledge_mastery
+  exec_sql "INSERT OR REPLACE INTO user_knowledge_mastery
        (user_id, course_code, tag_id, correct_count, wrong_count, consecutive_correct, last_result)
-     VALUES ($SID,'13000','$tag',$1,$2,$3,$([ "$4" = null ] && echo NULL || echo "'$4'"))" >/dev/null 2>&1
+     VALUES ($SID,'13000','$tag',$1,$2,$3,$([ "$4" = null ] && echo NULL || echo "'$4'"))"
   idx=$((idx+1))
 done <<< "$TAGS"
 REPORT=$(curl -s -H "Authorization: Bearer $ADMIN" "$BASE/admin/stats/students/$SID")

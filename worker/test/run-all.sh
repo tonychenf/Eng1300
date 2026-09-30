@@ -38,7 +38,7 @@ REPO_DIR="$(cd "$WORKER_DIR/.." && pwd)"
 # 其余都跑完了还要等它俩三四分钟。以后加了新套件，按它的实测用时插进来。
 SERVER_SUITES=(n5-items n6-content cr-h2-publish n6b-upload n3-rebuild n2-grants m4-smoke
   m5-smoke n3-pack n4-parity m3-smoke n7d-ai-purposes n5b-assets m6-acceptance cr-auth-limits
-  prod-e2e-local n1-subjects m2-smoke db-isolation)
+  prod-e2e-local n1-subjects m2-smoke d1-lib db-isolation)
 UI_SUITES=(ui-items ui-rich ui-n6 ui-n6b ui-smoke ui-subjects)   # 同上，按实测用时（94 秒 … 49 秒）
 NODE_TESTS=(grade-items.test.mjs rich-text.test.mjs docx-import.test.mjs normalizers.test.mjs
   ai-purposes.test.mjs auth-guard.test.mjs quota-degrade.mjs essay-parse.mjs)
@@ -129,7 +129,7 @@ fi
 declare -A PORT_OWNER=()
 for name in "${QUEUE[@]}"; do
   f=$(script_of "$name"); [ -f "$f" ] || continue
-  for p in $(grep -hoE '^(PORT|STUB_PORT)=[0-9]+' "$f" | cut -d= -f2); do
+  for p in $(grep -hoE '^[A-Z_]*PORT=[0-9]+' "$f" | cut -d= -f2); do   # PORT、STUB_PORT、HANG_PORT……
     if [ -n "${PORT_OWNER[$p]:-}" ]; then
       problems+=("端口 $p 同时被 ${PORT_OWNER[$p]} 和 $name 占用，并行时两套会互相踩（端口表见 CLAUDE.md）")
     fi
@@ -173,7 +173,14 @@ make_sandbox() {
   # 调试端口也要各用各的：不指定时 wrangler 从 9229 往上探一个空闲的，几套同时启动可能
   # 探到同一个（探的那一刻空闲、真绑的时候被别人抢了），后绑的那个起不来。
   printf '\n# run-all.sh 加的：并行时各套的调试端口不能撞\n[dev]\ninspector_port = %s\n' "$2" >> "$repo/worker/wrangler.toml"
+  # 副本里的 database_id 换成一个明显是假的 id（CR-M12）：读库助手服务起来之后走 dev 服务的本地接口，
+  # 接口按这个 id 找库，留空的话路径里拼不出来。只动副本，本地用、不部署；真实的 wrangler.toml
+  # 必须留空（CLAUDE.md 四之二）——那一行要不是 database_id = ""，这里换不上，就停下别跑。
+  sed -i "s/^database_id = \"\"\$/database_id = \"$FAKE_D1_ID\"/" "$repo/worker/wrangler.toml"
+  grep -qx "database_id = \"$FAKE_D1_ID\"" "$repo/worker/wrangler.toml" \
+    || { echo "!! 沙箱里的 database_id 没换上：真实 wrangler.toml 里那一行不是 database_id = \"\"？"; return 1; }
 }
+FAKE_D1_ID=00000000-0000-4000-8000-000000000000
 
 run_one() {   # 名字 调试端口 → 结果写到 <RUN_DIR>/<名字>.done：「退出码 秒数」
   local name=$1 start rc pid
@@ -186,6 +193,7 @@ run_one() {   # 名字 调试端口 → 结果写到 <RUN_DIR>/<名字>.done：�
   # 中途停下时 stop_all 也按这个组来收。套件自己的 EXIT 陷阱会再去收它用 setsid 起的 wrangler dev。
   (
     cd "$RUN_DIR/$name/repo/worker" || exit 98
+    export D1_TRACE="$RUN_DIR/$name.d1trace"   # 读库助手每次走了哪条路（接口 / 命令）
     case "$name" in
       *.mjs) exec timeout -k 30 "$SUITE_TIMEOUT" node "test/$name" ;;
       *)     exec timeout -k 30 "$SUITE_TIMEOUT" bash "test/$name.sh" ;;
@@ -287,6 +295,11 @@ for name in "${QUEUE[@]}"; do
 done
 echo
 echo "合计 ${#QUEUE[@]} 项，通过断言 $npass 条；用时 $((WALL/60)) 分 $((WALL%60)) 秒（各项累计 $((sum/60)) 分 $((sum%60)) 秒）"
+# 走接口的次数突然掉到 0（比如 wrangler 升级后本地接口换了路径），各套照样全绿、只是变慢——
+# 所以把走向摆在汇总里，一眼看得出来
+n_http=$(cat "$RUN_DIR"/*.d1trace 2>/dev/null | grep -c '^http' || true)
+n_cli=$(cat "$RUN_DIR"/*.d1trace 2>/dev/null | grep -c '^cli' || true)
+echo "读库助手：走本地接口 ${n_http:-0} 次、走 wrangler d1 execute ${n_cli:-0} 次（迁移、导种子这些直接调命令的不在内）"
 
 rm -rf "$RUN_DIR/.snapshot"
 if [ ${#bad[@]} -eq 0 ]; then

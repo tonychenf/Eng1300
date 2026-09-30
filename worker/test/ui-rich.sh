@@ -78,11 +78,9 @@ ALT='腺嘌呤与胸腺嘧啶之间形成两个氢键'
 # 给第一题换上带图带公式的题干。挑第一题是因为它在页面最上面，
 # 三种宽度下都不用翻部分就能看到；这里不依赖它原本是什么题型——
 # 题干渲染由标记决定，与题型无关。
-npx wrangler d1 execute "$D1_NAME" --local --command \
-  "UPDATE questions SET stem = '下图 ![fig1] 中，氢键数目满足 \$\\frac{a}{b}\$ 吗？' WHERE question_id='$QID';" >/dev/null 2>&1
-npx wrangler d1 execute "$D1_NAME" --local --command \
-  "INSERT OR REPLACE INTO question_assets (question_id, asset_key, subject_id, kind, path, alt, caption)
-   VALUES ('$QID', 'fig1', $ENG, 'IMAGE', 'english/ui-rich/fig.png', '$ALT', '图 1 构造图');" >/dev/null 2>&1
+exec_sql "UPDATE questions SET stem = '下图 ![fig1] 中，氢键数目满足 \$\\frac{a}{b}\$ 吗？' WHERE question_id='$QID';"
+exec_sql "INSERT OR REPLACE INTO question_assets (question_id, asset_key, subject_id, kind, path, alt, caption)
+   VALUES ('$QID', 'fig1', $ENG, 'IMAGE', 'english/ui-rich/fig.png', '$ALT', '图 1 构造图');"
 N=$(one "SELECT COUNT(*) FROM question_assets WHERE question_id='$QID';")
 [ "$N" = "1" ] || { echo "挂图失败"; exit 1; }
 echo "  第 1 题（$QID）已挂上图与公式"

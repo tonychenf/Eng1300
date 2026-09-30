@@ -85,6 +85,7 @@ in use，同时提示一个已删除的构建临时路径，很容易把注意�
 | cr-h2-publish | 不起服务 | — |
 | cr-auth-limits | 8778（自带本地库目录 `.wrangler-cr-auth`） | — |
 | prod-e2e-local | 8777 | 8893 |
+| d1-lib | 8776 | 8891、8892（两个假服务：回 404 的、只接不回的） |
 
 端口表没有东西强制，所以 `test/run-all.sh` 开跑前会查一遍：各套 `PORT=` / `STUB_PORT=` 有没有重号、
 有没有上一轮残留的进程还占着（读 `/proc/net/tcp`——**本机没有 `ss`**，各套开头"等端口释放"那句
@@ -122,7 +123,7 @@ bash 正在执行某个脚本时去编辑它——会在毫不相干的行报语
 
 ```bash
 # 全套回归（推送前必跑）：服务端 19 套 + node 单测 8 个，4 路并行，每套在自己的沙箱里跑
-cd worker && bash test/run-all.sh           # 约 15 分钟（串行 45 分钟）；退出码非 0 就是没过
+cd worker && bash test/run-all.sh           # 约 12 分钟（带 --ui 也差不多）；退出码非 0 就是没过
 cd worker && bash test/run-all.sh --ui      # 再加 6 套浏览器实测（改了前端时）
 cd worker && bash test/run-all.sh n5-items essay-parse.mjs   # 只重跑点名的几项
 cd worker && bash test/run-all.sh -j 1      # 串行，拿来和并行对照
@@ -260,8 +261,11 @@ JSON 示例，同样要想清楚：原样抄回来的那一份，会不会被当
 ## 四、部署与线上验证
 
 推送到 `claude/eng1300-multidisciplinary-platform-ozri7n` 会自动触发
-`.github/workflows/deploy-worker.yml`。顺序是：迁移 → 部署 → 写密钥 → 导题库 →
-放行 → 初始化账号 → 线上验证。
+`.github/workflows/deploy-worker.yml`。**先跑 `test` job（CI 测试门，CR-H3）：全套回归
+（`run-all.sh`，服务端各套 + node 单测），红了就不部署**；手动触发的部署也一样。它不碰任何 Secret，
+失败时各套日志作为 artifact（regression-logs）留 7 天——流水线日志有长度上限，细节去那里看。
+浏览器实测（ui-*）不在 CI 里跑（写死了开发沙箱的 Chromium 路径），改前端时本地跑 `--ui`。
+过了才是 `deploy` job：迁移 → 部署 → 写密钥 → 导题库 → 放行 → 初始化账号 → 线上验证。
 
 **「放行」只放回重导前就是已发布的章节**（`sql/republish-reseeded.sql`，CR-H2）。
 导题库那一步导某章之前先查它是不是已发布，是的话在同一次导入里记 `republish:<章节>`
@@ -478,6 +482,16 @@ alt 空着，模型会照着残缺信息一本正经地编一段解析——不�
 **`scripts/` 不能软链**：Node 按真实路径算 `import.meta.url`，从沙箱里调起的 `build-seed-sql.mjs`
 会顺着链接把种子写回原来的 `worker/seed`（踩坑记录第二十节）。
 以后给测试加了新的"会写"的位置（新的输出目录、新的固定端口），先想它在沙箱里是不是各用各的。
+
+**读库助手有两条路（CR-M12）。** 套件的服务起来之后，`sql` / `one` / `exec_sql` 走 dev 服务自己的库
+（miniflare 的本地接口 `/cdn-cgi/local/explorer/api/d1/database/<id>/raw`，一次十几毫秒）；
+服务起来之前、不起服务的套件、单独在真实目录里跑时，走 `wrangler d1 execute`（一次 2.4 秒）。
+接口按 `database_id` 找库，所以只有 run-all.sh 的沙箱里走得通——它把副本里的 `database_id`
+换成全 0 的假 id；**真实的 `wrangler.toml` 照旧留空**。按库名或绑定名去问接口，它不报错，
+找到的是另一个空库（踩坑记录第二十一节）。两条路的输出做成同一个形状，`test/d1-lib.sh` 逐条比对；
+汇总表下面那行"走本地接口 N 次"要是掉到 0，就是接口那条路断了（比如 wrangler 升级换了路径）。
+新写的套件在服务起来之后要读写库，用这三个助手，别直接调 `npx wrangler d1 execute`——
+除非测的就是命令行那条路（模拟旧库删列、部署脚本）。
 
 ---
 

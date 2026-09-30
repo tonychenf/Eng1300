@@ -62,7 +62,11 @@ try {
     check('学科内导航全部带学科码', appLinks.every((h) => h.startsWith('/app/english')), 'true');
     console.log(`       导航：${hrefs.join(' ')}`);
 
-    // 切换器：可访问学科 2 个 > 1，应该出现
+    // 切换器：可访问学科 2 个 > 1，应该出现。
+    // 它要等"我的学科"接口回来才渲染（Shell 在 useEffect 里取），比侧边栏导航晚一拍——
+    // 上面等到了导航就立刻去数，负载高的时候数到 0（CR-M12 那一轮并行回归里红过）。
+    // 所以先等它出现（最多 10 秒）；真不出现，下面照样数到 0、照样红。
+    await page.locator('.subject-switch').first().waitFor({ state: 'attached', timeout: 10000 }).catch(() => {});
     check('学科切换器可见', await page.locator('.subject-switch').count(), 1);
     const opts = await page.locator('.subject-switch option').evaluateAll(
       (els) => els.map((e) => e.value));
