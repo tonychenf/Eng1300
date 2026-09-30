@@ -175,14 +175,12 @@ fi
 ESSAY_STATUS=$(echo "$AI" | jq -r '.essay.status // "none"' 2>/dev/null || echo none)
 ESSAY_TOTAL=$(echo "$AI" | jq -r '.essay.total // "null"' 2>/dev/null || echo null)
 case "$ESSAY_STATUS" in
-  graded|already)
-    # 只看 status 不够：曾经出现过"批改成功但得 0 分"，实为没读懂模型的回复。
-    # 这段作文是通顺的英文，正常不该是 0 分。
-    if [ "$ESSAY_TOTAL" = "0" ]; then
-      bad "作文批改返回 0 分——这段是通顺英文，八成是没读懂模型的回复"
-    else
-      ok "作文批改完成（$ESSAY_STATUS，$ESSAY_TOTAL 分 / 30）"
-    fi ;;
+  # 分数本身不断言（CR-M11）：卷子是随机组的，作文题和下面这篇固定作文未必是一个话题，
+  # 按跑题判 0 分是合理结果。以前这里断"通顺英文不该是 0 分"，那是直觉不是规格——
+  # 线上实测 #6 就红在这里，却分不清是跑题还是没读懂。没读懂的两种形状（维度一个都读不到、
+  # 把示例原样抄回来）现在都由服务端判成 ai_bad_shape，走下面 * 那一支；
+  # 真批改了，评语会说明理由，下面单独断一条。
+  graded|already) ok "作文批改完成（$ESSAY_STATUS，$ESSAY_TOTAL 分 / 30）" ;;
   blank)   bad "作文被判为未作答——本次明明写了正文" ;;
   *)       bad "作文批改未完成（status=$ESSAY_STATUS）：$(echo "$AI" | jq -r '.essay.detail // ""' 2>/dev/null)" ;;
 esac
@@ -197,9 +195,23 @@ else bad "错题分析一条都没成功"; fi
 
 REP2=$(api "$WORKER_URL/api/attempts/$ATT/report" "${S[@]}")
 check "跑完 AI 后待处理归零" "$(echo "$REP2" | jq -r '.attempt.pendingAi // 0')" "0"
+# 作文这一题的题目、各维度分、评语都打出来：分数对不对得人看，0 分是跑题还是没读懂，
+# 看评语一眼就分得清。线上实测 #6 就是因为没打出来，只能猜。
+ESSAY=$(echo "$REP2" | jq -c '[.sections[] | .writingPrompt as $p | .questions[]
+          | select(.questionType == "essay") | {prompt: ($p // .stem // ""), score, aiComment}][0] // {}')
+EC=$(echo "$ESSAY" | jq -r '.aiComment // "{}"' | jq -c '.' 2>/dev/null || echo '{}')
+echo "     作文题目：$(echo "$ESSAY" | jq -r '(.prompt // "") | gsub("\\s+"; " ") | .[0:120]')"
+echo "     各维度分：$(echo "$EC" | jq -c '.scores // {}')"
+echo "     评语：$(echo "$EC" | jq -r '(.comments // {}) | tojson | .[0:600]')"
+check "作文批改带着评语（0 分也要说得出理由）" \
+  "$(echo "$EC" | jq -r '[(.comments // {})[] | select(type == "string" and (gsub("\\s"; "") | length) > 0)] | length > 0')" "true"
 TOT=$(echo "$REP2" | jq -r '.attempt.totalScore // "null"')
-check "总分已补上作文分" "$([ "$TOT" != null ] && [ "$TOT" != "$OBJ" ] && echo yes)" "yes"
-echo "     （客观 $OBJ → 总分 $TOT）"
+ESSAY_SCORE=$(echo "$ESSAY" | jq -r '.score // "null"')
+# 总分是各题得分之和（study.js 重算 total_score 的口径）。以前断的是"总分 ≠ 客观分"，
+# 作文真拿 0 分时它就红了，而那不是错。
+check "总分 = 客观题 + 作文分" \
+  "$(awk -v t="$TOT" -v o="$OBJ" -v e="$ESSAY_SCORE" 'BEGIN { if (t == "null" || e == "null") print "读不到"; else { d = t - o - e; print ((d < 0.01 && d > -0.01) ? "对得上" : "对不上") } }')" "对得上"
+echo "     （客观 $OBJ + 作文 $ESSAY_SCORE → 总分 $TOT）"
 
 echo "== 错题本与能力评估 =="
 WB=$(api "$WORKER_URL/api/wrongbook?courseCode=13000" "${S[@]}")

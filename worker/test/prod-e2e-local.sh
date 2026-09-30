@@ -158,6 +158,31 @@ check "  没上传、也没调 AI（不白花那几次调用的钱）" \
 check "  英语那一段照常跑完" "$(echo "$OUT" | grep -c 'OK   能力评估接口可用')" "1"
 
 echo
+echo "== prod-e2e.sh 第四遍：模型把作文的 JSON 示例原样抄回来（CR-M11） =="
+# 线上实测 #6 作文拿了 0 分、状态却是"已批改"。可能原因之一是模型照抄了提示里用 0 占位的示例。
+# 替身的 /echo/ 只对作文这么做，别的调用照常回——一次运行里只让作文这一处出事。
+# 文字解析在第三遍被删掉了，先补回来（顺带再验一次"没配才补"）
+OUT=$(cfg); RC=$?
+check "（前提）文字解析又补回来了" "$RC/$(settings | jq -r '.settings.TEXT_PARSING.model')" "0/Qwen/Qwen3-8B"
+curl -s -o /dev/null -X PUT "$BASE/admin/ai/settings/TUTORING" -H "Authorization: Bearer $ADMIN_TOKEN" \
+  -H 'Content-Type: application/json' -d "{\"baseUrl\":\"http://127.0.0.1:$STUB_PORT/echo/v1\"}"
+check "（前提）教学那一档指到了替身的 /echo/" \
+  "$(settings | jq -r '.settings.TUTORING.baseUrl')" "http://127.0.0.1:$STUB_PORT/echo/v1"
+OUT=$(e2e); RC=$?
+show "$OUT"
+check "第四遍：判失败" "$RC" "1"
+check "  红在作文没批改成，原因写着像是抄了示例" \
+  "$(echo "$OUT" | grep -c 'FAIL 作文批改未完成（status=failed）.*原样抄')" "1"
+LATEST=$(one "SELECT a.attempt_id FROM attempts a JOIN users u ON u.id = a.user_id
+               WHERE u.username = 'PROBE01' AND a.mode = 'EXAM' ORDER BY a.started_at DESC, a.rowid DESC LIMIT 1;")
+check "  库里没有记成「已批改的 0 分」（这份卷的作文还是待批改）" \
+  "$(one "SELECT r.ai_judged || '/' || COALESCE(r.score, 'null') FROM answer_records r
+            JOIN questions q ON q.question_id = r.question_id
+           WHERE r.attempt_id = '$LATEST' AND q.question_type = 'essay';")" "0/null"
+check "  上传出题那段照常通过（只有作文这一处出事）" "$(echo "$OUT" | grep -c 'OK   4 道全部生成')" "1"
+check "  错题分析照常全部成功" "$(echo "$OUT" | grep -c 'OK   错题分析全部成功')" "1"
+
+echo
 echo "== 服务还活着 =="
 check "跑完之后服务还在" "$(curl -s -o /dev/null -w '%{http_code}' -m 5 "$BASE/health")" "200"
 
