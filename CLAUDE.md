@@ -75,6 +75,7 @@ in use，同时提示一个已删除的构建临时路径，很容易把注意�
 | n7d-ai-purposes | 不起服务 | — |
 | cr-h2-publish | 不起服务 | — |
 | cr-auth-limits | 8778（自带本地库目录 `.wrangler-cr-auth`） | — |
+| prod-e2e-local | 8777 | 8893 |
 
 **LibreOffice 不可用**（连最小 docx 都报 source file could not be loaded），
 生成 Word 后没法转 PDF 看版式。只能做 schema 校验加读回正文核对，版式要如实
@@ -99,7 +100,7 @@ bash 正在执行某个脚本时去编辑它——会在毫不相干的行报语
 
 ```bash
 # 全套回归（推送前必跑）
-cd worker && for s in m2-smoke m3-smoke m4-smoke m5-smoke m6-acceptance n1-subjects n2-grants n3-pack n3-rebuild n4-parity n5-items n5b-assets n6-content n6b-upload n7d-ai-purposes db-isolation cr-h2-publish cr-auth-limits; do
+cd worker && for s in m2-smoke m3-smoke m4-smoke m5-smoke m6-acceptance n1-subjects n2-grants n3-pack n3-rebuild n4-parity n5-items n5b-assets n6-content n6b-upload n7d-ai-purposes db-isolation cr-h2-publish cr-auth-limits prod-e2e-local; do
   echo "=== $s ==="; bash test/$s.sh 2>&1 | grep -E "FAIL|小结" || echo "  !! 没有小结"
 done
 node test/quota-degrade.mjs && node test/essay-parse.mjs && node test/normalizers.test.mjs \
@@ -243,7 +244,18 @@ Qwen3-8B 是推理模型，所有结构化调用必须带 `enable_thinking: fals
 
 `prod-e2e.yml` 是线上端到端实测，只手动触发，会真的调 AI 花钱、占写入额度。
 它用探针账号 `PROBE01`（每次跑之前重置密码取随机口令，不必存任何 Secret，也
-不污染 T001–T010 真学员的记录）。
+不污染 T001–T010 真学员的记录）。它分两段：先以管理员身份上传
+`scripts/ci/fixtures/prod-e2e-sample.docx`（生化第 1 章摘的 4 道题，`make-e2e-sample.mjs` 生成），
+让真模型出答案和解析、核对落库，再用删除接口删掉；然后才是英语作答那一段。
+
+**`prod-e2e.sh` 由本地套件 `prod-e2e-local` 对本地服务 + 替身整个跑一遍，进全套回归。**
+XLearn 复制过来之后它一次都没跑成过（地址空着、探针账号没开学科授权），就因为平时没有任何东西
+会跑它（CR-M4，踩坑记录第十八节）。改了 `prod-e2e.sh` 或它的 yml，推送会自动触发一次线上实测（花钱），
+所以先让本地这一套绿了再推。
+
+**部署写 AI 配置在 `scripts/ci/configure-ai.sh`。** 图片解析、教学两档每次部署都写，会把后台的改动
+冲回默认值（已知问题 CR-M10，排在 M8 一起改）；文字解析只补不改——没配才写 Qwen/Qwen3-8B，
+配过的不动。以前部署从来不写文字解析，线上传 docx 让 AI 出答案会退回图片解析那档的 OCR 模型。
 
 **只手动触发的流水线在非默认分支上注册不了**：GitHub 要它至少跑过一次才认得，
 而没注册就没法手动触发（dispatch 返回 404）。给一个 paths 限定到它自己文件的
@@ -408,6 +420,12 @@ alt 空着，模型会照着残缺信息一本正经地编一段解析——不�
 中间件），前端从 `useParams()` 取。不要从请求体或组件 props 传——蓝本的
 `?courseCode=xxx` 就是只校验参数存在、不校验归属，多学科之后那是越权漏洞。
 页面里也不要自己拼 `/app/${code}/xxx`，用 `useSubject().path()`。
+
+**删除内容组只删三个条件都满足的**（`DELETE /api/admin/bank/exams/:id`，CR-M4）：后台上传的、
+没发布的、没有学员数据（作答、答题记录、错题本）引用它的题。学员做过的只能撤回发布——
+删题就得连学员数据一起删。一章的数据散在 8 张表里，删除是一个 `db.batch`、先子表后父表；
+以后给题目或章节加子表，要把它加进这个删除里，否则外键会让整个删除失败（workerd 强制外键，
+踩坑记录第十三节）。
 
 **中间件验过的值，接口原样拿来用，不要自己再读一遍。** 收 `courseCode` 的接口从
 `c.get('courseCode')` 取（`requireCourseAccess` 放进去的），不要自己读请求体。第一版中间件
