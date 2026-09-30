@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { get, patch, post } from '../../api.js';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { api, get, patch, post } from '../../api.js';
 import { Alert, Loading, StatusBadge } from '../../components/ui.jsx';
 
 export default function BankReview() {
   const { examId } = useParams();
+  const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [tags, setTags] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -57,6 +58,20 @@ export default function BankReview() {
       await post(`/admin/bank/exams/${examId}/unpublish`);
       setNotice('已撤回发布，题目回到草稿状态');
       await load();
+    } catch (e) { setError(e.message); }
+  }
+
+  // 删除内容组（CR-M4）。按钮只给没发布的上传内容组看；有学员做过的由服务端拒绝，
+  // 拒绝的原因原样显示（几次作答、几条错题记录），前端不再自己猜一遍。
+  async function remove() {
+    setError(''); setNotice('');
+    const name = data.exam.label || data.exam.title;
+    const sure = window.confirm(
+      `删除「${name}」？\n这一章的题目、已录的答案和解析、原文留存会一起删掉，删了找不回来。`);
+    if (!sure) return;
+    try {
+      await api(`/admin/bank/exams/${examId}`, { method: 'DELETE' });
+      navigate('/admin/bank', { state: { notice: `已删除「${name}」` } });
     } catch (e) { setError(e.message); }
   }
 
@@ -189,6 +204,9 @@ export default function BankReview() {
               : <button className="btn" onClick={publish} disabled={openNotes > 0}>
                   {openNotes > 0 ? `还有 ${openNotes} 条存疑待处理` : '发布整卷'}
                 </button>}
+            {exam.origin === 'UPLOAD' && exam.status !== '已发布'
+              ? <button className="btn danger" onClick={remove}>删除内容组</button>
+              : null}
           </div>
         </>
       )}

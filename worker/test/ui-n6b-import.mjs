@@ -109,6 +109,48 @@ try {
     const box = await page.locator('button', { hasText: '去校对这一章' }).boundingBox();
     check(`${label}｜按钮高度够点`, (box?.height ?? 0) >= 44, true);
 
+    // ── 校对页的「删除内容组」（CR-M4）──
+    // 上传撞 id 时的报错叫人去这里删；以前这个按钮不存在。
+    await page.locator('button', { hasText: '去校对这一章' }).click();
+    await page.waitForURL((u) => u.pathname === `/admin/bank/${gid}`, { timeout: 15000 });
+    const delBtn = page.locator('button', { hasText: '删除内容组' });
+    await delBtn.waitFor({ timeout: 15000 }).catch(() => {});
+    // 按钮不在时后面的点击会等满 30 秒再抛错，整个脚本崩掉、连小结都不打。
+    // 没有按钮就只让这几条红，不去点它
+    const hasDel = (await delBtn.count()) === 1;
+    check(`${label}｜校对页有「删除内容组」`, hasDel, true);
+    const dbox = hasDel ? await delBtn.boundingBox() : null;
+    check(`${label}｜删除按钮高度够点`, (dbox?.height ?? 0) >= 44, true);
+    check(`${label}｜删除按钮整个在屏幕里`,
+      Boolean(dbox) && dbox.x >= 0 && dbox.x + dbox.width <= width, true);
+    check(`${label}｜校对页不横向滚动`, await noHScroll(page), true);
+
+    if (label === '手机' && hasDel) {
+      // 点了又取消：什么都不能发生。确认框是这个按钮唯一的保险
+      let asked = '';
+      page.once('dialog', async (d) => { asked = d.message(); await d.dismiss(); });
+      await delBtn.click();
+      await page.waitForTimeout(500);
+      check(`${label}｜删除前先弹确认框，说清楚删了找不回来`, asked.includes('删了找不回来'), true);
+      check(`${label}｜取消之后还留在校对页`, page.url().endsWith(`/admin/bank/${gid}`), true);
+      check(`${label}｜取消之后这一章还在`,
+        await page.locator('h1', { hasText: `浏览器实测 ${label}` }).count(), 1);
+    }
+    if (label === 'PC' && hasDel) {
+      // 真删一次：回到列表、说出删了哪一章、列表里没有它了
+      page.once('dialog', (d) => d.accept());
+      await delBtn.click();
+      await page.waitForURL((u) => u.pathname === '/admin/bank', { timeout: 15000 });
+      await page.waitForSelector('text=已删除「浏览器实测 PC」', { timeout: 15000 }).catch(() => {});
+      check(`${label}｜删完回到列表，并说出删了哪一章`,
+        await page.locator('text=已删除「浏览器实测 PC」').count(), 1);
+      await page.waitForSelector('table.table', { timeout: 15000 }).catch(() => {});
+      check(`${label}｜列表里没有它了`,
+        await page.locator('table.table td', { hasText: '浏览器实测 PC' }).count(), 0);
+      check(`${label}｜另外两章还在列表里`,
+        await page.locator('table.table td', { hasText: '浏览器实测' }).count(), 2);
+    }
+
     await ctx.close();
   }
 } finally {

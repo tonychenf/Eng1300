@@ -71,16 +71,24 @@ N=$(one "SELECT COUNT(*) FROM exams WHERE origin='UPLOAD';")
 Q=$(one "SELECT COUNT(*) FROM questions q JOIN exams e ON e.exam_id=q.exam_id WHERE e.origin='UPLOAD';")
 BAD=$(one "SELECT COUNT(*) FROM questions q JOIN exams e ON e.exam_id=q.exam_id
              WHERE e.origin='UPLOAD' AND (q.answer_state<>'待核' OR q.status='已发布');")
-echo "  三种宽度各传一章：内容组 $N 个，题 $Q 道，状态不对的 $BAD 道"
-[ "$N" = "3" ] && [ "$Q" = "102" ] && [ "$BAD" = "0" ] || {
+# 三种宽度各传一章，PC 那一章又在校对页删掉了（CR-M4），所以剩两章 68 道
+echo "  三种宽度各传一章、删掉 PC 那章：内容组 $N 个，题 $Q 道，状态不对的 $BAD 道"
+[ "$N" = "2" ] && [ "$Q" = "68" ] && [ "$BAD" = "0" ] || {
   echo "  FAIL 库里的结果与界面说的对不上"; RC=1; }
+# 界面说"已删除"，库里也得真的一行不剩（题、得分单元、原文留存都算）
+LEFT=$(one "SELECT (SELECT COUNT(*) FROM exams WHERE exam_id='biochem-ui-1280')
+                 + (SELECT COUNT(*) FROM questions WHERE exam_id='biochem-ui-1280')
+                 + (SELECT COUNT(*) FROM question_items WHERE question_id LIKE 'biochem-ui-1280-%')
+                 + (SELECT COUNT(*) FROM content_group_sources WHERE exam_id='biochem-ui-1280');")
+echo "  界面上删掉的那一章，库里还剩 $LEFT 行"
+[ "$LEFT" = "0" ] || { echo "  FAIL 界面说删了，库里还有"; RC=1; }
 
 # 中文文件名要一路原样存下来：浏览器 File.name → 查询串（百分号编码）→ 服务端
 # 解码 → content_group_sources.filename。这条链上任何一段编码错了，
 # 留下来的都是一串乱码或者空——而上传本身照样成功，界面上看不出来。
 FNAME=$(basename "$DOCX")
 FN=$(one "SELECT COUNT(*) FROM content_group_sources WHERE filename = '$FNAME';")
-echo "  留存里文件名对得上的：$FN 条（应为 3，文件名 $FNAME）"
-[ "$FN" = "3" ] || { echo "  FAIL 中文文件名没原样存下来"; RC=1; }
+echo "  留存里文件名对得上的：$FN 条（应为 2——传了 3 章、删了 1 章，文件名 $FNAME）"
+[ "$FN" = "2" ] || { echo "  FAIL 中文文件名没原样存下来"; RC=1; }
 
 exit $RC

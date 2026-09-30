@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { get } from '../../api.js';
 import { Alert, Empty, Loading, PageHead, StatusBadge } from '../../components/ui.jsx';
 
 const STATUSES = ['', '待校对', '已发布'];
 
 export default function BankList() {
+  // 校对页删完内容组跳回这里，带着一句"已删除「…」"（CR-M4）。
+  // 不显示的话，人看到的是列表里少了一行，分不清是删成功了还是筛选条件变了。
+  const notice = useLocation().state?.notice;
   const [exams, setExams] = useState(null);
   const [courses, setCourses] = useState([]);
   const [courseCode, setCourseCode] = useState('');
@@ -54,6 +57,7 @@ export default function BankList() {
 
       </p>
 
+      {notice ? <div style={{ marginBottom: 12 }}><Alert kind="success">{notice}</Alert></div> : null}
       {error ? <Alert>{error}</Alert> : null}
       {!exams ? <Loading /> : exams.length === 0 ? <Empty>没有符合条件的试卷</Empty> : (
         <div className="card" style={{ overflowX: 'auto' }}>
