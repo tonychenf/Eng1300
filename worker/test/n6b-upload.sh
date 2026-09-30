@@ -141,6 +141,8 @@ echo "== 重复上传默认拒绝 =="
 DUP=$(up "$Q")
 check "同一个 id 再传一次被拒" "$(echo "$DUP" | jq -r '.error')" "group_exists"
 check "拒绝时说得出它现在的来源" "$(echo "$DUP" | jq -r '.message' | grep -c UPLOAD)" "1"
+# 以前这里叫人"在后台删除"，后台其实没有这个功能（CR-M4）。现在指到真实存在的按钮上
+check "并且指路到校对页的「删除内容组」" "$(echo "$DUP" | jq -r '.message' | grep -c '删除内容组')" "1"
 check "被拒之后题数没变" "$(one "SELECT COUNT(*) FROM questions WHERE exam_id='biochem-ch01';")" "34"
 
 echo
@@ -262,6 +264,117 @@ check "种子来源的内容组拒绝生成" \
   "$(exec_sql "UPDATE exams SET origin='SEED' WHERE exam_id='biochem-ch01';"; \
      curl -s -X POST "$GEN_URL" -H "Authorization: Bearer $ADMIN" | jq -r '.error')" "not_uploaded"
 exec_sql "UPDATE exams SET origin='UPLOAD' WHERE exam_id='biochem-ch01';"
+
+echo
+echo "== 删除上传的内容组（CR-M4） =="
+# 以前上传撞了 id，报错叫人"在后台删除"，后台其实没有删的地方；线上实测传完测试章节也收拾不掉。
+DEL() { curl -s -X DELETE "$BASE/admin/bank/exams/$1" -H "Authorization: Bearer $ADMIN"; }
+# 一章内容散在 8 张表里。逐表数行拼成一串，删前删后对着看：
+# 章节 / 分组 / 题 / 得分单元 / 图片 / 考点关联 / 存疑 / 原文留存
+rows_of() {
+  local g="$1" q="SELECT question_id FROM questions WHERE exam_id='$1'"
+  one "SELECT (SELECT COUNT(*) FROM exams WHERE exam_id='$g') || '/' ||
+              (SELECT COUNT(*) FROM sections WHERE exam_id='$g') || '/' ||
+              (SELECT COUNT(*) FROM questions WHERE exam_id='$g') || '/' ||
+              (SELECT COUNT(*) FROM question_items WHERE question_id IN ($q)) || '/' ||
+              (SELECT COUNT(*) FROM question_assets WHERE question_id IN ($q)) || '/' ||
+              (SELECT COUNT(*) FROM question_knowledge_points WHERE question_id IN ($q)) || '/' ||
+              (SELECT COUNT(*) FROM exam_parsing_notes WHERE exam_id='$g') || '/' ||
+              (SELECT COUNT(*) FROM content_group_sources WHERE exam_id='$g');"
+}
+# 参照章节：删 biochem-ch01 时它必须原封不动。删除语句按"这一章的题"子查询删，
+# 条件写错时"要删的那一章删干净了"照样成立，只有旁边这一章会少东西。
+UP2=$(up 'subjectCode=biochem&groupId=biochem-keep&label=%E5%8F%82%E7%85%A7&orderKey=2&filename=keep.docx')
+check "（前提）参照章节传进来了" "$(echo "$UP2" | jq -r '.ok')" "true"
+# 上传不会产生考点关联和图片（管线只抽文字），这两张表的行是后台校对时才有的。
+# 各挂一行，否则删这两张表的语句删的是空集，写错了也看不出来。
+BIO_ID=$(one "SELECT subject_id FROM subjects WHERE code='biochem';")
+exec_sql "INSERT INTO knowledge_points (tag_id, name, subject_id) VALUES ('kp-del-test', '删除测试考点', $BIO_ID);"
+for g in biochem-ch01 biochem-keep; do
+  exec_sql "INSERT INTO question_knowledge_points (question_id, tag_id) VALUES ('$g-q01', 'kp-del-test');"
+  exec_sql "INSERT INTO question_assets (question_id, asset_key, subject_id, kind, path, alt)
+            VALUES ('$g-q01', 'fig1', $BIO_ID, 'IMAGE', 'biochem/test/fig1.png', '删除测试图');"
+done
+check "（前提）两章各挂上了一个考点和一张图" \
+  "$(one "SELECT (SELECT COUNT(*) FROM question_knowledge_points WHERE tag_id='kp-del-test') || '/' ||
+                 (SELECT COUNT(*) FROM question_assets WHERE asset_key='fig1');")" "2/2"
+CH1_BEFORE=$(rows_of biochem-ch01)
+KEEP_BEFORE=$(rows_of biochem-keep)
+echo "     删之前各表行数（章节/分组/题/单元/图/考点/存疑/原文）：biochem-ch01 $CH1_BEFORE，参照章节 $KEEP_BEFORE"
+
+check "未登录删不了" \
+  "$(curl -s -o /dev/null -w '%{http_code}' -X DELETE "$BASE/admin/bank/exams/biochem-ch01")" "401"
+STU_PW=$(curl -s -X POST "$BASE/admin/users" -H "Authorization: Bearer $ADMIN" \
+  -H 'Content-Type: application/json' -d '{"username":"S901"}' | jq -r '.initialPassword')
+STU=$(curl -s -X POST "$BASE/auth/login" -H 'Content-Type: application/json' \
+  -d "$(jq -n --arg p "$STU_PW" '{username:"S901",password:$p}')" | jq -r '.token')
+check "（前提）学员登录成功" "$([ -n "$STU" ] && [ "$STU" != null ] && echo yes)" "yes"
+check "学员删不了" "$(curl -s -o /dev/null -w '%{http_code}' -X DELETE \
+  "$BASE/admin/bank/exams/biochem-ch01" -H "Authorization: Bearer $STU")" "403"
+check "不存在的内容组" "$(DEL nosuch | jq -r '.error')" "not_found"
+
+# 先把这一章摆到"没发布"：前面那次发布放出了 0 道题，章节是不是标成已发布取决于发布接口的细节。
+# 种子来源这一条要只靠来源检查挡住——章节此刻若是已发布，挡下它的会是"已发布"那道检查。
+# 变异验证时就是这样：删掉来源检查，这一条照样红，但红的原因是 published，不是来源。
+curl -s -o /dev/null -X POST "$BASE/admin/bank/exams/biochem-ch01/unpublish" -H "Authorization: Bearer $ADMIN"
+check "（前提）这一章此刻没发布" "$(one "SELECT status FROM exams WHERE exam_id='biochem-ch01';")" "待校对"
+exec_sql "UPDATE exams SET origin='SEED' WHERE exam_id='biochem-ch01';"
+check "（前提）来源改成了种子" "$(one "SELECT origin FROM exams WHERE exam_id='biochem-ch01';")" "SEED"
+check "种子来源的拒绝删（归仓库管）" "$(DEL biochem-ch01 | jq -r '.error')" "not_uploaded"
+exec_sql "UPDATE exams SET origin='UPLOAD' WHERE exam_id='biochem-ch01';"
+
+# 发布状态直接写：这里要的只是"已发布"这个状态本身
+exec_sql "UPDATE exams SET status='已发布' WHERE exam_id='biochem-ch01';"
+check "（前提）这一章此刻是已发布" "$(one "SELECT status FROM exams WHERE exam_id='biochem-ch01';")" "已发布"
+R=$(DEL biochem-ch01)
+check "已发布的拒绝删" "$(echo "$R" | jq -r '.error')" "published"
+check "  并且指路：先撤回发布" "$(echo "$R" | jq -r '.message' | grep -c '撤回发布')" "1"
+curl -s -o /dev/null -X POST "$BASE/admin/bank/exams/biochem-ch01/unpublish" -H "Authorization: Bearer $ADMIN"
+check "（前提）撤回之后回到待校对" "$(one "SELECT status FROM exams WHERE exam_id='biochem-ch01';")" "待校对"
+
+# 学员做过这一章：三张表各自都要拦得住。服务端是三个子查询拼起来判的，
+# 漏掉一个的话另外两条照样绿，所以一张表单独一条。
+CC=$(one "SELECT course_code FROM exams WHERE exam_id='biochem-ch01';")
+SID=$(one "SELECT id FROM users WHERE username='S901';")
+exec_sql "INSERT INTO wrong_items (user_id, course_code, question_id) VALUES ($SID, '$CC', 'biochem-ch01-q05');"
+check "（前提）错题本里有了这一章的题" "$(one "SELECT COUNT(*) FROM wrong_items WHERE question_id='biochem-ch01-q05';")" "1"
+R=$(DEL biochem-ch01)
+check "进了错题本的拒绝删" "$(echo "$R" | jq -r '.error')" "in_use"
+check "  说得出几条错题记录" "$(echo "$R" | jq -r '.wrongItems')" "1"
+exec_sql "DELETE FROM wrong_items WHERE question_id='biochem-ch01-q05';"
+exec_sql "INSERT INTO attempts (attempt_id, user_id, course_code, mode) VALUES ('att-del-test', $SID, '$CC', 'PRACTICE');"
+exec_sql "INSERT INTO answer_records (attempt_id, question_id) VALUES ('att-del-test', 'biochem-ch01-q05');"
+check "（前提）有了一条答题记录" "$(one "SELECT COUNT(*) FROM answer_records WHERE attempt_id='att-del-test';")" "1"
+R=$(DEL biochem-ch01)
+check "有答题记录的拒绝删" "$(echo "$R" | jq -r '.error')" "in_use"
+check "  说得出几次作答" "$(echo "$R" | jq -r '.attempts')" "1"
+exec_sql "DELETE FROM answer_records WHERE attempt_id='att-del-test';"
+exec_sql "INSERT INTO attempt_questions (attempt_id, ord, question_id, section_id, section_ord, score_per_question)
+          VALUES ('att-del-test', 1, 'biochem-ch01-q05', 'biochem-ch01-s1', 1, 1);"
+check "（前提）有一份卷子组进了这一章的题" "$(one "SELECT COUNT(*) FROM attempt_questions WHERE attempt_id='att-del-test';")" "1"
+check "组进过卷子的拒绝删" "$(DEL biochem-ch01 | jq -r '.error')" "in_use"
+exec_sql "DELETE FROM attempt_questions WHERE attempt_id='att-del-test';"
+exec_sql "DELETE FROM attempts WHERE attempt_id='att-del-test';"
+check "被拒的这几次，一行都没删" "$(rows_of biochem-ch01)" "$CH1_BEFORE"
+
+# 该删的时候
+EXP=$(one "SELECT (SELECT COUNT(*) FROM questions WHERE exam_id='biochem-ch01') || '/' ||
+                  (SELECT COUNT(*) FROM question_items WHERE question_id IN
+                     (SELECT question_id FROM questions WHERE exam_id='biochem-ch01')) || '/' ||
+                  (SELECT COUNT(*) FROM exam_parsing_notes WHERE exam_id='biochem-ch01');")
+R=$(DEL biochem-ch01)
+check "没发布、没人做过：删得掉" "$(echo "$R" | jq -r '.ok')" "true"
+check "  报的删除数与删之前库里的对得上（题/单元/存疑/原文/图/考点）" \
+  "$(echo "$R" | jq -r '[.deleted.questions, .deleted.items, .deleted.parsingNotes, .deleted.sources,
+                          .deleted.assets, .deleted.knowledgePointLinks] | map(tostring) | join("/")')" "$EXP/1/1/1"
+check "8 张表里这一章一行不剩" "$(rows_of biochem-ch01)" "0/0/0/0/0/0/0/0"
+check "参照章节原封不动" "$(rows_of biochem-keep)" "$KEEP_BEFORE"
+check "考点本身还在（它不属于哪一章）" "$(one "SELECT COUNT(*) FROM knowledge_points WHERE tag_id='kp-del-test';")" "1"
+check "校对页取不到了" "$(curl -s -o /dev/null -w '%{http_code}' \
+  "$BASE/admin/bank/exams/biochem-ch01" -H "Authorization: Bearer $ADMIN")" "404"
+check "原文留存也取不到了" "$(curl -s "$BASE/admin/bank/import/biochem-ch01/source" \
+  -H "Authorization: Bearer $ADMIN" | jq -r '.error')" "not_found"
+check "删了之后同一个 id 能重传（409 提示说的那条路走得通）" "$(up "$Q" | jq -r '.ok')" "true"
 
 echo
 echo "== 服务还活着 =="

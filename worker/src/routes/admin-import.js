@@ -94,9 +94,13 @@ importRouter.post('/import', async (c) => {
   if (existing) {
     // 默认拒绝覆盖。覆盖会连带清掉这一章已录的答案与学生的作答记录，
     // 这件事不该由一次手滑决定，也不该在上传接口里顺手做。
+    // 提示里只说真能做到的事：删除在校对页，而且只删得掉没发布、没人做过的上传内容组
+    // （见下面的 DELETE）。以前这里叫人"在后台删除"，后台其实没有这个功能。
     return bad(c, 409, 'group_exists',
       `内容组 ${groupId}（${existing.label}）已经存在，来源是 ${existing.origin}。` +
-      '要替换请先在后台确认并删除它——删除会连带清掉已录的答案与学生的作答记录。');
+      (existing.origin === 'UPLOAD'
+        ? '要重传，先到它的校对页点「删除内容组」（只能删没发布、没有学员做过的），或者换一个内容组 id。'
+        : '它来自仓库里的种子文件，后台删不了；请换一个内容组 id。'));
   }
 
   const body = await c.req.arrayBuffer();
@@ -331,6 +335,76 @@ importRouter.post('/exams/:examId/ai-answers', async (c) => {
       `逐题人工确认之后才能发布。` +
       (failures.length ? `另有 ${failures.length} 道没生成出来，仍是缺答案。` : '') +
       (withoutExplanation.length ? `其中 ${withoutExplanation.length} 道只有答案、没有解析。` : ''),
+  });
+});
+
+// 删除一个后台上传的内容组（CR-M4）。
+//
+// 上传撞了 id 时，上面的 409 叫人先删掉旧的——在这之前后台根本没有删的地方，
+// 传错一次文件，这个 id 就一直占着。线上实测（prod-e2e）传完测试章节也靠它收拾。
+//
+// 三个条件都满足才删，不满足就说清楚为什么，不替人做决定：
+// ① 后台上传的（origin='UPLOAD'）。种子导入的归仓库管：删了之后要等种子文件变了才会重导，
+//    这期间库和仓库对不上，而且没有任何地方提示。
+// ② 没有发布。已发布的学员正在用，先「撤回发布」——删除不顺手替人撤回。
+// ③ 没有学员数据引用它的题（作答、答题记录、错题本）。这三张表的外键指着题目，
+//    要删题就得连它们一起删，学员的成绩报告和错题本会少一块，
+//    这不是"删一章内容"该有的后果。只想让学员看不到，撤回发布就够了。
+//
+// 删除是一次 db.batch：D1 把一批语句放在一个事务里，中途失败整批回滚，不会删一半。
+// 顺序是先子表后父表——外键约束下反过来会在第一句就失败。
+importRouter.delete('/exams/:examId', async (c) => {
+  const db = c.env.DB;
+  const examId = c.req.param('examId');
+  const exam = await db.prepare('SELECT exam_id, label, origin, status FROM exams WHERE exam_id = ?')
+    .bind(examId).first();
+  if (!exam) return bad(c, 404, 'not_found', `没有内容组 ${examId}`);
+  const name = `内容组 ${examId}（${exam.label}）`;
+  if (exam.origin !== 'UPLOAD') {
+    return bad(c, 422, 'not_uploaded',
+      `${name}来自${exam.origin === 'SEED' ? '仓库里的种子文件' : '未知来源'}，不在后台删：` +
+      '它归仓库管，删了库和仓库就对不上了。只想让学员看不到的话，用「撤回发布」。');
+  }
+  if (exam.status === '已发布') {
+    return bad(c, 409, 'published', `${name}已发布，学员正在用。先「撤回发布」，再删除。`);
+  }
+
+  const ofGroup = 'SELECT question_id FROM questions WHERE exam_id = ?';
+  const used = await db.prepare(
+    `SELECT (SELECT COUNT(*) FROM (
+               SELECT attempt_id FROM attempt_questions WHERE question_id IN (${ofGroup})
+               UNION
+               SELECT attempt_id FROM answer_records WHERE question_id IN (${ofGroup}))) AS attempts,
+            (SELECT COUNT(*) FROM wrong_items WHERE question_id IN (${ofGroup})) AS wrong`
+  ).bind(examId, examId, examId).first();
+  if (used.attempts > 0 || used.wrong > 0) {
+    return bad(c, 409, 'in_use',
+      `${name}已经有学员做过：${used.attempts} 次作答、${used.wrong} 条错题记录用到了它的题。` +
+      '删了会让他们的成绩报告和错题本缺一块，所以不能删；只想让学员看不到的话，用「撤回发布」。',
+      { attempts: used.attempts, wrongItems: used.wrong });
+  }
+
+  const res = await db.batch([
+    db.prepare(`DELETE FROM question_items WHERE question_id IN (${ofGroup})`).bind(examId),
+    db.prepare(`DELETE FROM question_assets WHERE question_id IN (${ofGroup})`).bind(examId),
+    db.prepare(`DELETE FROM question_knowledge_points WHERE question_id IN (${ofGroup})`).bind(examId),
+    db.prepare('DELETE FROM questions WHERE exam_id = ?').bind(examId),
+    db.prepare('DELETE FROM sections WHERE exam_id = ?').bind(examId),
+    db.prepare('DELETE FROM exam_parsing_notes WHERE exam_id = ?').bind(examId),
+    db.prepare('DELETE FROM content_group_sources WHERE exam_id = ?').bind(examId),
+    db.prepare('DELETE FROM exams WHERE exam_id = ?').bind(examId),
+  ]);
+  // 读不到行数就报 null，不报 0：0 是合法结果（这一章本来就没有图），
+  // 回落成 0 等于把"不知道"说成"一行都没有"
+  const n = (i) => res[i]?.meta?.changes ?? null;
+  return c.json({
+    ok: true,
+    examId,
+    label: exam.label,
+    deleted: {
+      items: n(0), assets: n(1), knowledgePointLinks: n(2), questions: n(3),
+      sections: n(4), parsingNotes: n(5), sources: n(6),
+    },
   });
 });
 
