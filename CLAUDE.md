@@ -122,7 +122,7 @@ bash 正在执行某个脚本时去编辑它——会在毫不相干的行报语
 ## 二、常用命令
 
 ```bash
-# 全套回归（推送前必跑）：服务端 19 套 + node 单测 8 个，4 路并行，每套在自己的沙箱里跑
+# 全套回归（推送前必跑）：服务端各套 + node 单测，4 路并行，每套在自己的沙箱里跑（清单在 run-all.sh 开头）
 cd worker && bash test/run-all.sh           # 约 12 分钟（带 --ui 也差不多）；退出码非 0 就是没过
 cd worker && bash test/run-all.sh --ui      # 再加 6 套浏览器实测（改了前端时）
 cd worker && bash test/run-all.sh n5-items essay-parse.mjs   # 只重跑点名的几项
