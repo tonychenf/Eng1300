@@ -198,7 +198,10 @@ console.log('== 种子生成阶段拒掉不合契约的题（G2 端到端）==')
   const sql = fs.existsSync(sqlPath) ? fs.readFileSync(sqlPath, 'utf8') : '';
   check('资源写进了 question_assets', sql.includes('INSERT INTO question_assets'), true);
   check('alt 一起入库', sql.includes('腺嘌呤与胸腺嘧啶之间形成两个氢键'), true);
-  check('清题时连资源一起清', sql.includes('DELETE FROM question_assets'), true);
+  // CR-H4 之前这里断的是"清题时连资源一起清"（种子先删后插，不连资源一起删会留下孤儿行）。
+  // 现在种子只插不删：导入过的章节不再重导，内容要改就停用旧题、用新编号加新文件。
+  // 于是要断的反过来了——种子里一条删除语句都不该有，资源行也就谈不上孤儿。
+  check('种子只插不删：没有任何 DELETE（CR-H4）', /^\s*DELETE /im.test(sql), false);
   // G10：图片本身不进 D1，只有元数据行
   check('SQL 里没有图片的字节', sql.includes('iVBORw0KGgo'), false);
   check('SQL 里存的是相对路径', sql.includes("'fixture/ch01/fig1.png'"), true);

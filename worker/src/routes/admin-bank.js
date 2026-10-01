@@ -53,10 +53,20 @@ bankRouter.get('/stats', async (c) => {
     `SELECT COUNT(*) AS n FROM questions WHERE status = '已发布' AND answer_state <> '已确认'`
   ).first();
 
+  // CR-H4：停用的题。停用时已发布的会退回草稿，所以"已发布又停用"应当永远是 0——
+  // 和上面那个一样，单独算出来给线上验证断：哪条发布的路漏了停用判断，这里就不是 0。
+  const retired = await c.env.DB.prepare(
+    `SELECT COUNT(*) AS n,
+            SUM(CASE WHEN status = '已发布' THEN 1 ELSE 0 END) AS published
+       FROM questions WHERE retired_at IS NOT NULL`
+  ).first();
+
   return c.json({
     byCourse, byType, byTag, byAnswerState: answers,
     unresolvedNotes: pending?.n || 0,
     publishedWithoutConfirmedAnswer: leak?.n || 0,
+    retiredQuestions: retired?.n || 0,
+    retiredButPublished: retired?.published || 0,
   });
 });
 
@@ -215,6 +225,13 @@ bankRouter.patch('/questions/:questionId', async (c) => {
         answerState: nextAnswerState ?? null,
       }, 422);
     }
+    // CR-H4：停用的题不能发布，先恢复（恢复后是草稿，再在这里发布）
+    if (body.status === '已发布' && existing.retired_at) {
+      return c.json({
+        error: 'question_retired',
+        message: `这道题 ${existing.retired_at} 被停用了，先恢复再发布`,
+      }, 409);
+    }
     fields.push('status = ?'); binds.push(body.status);
   }
   if ('reviewed' in body) { fields.push('reviewed = ?'); binds.push(body.reviewed ? 1 : 0); }
@@ -362,7 +379,7 @@ bankRouter.post('/exams/:examId/publish', async (c) => {
   const { results: badTypes } = await c.env.DB.prepare(
     `SELECT q.question_id, q.ord, q.question_type
        FROM questions q
-      WHERE q.exam_id = ? AND q.status != '存疑'
+      WHERE q.exam_id = ? AND q.status != '存疑' AND q.retired_at IS NULL
         AND NOT EXISTS (
           SELECT 1 FROM subject_question_types t
            WHERE t.subject_id = q.subject_id AND t.type_code = q.question_type)
@@ -386,7 +403,7 @@ bankRouter.post('/exams/:examId/publish', async (c) => {
             a.asset_key, a.kind, a.path, a.alt
        FROM questions q
        LEFT JOIN question_assets a ON a.question_id = q.question_id
-      WHERE q.exam_id = ? AND q.status != '存疑'
+      WHERE q.exam_id = ? AND q.status != '存疑' AND q.retired_at IS NULL
         AND (a.asset_key IS NOT NULL OR q.stem LIKE '%![%')
       ORDER BY q.ord`
   ).bind(examId).all();
@@ -426,7 +443,7 @@ bankRouter.post('/exams/:examId/publish', async (c) => {
     `SELECT q.question_id, q.ord, i.item_ord, i.item_kind, i.group_key, i.answer,
             i.alt_answers, i.params
        FROM questions q JOIN question_items i ON i.question_id = q.question_id
-      WHERE q.exam_id = ? AND q.status != '存疑' AND q.answer_state = ?
+      WHERE q.exam_id = ? AND q.status != '存疑' AND q.answer_state = ? AND q.retired_at IS NULL
       ORDER BY q.ord, i.item_ord`
   ).bind(examId, ANSWER_CONFIRMED).all();
   if (pubItems.length) {
@@ -456,14 +473,14 @@ bankRouter.post('/exams/:examId/publish', async (c) => {
   // 又没有任何地方提示，那是最糟的一种"成功"。
   const { results: noAnswer } = await c.env.DB.prepare(
     `SELECT question_id, ord, answer_state FROM questions
-      WHERE exam_id = ? AND status != '存疑' AND answer_state <> ?
+      WHERE exam_id = ? AND status != '存疑' AND answer_state <> ? AND retired_at IS NULL
       ORDER BY ord`
   ).bind(examId, ANSWER_CONFIRMED).all();
 
-  // 标记为存疑、以及答案未确认的题目不随整卷发布
+  // 标记为存疑、答案未确认、已停用（CR-H4）的题目不随整卷发布
   await c.env.DB.prepare(
     `UPDATE questions SET status = '已发布'
-      WHERE exam_id = ? AND status != '存疑' AND answer_state = ?`
+      WHERE exam_id = ? AND status != '存疑' AND answer_state = ? AND retired_at IS NULL`
   ).bind(examId, ANSWER_CONFIRMED).run();
   await c.env.DB.prepare(
     `UPDATE exams SET status = '已发布', published_at = datetime('now') WHERE exam_id = ?`
@@ -486,6 +503,47 @@ bankRouter.post('/exams/:examId/publish', async (c) => {
         `${noAnswer.slice(0, 10).map((q) => q.ord).join('、')}${noAnswer.length > 10 ? '…' : ''}题）`
       : undefined,
   });
+});
+
+// 单题停用（CR-H4）。导入过的题库文件不许改（用户 2026-10-01 定的规矩）：题的内容错了，
+// 在这里把旧题停用，再用新的内容组编号加一个新文件。停用之后抽题抽不到（pickableSql）、
+// 整卷发布跳过它、学员错题本不再显示它；作答记录和成绩报告照旧引用它——那是已经发生的事。
+// 已发布的退回草稿：不留"已发布但停用"的半截状态，否则凡是数已发布题数的地方都得各自记得
+// 再排除一次停用（看板的 retiredButPublished 盯着这件事）。
+bankRouter.post('/questions/:questionId/retire', async (c) => {
+  const me = c.get('user');
+  const questionId = c.req.param('questionId');
+  const q = await c.env.DB.prepare('SELECT status, retired_at FROM questions WHERE question_id = ?')
+    .bind(questionId).first();
+  if (!q) return c.json({ error: 'not_found' }, 404);
+  if (q.retired_at) {
+    return c.json({ error: 'already_retired', message: `这道题 ${q.retired_at} 已经停用了` }, 409);
+  }
+  await c.env.DB.prepare(
+    `UPDATE questions SET retired_at = datetime('now'), retired_by = ?,
+            status = CASE WHEN status = '已发布' THEN '草稿' ELSE status END
+      WHERE question_id = ? AND retired_at IS NULL`
+  ).bind(me?.username || `user:${me?.id ?? '?'}`, questionId).run();
+  const after = await c.env.DB.prepare(
+    'SELECT status, retired_at, retired_by FROM questions WHERE question_id = ?'
+  ).bind(questionId).first();
+  return c.json({ ok: true, wasPublished: q.status === '已发布', ...after });
+});
+
+// 恢复：只撤销停用。题保持停用时退回的状态（一般是草稿），要在校对页重新发布才对学员可见
+// （用户 2026-10-01 定的：防误点，但恢复不等于直接上线）。
+bankRouter.post('/questions/:questionId/restore', async (c) => {
+  const questionId = c.req.param('questionId');
+  const q = await c.env.DB.prepare('SELECT retired_at FROM questions WHERE question_id = ?')
+    .bind(questionId).first();
+  if (!q) return c.json({ error: 'not_found' }, 404);
+  if (!q.retired_at) return c.json({ error: 'not_retired', message: '这道题没有停用' }, 409);
+  await c.env.DB.prepare(
+    'UPDATE questions SET retired_at = NULL, retired_by = NULL WHERE question_id = ? AND retired_at IS NOT NULL'
+  ).bind(questionId).run();
+  const after = await c.env.DB.prepare('SELECT status, retired_at FROM questions WHERE question_id = ?')
+    .bind(questionId).first();
+  return c.json({ ok: true, ...after });
 });
 
 // 撤回发布

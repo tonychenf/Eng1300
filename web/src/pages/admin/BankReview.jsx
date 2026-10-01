@@ -80,6 +80,7 @@ export default function BankReview() {
 
   const { exam } = data;
   const reviewedCount = allQuestions.filter((q) => q.reviewed).length;
+  const retiredCount = allQuestions.filter((q) => q.retired_at).length;
 
   return (
     <>
@@ -90,7 +91,7 @@ export default function BankReview() {
             <h1>{exam.label || exam.title}</h1>
             <p>
               {exam.course_name}（{exam.course_code}） · 共 {allQuestions.length} 题 ·
-              已校对 {reviewedCount} 题
+              已校对 {reviewedCount} 题{retiredCount ? ` · 已停用 ${retiredCount} 题` : ''}
             </p>
           </div>
           <StatusBadge status={exam.status} />
@@ -174,7 +175,9 @@ export default function BankReview() {
                     key={q.question_id}
                     onClick={() => setSelected(q.question_id)}
                     className="card card-pad"
-                    style={{ display: 'block', width: '100%', textAlign: 'left', cursor: 'pointer', border: '1px solid var(--line)' }}
+                    data-retired={q.retired_at ? '1' : undefined}
+                    style={{ display: 'block', width: '100%', textAlign: 'left', cursor: 'pointer', border: '1px solid var(--line)',
+                      opacity: q.retired_at ? 0.6 : 1 }}
                   >
                     <div className="spread" style={{ marginBottom: 4 }}>
                       <strong className="small">第 {q.ord} 题</strong>
@@ -182,6 +185,7 @@ export default function BankReview() {
                         {q.reviewed ? <span className="badge ok">已校对</span> : null}
                         {q.answer_state && q.answer_state !== '已确认'
                           ? <span className="badge warn">{q.answer_state}</span> : null}
+                        {q.retired_at ? <span className="badge danger">已停用</span> : null}
                         <StatusBadge status={q.status} />
                       </span>
                     </div>
@@ -259,6 +263,27 @@ function QuestionEditor({ question, tagLibrary, onClose, onSaved }) {
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
   const section = question.section;
+
+  // 单题停用 / 恢复（CR-H4）。导入过的题库文件不许改：内容错了就停用旧题，
+  // 再用新的内容组编号上传改好的文件。恢复后是草稿，要在下面把状态改成已发布才对学员可见。
+  async function retire() {
+    const sure = window.confirm(
+      `停用第 ${question.ord} 题？\n停用后学员组卷和练习都抽不到它，错题本里也不再显示；` +
+      '作答记录和成绩报告保留。可以恢复，恢复后是草稿，要重新发布。');
+    if (!sure) return;
+    setBusy(true); setError('');
+    try {
+      await post(`/admin/bank/questions/${question.question_id}/retire`);
+      await onSaved();
+    } catch (e) { setError(e.message); setBusy(false); }
+  }
+  async function restore() {
+    setBusy(true); setError('');
+    try {
+      await post(`/admin/bank/questions/${question.question_id}/restore`);
+      await onSaved();
+    } catch (e) { setError(e.message); setBusy(false); }
+  }
 
   async function save() {
     setBusy(true); setError('');
@@ -440,8 +465,9 @@ function QuestionEditor({ question, tagLibrary, onClose, onSaved }) {
           <select id="status" className="input" value={form.status}
             onChange={(e) => set('status', e.target.value)}>
             <option value="草稿">草稿</option>
-            <option value="已发布" disabled={form.answerState !== '已确认'}>
-              已发布{form.answerState !== '已确认' ? '（答案确认后才能选）' : ''}
+            <option value="已发布" disabled={form.answerState !== '已确认' || Boolean(question.retired_at)}>
+              已发布{question.retired_at ? '（已停用，先恢复）'
+                : form.answerState !== '已确认' ? '（答案确认后才能选）' : ''}
             </option>
             <option value="存疑">存疑（不随整卷发布）</option>
           </select>
@@ -452,6 +478,28 @@ function QuestionEditor({ question, tagLibrary, onClose, onSaved }) {
             onChange={(e) => set('reviewed', e.target.checked)} />
           <span className="small">标记为已校对</span>
         </label>
+
+        <div className="field retire-box">
+          <label>停用</label>
+          {question.retired_at ? (
+            <>
+              <p className="small">
+                这道题 {question.retired_at} 由 {question.retired_by || '—'} 停用：学员组卷和练习抽不到它，
+                错题本里也不显示。
+              </p>
+              <button className="btn" onClick={restore} disabled={busy}>恢复这道题</button>
+              <p className="tiny faint">恢复后是草稿，要把上面的题目状态改成「已发布」才对学员可见。</p>
+            </>
+          ) : (
+            <>
+              <p className="tiny faint">
+                题的内容错了：在这里停用，再用新的内容组编号上传改好的文件（导入过的文件不能再改）。
+                停用后学员组卷和练习都抽不到它，错题本里也不再显示；作答记录保留。可以恢复。
+              </p>
+              <button className="btn danger" onClick={retire} disabled={busy}>停用这道题</button>
+            </>
+          )}
+        </div>
 
         <div className="sticky-actions">
           <button className="btn" onClick={save} disabled={busy}>{busy ? '保存中…' : '保存'}</button>

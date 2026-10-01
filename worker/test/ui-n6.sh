@@ -46,7 +46,7 @@ SEED_SUBJECT_DIR="$ROOT_DIR/../data/subjects/biochem" \
 for f in "$BIO_SEED"/*.sql; do
   npx wrangler d1 execute "$D1_NAME" --local --file="$f" >/dev/null 2>&1 || { echo "导入 $f 失败"; exit 1; }
 done
-npx wrangler d1 execute "$D1_NAME" --local --file=sql/publish-all.sql >/dev/null 2>&1
+npx wrangler d1 execute "$D1_NAME" --local --file=test/fixtures/publish-all.sql >/dev/null 2>&1
 
 source "$ROOT_DIR/test/lib/d1.sh"   # sql / one / exec_sql（读库失败会在 stderr 报出来）
 BIO_LABEL=$(one "SELECT label FROM exams WHERE exam_id='biochem-ch01';")

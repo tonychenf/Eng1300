@@ -51,8 +51,8 @@ VARS
 for m in migrations/*.sql; do
   npx wrangler d1 execute "$D1_NAME" --local --file="$m" >/dev/null 2>&1 || { echo "执行 $m 失败"; exit 1; }
 done
-# 先重新生成英语的种子。**这一套测的是种子 SQL 本身的语义**（清理段只清 SEED、
-# 内容组带 origin），而 worker/seed/ 是构建产物、不进 git——改了生成器不重新生成的话，
+# 先重新生成英语的种子。**这一套测的是种子 SQL 本身的语义**（只插不删、导入过的章节
+# 再执行会整体失败、内容组带 origin），而 worker/seed/ 是构建产物、不进 git——改了生成器不重新生成的话，
 # 这里导进去的是上一次留下的旧 SQL，断言照样跑、照样绿，测的却是旧行为。
 # 我就是这么让 origin 那四条断言"通过"了一轮的。
 SEED_SUBJECT_DIR="$ROOT_DIR/../data/subjects/english" \
@@ -73,7 +73,7 @@ SEED_SUBJECT_DIR="$ROOT_DIR/../data/subjects/biochem" \
 for f in "$BIO_SEED"/*.sql; do
   npx wrangler d1 execute "$D1_NAME" --local --file="$f" >/dev/null 2>&1 || { echo "导入 $f 失败"; exit 1; }
 done
-npx wrangler d1 execute "$D1_NAME" --local --file=sql/publish-all.sql >/dev/null 2>&1
+npx wrangler d1 execute "$D1_NAME" --local --file=test/fixtures/publish-all.sql >/dev/null 2>&1
 
 echo
 echo "== 两个学科的数据都在（否则下面全是恒等式） =="
@@ -339,10 +339,9 @@ check "现有内容组的来源都是种子" \
 
 # ① 先摘掉这套卷子的作答引用。
 # 前面的 B14 段组过三次卷，attempt_questions 里留着指向这些题的行，而 workerd
-# **强制外键**——不摘的话，护栏被拿掉之后 DELETE 也会被外键拦住，数据照样在，
-# 下面三条就都成了恒真的。**我第一版就是这样：把护栏整个删掉做变异验证，
-# 仍然 104/0**，那三条断言其实什么都没测。
-# （种子的清理段删不动被作答过的题，这件事本身是隐患，记在踩坑记录第十三节。）
+# **强制外键**——不摘的话，种子里哪天又冒出 DELETE（CR-H4 之前就是先删后插），
+# 也会被外键拦住，数据照样在，下面几条就都成了恒真的。**我第一版就是这样：
+# 把护栏整个删掉做变异验证，仍然 104/0**，那几条断言其实什么都没测。
 exec_sql "DELETE FROM answer_records WHERE question_id IN (SELECT question_id FROM questions WHERE exam_id='$UP_EX');
   DELETE FROM attempt_questions WHERE question_id IN (SELECT question_id FROM questions WHERE exam_id='$UP_EX');
   DELETE FROM wrong_items WHERE question_id IN (SELECT question_id FROM questions WHERE exam_id='$UP_EX');"
@@ -360,19 +359,15 @@ check "哨兵 label 没被冲掉" \
   "$(one "SELECT label FROM exams WHERE exam_id='$UP_EX';")" "__上传哨兵__"
 check "它的题一道都没少" "$(one "SELECT COUNT(*) FROM questions WHERE exam_id='$UP_EX';")" "$UP_BEFORE"
 
-# ③ 正面对照：护栏不能把正常的重导也挡死。红的时候要说得出为什么——
-# 只报"期望 0 实际 1"的话，下一个人得把整套重放一遍才知道是哪句 SQL 失败。
+# ③ 改回种子来源再执行一次：CR-H4 之后，导入过的章节**不管来自种子还是上传**都不许被覆盖。
+# 以前这里断的是"改回种子之后重导又能成功、哨兵被换回种子里的标题"——那正是 H4 要消灭的
+# 行为：重导把管理员在后台改过的东西冲回文件里的样子。现在同一个文件再执行，要整体失败、
+# 哨兵原样留着（用户 2026-10-01 定的规矩：内容要改，停用旧题、用新编号加新文件）。
 exec_sql "UPDATE exams SET origin='SEED' WHERE exam_id='$UP_EX';"
 npx wrangler d1 execute "$D1_NAME" --local --file="$UP_SEED" >/tmp/n6-reimport.log 2>&1
-REIMPORT_RC=$?
-check "改回种子之后重导又能成功" "$REIMPORT_RC" "0"
-[ "$REIMPORT_RC" = "0" ] || {
-  echo "     （重导失败，报错如下）"
-  sed 's/\x1b\[[0-9;]*m//g' /tmp/n6-reimport.log | grep -E "ERROR" | head -3 | sed 's/^/       /'
-}
-# 这一条让正面对照也不至于空转：重导要真的把数据换过一遍，哨兵才会消失。
-check "重导之后哨兵被换回种子里的标题" \
-  "$(one "SELECT label FROM exams WHERE exam_id='$UP_EX';")" "$UP_TITLE"
+check "改回种子来源之后再执行，照样整体失败（导入过的章节不许覆盖）" "$?" "1"
+check "哨兵 label 还在（没被种子里的标题 $UP_TITLE 覆盖）" \
+  "$(one "SELECT label FROM exams WHERE exam_id='$UP_EX';")" "__上传哨兵__"
 
 echo
 echo "== 旧库模拟：新列补得上、回填对得上 =="
@@ -558,6 +553,68 @@ exec_sql "UPDATE questions SET answer_state='待核' WHERE question_id='$VIOL';"
 check "出现违例时报得出来" "$(stat)" "1"
 exec_sql "UPDATE questions SET answer_state='已确认' WHERE question_id='$VIOL';"
 check "改回去之后又是 0" "$(stat)" "0"
+
+echo
+echo "== 单题停用 / 恢复（CR-H4）=="
+# 导入过的题库文件不许改：题的内容错了，管理员在后台把它停用，再用新编号加新文件。
+# 停用的题要从三处消失——抽题（组卷、练习、题型清单都引 pickableSql）、整卷发布、学员错题本——
+# 作答记录和成绩报告留着。挑一道"练习抽得到"的题：先从题型清单里拿一个有题的题型，再在它下面挑。
+stypes() { stu "$BASE/practice/section-types?courseCode=13000"; }
+RT=$(stypes | jq -r '[.sectionTypes[] | select(.question_count > 0)][0].section_type // empty')
+RQ=$(one "SELECT question_id FROM questions WHERE course_code='13000' AND section_type='$RT'
+          AND status='已发布' AND answer_state='已确认' AND retired_at IS NULL ORDER BY question_id LIMIT 1;")
+REX=$(one "SELECT exam_id FROM questions WHERE question_id='$RQ';")
+type_count() { stypes | jq -r --arg t "$RT" '[.sectionTypes[] | select(.section_type == $t) | .question_count][0] // 0'; }
+in_wrongbook() { stu "$BASE/wrongbook?courseCode=13000" | jq -r --arg q "$RQ" '[.items[] | select(.questionId == $q)] | length'; }
+echo "     停用 $RQ（$REX，题型「$RT」）"
+check "（前提）挑到了一道练习抽得到的题" "$([ -n "$RQ" ] && [ -n "$REX" ] && echo yes)" "yes"
+N_BEFORE=$(type_count)
+exec_sql "INSERT INTO wrong_items (user_id, course_code, question_id) VALUES ((SELECT id FROM users WHERE username='T601'), '13000', '$RQ');"
+check "（前提）它在学员的错题本里" "$(in_wrongbook)" "1"
+WRONG_BEFORE=$(stu "$BASE/me/subjects" | jq -r '.subjects[] | select(.code=="english") | .wrongOpen')
+
+check "学员不能停用题（后台接口）" \
+  "$(stuj -o /dev/null -w '%{http_code}' -X POST "$BASE/admin/bank/questions/$RQ/retire")" "403"
+R=$(admj -X POST "$BASE/admin/bank/questions/$RQ/retire")
+check "停用成功：原来是已发布，现在退回草稿" \
+  "$(echo "$R" | jq -r '[.ok, .wasPublished, .status] | map(tostring) | join("/")')" "true/true/草稿"
+check "  记下了停用时间和停用人" \
+  "$(one "SELECT (retired_at IS NOT NULL) || '/' || retired_by FROM questions WHERE question_id='$RQ';")" "1/admin"
+check "题型清单里这个题型少了一道" "$(type_count)" "$((N_BEFORE - 1))"
+# 上一条其实只证明了"停用时退回草稿"：草稿本来就抽不到，把抽题判据里停用那个分量去掉它照样绿
+# （变异验证时就是这样）。抽题判据自己也得排除停用的题——哪条路把它弄回了已发布（直接改库、
+# 将来某个新入口），抽题照样不能抽到它，看板也要报得出这种状态。
+exec_sql "UPDATE questions SET status='已发布' WHERE question_id='$RQ';"
+check "停用的题就算被改回已发布，抽题判据照样排除它" "$(type_count)" "$((N_BEFORE - 1))"
+check "  看板报得出「停用却已发布」" "$(adm "$BASE/admin/bank/stats" | jq -r '.retiredButPublished')" "1"
+exec_sql "UPDATE questions SET status='草稿' WHERE question_id='$RQ';"
+check "学员错题本里不再有它" "$(in_wrongbook)" "0"
+check "学科卡片上的错题数也少了一道" \
+  "$(stu "$BASE/me/subjects" | jq -r '.subjects[] | select(.code=="english") | .wrongOpen')" "$((WRONG_BEFORE - 1))"
+check "错题记录本身还在（只是不显示）" \
+  "$(one "SELECT COUNT(*) FROM wrong_items WHERE question_id='$RQ';")" "1"
+check "再停用一次：409" \
+  "$(admj -o /dev/null -w '%{http_code}' -X POST "$BASE/admin/bank/questions/$RQ/retire")" "409"
+R=$(admj -X PATCH "$BASE/admin/bank/questions/$RQ" -d '{"status":"已发布"}')
+check "停用的题不能单独发布" "$(echo "$R" | jq -r '.error')" "question_retired"
+R=$(admj -X POST "$BASE/admin/bank/exams/$REX/publish")
+check "整卷重新发布照常成功" "$(echo "$R" | jq -r '.ok')" "true"
+check "  但跳过了停用的题" "$(one "SELECT status FROM questions WHERE question_id='$RQ';")" "草稿"
+check "看板：停用 1 道、其中已发布 0 道" \
+  "$(adm "$BASE/admin/bank/stats" | jq -r '"\(.retiredQuestions)/\(.retiredButPublished)"')" "1/0"
+
+R=$(admj -X POST "$BASE/admin/bank/questions/$RQ/restore")
+check "恢复成功，题还是草稿（要重新发布）" "$(echo "$R" | jq -r '[.ok, .status] | map(tostring) | join("/")')" "true/草稿"
+check "  停用记录清掉了" "$(one "SELECT COALESCE(retired_at, '空') || '/' || COALESCE(retired_by, '空') FROM questions WHERE question_id='$RQ';")" "空/空"
+check "错题本里又看得到它" "$(in_wrongbook)" "1"
+check "草稿还抽不到" "$(type_count)" "$((N_BEFORE - 1))"
+admj -X PATCH "$BASE/admin/bank/questions/$RQ" -d '{"status":"已发布"}' >/dev/null
+check "重新发布之后又抽得到" "$(type_count)" "$N_BEFORE"
+check "再恢复一次：409" \
+  "$(admj -o /dev/null -w '%{http_code}' -X POST "$BASE/admin/bank/questions/$RQ/restore")" "409"
+check "不存在的题：404" \
+  "$(admj -o /dev/null -w '%{http_code}' -X POST "$BASE/admin/bank/questions/no-such-q/retire")" "404"
+exec_sql "DELETE FROM wrong_items WHERE question_id='$RQ';"
 
 echo
 echo "== 服务还活着 =="

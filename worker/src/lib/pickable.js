@@ -1,9 +1,10 @@
 // 一道题"能不能被抽给学员"的判据，以及答案状态的合法取值。
 //
-// 为什么单独拿出来一个文件：判据有两个分量（校对状态 + 答案状态），
+// 为什么单独拿出来一个文件：判据有三个分量（校对状态 + 答案状态 + 没停用），
 // 而它散落在七处查询里——组卷三处、练习三处、题型清单一处。
-// 加第三个分量时漏掉一处，症状是"某道缺答案的题偶尔出现在练习里"：
-// 抽题带随机，测不稳；线上也要很久才被人撞见一次。
+// 加一个分量时漏掉一处，症状是"某道缺答案的题偶尔出现在练习里"：
+// 抽题带随机，测不稳；线上也要很久才被人撞见一次。第三个分量（CR-H4 的单题停用）
+// 就是照这个办法加的：只改下面这一个函数。
 //
 // 为什么答案状态要进抽题条件，而不是只靠发布门（§6.4.10、B14）：
 // 发布门管的是"进入已发布的那一刻"。答案录错了要退回重录，那时题已经是
@@ -33,5 +34,14 @@ export const isAnswerSource = (v) => ANSWER_SOURCES.includes(v);
  */
 export function pickableSql(alias) {
   const p = alias ? `${alias}.` : '';
-  return `${p}status = '已发布' AND ${p}answer_state = '${ANSWER_CONFIRMED}'`;
+  return `${p}status = '已发布' AND ${p}answer_state = '${ANSWER_CONFIRMED}' AND ${p}retired_at IS NULL`;
+}
+
+/**
+ * 错题本里"这条还算数"的判据（CR-H4）：题被停用了，学员的错题本就不再显示它，
+ * 也不计入错题数、不再拿去做错因分析。作答记录和成绩报告照旧引用它——那是已经发生的事。
+ * w 是 wrong_items 在该查询里的别名。和 pickableSql 一样只此一处，几处查询都引它。
+ */
+export function wrongItemVisibleSql(w = 'w') {
+  return `NOT EXISTS (SELECT 1 FROM questions rq WHERE rq.question_id = ${w}.question_id AND rq.retired_at IS NOT NULL)`;
 }

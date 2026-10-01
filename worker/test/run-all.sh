@@ -36,9 +36,9 @@ REPO_DIR="$(cd "$WORKER_DIR/.." && pwd)"
 # 顺序按 2026-09-30 四路并行实测的各套用时排（n5-items 606 秒、n6-content 543 秒……
 # m2-smoke 69 秒）。第一版凭感觉排，cr-h2-publish 和 n3-rebuild 排在最后，
 # 其余都跑完了还要等它俩三四分钟。以后加了新套件，按它的实测用时插进来。
-SERVER_SUITES=(n5-items deploy-local n6-content cr-h2-publish n6b-upload n3-rebuild n2-grants m4-smoke
+SERVER_SUITES=(n5-items deploy-local n6-content h4-seed-guard n6b-upload n3-rebuild n2-grants m4-smoke
   m5-smoke n3-pack n4-parity m3-smoke n7d-ai-purposes n5b-assets m6-acceptance cr-auth-limits
-  prod-e2e-local n1-subjects m2-smoke d1-lib db-isolation)
+  prod-e2e-local n1-subjects m2-smoke d1-lib db-isolation bank-files-guard)
 UI_SUITES=(ui-items ui-rich ui-n6 ui-n6b ui-smoke ui-subjects)   # 同上，按实测用时（94 秒 … 49 秒）
 NODE_TESTS=(grade-items.test.mjs rich-text.test.mjs docx-import.test.mjs normalizers.test.mjs
   ai-purposes.test.mjs auth-guard.test.mjs quota-degrade.mjs essay-parse.mjs)

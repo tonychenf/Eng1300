@@ -50,7 +50,7 @@ for m in migrations/*.sql; do
   npx wrangler d1 execute "$D1_NAME" --local --file="$m" >/dev/null 2>&1 || { echo "执行 $m 失败"; exit 1; }
 done
 # 实测组的是 13000 的卷，导这门课的几套就够
-for f in seed/english-000-knowledge-points.sql seed/english-*-13000-*.sql sql/publish-all.sql; do
+for f in seed/english-000-knowledge-points.sql seed/english-*-13000-*.sql test/fixtures/publish-all.sql; do
   npx wrangler d1 execute "$D1_NAME" --local --file="$f" >/dev/null 2>&1 || { echo "导入 $f 失败"; exit 1; }
 done
 # 实测脚本这里要跑三遍，每遍组一份卷，一分钟内就超过每分钟 3 份。限流不是这一套要测的

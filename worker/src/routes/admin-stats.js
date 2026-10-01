@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { shapeContentGroup } from '../lib/content-group.js';
 import { masteryTier } from '../lib/mastery.js';
 import { loadPacksForCourses } from '../lib/subject-pack.js';
+import { wrongItemVisibleSql } from '../lib/pickable.js';
 
 export const adminStatsRouter = new Hono();
 
@@ -24,7 +25,7 @@ adminStatsRouter.get('/students', async (c) => {
                JOIN attempts a ON a.attempt_id = r.attempt_id
               WHERE a.user_id = u.id AND r.is_correct IS NOT NULL) AS answered,
             (SELECT COUNT(*) FROM wrong_items w
-              WHERE w.user_id = u.id AND w.corrected = 0) AS wrong_open,
+              WHERE w.user_id = u.id AND w.corrected = 0 AND ${wrongItemVisibleSql('w')}) AS wrong_open,
             (SELECT COUNT(*) FROM wrong_items w
               WHERE w.user_id = u.id AND w.corrected = 1) AS wrong_cleared,
             (SELECT MAX(a.started_at) FROM attempts a WHERE a.user_id = u.id) AS last_activity
@@ -91,9 +92,10 @@ adminStatsRouter.get('/overview', async (c) => {
        (SELECT COUNT(*) FROM attempts WHERE mode = 'EXAM' AND status = '已交卷') AS exams_done,
        (SELECT COUNT(*) FROM attempts WHERE mode = 'PRACTICE') AS practices,
        (SELECT COUNT(*) FROM answer_records WHERE is_correct IS NOT NULL) AS answers,
-       (SELECT COUNT(*) FROM wrong_items WHERE corrected = 0) AS wrong_open,
+       (SELECT COUNT(*) FROM wrong_items w WHERE w.corrected = 0 AND ${wrongItemVisibleSql('w')}) AS wrong_open,
        (SELECT COUNT(*) FROM questions WHERE status = '已发布') AS questions_live,
        (SELECT COUNT(*) FROM questions WHERE status = '存疑') AS questions_held,
+       (SELECT COUNT(*) FROM questions WHERE retired_at IS NOT NULL) AS questions_retired,
        (SELECT COUNT(*) FROM questions WHERE answer_state = '缺答案') AS questions_no_answer,
        (SELECT COUNT(*) FROM questions WHERE answer_state = '待核') AS questions_unreviewed`
   ).first();

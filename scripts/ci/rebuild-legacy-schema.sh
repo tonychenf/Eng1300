@@ -133,8 +133,11 @@ d1 --command "
 # 题库拆掉了，种子的内容指纹就必须一起作废，否则 seed-if-changed.sh 会看着
 # "指纹没变"把导入整个跳过，留下一个空题库——而在它之后的每一步都不会报错。
 # 这条不变量当时缺了，就是 #44 那次空题库的直接原因。
+# 三种名字都要清：N3 时期的 NNN-*.sql、后来带学科前缀的 <学科>-NNN-*.sql（含知识点文件，
+# 知识点表也一起拆了），以及 CR-H4 之后按内容组编号记的 group:<编号>——
+# 不清后者，导题库那一步会看到"有导入记录、库里却没有这一章"，把每一章都拒掉。
 echo "  ++ 作废题库种子指纹，强制下一步重新导入"
-d1 --command "DELETE FROM seed_state WHERE name GLOB '[0-9][0-9][0-9]-*.sql';" || exit 1
+d1 --command "DELETE FROM seed_state WHERE name GLOB '[0-9][0-9][0-9]-*.sql' OR name GLOB '*-[0-9][0-9][0-9]-*.sql' OR substr(name, 1, 6) = 'group:';" || exit 1
 
 drop_latch
 # 不在这里重建表：紧接着跑的迁移会按 0002_bank.sql 的新结构建出来，

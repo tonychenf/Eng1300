@@ -90,7 +90,9 @@ npx wrangler d1 execute "$D1_NAME" --local --command "
     VALUES ('TUTORING','http://x/v1','ENC-KEY-DO-NOT-LOSE','m1'),
            ('PARSING','http://y/v1','ENC-KEY-2','m2');
   INSERT OR IGNORE INTO seed_state (name,sha) VALUES
-    ('001-fake-exam.sql','deadbeef'), ('002-fake-exam.sql','cafebabe');
+    ('001-fake-exam.sql','deadbeef'), ('002-fake-exam.sql','cafebabe'),
+    ('english-003-fake-exam.sql','f00d'), ('english-000-knowledge-points.sql','beef'),
+    ('group:fake-exam','abad1dea');
 " >/dev/null 2>&1 || { echo "造数据失败"; exit 1; }
 
 echo
@@ -161,8 +163,12 @@ check "重建之后门闩落下了" \
   "$(one "SELECT COUNT(*) FROM seed_state WHERE name='n3-legacy-rebuild';")" "1"
 # 拆了题库却不作废指纹，seed-if-changed.sh 会看着"指纹没变"把导入整个跳过，
 # 留下一个空题库，而在它之后每一步都不报错——#44 就是这么来的。
-check "题库种子指纹已被作废" \
-  "$(one "SELECT COUNT(*) FROM seed_state WHERE name GLOB '[0-9][0-9][0-9]-*.sql';")" "0"
+# 三种名字都要清：N3 时期的 NNN-*.sql、带学科前缀的 <学科>-NNN-*.sql（含知识点文件）、
+# CR-H4 之后按内容组编号记的 group:<编号>。漏了最后一种，导题库会把每一章都当成
+# "有导入记录、库里却没有"拒掉——响是响，但题库就空在那儿了。
+check "题库种子指纹已被作废（三种名字）" \
+  "$(one "SELECT COUNT(*) FROM seed_state WHERE name GLOB '[0-9][0-9][0-9]-*.sql'
+            OR name GLOB '*-[0-9][0-9][0-9]-*.sql' OR substr(name, 1, 6) = 'group:';")" "0"
 check "非题库的门闩记录没被误删" \
   "$(one "SELECT COUNT(*) FROM seed_state WHERE name='n3-pack-seed';")" "1"
 

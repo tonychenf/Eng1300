@@ -35,7 +35,7 @@ npx wrangler d1 execute "$D1_NAME" --local --file=seed/english-000-knowledge-poi
 F=$(ls seed/*13000-2024-10.sql 2>/dev/null | head -1)
 [ -n "$F" ] || { echo "找不到种子，先跑 node scripts/build-seed-sql.mjs"; exit 1; }
 npx wrangler d1 execute "$D1_NAME" --local --file="$F" >/dev/null 2>&1
-npx wrangler d1 execute "$D1_NAME" --local --file=sql/publish-all.sql >/dev/null 2>&1
+npx wrangler d1 execute "$D1_NAME" --local --file=test/fixtures/publish-all.sql >/dev/null 2>&1
 
 echo "== 启动服务 =="
 DEV_LOG=/tmp/ui-subjects-dev.log

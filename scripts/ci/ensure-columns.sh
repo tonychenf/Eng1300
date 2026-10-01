@@ -111,6 +111,9 @@ SPECS=(
   "exam_parsing_notes|corrected_at|TEXT"
   # CR-M2：令牌版本号。带默认值，补列时旧行自动是 0，不用回填
   "users|token_version|INTEGER NOT NULL DEFAULT 0"
+  # CR-H4：单题停用。空就是没停用——旧行本来就没停用，不用回填，也不进 REQUIRED
+  "questions|retired_at|TEXT"
+  "questions|retired_by|TEXT"
 )
 
 # 补完列还要**回填**：新库从建表语句和种子里就带着值，旧库补出来的列全是 NULL，

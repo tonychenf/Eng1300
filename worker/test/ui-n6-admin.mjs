@@ -90,6 +90,32 @@ try {
     check(`${label}｜确认之后「已发布」能选了`, await publishOpt.isDisabled(), false);
     check(`${label}｜校对页不横向滚动`, await noHScroll(page), true);
 
+    // ── 单题停用 / 恢复（CR-H4）──
+    // 按钮要真的在、够点（44px）；点下去先要确认（题会从学员那边消失）；停用后列表上看得出来、
+    // 「已发布」点不了（先恢复）；恢复回得去。三种宽度各走一遍，每一轮自己恢复干净。
+    const retireBtn = page.locator('button', { hasText: '停用这道题' });
+    check(`${label}｜有停用按钮`, await retireBtn.count(), 1);
+    const rb = await retireBtn.boundingBox();
+    check(`${label}｜停用按钮够点（44px）`, (rb?.height ?? 0) >= 44, true);
+    let asked = '';
+    page.once('dialog', (d) => { asked = d.message(); d.accept(); });
+    await retireBtn.click();
+    await page.waitForSelector('[data-retired="1"]', { timeout: 15000 });
+    check(`${label}｜停用前先问了一句，并说清后果`, asked.includes('抽不到'), true);
+    check(`${label}｜列表上标出已停用`,
+      await page.locator('[data-retired="1"] .badge', { hasText: '已停用' }).count(), 1);
+    check(`${label}｜页头写着已停用 1 题`,
+      (await page.locator('.page-head').innerText()).includes('已停用 1 题'), true);
+    await page.locator('[data-retired="1"]').click();
+    await page.waitForSelector('#status', { timeout: 15000 });
+    check(`${label}｜停用的题「已发布」点不了`,
+      await page.locator('#status option[value="已发布"]').isDisabled(), true);
+    const restoreBtn = page.locator('button', { hasText: '恢复这道题' });
+    check(`${label}｜有恢复按钮`, await restoreBtn.count(), 1);
+    await restoreBtn.click();
+    await page.waitForFunction(() => !document.querySelector('[data-retired="1"]'), null, { timeout: 15000 });
+    check(`${label}｜恢复后列表上没有停用的题了`, await page.locator('[data-retired="1"]').count(), 0);
+
     // ── 重置密码的一次性口令（N7a）──
     //
     // 这一段要证明的就一件事：**口令不可能被错过**。原先它是表格上方的一条横幅，

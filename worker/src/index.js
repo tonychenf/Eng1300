@@ -14,7 +14,7 @@ import { adminGrantsRouter } from './routes/admin-grants.js';
 import { adminPackRouter } from './routes/admin-pack.js';
 import { subjectRouter } from './routes/subject.js';
 import { accessibleSubjectFilter, accessibleCourseFilter, writeGrantWithAudit, upsertGrantStmt } from './lib/access.js';
-import { pickableSql } from './lib/pickable.js';
+import { pickableSql, wrongItemVisibleSql } from './lib/pickable.js';
 
 const app = new Hono();
 app.use('/api/*', cors());
@@ -176,7 +176,8 @@ app.get('/api/me/subjects', requireAuth, async (c) => {
                 AND a.mode = 'EXAM' AND a.status = '已交卷') AS exam_count,
             (SELECT COUNT(*) FROM wrong_items w
                JOIN courses co ON co.course_code = w.course_code
-              WHERE co.subject_id = s.subject_id AND w.user_id = ?1 AND w.corrected = 0) AS wrong_open,
+              WHERE co.subject_id = s.subject_id AND w.user_id = ?1 AND w.corrected = 0
+                AND ${wrongItemVisibleSql('w')}) AS wrong_open,
             (SELECT MAX(a.started_at) FROM attempts a
                JOIN courses co ON co.course_code = a.course_code
               WHERE co.subject_id = s.subject_id AND a.user_id = ?1) AS last_activity

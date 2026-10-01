@@ -63,7 +63,7 @@ for EXAM in 00015-2015-04 00015-2016-04 00015-2019-10 13000-2026-04; do
   [ -n "$F" ] || { echo "找不到 $EXAM 的种子，先跑 node scripts/build-seed-sql.mjs"; exit 1; }
   npx wrangler d1 execute "$D1_NAME" --local --persist-to "$PERSIST" --file="$F" >/dev/null 2>&1 || { echo "导入 $F 失败"; exit 1; }
 done
-npx wrangler d1 execute "$D1_NAME" --local --persist-to "$PERSIST" --file=sql/publish-all.sql >/dev/null 2>&1
+npx wrangler d1 execute "$D1_NAME" --local --persist-to "$PERSIST" --file=test/fixtures/publish-all.sql >/dev/null 2>&1
 
 echo "== 启动服务 =="
 DEV_LOG=/tmp/cr-auth-dev.log

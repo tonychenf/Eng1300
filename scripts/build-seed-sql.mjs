@@ -155,12 +155,27 @@ const kpLines = kps.map(
 // 部署又原样重导一遍，再次在同一处失败——每跑一次白烧约 578 行额度，永远
 // 走不出来。写进同一个文件后，d1 execute --file 是一次导入，指纹和数据同生
 // 共死，导入成功就一定记上了。
-function writeSeedFile(dir, name, lines) {
+//
+// 内容组（一章、一套卷）的指纹另有讲究（CR-H4）：按**内容组编号**记（group:<编号>），
+// 算的是**题库文件本身**的字节，并且是普通 INSERT——导入过的章节再导一次，连同这一行在内整个失败。
+// 用户定的规矩是"导入过的文件不许改"：内容要改，停用旧题、用新编号加新文件。所以这一行一旦写下就
+// 不该被覆盖；改过的文件由导题库那一步拒绝（scripts/ci/seed-if-changed.sh），这里是最后一道：
+// 有人绕过脚本手动执行种子，也只会撞在编号上失败，覆盖不了已导入的章节。
+// 不按种子文件名记，是因为文件名带序号（中间插一个新文件，后面的全变）；不按生成出来的 SQL 算，
+// 是因为那样改一下生成器，所有章节都会"变了"。
+//
+// 知识点文件照旧按文件名、可覆盖：它只做 INSERT OR IGNORE，重跑只会补，不会改或删。
+function writeSeedFile(dir, name, lines, group) {
   const body = lines.join('\n') + '\n';
-  const sha = crypto.createHash('sha256').update(body).digest('hex');
-  const stamp =
-    `INSERT INTO seed_state (name, sha, applied_at) VALUES ('${name}', '${sha}', datetime('now'))\n` +
-    `  ON CONFLICT(name) DO UPDATE SET sha = excluded.sha, applied_at = excluded.applied_at;\n`;
+  let stamp;
+  if (group) {
+    stamp = `INSERT INTO seed_state (name, sha, applied_at) VALUES ('group:${group.id}', '${group.sha}', datetime('now'));\n`;
+  } else {
+    const sha = crypto.createHash('sha256').update(body).digest('hex');
+    stamp =
+      `INSERT INTO seed_state (name, sha, applied_at) VALUES ('${name}', '${sha}', datetime('now'))\n` +
+      `  ON CONFLICT(name) DO UPDATE SET sha = excluded.sha, applied_at = excluded.applied_at;\n`;
+  }
   fs.writeFileSync(path.join(dir, name), body + stamp);
 }
 
@@ -250,35 +265,18 @@ function answerStateOf(d, qu, file) {
 }
 
 for (const file of files) {
-  const d = JSON.parse(fs.readFileSync(path.join(examDir, file), 'utf8'));
+  const raw = fs.readFileSync(path.join(examDir, file));
+  const d = JSON.parse(raw.toString('utf8'));
   const courseCode = courseOf(d.courseCode);
   const g = contentGroupOf(d, file);
   const flagged = flaggedOrders(d);
+
+  // **只插不删**（CR-H4）。以前这里先整章 DELETE 再插回来：管理员在后台的确认、改过的题面、
+  // 发布状态都被冲回文件里的样子；学员做过的章节删不掉，外键报错，部署卡死在导题库那一步。
+  // 现在已导入的章节根本不会再执行这个文件（导题库一步按指纹跳过或拒绝），万一被执行，
+  // 下面这条 INSERT INTO exams 撞主键，整个文件失败——库里一行不动。
+  // 和后台上传的内容组撞了编号也是同一个结果，那本来就该停下来让人看。
   const lines = [];
-
-  // 幂等：重复导入时先清掉这套卷的旧数据，避免主键冲突或残留
-  // 幂等清理**只清种子自己导过的内容组**（origin='SEED'）。
-  //
-  // 后台上传的那些（origin='UPLOAD'）不属于种子：清掉它们等于把管理员录好的答案
-  // 和学生已有的作答记录一起抹了，而 DELETE 删不到行是不报错的——下一次部署
-  // 整章消失，日志里一片正常。这是本项目已经踩过一次的那类事故（第十节）。
-  //
-  // 万一 id 真撞上了（一个 UPLOAD 的内容组占了种子文件的 exam_id），
-  // 下面的 INSERT INTO exams 会撞主键、整个文件导入失败、部署当场红——
-  // 这是对的：id 撞车该停下来让人看，不该悄悄合并。
-  const seedOnly = `AND ${q(g.groupId)} NOT IN (SELECT exam_id FROM exams WHERE origin = 'UPLOAD')`;
-  lines.push(
-    `DELETE FROM question_knowledge_points WHERE question_id IN (SELECT question_id FROM questions WHERE exam_id = ${q(g.groupId)}) ${seedOnly};`,
-    // 资源行跟着题一起清。不清的话重导之后会留下指向已删题目的孤儿行，
-    // 而外键在 D1 上默认不强制，不会有任何地方报错。
-    `DELETE FROM question_assets WHERE question_id IN (SELECT question_id FROM questions WHERE exam_id = ${q(g.groupId)}) ${seedOnly};`,
-    `DELETE FROM question_items WHERE question_id IN (SELECT question_id FROM questions WHERE exam_id = ${q(g.groupId)}) ${seedOnly};`,
-    `DELETE FROM questions WHERE exam_id = ${q(g.groupId)} ${seedOnly};`,
-    `DELETE FROM sections WHERE exam_id = ${q(g.groupId)} ${seedOnly};`,
-    `DELETE FROM exam_parsing_notes WHERE exam_id = ${q(g.groupId)} ${seedOnly};`,
-    `DELETE FROM exams WHERE exam_id = ${q(g.groupId)} ${seedOnly};`
-  );
-
   lines.push(
     `INSERT INTO exams (exam_id, course_code, title, label, order_key, meta, year, month, ` +
       `source_file, status, origin) VALUES (` +
@@ -379,7 +377,8 @@ for (const file of files) {
   }
 
   const outName = `${subjectCode}-${String(files.indexOf(file) + 1).padStart(3, '0')}-${g.groupId}.sql`;
-  pending.push([outName, lines]);
+  pending.push([outName, lines,
+    { id: g.groupId, sha: crypto.createHash('sha256').update(raw).digest('hex') }]);
 }
 
 if (unknownTags.size) {
@@ -408,7 +407,7 @@ if (badAssets.length) {
 for (const f of fs.readdirSync(outDir)) {
   if (f.endsWith('.sql') && f.startsWith(`${subjectCode}-`)) fs.unlinkSync(path.join(outDir, f));
 }
-for (const [name, lines] of pending) writeSeedFile(outDir, name, lines);
+for (const [name, lines, group] of pending) writeSeedFile(outDir, name, lines, group);
 
 console.log(`生成完成：${files.length} 套试卷，${totalQ} 道题，${totalItems} 个得分单元，${totalAssets} 个题目资源，` +
   `${kps.length} 个考点标签 -> ${outDir}`);

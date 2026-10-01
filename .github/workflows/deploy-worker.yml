@@ -14,12 +14,9 @@ on:
       - 'data/**'
       - 'scripts/**'
       - '.github/workflows/deploy-worker.yml'
+  # 以前这里有一个「强制重新导入全部题库」的开关。导入过的题库文件不许改、导入过的章节
+  # 不再重导（CR-H4），那个开关和这条规矩矛盾，去掉了。
   workflow_dispatch:
-    inputs:
-      force_seed:
-        description: '强制重新导入全部题库（平时不需要，会占用 D1 每日写入额度）'
-        type: boolean
-        default: false
 
 permissions:
   contents: read
@@ -42,6 +39,15 @@ jobs:
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
+        with:
+          # 下一步要拿推送前的版本比对，浅克隆取不到它
+          fetch-depth: 0
+
+      # 导入过的题库文件不许改（CR-H4）：这次推送改动或删除了已有的题库文件、题目图片，直接红，
+      # 代码都不部署。真正兜底的是部署时导题库那一步（比对库里的指纹）；这里让它更早红，并且连图片
+      # 也看得到——图片随前端上传，改了图已导入的题立刻换图，导题库那一步看不见。
+      - name: Imported question-bank files must not change
+        run: bash scripts/ci/check-bank-files.sh "${{ github.event.before }}" "${{ github.sha }}"
 
       - uses: actions/setup-node@v4
         with:
@@ -85,7 +91,7 @@ jobs:
           if-no-files-found: warn
 
   deploy:
-    # 测试红了就不部署（CR-H3）。手动触发（比如强制重导题库）也一样要先过测试。
+    # 测试红了就不部署（CR-H3）。手动触发的部署也一样要先过测试。
     needs: test
     runs-on: ubuntu-latest
     steps:
@@ -219,27 +225,21 @@ jobs:
         run: bash ../scripts/ci/ensure-worker-secrets.sh
 
       # 导题库之前记下哪些章节是已发布的，线上验证拿它逐章比对：部署不该改变任何章节的
-      # 发布状态——撤回的不能被放回去，已发布的不能因为重导被冲回草稿而丢掉（CR-M14）。
+      # 发布状态——撤回的不能被放回去，已发布的不能被部署弄丢（CR-M14）。
       - name: Record which chapters are published before seeding
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           PUBLISHED_BEFORE_FILE: ${{ runner.temp }}/published-before.txt
         run: bash scripts/ci/record-published.sh --remote
 
+      # 导入过的章节不再重导：没变的跳过，文件被改了就拒绝（库里一行不动），新章节才导入（CR-H4）。
+      # 拒绝的写进清单，由线上验证报红并点名——这一步本身不因此失败，后面的步骤照常跑完。
+      # 以前接在后面的「放行」一步（republish-reseeded.sql）也就没有东西可放了，一起拆掉（CR-H2 根治）。
       - name: Seed question bank
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          FORCE_SEED: ${{ inputs.force_seed && '1' || '0' }}
+          SEED_REFUSED_FILE: ${{ runner.temp }}/seed-refused.txt
         run: bash scripts/ci/seed-if-changed.sh
-
-      - name: Put re-seeded chapters back online
-        working-directory: worker
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: |
-          # 必须排在导入之后：种子按章节先删后插，会把状态冲回草稿。
-          # 只放回重导前就是已发布的章节（标记由导题库那一步记下），其余章节一律不碰（CR-H2）
-          npx wrangler d1 execute "$D1_NAME" --remote --yes --file=sql/republish-reseeded.sql
 
       - name: Wait for the worker to respond
         run: bash scripts/ci/wait-for-worker.sh
@@ -292,6 +292,7 @@ jobs:
       - name: Verify deployment
         env:
           PUBLISHED_BEFORE_FILE: ${{ runner.temp }}/published-before.txt
+          SEED_REFUSED_FILE: ${{ runner.temp }}/seed-refused.txt
         run: bash scripts/ci/verify-deployment.sh
 
       - name: Summary

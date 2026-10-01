@@ -117,7 +117,14 @@ CREATE TABLE IF NOT EXISTS questions (
   -- 冗余自 courses.subject_id。题型校验、报告分层都要按学科过滤，
   -- 每次都 join 一次 courses 只为拿这一个值不划算。
   -- 写入方负责保持一致（种子生成器从 courses 现取）。
-  subject_id INTEGER REFERENCES subjects(subject_id)
+  subject_id INTEGER REFERENCES subjects(subject_id),
+  -- CR-H4：单题停用。导入过的题库文件不许改（用户 2026-10-01 定的规矩），内容要改就停用旧题、
+  -- 用新编号加新文件。status 只能是三格、CHECK 改不动（同 answer_state 那条），所以单开两列：
+  -- retired_at 不为空就是停用了——抽题排除（lib/pickable.js）、发布跳过、学员错题本不再显示；
+  -- 作答记录和成绩报告照旧引用它。可以恢复，恢复后是草稿，要重新发布。
+  -- 线上那张表是早先建的，这两列由 scripts/ci/ensure-columns.sh 补上（排在迁移之前）。
+  retired_at TEXT,
+  retired_by TEXT
 );
 CREATE INDEX IF NOT EXISTS idx_questions_subject ON questions(subject_id, status);
 -- 组卷与练习抽题的主查询路径：按课程+题型+状态筛选

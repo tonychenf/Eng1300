@@ -5,6 +5,7 @@ import { masteryTier } from '../lib/mastery.js';
 import { gradeEssay, analyzeWrong, assessAbility } from '../lib/tutor.js';
 import { loadAssetRows } from '../lib/stem-assets.js';
 import { mapLimit } from '../lib/ai.js';
+import { wrongItemVisibleSql } from '../lib/pickable.js';
 import { loadPackByCourse, aiGradedTypes, typeInClause } from '../lib/subject-pack.js';
 
 // 错题分析的并发上限。20 条分四批约 15 秒，既压住总时长，
@@ -44,7 +45,8 @@ studyRouter.get('/wrongbook', async (c) => {
   // 连同题干、答案、解析原样列出来（CR-H1 评估时本地复现）。带课程码时中间件已经拦过，
   // 这条过滤恒真，所以不分支——两套 SQL 分支是"其中一套悄悄写错了也没人知道"的温床。
   const acc = accessibleCourseFilter(me, 'w');
-  const conds = ['w.user_id = ?', acc.sql];
+  // 停用的题不再显示、不计入错题数（CR-H4）
+  const conds = ['w.user_id = ?', acc.sql, wrongItemVisibleSql('w')];
   const binds = [me.id, ...acc.binds];
   if (courseCode) { conds.push('w.course_code = ?'); binds.push(courseCode); }
   if (sectionType) { conds.push('q.section_type = ?'); binds.push(sectionType); }
@@ -112,7 +114,7 @@ studyRouter.get('/wrongbook/filters', async (c) => {
   const { results: types } = await c.env.DB.prepare(
     `SELECT q.section_type, COUNT(*) AS n
        FROM wrong_items w JOIN questions q ON q.question_id = w.question_id
-      WHERE w.user_id = ? AND w.corrected = 0 AND ${acc.sql}
+      WHERE w.user_id = ? AND w.corrected = 0 AND ${acc.sql} AND ${wrongItemVisibleSql('w')}
       GROUP BY q.section_type ORDER BY n DESC`
   ).bind(me.id, ...acc.binds).all();
   const { results: tags } = await c.env.DB.prepare(
@@ -120,7 +122,7 @@ studyRouter.get('/wrongbook/filters', async (c) => {
        FROM wrong_items w
        JOIN question_knowledge_points x ON x.question_id = w.question_id
        JOIN knowledge_points k ON k.tag_id = x.tag_id
-      WHERE w.user_id = ? AND w.corrected = 0 AND ${acc.sql}
+      WHERE w.user_id = ? AND w.corrected = 0 AND ${acc.sql} AND ${wrongItemVisibleSql('w')}
       GROUP BY k.name ORDER BY n DESC`
   ).bind(me.id, ...acc.binds).all();
   return c.json({ sectionTypes: types, knowledgePoints: tags });
@@ -202,6 +204,7 @@ studyRouter.post('/ai/attempts/:id/run', async (c) => {
        JOIN sections s ON s.section_id = q.section_id
        LEFT JOIN answer_records r ON r.question_id = w.question_id AND r.attempt_id = ?
       WHERE w.user_id = ? AND w.last_attempt_id = ? AND w.ai_status != '已生成'
+        AND ${wrongItemVisibleSql('w')}
       LIMIT 20`
   ).bind(attemptId, me.id, attemptId).all();
 
@@ -364,7 +367,7 @@ studyRouter.post('/ai/assessment', async (c) => {
        FROM wrong_items w
        JOIN question_knowledge_points x ON x.question_id = w.question_id
        JOIN knowledge_points k ON k.tag_id = x.tag_id
-      WHERE w.user_id = ? AND w.course_code = ? AND w.corrected = 0
+      WHERE w.user_id = ? AND w.course_code = ? AND w.corrected = 0 AND ${wrongItemVisibleSql('w')}
       GROUP BY k.name ORDER BY n DESC LIMIT 5`
   ).bind(me.id, courseCode).all();
 

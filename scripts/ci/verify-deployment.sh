@@ -25,6 +25,19 @@ check "健康检查" "$CODE" "200"
 CODE=$(curl -sS -m 20 -o /dev/null -w '%{http_code}' "$WORKER_URL/api/me" || echo 000)
 check "未登录访问 /api/me 被拒绝" "$CODE" "401"
 
+# 导题库那一步拒绝了哪些文件（CR-H4）。导入过的题库文件不许改：被改了的那一步不导入、库里一行不动，
+# 也不在那一步失败（不然后面的初始化和这里的验证全被跳过），而是记进清单，由这里报红并点名。
+# 清单不在就是那一步没跑完或者没交接上——当成"没有拒绝"的话，这条就永远是绿的。
+if [ -z "${SEED_REFUSED_FILE:-}" ] || [ ! -f "$SEED_REFUSED_FILE" ]; then
+  echo "  FAIL 导题库那一步没有留下拒绝清单（${SEED_REFUSED_FILE:-SEED_REFUSED_FILE 没设}），说不清有没有文件被拒"; FAIL=1
+elif [ -s "$SEED_REFUSED_FILE" ]; then
+  echo "  FAIL 导题库拒绝了 $(grep -c . "$SEED_REFUSED_FILE") 个题库文件（库里没动它们）："
+  sed 's/^/         /; s/\t/：/' "$SEED_REFUSED_FILE"
+  FAIL=1
+else
+  echo "  OK   导题库没有拒绝任何文件（导入过的题库文件都没被改过）"
+fi
+
 if [ -n "${ADMIN_TOKEN:-}" ]; then
   ROLE=$(curl -sS -m 20 "$WORKER_URL/api/me" -H "Authorization: Bearer $ADMIN_TOKEN" \
     | jq -r '.user.role // "none"' || echo none)
@@ -80,9 +93,9 @@ if [ -n "${ADMIN_TOKEN:-}" ]; then
 
     # 部署不该改变任何章节的发布状态（CR-M14）。这里原先断的是"英语 20 套试卷全部已发布"——
     # H2 之后撤回会保留，管理员撤回任何一套英语卷，之后每次部署都会红，和下面生化那段说的是
-    # 同一个毛病。真正要守的是部署前后一样：多了是"撤回的被放回去"（H2），少了是"重导冲回草稿、
-    # 放行没放回来"。部署前的状态由导题库之前那步读库记下（record-published.sh），部署后的从
-    # 后台接口取，两边不同源。
+    # 同一个毛病。真正要守的是部署前后一样：多了是"撤回的被放回去"（H2），少了是"被部署弄丢了"
+    # （以前种子整章重导会冲回草稿；CR-H4 之后导入过的章节不再重导，这条守着它别再回来）。
+    # 部署前的状态由导题库之前那步读库记下（record-published.sh），部署后的从后台接口取，两边不同源。
     curl -sS -m 20 -G -o "$T/published.json" "$WORKER_URL/api/admin/bank/exams" \
       --data-urlencode "status=已发布" -H "Authorization: Bearer $TOKEN"
     if ! jq -e '.exams | type == "array"' "$T/published.json" >/dev/null 2>&1; then
@@ -119,6 +132,8 @@ if [ -n "${ADMIN_TOKEN:-}" ]; then
     # 交叉起来才是"把没人核过的答案发给了学员"——所以看板专门算了这个数。
     check "没有一道已发布的题是答案未确认的（§6.4.10 硬约束）" \
       "$(echo "$STATS" | jq -r '.publishedWithoutConfirmedAnswer')" "0"
+    # CR-H4：停用的题退回草稿、整卷发布跳过它，所以"已发布又停用"永远该是 0
+    check "没有一道停用的题还在已发布状态" "$(echo "$STATS" | jq -r '.retiredButPublished')" "0"
     BIO_PUB=$(echo "$STATS" | jq -r '[.byType[] | select(.course_code == "biochem-main") | .published] | add // 0')
     BIO_CONFIRMED=$(echo "$STATS" | jq -r '.byAnswerState[] | select(.subject_code == "biochem") | .confirmed')
     echo "     （生化 $BIO_TOTAL 道，已确认 $BIO_CONFIRMED 道，已发布 $BIO_PUB 道）"
@@ -143,9 +158,9 @@ if [ -n "${ADMIN_TOKEN:-}" ]; then
     check "存疑题确实被排除在可抽题之外" "$(( PUBLISHED_Q > 0 && PUBLISHED_Q < QUESTIONS ))" "1"
     echo "     （共 $QUESTIONS 题，其中 $PUBLISHED_Q 题可参与组卷）"
     # 这里原先断"解析存疑记录已清零"（全库），那是部署每次跑 publish-all.sql 清掉全部存疑的年代。
-    # H2 之后部署不再替人清：撤回的章节重导之后、后台上传还没核的内容，存疑都是正常在等人看的，
+    # H2 之后部署不再替人清：新导入还没人看的章节、后台上传还没核的内容，存疑都是正常在等人看的，
     # 全库清零会拦正常操作。要守的是：已发布的章节没有未处理的存疑——发布那道门要求存疑清零，
-    # 重导把存疑插回来的已发布章节由放行一步处理掉；哪一步漏了，这里就红。
+    # 有哪条路绕过了那道门（或者已发布的章节被插进了新的存疑），这里就红。
     check "已发布的章节没有未处理的解析存疑" \
       "$(jq -r '[.exams[].open_notes] | add // 0' "$T/published.json" 2>/dev/null)" "0"
 

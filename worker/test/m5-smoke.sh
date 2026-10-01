@@ -48,7 +48,7 @@ npx wrangler d1 execute "$D1_NAME" --local --file=seed/english-000-knowledge-poi
 for EXAM in 00015-2015-04 00015-2016-04 00015-2019-10 13000-2026-04; do
   npx wrangler d1 execute "$D1_NAME" --local --file="$(ls seed/*"$EXAM".sql | head -1)" >/dev/null 2>&1
 done
-npx wrangler d1 execute "$D1_NAME" --local --file=sql/publish-all.sql >/dev/null 2>&1
+npx wrangler d1 execute "$D1_NAME" --local --file=test/fixtures/publish-all.sql >/dev/null 2>&1
 # 本套一分钟内连组 4 份卷（A1–A4）测 AI 链路，会撞上组卷限流（CR-M1，默认每分钟 3 份）。
 # 限流本身在 cr-auth-limits.sh 测，这里把上限放开，免得第 4 份被 429、后面的场景拿不到卷
 npx wrangler d1 execute "$D1_NAME" --local --command \

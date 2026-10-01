@@ -240,7 +240,7 @@ BODY=$(curl -s "$ORIGIN/api/does-not-exist")
 case "$BODY" in *not_found*) check "未知接口返回 JSON 404" "ok" "ok" ;; *) check "未知接口返回 JSON 404" "$BODY" "not_found" ;; esac
 
 echo "== 一次性放行脚本 =="
-npx wrangler d1 execute "$D1_NAME" --local --file=sql/publish-all.sql >/dev/null 2>&1 \
+npx wrangler d1 execute "$D1_NAME" --local --file=test/fixtures/publish-all.sql >/dev/null 2>&1 \
   || { echo "  FAIL publish-all.sql 执行失败"; FAIL=$((FAIL+1)); }
 curl -s -o /tmp/stats2.json "$BASE/admin/bank/stats" -H "Authorization: Bearer $ADMIN"
 check "存疑记录已清零" "$(jq -r '.unresolvedNotes' /tmp/stats2.json)" "0"
