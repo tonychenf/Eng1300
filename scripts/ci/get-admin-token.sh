@@ -3,7 +3,12 @@
 # 两个 Secret 名字都认，按顺序各试一次。
 #
 # 需要环境变量：WORKER_URL、ADMIN_PASSWORD 和/或 ADMIN_PASS、GITHUB_ENV
+# 写入 GITHUB_ENV：ADMIN_TOKEN；ADMIN_LOGIN_AT（登录成功那一次发请求的时刻，世界时秒数）——
+#   线上验证的写入哨兵拿它和 admin 的"最后登录时间"比：这次登录写的那一笔落库了没有（CR-M10）
 set -uo pipefail
+# 临时文件放在自己的目录里：本地两个套件会同时跑这几份脚本，用 /tmp 下的固定文件名会互相覆盖
+T=$(mktemp -d)
+trap 'rm -rf "$T"' EXIT
 
 CANDIDATES=()
 LAST_CODE=""
@@ -18,16 +23,17 @@ fi
 try_login() {
   local name="$1" secret="$2"
   local code
-  code=$(curl -sS -m 30 -o /tmp/login.json -w '%{http_code}' -X POST "$WORKER_URL/api/auth/login" \
+  LOGIN_AT=$(date -u +%s)
+  code=$(curl -sS -m 30 -o "$T/login.json" -w '%{http_code}' -X POST "$WORKER_URL/api/auth/login" \
     -H 'Content-Type: application/json' \
     --data "$(jq -n --arg p "$secret" '{username:"admin",password:$p}')" || echo 000)
-  TOKEN=$(jq -r '.token // empty' /tmp/login.json 2>/dev/null || echo '')
+  TOKEN=$(jq -r '.token // empty' "$T/login.json" 2>/dev/null || echo '')
   LAST_CODE="$code"
   if [ -n "$TOKEN" ]; then
     echo "用 $name 登录成功。"
     return 0
   fi
-  echo "用 $name 登录返回 HTTP $code：$(jq -c '.' /tmp/login.json 2>/dev/null || cat /tmp/login.json)"
+  echo "用 $name 登录返回 HTTP $code：$(jq -c '.' "$T/login.json" 2>/dev/null || cat "$T/login.json")"
   return 1
 }
 
@@ -40,7 +46,7 @@ for _round in 1 2 3; do
       exit 1
     fi
     # D1 每日写入额度用尽，等到世界时零点才会恢复，重试没有意义
-    if grep -q 'storage_quota_exceeded' /tmp/login.json 2>/dev/null; then
+    if grep -q 'storage_quota_exceeded' "$T/login.json" 2>/dev/null; then
       echo "::error::D1 今日写入额度已用尽，要等世界时零点（北京时间早八点）才恢复。登录需要写入，所以现在过不去。"
       exit 1
     fi
@@ -56,4 +62,5 @@ if [ -z "$TOKEN" ]; then
 fi
 echo "::add-mask::$TOKEN"
 echo "ADMIN_TOKEN=$TOKEN" >> "$GITHUB_ENV"
+echo "ADMIN_LOGIN_AT=$LOGIN_AT" >> "$GITHUB_ENV"
 echo "管理员登录成功。"

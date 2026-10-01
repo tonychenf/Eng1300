@@ -3,13 +3,16 @@
 #
 # 需要：WORKER_URL；可选 ADMIN_TOKEN（没有就只跑不用登录的几条）
 #
-# 原来内联在 deploy-worker.yml 里（CR-M8 搬出来，正文一字未改）：流水线日志有长度上限，
+# 原来内联在 deploy-worker.yml 里（CR-M8 搬出来）：流水线日志有长度上限，
 # 内联的大段 shell 没法在本地跑、也没法测。
 #
 # set -e 不是新加的规矩：YAML 里不写 shell: 的 run 步骤，GitHub 用 `bash -e {0}` 执行，
 # 任何一条命令失败整步就停。搬进脚本后由 `bash 脚本` 执行，默认不带 -e——不补这一行，
 # 原来会当场停下的失败就会被跳过去，接着往下跑。
 set -e
+# 临时文件放在自己的目录里：本地两个套件会同时跑这几份脚本，用 /tmp 下的固定文件名会互相覆盖
+T=$(mktemp -d)
+trap 'rm -rf "$T"' EXIT
 
 FAIL=0
 check() {
@@ -29,33 +32,34 @@ if [ -n "${ADMIN_TOKEN:-}" ]; then
 
   TOKEN="$ADMIN_TOKEN"
   {
-    CODE=$(curl -sS -m 20 -o /tmp/users.json -w '%{http_code}' "$WORKER_URL/api/admin/users" \
+    CODE=$(curl -sS -m 20 -o "$T/users.json" -w '%{http_code}' "$WORKER_URL/api/admin/users" \
       -H "Authorization: Bearer $TOKEN" || echo 000)
     check "超级管理员可访问后台用户接口" "$CODE" "200"
     # 只数 T001–T010 是否齐全，不比总数，免得以后手工新建账号把这条弄红
-    STUDENTS=$(jq -r '[.users[] | select(.username | test("^T0(0[1-9]|10)$"))] | length' /tmp/users.json 2>/dev/null || echo 0)
+    STUDENTS=$(jq -r '[.users[] | select(.username | test("^T0(0[1-9]|10)$"))] | length' "$T/users.json" 2>/dev/null || echo 0)
     check "学员账号 T001–T010 已创建" "$STUDENTS" "10"
 
     # 真有一条写入落库了吗？
     #
     # 这条不是凑数：D1 免费版写入额度用尽时，读接口全都正常，只有写会失败，
-    # 所以上面那些检查全绿也说明不了站点能用。原先"取管理员令牌"那步能当哨兵
-    # （登录要写最后登录时间），但登录已经改成额度用尽也放行，哨兵没了。
+    # 所以上面那些检查全绿也说明不了站点能用。
     #
-    # AI 配置那步每次部署都会重写一次，额度用尽时它会回退成沿用旧值并打
-    # warning。所以看 updated_at 离现在多久：刚写的就是几秒，回退了就是上一次
-    # 成功部署的时间。10 分钟的窗口足够覆盖一次部署的耗时。
-    AI_UPDATED=$(curl -sS -m 20 "$WORKER_URL/api/admin/ai/settings" \
-      -H "Authorization: Bearer $TOKEN" | jq -r '.settings.TUTORING.updatedAt // ""')
-    if [ -z "$AI_UPDATED" ]; then
-      check "写入已恢复（AI 配置刚落库）" "读不到 updatedAt" "10 分钟内"
+    # 哨兵是 admin 这次登录写下的"最后登录时间"：每次部署都要登录一次（取管理员令牌那步），
+    # 额度用尽时登录照样放行，只是这一笔写不进去（记账类写入，失败吞掉）。所以它不早于
+    # 这次登录的时刻，就说明这次部署的写入落了库；登录本身成没成功说明不了这件事。
+    # 以前读的是「教学」AI 配置的更新时间，靠的是它每次部署都被重写——AI 配置改成只补不改
+    # 之后（CR-M10）它就不变了。留 60 秒给运行器和 D1 的时钟差。
+    LAST_LOGIN=$(jq -r '[.users[] | select(.username == "admin")][0].last_login_at // ""' "$T/users.json" 2>/dev/null || true)
+    if [ -z "${ADMIN_LOGIN_AT:-}" ] || [ -z "$LAST_LOGIN" ]; then
+      check "写入已恢复（这次登录的最后登录时间已落库）" \
+        "读不到（登录时刻 ${ADMIN_LOGIN_AT:-无}，最后登录时间 ${LAST_LOGIN:-无}）" "读得到"
     else
-      # updated_at 由 SQLite datetime('now') 生成，是世界时
-      AGE=$(( $(date -u +%s) - $(date -u -d "${AI_UPDATED}Z" +%s 2>/dev/null || echo 0) ))
-      if [ "$AGE" -ge 0 ] && [ "$AGE" -le 600 ]; then
-        echo "  OK   写入已恢复（AI 配置 ${AGE} 秒前刚落库）"
+      # last_login_at 由 SQLite datetime('now') 生成，是世界时
+      LAST_EPOCH=$(date -u -d "${LAST_LOGIN}Z" +%s 2>/dev/null || echo 0)
+      if [ "$LAST_EPOCH" -ge $(( ADMIN_LOGIN_AT - 60 )) ]; then
+        echo "  OK   写入已恢复（admin 这次登录写的最后登录时间 $LAST_LOGIN 已落库）"
       else
-        echo "  FAIL 写入未恢复：AI 配置停在 $AI_UPDATED（${AGE} 秒前），说明这次没写进去"
+        echo "  FAIL 写入未恢复：admin 最后登录时间停在 $LAST_LOGIN，早于这次登录（$(date -u -d "@$ADMIN_LOGIN_AT" '+%F %T')），说明这次没写进去"
         FAIL=1
       fi
     fi
@@ -73,8 +77,29 @@ if [ -n "${ADMIN_TOKEN:-}" ]; then
     # 后者在加第二个学科的课程行之后自动为假，而 00015 有没有被并掉与它无关。
     check "00015 不再是独立课程" \
       "$(echo "$STATS" | jq -r '[.byCourse[].course_code] | index("00015") // "无"')" "无"
-    PUBLISHED_EXAMS=$(echo "$STATS" | jq -r '[.byCourse[] | select(.course_code == "13000") | .published_exams] | add // 0')
-    check "英语 20 套试卷全部已发布" "$PUBLISHED_EXAMS" "20"
+
+    # 部署不该改变任何章节的发布状态（CR-M14）。这里原先断的是"英语 20 套试卷全部已发布"——
+    # H2 之后撤回会保留，管理员撤回任何一套英语卷，之后每次部署都会红，和下面生化那段说的是
+    # 同一个毛病。真正要守的是部署前后一样：多了是"撤回的被放回去"（H2），少了是"重导冲回草稿、
+    # 放行没放回来"。部署前的状态由导题库之前那步读库记下（record-published.sh），部署后的从
+    # 后台接口取，两边不同源。
+    curl -sS -m 20 -G -o "$T/published.json" "$WORKER_URL/api/admin/bank/exams" \
+      --data-urlencode "status=已发布" -H "Authorization: Bearer $TOKEN"
+    if ! jq -e '.exams | type == "array"' "$T/published.json" >/dev/null 2>&1; then
+      echo "  FAIL 读不到部署后的已发布章节（收到的前 200 字：$(head -c 200 "$T/published.json")）"; FAIL=1
+    elif [ -z "${PUBLISHED_BEFORE_FILE:-}" ] || [ ! -f "$PUBLISHED_BEFORE_FILE" ]; then
+      # 没有记录不能当成"没变"：那样这条就永远是绿的
+      echo "  FAIL 部署前的发布状态没有记录（${PUBLISHED_BEFORE_FILE:-PUBLISHED_BEFORE_FILE 没设}），比对不了"; FAIL=1
+    else
+      jq -r '.exams[].exam_id' "$T/published.json" | LC_ALL=C sort > "$T/published-after.txt"
+      MORE=$(LC_ALL=C comm -13 "$PUBLISHED_BEFORE_FILE" "$T/published-after.txt" | paste -sd' ' -)
+      LESS=$(LC_ALL=C comm -23 "$PUBLISHED_BEFORE_FILE" "$T/published-after.txt" | paste -sd' ' -)
+      if [ -z "$MORE$LESS" ]; then
+        echo "  OK   部署没有改变任何章节的发布状态（$(wc -l < "$T/published-after.txt") 章已发布）"
+      else
+        echo "  FAIL 部署改变了章节的发布状态：${MORE:+多了 $MORE}${MORE:+${LESS:+；}}${LESS:+少了 $LESS}"; FAIL=1
+      fi
+    fi
 
     # 生化在库里，而且题数不为 0。
     #
@@ -117,7 +142,12 @@ if [ -n "${ADMIN_TOKEN:-}" ]; then
     PUBLISHED_Q=$(echo "$STATS" | jq -r '[.byType[].published] | add // 0')
     check "存疑题确实被排除在可抽题之外" "$(( PUBLISHED_Q > 0 && PUBLISHED_Q < QUESTIONS ))" "1"
     echo "     （共 $QUESTIONS 题，其中 $PUBLISHED_Q 题可参与组卷）"
-    check "解析存疑记录已清零" "$(echo "$STATS" | jq -r '.unresolvedNotes')" "0"
+    # 这里原先断"解析存疑记录已清零"（全库），那是部署每次跑 publish-all.sql 清掉全部存疑的年代。
+    # H2 之后部署不再替人清：撤回的章节重导之后、后台上传还没核的内容，存疑都是正常在等人看的，
+    # 全库清零会拦正常操作。要守的是：已发布的章节没有未处理的存疑——发布那道门要求存疑清零，
+    # 重导把存疑插回来的已发布章节由放行一步处理掉；哪一步漏了，这里就红。
+    check "已发布的章节没有未处理的解析存疑" \
+      "$(jq -r '[.exams[].open_notes] | add // 0' "$T/published.json" 2>/dev/null)" "0"
 
     # ---- N1 学科骨架 ----
     # 线上没有这几条的话，学科层是不是真的上线了只能靠猜
@@ -132,13 +162,13 @@ if [ -n "${ADMIN_TOKEN:-}" ]; then
     # 学科隔离：生化名下不能冒出英语的课程。
     # 原来断的是"生化名下一门课都没有"——N6 给生化建了课程行之后那就成了
     # 测"生化是空的"。改成断两边课程码没有交集。
-    curl -sS -m 20 -o /tmp/bio-courses.json "$WORKER_URL/api/s/biochem/courses" \
+    curl -sS -m 20 -o "$T/bio-courses.json" "$WORKER_URL/api/s/biochem/courses" \
       -H "Authorization: Bearer $TOKEN"
-    curl -sS -m 20 -o /tmp/en-courses.json "$WORKER_URL/api/s/english/courses" \
+    curl -sS -m 20 -o "$T/en-courses.json" "$WORKER_URL/api/s/english/courses" \
       -H "Authorization: Bearer $TOKEN"
     check "生化学科名下没有英语的课程" \
-      "$(jq -r --argjson en "$(jq -c '[.courses[].course_code]' /tmp/en-courses.json)" \
-         '[.courses[].course_code] | map(select(. as $c | $en | index($c))) | length' /tmp/bio-courses.json)" "0"
+      "$(jq -r --argjson en "$(jq -c '[.courses[].course_code]' "$T/en-courses.json")" \
+         '[.courses[].course_code] | map(select(. as $c | $en | index($c))) | length' "$T/bio-courses.json")" "0"
     # ready 盯的是"别把一个没内容的学科报成可用"——误判成 true 的话，
     # 学员点进去看到一个空的练习页，而没有任何地方报错。
     # 但它不该写死成 false：第 1 章人工核完发布之后 ready 本来就该是 true。
@@ -154,12 +184,12 @@ if [ -n "${ADMIN_TOKEN:-}" ]; then
     # ---- N2 学科权限 ----
     # 迁移里那段"给既有学员补授权"在线上到底生效没有，只有这几条能证明。
     # 补漏了的话现象是学员打不开任何学科，而流水线其余断言全绿。
-    T001=$(jq -r '.users[] | select(.username=="T001") | .id' /tmp/users.json)
+    T001=$(jq -r '.users[] | select(.username=="T001") | .id' "$T/users.json")
     if [ -n "$T001" ] && [ "$T001" != "null" ]; then
-      curl -sS -m 20 -o /tmp/grants.json "$WORKER_URL/api/admin/users/$T001/subjects" \
+      curl -sS -m 20 -o "$T/grants.json" "$WORKER_URL/api/admin/users/$T001/subjects" \
         -H "Authorization: Bearer $TOKEN"
       check "授权接口在线上可用" \
-        "$(jq -r 'has("subjects")' /tmp/grants.json)" "true"
+        "$(jq -r 'has("subjects")' "$T/grants.json")" "true"
       # 单人授权视图必须把"还没开通的学科"也列出来，否则管理员在界面上
       # 根本点不到它、没法开通。用 LEFT JOIN 写错成 INNER JOIN 正是这个
       # 现象，而且不报错。拿 /api/me/subjects 的学科数来对（两个接口走的
@@ -168,12 +198,12 @@ if [ -n "${ADMIN_TOKEN:-}" ]; then
       # /api/me/subjects 不列，管理员哪天停用一个学科这条就会无故变红。
       ALL_SUBJ=$(echo "$SUBJ" | jq -r '.subjects | length')
       check "单人视角列出了全部 $ALL_SUBJ 个启用学科（含未开通的）" \
-        "$(jq -r '[.subjects[] | select(.subject_status=="启用")] | length' /tmp/grants.json)" \
+        "$(jq -r '[.subjects[] | select(.subject_status=="启用")] | length' "$T/grants.json")" \
         "$ALL_SUBJ"
       # 权限是新增的约束，不该追溯剥夺既有学员的访问。
       # 只断"至少有一个已开通"而不是"全部已开通"：后者在管理员真撤销过
       # 某个学科之后会在下次部署误报，而这条要守的是"补授权跑了没有"。
-      ACTIVE_N=$(jq -r '[.subjects[] | select(.grant_status=="ACTIVE")] | length' /tmp/grants.json)
+      ACTIVE_N=$(jq -r '[.subjects[] | select(.grant_status=="ACTIVE")] | length' "$T/grants.json")
       check "既有学员 T001 有授权（迁移没有追溯剥夺访问）" \
         "$(( ACTIVE_N > 0 ))" "1"
       echo "     （T001 已开通 $ACTIVE_N 个学科）"
@@ -190,20 +220,20 @@ if [ -n "${ADMIN_TOKEN:-}" ]; then
     ENG_ID=$(curl -sS -m 20 "$WORKER_URL/api/admin/subjects" \
       -H "Authorization: Bearer $TOKEN" | jq -r '.subjects[] | select(.code=="english") | .subject_id')
     if [ -n "$ENG_ID" ] && [ "$ENG_ID" != "null" ]; then
-      curl -sS -m 20 -o /tmp/pack.json "$WORKER_URL/api/admin/subjects/$ENG_ID/pack" \
+      curl -sS -m 20 -o "$T/pack.json" "$WORKER_URL/api/admin/subjects/$ENG_ID/pack" \
         -H "Authorization: Bearer $TOKEN"
       check "英语能力包已落库（题型）" \
-        "$(jq -r '.questionTypes | length > 0' /tmp/pack.json)" "true"
+        "$(jq -r '.questionTypes | length > 0' "$T/pack.json")" "true"
       check "英语有生效中的评价标准" \
-        "$(jq -r '.currentRubric != null' /tmp/pack.json)" "true"
+        "$(jq -r '.currentRubric != null' "$T/pack.json")" "true"
       # 作文权重合计不等于 1 的话分数会整体虚高，而批改照常"成功"
       check "作文维度权重合计为 1" \
-        "$(jq -r '[.currentRubric.payload | fromjson | .essay.dimensions[].weight] | add | (. * 1000 | round)' /tmp/pack.json)" "1000"
+        "$(jq -r '[.currentRubric.payload | fromjson | .essay.dimensions[].weight] | add | (. * 1000 | round)' "$T/pack.json")" "1000"
       check "四类 AI 提示词都在" \
-        "$(jq -r '[.prompts[] | select(.missing != true)] | length' /tmp/pack.json)" "4"
+        "$(jq -r '[.prompts[] | select(.missing != true)] | length' "$T/pack.json")" "4"
       # 题型声明里引用的归一化器必须都在注册表里，否则判分时会抛 unknown_normalizer
       check "题型引用的归一化器都认识" \
-        "$(jq -r '[.questionTypes[].normalizers | fromjson[]] - .availableNormalizers | length' /tmp/pack.json)" "0"
+        "$(jq -r '[.questionTypes[].normalizers | fromjson[]] - .availableNormalizers | length' "$T/pack.json")" "0"
     else
       echo "  FAIL 找不到英语学科，无法验证能力包"; FAIL=1
     fi
@@ -213,9 +243,9 @@ if [ -n "${ADMIN_TOKEN:-}" ]; then
     # 而这两件事都要等有人真去做题才会发生。
     if [ -n "$ENG_ID" ] && [ "$ENG_ID" != "null" ]; then
       check "英语已声明 fill_text" \
-        "$(jq -r '[.questionTypes[].type_code] | index("fill_text") != null' /tmp/pack.json)" "true"
+        "$(jq -r '[.questionTypes[].type_code] | index("fill_text") != null' "$T/pack.json")" "true"
       check "旧题型码已不在声明里" \
-        "$(jq -r '[.questionTypes[].type_code] | index("fill_blank_transform") // "absent"' /tmp/pack.json)" "absent"
+        "$(jq -r '[.questionTypes[].type_code] | index("fill_blank_transform") // "absent"' "$T/pack.json")" "absent"
     fi
     # ---- N5 得分单元与判分骨架 ----
     # 线上那张 subject_question_types 是 N3 建的，没有这两列。迁移里的
@@ -223,15 +253,15 @@ if [ -n "${ADMIN_TOKEN:-}" ]; then
     # 补漏了的现象是：读接口全绿，而任何人一交卷就 500（判分读不到策略）。
     if [ -n "$ENG_ID" ] && [ "$ENG_ID" != "null" ]; then
       check "每个题型都有判分策略（补列与回填都跑到了）" \
-        "$(jq -r '[.questionTypes[] | select(.grading_strategy == null)] | length' /tmp/pack.json)" "0"
+        "$(jq -r '[.questionTypes[] | select(.grading_strategy == null)] | length' "$T/pack.json")" "0"
       check "每个题型都有作答形态" \
-        "$(jq -r '[.questionTypes[] | select(.answer_shape == null)] | length' /tmp/pack.json)" "0"
+        "$(jq -r '[.questionTypes[] | select(.answer_shape == null)] | length' "$T/pack.json")" "0"
       # 声明的策略必须都是已实现的，否则判分时抛 strategy_not_implemented
       check "题型声明的策略都已实现" \
-        "$(jq -r '[.questionTypes[].grading_strategy] - [.availableStrategies[] | select(.implemented) | .code] | length' /tmp/pack.json)" "0"
+        "$(jq -r '[.questionTypes[].grading_strategy] - [.availableStrategies[] | select(.implemented) | .code] | length' "$T/pack.json")" "0"
       # needs_ai 与策略打架的话，交卷时的"待批改"计数与实际判分对不上
       check "needs_ai 与判分策略一致" \
-        "$(jq -r '[.questionTypes[] | select((.needs_ai == 1) != (.grading_strategy | startswith("AI_")))] | length' /tmp/pack.json)" "0"
+        "$(jq -r '[.questionTypes[] | select((.needs_ai == 1) != (.grading_strategy | startswith("AI_")))] | length' "$T/pack.json")" "0"
     fi
 
     # 题型声明真的在起作用：写作声明成不进练习，可选题型里就不该有它。
@@ -248,12 +278,12 @@ if [ -n "${ADMIN_TOKEN:-}" ]; then
 fi
 
 # 前端：首页应返回 HTML，未知前端路由要回落到同一个 index.html
-TYPE=$(curl -sS -m 20 -o /tmp/index.html -w '%{content_type}' "$WORKER_URL/" || echo none)
+TYPE=$(curl -sS -m 20 -o "$T/index.html" -w '%{content_type}' "$WORKER_URL/" || echo none)
 case "$TYPE" in
   text/html*) echo "  OK   首页返回 HTML" ;;
   *) echo "  FAIL 首页返回 $TYPE"; FAIL=1 ;;
 esac
-if grep -q 'id="root"' /tmp/index.html; then
+if grep -q 'id="root"' "$T/index.html"; then
   echo "  OK   首页是前端应用页面"
 else
   echo "  FAIL 首页内容不是前端应用"; FAIL=1

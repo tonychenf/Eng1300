@@ -218,6 +218,14 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: bash ../scripts/ci/ensure-worker-secrets.sh
 
+      # 导题库之前记下哪些章节是已发布的，线上验证拿它逐章比对：部署不该改变任何章节的
+      # 发布状态——撤回的不能被放回去，已发布的不能因为重导被冲回草稿而丢掉（CR-M14）。
+      - name: Record which chapters are published before seeding
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          PUBLISHED_BEFORE_FILE: ${{ runner.temp }}/published-before.txt
+        run: bash scripts/ci/record-published.sh --remote
+
       - name: Seed question bank
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -266,6 +274,8 @@ jobs:
           STUDENT_PASSWORD: ${{ secrets.STUDENT_PASSWORD }}
         run: bash scripts/ci/bootstrap-students.sh
 
+      # 三档都只补不改（CR-M10）：库里配过就不动，仓库变量和 Secret 只管第一次部署的初值。
+      # 以后换模型、换 Key 都在后台「AI 配置」页改——在这里换 SILICONFLOW_API_KEY 不会同步到线上。
       - name: Configure AI providers
         env:
           # 复用 ai-smoke-test.yml 已经配好的那个 Secret
@@ -273,12 +283,15 @@ jobs:
           AI_BASE_URL: ${{ vars.AI_BASE_URL }}
           AI_PARSING_MODEL: ${{ vars.AI_PARSING_MODEL }}
           AI_TUTORING_MODEL: ${{ vars.AI_TUTORING_MODEL }}
-          # 「文字解析」只在还没配时补上（CR-M4），默认 Qwen/Qwen3-8B；配过的不动
           AI_TEXT_PARSING_MODEL: ${{ vars.AI_TEXT_PARSING_MODEL }}
-        # 逻辑在脚本里：本地套件 prod-e2e-local 对本地服务跑的是同一份
+        # 逻辑在脚本里：本地套件 prod-e2e-local、deploy-local 对本地服务跑的是同一份
         run: bash scripts/ci/configure-ai.sh
 
+      # 本地套件 deploy-local 在新库上按部署顺序把这些脚本连跑三次（中间模拟后台操作），
+      # 线上验证要全过，并且证明它在写入没落库、发布状态被部署改了的时候会红。
       - name: Verify deployment
+        env:
+          PUBLISHED_BEFORE_FILE: ${{ runner.temp }}/published-before.txt
         run: bash scripts/ci/verify-deployment.sh
 
       - name: Summary
