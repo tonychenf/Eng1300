@@ -5,6 +5,7 @@
 //   单学科视角 新学科开课，一次给一批学员开通
 import { Hono } from 'hono';
 import { writeGrantWithAudit as writeWithAudit, upsertGrantStmt } from '../lib/access.js';
+import { expiryToUtc } from '../lib/beijing-time.js';
 
 export const adminGrantsRouter = new Hono();
 
@@ -66,6 +67,12 @@ adminGrantsRouter.put('/users/:id/subjects', async (c) => {
   if (unknown.length) {
     return c.json({ error: 'subject_not_found', message: `没有这些学科：${unknown.join('、')}` }, 404);
   }
+  // 到期日按北京时间那一天结束、换成世界时存（CR-M7）。先全部换完再动库：一个写错就整批不改
+  const expiries = new Map();
+  for (const w of wanted) {
+    try { expiries.set(w.code, expiryToUtc(w.expiresAt)); }
+    catch (e) { return c.json({ error: e.code, message: `「${w.code}」的${e.message}` }, 400); }
+  }
 
   const { results: existing } = await c.env.DB.prepare(
     'SELECT subject_id, status, expires_at FROM user_subject_grants WHERE user_id = ?'
@@ -75,7 +82,7 @@ adminGrantsRouter.put('/users/:id/subjects', async (c) => {
   let granted = 0, revoked = 0, updated = 0;
   for (const w of wanted) {
     const sid = byCode.get(w.code);
-    const exp = w.expiresAt || null;
+    const exp = expiries.get(w.code);
     const prev = before.get(sid);
     if (prev && prev.status === 'ACTIVE' && (prev.expires_at || null) === exp) continue;
     await writeWithAudit(
@@ -143,7 +150,10 @@ adminGrantsRouter.post('/subjects/:id/members', async (c) => {
   if (!names || !names.length) {
     return c.json({ error: 'invalid_request', message: 'usernames 必须是非空数组' }, 400);
   }
-  const expiresAt = body.expiresAt || null;
+  // 到期日按北京时间那一天结束、换成世界时存（CR-M7）
+  let expiresAt;
+  try { expiresAt = expiryToUtc(body.expiresAt); }
+  catch (e) { return c.json({ error: e.code, message: e.message }, 400); }
 
   const holes = names.map(() => '?').join(',');
   const { results: found } = await c.env.DB.prepare(

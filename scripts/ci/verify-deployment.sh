@@ -78,13 +78,40 @@ if [ -n "${ADMIN_TOKEN:-}" ]; then
     fi
 
     STATS=$(curl -sS -m 20 "$WORKER_URL/api/admin/bank/stats" -H "Authorization: Bearer $TOKEN" || echo '{}')
-    # 这三条原来写的是全库总数（20 套 / 1020 题 / 1 门课），那是英语独占时代的
-    # 数字。多一个学科就红一次，而红了之后正确的做法永远是改数字——
-    # 这种断言不提供信号。按**学科**算，英语那几个数才是稳定的。
-    EXAMS=$(echo "$STATS" | jq -r '[.byCourse[] | select(.course_code == "13000") | .exam_count] | add // 0')
-    check "英语题库已导入 20 套真题" "$EXAMS" "20"
-    QUESTIONS=$(echo "$STATS" | jq -r '[.byType[] | select(.course_code == "13000") | .total] | add // 0')
-    check "英语题库已导入 1020 道题" "$QUESTIONS" "1020"
+    # 仓库里每个题库文件的章节都在库里、题数和文件一致（CR-M16）。
+    # 这里原先断的是"英语 20 套 / 1020 道"。H4 之后内容要改的正规做法是加一个新文件，加一个
+    # 英语文件这两条就红——和 M14 是同一个毛病：把某一时刻的数字当成不变量，红了只能改数字。
+    # 期望从文件现算（会随业务变的数字不写死），实际从后台接口读，两边不同源。
+    # 只看仓库里的文件：后台上传的章节不在这里，也不该在这里。
+    SUBJ_ROOT="${SUBJECTS_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)/data/subjects}"
+    curl -sS -m 20 -o "$T/all-exams.json" "$WORKER_URL/api/admin/bank/exams" \
+      -H "Authorization: Bearer $TOKEN" || true
+    if ! jq -e '.exams | type == "array"' "$T/all-exams.json" >/dev/null 2>&1; then
+      echo "  FAIL 读不到库里的章节列表，没法和题库文件比对（收到的前 200 字：$(head -c 200 "$T/all-exams.json" 2>/dev/null)）"; FAIL=1
+    else
+      jq -r '.exams[] | "\(.exam_id)\t\(.question_count)"' "$T/all-exams.json" | LC_ALL=C sort > "$T/db-counts.tsv"
+      : > "$T/file-counts.tsv"; UNREADABLE=""
+      for f in "$SUBJ_ROOT"/*/groups/*.json; do
+        [ -e "$f" ] || continue
+        # 读不了的文件不能悄悄跳过：跳过就等于这一章没被检查
+        LINE=$(jq -r '[(.examId // .groupId // error("没有 examId / groupId")),
+                       ([.sections[].questions | length] | add // 0)] | @tsv' "$f" 2>/dev/null) \
+          && [ -n "$LINE" ] && printf '%s\n' "$LINE" >> "$T/file-counts.tsv" \
+          || UNREADABLE="$UNREADABLE$(basename "$f")（读不了）；"
+      done
+      LC_ALL=C sort -o "$T/file-counts.tsv" "$T/file-counts.tsv"
+      NFILES=$(grep -c . "$T/file-counts.tsv" || true)
+      MISMATCH=$(LC_ALL=C join -t "$(printf '\t')" -a 1 -e '没有' -o '1.1,1.2,2.2' "$T/file-counts.tsv" "$T/db-counts.tsv" \
+        | awk -F'\t' '$3 == "没有" { printf "%s（文件 %s 道，库里没有这一章）；", $1, $2; next }
+                      $2 != $3   { printf "%s（文件 %s 道，库里 %s 道）；", $1, $2, $3 }')
+      if [ "${NFILES:-0}" -eq 0 ]; then
+        echo "  FAIL 在 $SUBJ_ROOT 下一个题库文件都没找到，没法比对"; FAIL=1
+      elif [ -n "$MISMATCH$UNREADABLE" ]; then
+        echo "  FAIL 题库文件和库里对不上：$MISMATCH$UNREADABLE"; FAIL=1
+      else
+        echo "  OK   仓库里 $NFILES 个题库文件的章节都在库里，题数和文件一致"
+      fi
+    fi
 
     # 真正要守的性质是"00015 不再作为独立课程存在"，不是"课程总数是 1"。
     # 后者在加第二个学科的课程行之后自动为假，而 00015 有没有被并掉与它无关。
@@ -152,11 +179,14 @@ if [ -n "${ADMIN_TOKEN:-}" ]; then
     ERR=$(curl -sS -m 20 "$WORKER_URL/api/admin/bank/import/no-such-group/source" \
       -H "Authorization: Bearer $TOKEN" | jq -r '.error // "路由没挂"' || echo 取不到)
     check "原文留存接口已上线" "$ERR" "not_found"
-    # 被解析存疑记录点名的题目不参与组卷，所以可抽题数少于总题数。
-    # 不写死具体数字：存疑记录一旦人工核对放行，这个数就会变。
+    # 这里原先断"存疑题确实被排除在可抽题之外"：已发布题数 < 英语总题数（CR-M16 删掉）。它成立靠的是
+    # "现在恰好有题没发布"，管理员把题都核完、发布了，它就红——又是一条快照断言；还拿全学科的已发布数
+    # 去比英语一科的总数。存疑的题抽不到由抽题判据保证（pickableSql 只认已发布），本地 m3-smoke 测着。
+    # 英语总题数原本出自上面删掉的"1020 道"那条；变量没了 bash 算术当 0，这条就悄悄变成恒红——
+    # 是部署彩排 deploy-local 当场照出来的。
     PUBLISHED_Q=$(echo "$STATS" | jq -r '[.byType[].published] | add // 0')
-    check "存疑题确实被排除在可抽题之外" "$(( PUBLISHED_Q > 0 && PUBLISHED_Q < QUESTIONS ))" "1"
-    echo "     （共 $QUESTIONS 题，其中 $PUBLISHED_Q 题可参与组卷）"
+    ALL_Q=$(echo "$STATS" | jq -r '[.byType[].total] | add // 0')
+    echo "     （全库 $ALL_Q 题，其中 $PUBLISHED_Q 题可参与组卷）"
     # 这里原先断"解析存疑记录已清零"（全库），那是部署每次跑 publish-all.sql 清掉全部存疑的年代。
     # H2 之后部署不再替人清：新导入还没人看的章节、后台上传还没核的内容，存疑都是正常在等人看的，
     # 全库清零会拦正常操作。要守的是：已发布的章节没有未处理的存疑——发布那道门要求存疑清零，
@@ -284,11 +314,8 @@ if [ -n "${ADMIN_TOKEN:-}" ]; then
       "$(curl -sS -m 20 "$WORKER_URL/api/practice/section-types?courseCode=13000" \
          -H "Authorization: Bearer $TOKEN" | jq -r '[.sectionTypes[].section_type] | index("写作") // "absent"')" "absent"
 
-    # 缺原文的那道题按要求扣下，不参与组卷
-    HELD=$(curl -sS -m 20 "$WORKER_URL/api/admin/bank/exams/13000-2026-04" \
-      -H "Authorization: Bearer $TOKEN" \
-      | jq -r '[.sections[].questions[] | select(.question_id=="13000-2026-04-q15")][0].status')
-    check "13000-2026-04 第15题已扣下（缺原文支撑）" "$HELD" "存疑"
+    # 这里原先还断"13000-2026-04 第 15 题已扣下（存疑）"（CR-M16 删掉）。导入过的章节不再重导之后，
+    # 这道题的状态归管理员管：在后台补了原文、改了状态，部署就红。扣下机制本身由本地 m3-smoke 测。
   }
 fi
 

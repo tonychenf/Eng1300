@@ -51,6 +51,9 @@ npx wrangler d1 execute "$D1_NAME" --local --file=test/fixtures/publish-all.sql 
 source "$ROOT_DIR/test/lib/d1.sh"   # sql / one / exec_sql（读库失败会在 stderr 报出来）
 BIO_LABEL=$(one "SELECT label FROM exams WHERE exam_id='biochem-ch01';")
 UNREVIEWED=$(one "SELECT COUNT(*) FROM questions WHERE answer_state='待核';")
+# 时间按北京时间显示（CR-M7）：确认时间写一个固定的世界时，跨零点——北京时间是第二天 00:30
+exec_sql "UPDATE questions SET answer_reviewed_by = 'admin', answer_reviewed_at = '2026-01-01 16:30:00'
+           WHERE exam_id = 'biochem-ch01';" || exit 1
 [ -n "$BIO_LABEL" ] || { echo "生化内容组没进库"; exit 1; }
 [ "${UNREVIEWED:-0}" -gt 0 ] || { echo "一道待核的题都没有，这套测不出东西"; exit 1; }
 echo "  生化内容组：$BIO_LABEL，待核 $UNREVIEWED 题"

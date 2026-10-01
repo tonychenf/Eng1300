@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { api, get, post } from '../../api.js';
 import { Alert, Loading, PageHead } from '../../components/ui.jsx';
+import { beijingDate, formatBeijing } from '../../lib/time.js';
 
 // 单学科视角：这个学科有哪些成员。
 // 新学科开课时一次给一批学员开通，用这一页。
@@ -10,7 +11,7 @@ export default function SubjectMembers() {
   const [data, setData] = useState(null);
   const [audit, setAudit] = useState([]);
   const [names, setNames] = useState('');
-  const [expiresAt, setExpiresAt] = useState('');
+  const [expiryDate, setExpiryDate] = useState('');
   const [error, setError] = useState('');
   const [result, setResult] = useState(null);
 
@@ -33,7 +34,8 @@ export default function SubjectMembers() {
     try {
       const r = await post(`/admin/subjects/${id}/members`, {
         usernames,
-        expiresAt: expiresAt ? `${expiresAt} 23:59:59` : null,
+        // 只发日期：按北京时间那一天结束失效，后端换成世界时存（CR-M7）
+        expiresAt: expiryDate || null,
       });
       setResult(r);
       setNames('');
@@ -78,7 +80,7 @@ export default function SubjectMembers() {
           </label>
           <label className="small">
             统一到期日（留空为长期有效）
-            <input type="date" value={expiresAt} onChange={(e) => setExpiresAt(e.target.value)}
+            <input type="date" value={expiryDate} onChange={(e) => setExpiryDate(e.target.value)}
                    style={{ fontSize: 16, minHeight: 44 }} />
           </label>
           <div><button className="btn sm" type="submit">开通</button></div>
@@ -108,7 +110,7 @@ export default function SubjectMembers() {
                   {u.status === 'SUSPENDED'
                     ? <span className="badge" style={{ marginLeft: 6 }}>授权已暂停</span> : null}
                   <span className="tiny faint" style={{ marginLeft: 6 }}>
-                    {u.expires_at ? `${u.expires_at.slice(0, 10)} 到期` : '长期'}
+                    {u.expires_at ? `${beijingDate(u.expires_at)} 到期` : '长期'}
                   </span>
                 </span>
                 <span className="row">
@@ -127,7 +129,7 @@ export default function SubjectMembers() {
           <div className="stack">
             {audit.map((e) => (
               <div key={e.id} className="tiny">
-                <span className="faint">{e.created_at}</span>{' '}
+                <span className="faint">{formatBeijing(e.created_at)}</span>{' '}
                 <strong>{e.actor || '（已删除账号）'}</strong>{' '}
                 {e.action === 'GRANT' ? '开通了' : e.action === 'REVOKE' ? '撤销了' : '修改了'}{' '}
                 <strong>{e.target}</strong> 的「{e.subject_name || e.subject_code}」

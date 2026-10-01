@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { get } from '../api.js';
 import { Alert, Empty, Loading, PageHead } from '../components/ui.jsx';
 import { useSubject } from '../subject.jsx';
+import { formatBeijing } from '../lib/time.js';
 
 export default function History() {
   const { path } = useSubject();
@@ -30,7 +31,7 @@ export default function History() {
             <tbody>
               {rows.map((a) => (
                 <tr key={a.attempt_id}>
-                  <td data-label="时间">{a.started_at}</td>
+                  <td data-label="时间">{formatBeijing(a.started_at)}</td>
                   <td data-label="难度">{a.difficulty}</td>
                   <td data-label="状态">
                     {a.status === '进行中'

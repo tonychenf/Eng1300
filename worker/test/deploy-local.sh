@@ -9,13 +9,15 @@
 #   第 0 次部署  全新的库（第一次上线）
 #   管理员       核完英语、发布（用测试造数据的 publish-all.sql 代替逐章点发布）
 #   第 1 次部署  平常的一次部署，线上验证要全过
-#   管理员       撤回一章、停用一道题、改两档 AI 配置、撤掉一个学员的一个学科；仓库里新加了一个题库文件
-#   第 2 次部署  迁移重跑 + 导入新文件，线上验证要全过，管理员改的东西要都还在
+#   管理员       撤回一章、停用一道题、改两档 AI 配置、撤掉一个学员的一个学科；仓库里英语、生化各新加了一个题库文件
+#   第 2 次部署  迁移重跑 + 导入新文件，线上验证要全过（加英语文件以前会让「20 套 / 1020 道」红，M16），
+#                管理员改的东西要都还在
 #
 # 然后反过来证明线上验证会红：写入哨兵（最后登录时间没写进去）、发布状态（部署把一章弄丢了）、
 # 已发布章节带着存疑、没有部署前的记录；最后是 CR-H4 的规矩——导入过的题库文件被改了：
 #   第 3 次部署  拒绝导入、库里不动，线上验证报红并点名
 #   第 4 次部署  文件改回去，照常全过
+# 最后：库里的章节和题库文件对不上（少了题、少了章），线上验证要红并点名（M16）。
 # 题库文件用的是这一套自己的副本（SUBJECTS_ROOT），改它碰不到仓库里的 data/。
 #
 # 覆盖不到：调 Cloudflare 接口的几步（账号、子域名、建库、Worker 密钥）和 wrangler deploy
@@ -92,7 +94,7 @@ deploy() {
   VERIFY_RC=$?
   return 0
 }
-verify_fails() { grep '^  FAIL' "$WORK/verify-$1.log" | sed 's/^  FAIL //' | paste -sd'；' -; }
+verify_fails() { grep '^  FAIL' "$WORK/verify-$1.log" | sed 's/^  FAIL //' | awk 'NR > 1 { printf "；" } { printf "%s", $0 }'; }
 show_verify() { grep -E '^  (OK|FAIL)' "$WORK/verify-$1.log" | grep -E 'FAIL|写入|发布状态|授权' | sed 's/^/     /'; }
 api() { curl -s -m 20 "$@" -H "Authorization: Bearer $ADMIN_TOKEN"; }
 ai_model() { api "$BASE/admin/ai/settings" | jq -r --arg p "$1" '.settings[$p].model // "无"'; }
@@ -169,27 +171,40 @@ T002=$(one "SELECT id FROM users WHERE username = 'T002';")
 api -o /dev/null -X PUT "$BASE/admin/users/$T002/subjects" -H 'Content-Type: application/json' \
   -d '{"subjects":[{"code":"english"}]}'
 check "（前提）撤掉了 T002 的生化" "$(grants_of T002)" "english"
-# 内容要改的正确做法：用新的内容组编号加一个新文件（题目、大题编号跟着新编号走）
-python3 - "$WORK/subjects/biochem/groups/biochem-ch01.json" biochem-ch01-v2 <<'PY'
+# 内容要改的正确做法：用新的内容组编号加一个新文件（题目、大题编号跟着新编号走）。
+# 英语、生化各加一个：英语用 examId/title，生化用 groupId/label。英语那个专门照 M16——
+# 线上验证以前断"英语 20 套 / 1020 道"，按正规做法加一个英语文件它就红。
+copy_group() {
+  python3 - "$1" "$2" <<'PY'
 import json, sys, os
 src, gid = sys.argv[1], sys.argv[2]
 d = json.load(open(src, encoding='utf-8'))
-old = d['groupId']; d['groupId'] = gid; d['label'] += '（订正版）'
+key = 'examId' if 'examId' in d else 'groupId'
+name = 'title' if key == 'examId' else 'label'
+old = d[key]; d[key] = gid; d[name] += '（订正版）'
 for s in d['sections']:
     s['sectionId'] = s['sectionId'].replace(old, gid, 1)
     for q in s['questions']:
         q['questionId'] = q['questionId'].replace(old, gid, 1)
 json.dump(d, open(os.path.join(os.path.dirname(src), gid + '.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=2)
 PY
+}
+copy_group "$WORK/subjects/biochem/groups/biochem-ch01.json" biochem-ch01-v2
+EN_SRC=$(ls "$WORK/subjects/english/groups/"*.json | head -1)
+EN_V2="$(basename "$EN_SRC" .json)-v2"
+copy_group "$EN_SRC" "$EN_V2"
+echo "     新加 biochem-ch01-v2、$EN_V2（照 $(basename "$EN_SRC") 改编号）"
 
 echo
 echo "== 第 2 次部署：迁移重跑，导入新文件 =="
 migrate || exit 1
 deploy 2 || exit 1
 show_verify 2
-check "导题库只导了新加的那一个文件" "$(grep '^── 导入 ' "$WORK/deploy-2.log" | sed 's/.*-//')" "v2.sql"
-check "新章节进了库、待校对，部署不替人发布" "$(exam_status biochem-ch01-v2)" "待校对"
-check "线上验证全过（管理员撤回过一章、停用过一道题）" "$VERIFY_RC/$(verify_fails 2)" "0/"
+check "导题库只导了新加的两个文件" \
+  "$(grep '^── 导入 ' "$WORK/deploy-2.log" | sed -E 's/^── 导入 [a-z]+-[0-9]{3}-//' | LC_ALL=C sort | paste -sd, -)" \
+  "$EN_V2.sql,biochem-ch01-v2.sql"
+check "新章节进了库、待校对，部署不替人发布" "$(exam_status biochem-ch01-v2)/$(exam_status "$EN_V2")" "待校对/待校对"
+check "线上验证全过（管理员撤回过一章、停用过一道题、加了一个英语新文件）" "$VERIFY_RC/$(verify_fails 2)" "0/"
 check "撤回的 $W 没被部署放回去（H2）" "$(exam_status "$W")" "待校对"
 check "$R 照旧是已发布（导入过的章节不再重导）" "$(exam_status "$R")" "已发布"
 check "停用的 $RQ 还是停用、还是草稿（部署不会让它复活）" \
@@ -264,6 +279,26 @@ echo "== 第 4 次部署：文件改回去 =="
 cp "$WORK/r.bak" "$RF"
 deploy 4 || exit 1
 check "线上验证全过" "$VERIFY_RC/$(verify_fails 4)" "0/"
+
+echo
+echo "== 线上验证能红：库里的章节和题库文件对不上（CR-M16） =="
+# 期望从文件现算，所以加文件不会让它红（上面第 2 次部署已证明）；该红的是导入丢了东西。
+# 删新章节里的一道题（它没人做过，子表只有这三张）
+DQ=$(one "SELECT question_id FROM questions WHERE exam_id = 'biochem-ch01-v2' ORDER BY ord DESC LIMIT 1;")
+FILE_N=$(jq '[.sections[].questions | length] | add' "$WORK/subjects/biochem/groups/biochem-ch01-v2.json")
+exec_sql "DELETE FROM question_items WHERE question_id = '$DQ'; DELETE FROM question_knowledge_points WHERE question_id = '$DQ';
+          DELETE FROM question_assets WHERE question_id = '$DQ'; DELETE FROM questions WHERE question_id = '$DQ';"
+check "（前提）库里的 biochem-ch01-v2 比文件少一道" \
+  "$(one "SELECT COUNT(*) FROM questions WHERE exam_id = 'biochem-ch01-v2';")" "$((FILE_N - 1))"
+# 仓库里多一个文件、库里却没有这一章（导题库那一步没导它）
+copy_group "$EN_SRC" "$(basename "$EN_SRC" .json)-v3"
+bash "$CI/verify-deployment.sh" > "$WORK/verify-mismatch.log" 2>&1; RC=$?
+check "线上验证失败" "$RC" "1"
+check "  点名少题的章节和两边的题数" \
+  "$(grep '^  FAIL 题库文件和库里对不上' "$WORK/verify-mismatch.log" | grep -c "biochem-ch01-v2（文件 $FILE_N 道，库里 $((FILE_N - 1)) 道）")" "1"
+check "  点名库里没有的章节" \
+  "$(grep '^  FAIL 题库文件和库里对不上' "$WORK/verify-mismatch.log" | grep -c "$(basename "$EN_SRC" .json)-v3（文件 [0-9]* 道，库里没有这一章）")" "1"
+check "  红的只有这一条" "$(grep -c '^  FAIL' "$WORK/verify-mismatch.log")" "1"
 
 echo
 echo "== 小结: $PASS 通过, $FAIL 失败 =="

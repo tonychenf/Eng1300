@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { get, patch, post } from '../../api.js';
 import { Alert, Loading, PageHead } from '../../components/ui.jsx';
+import { formatBeijing } from '../../lib/time.js';
 
 export default function Users() {
   const [users, setUsers] = useState(null);
@@ -77,7 +78,7 @@ export default function Users() {
                       : <span className="badge ok">正常</span>}
                   </td>
                   <td data-label="最近登录">
-                    <span className="small muted">{u.last_login_at || '从未登录'}</span>
+                    <span className="small muted">{formatBeijing(u.last_login_at, '从未登录')}</span>
                   </td>
                   <td data-label="">
                     <div className="row">

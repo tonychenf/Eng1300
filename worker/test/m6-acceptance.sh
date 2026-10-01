@@ -218,6 +218,9 @@ check "普通用户不能导出(403)" \
   "$(stu -o /dev/null -w '%{http_code}' "$BASE/admin/stats/export/bank")" "403"
 CT=$(adm -o /dev/null -w '%{content_type}' "$BASE/admin/stats/export/bank?courseCode=13000")
 check "导出带 JSON 内容类型" "$(echo "$CT" | grep -c json)" "1"
+# 文件名是平台名 xlearn-…（CR-L7）。以前还叫 eng1300-…，那是复制过来的蓝本的名字
+check "题库、记录导出的文件名带平台名 xlearn" \
+  "$(adm -s -D - -o /dev/null "$BASE/admin/stats/export/bank?courseCode=13000" | grep -i -c '^content-disposition:.*filename="xlearn-bank-[0-9-]*\.json"')/$(adm -s -D - -o /dev/null "$BASE/admin/stats/export/records?userId=$UID2" | grep -i -c '^content-disposition:.*filename="xlearn-records-[0-9-]*\.json"')" "1/1"
 
 echo "== 10. 前端页面都能打开 =="
 BAD_PAGES=0

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { get, post } from '../api.js';
 import { Alert, Loading, PageHead } from '../components/ui.jsx';
 import { useSubject } from '../subject.jsx';
+import { formatBeijing } from '../lib/time.js';
 
 export default function PracticeNew() {
   const { path, courses: subjectCourses } = useSubject();
@@ -74,7 +75,7 @@ export default function PracticeNew() {
             <div>
               <strong className="small">有一次练习还没结束</strong>
               <p className="tiny muted" style={{ margin: '4px 0 0' }}>
-                {active.practice_stage} · 已做 {active.asked} 题 · 开始于 {active.started_at}
+                {active.practice_stage} · 已做 {active.asked} 题 · 开始于 {formatBeijing(active.started_at)}
               </p>
             </div>
             <Link className="btn sm" to={path(`/practice/${active.attempt_id}/run`)}>继续</Link>

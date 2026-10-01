@@ -1,0 +1,193 @@
+name: Restore XLearn database
+
+# 数据恢复（CR-M6）。只能手动触发：Actions → Restore XLearn database → Run workflow。
+# 怎么选方式、填什么、会丢什么、做完之后怎么办，全在 docs/数据恢复手册.md。
+#
+#   time-travel  7 天内：用 D1 时间旅行把线上库整库回滚到某个时间点或书签。恢复点之后的写入全部丢掉；
+#                动手前先打出撤销书签，恢复错了用它再跑一次就回去了。恢复完自动补齐表结构。
+#   backup       更早、或者库被删了：把某次部署存下的加密备份导进一个**新库**，逐表核对。线上库不碰；
+#                要切过去，把 worker/wrangler.toml 的 database_name 改成新库名推送。
+#
+# 填错了停在第一步，什么都不碰。确认栏要手输库名，防手滑。
+
+on:
+  # 只为让 GitHub 认得这条流水线：只手动触发的流水线在非默认分支上没跑过一次就没法手动触发。
+  # 推送那一次什么都不做（下面 register 只打一行字）。
+  push:
+    branches:
+      - claude/eng1300-multidisciplinary-platform-ozri7n
+    paths:
+      - '.github/workflows/d1-restore.yml'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: '恢复方式：time-travel（7 天内，整库回滚）或 backup（把加密备份导进一个新库）'
+        type: choice
+        options:
+          - time-travel
+          - backup
+        required: true
+      point:
+        description: 'time-travel 用：书签（部署日志里「部署前的恢复点」），或北京时间如 2026-10-01 15:00'
+        required: false
+      backup_run_id:
+        description: 'backup 用：存着备份的那次部署的运行编号（运行页网址 runs/ 后面那串数字）'
+        required: false
+      new_db_name:
+        description: 'backup 用：新库名，如 xlearn-restored-20261001（不能是线上库名）'
+        required: false
+      confirm:
+        description: '确认：time-travel 填线上库名；backup 填新库名'
+        required: true
+
+permissions:
+  contents: read
+  actions: read   # backup 方式要下载流水线附件
+
+jobs:
+  register:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "推送只为让 GitHub 认得这条流水线，什么都没做。要恢复数据请手动触发，见 docs/数据恢复手册.md。"
+
+  restore:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    # 和部署同一组：恢复和部署不会同时跑。只加在这个 job 上——加在整条流水线上的话，推送时那次
+    # 注册运行也要排在部署后面，排队时再来一次部署它就被取消了。
+    concurrency:
+      group: deploy-worker
+      cancel-in-progress: false
+    env:
+      MODE: ${{ inputs.mode }}
+      POINT: ${{ inputs.point }}
+      BACKUP_RUN_ID: ${{ inputs.backup_run_id }}
+      NEW_DB_NAME: ${{ inputs.new_db_name }}
+      CONFIRM_NAME: ${{ inputs.confirm }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Database name (single source - worker/wrangler.toml)
+        run: |
+          N=$(bash scripts/ci/d1-name.sh)
+          echo "D1_NAME=$N" >> "$GITHUB_ENV"
+
+      - name: Check the inputs before touching anything
+        run: bash scripts/ci/d1-restore-check-inputs.sh
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+        run: npm install --prefix worker --no-audit --no-fund
+
+      - name: Guard against writing to the copied platform's database
+        run: bash scripts/ci/check-db-isolation.sh
+
+      - name: Resolve Cloudflare account
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ACCOUNT_ID_SECRET: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: bash scripts/ci/resolve-account.sh
+
+      # ---------------- time-travel：线上库整库回滚 ----------------
+      - name: Find the database (never creates)
+        if: env.MODE == 'time-travel'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ALLOW_CREATE_DB: 'false'
+        run: bash scripts/ci/find-or-create-d1.sh
+
+      - name: Point wrangler.toml at the database
+        if: env.MODE == 'time-travel'
+        working-directory: worker
+        run: |
+          sed -i "s|^database_id = \".*\"|database_id = \"$D1_DATABASE_ID\"|" wrangler.toml
+          grep '^database_id' wrangler.toml
+
+      - name: Re-check isolation after the database id is filled in
+        if: env.MODE == 'time-travel'
+        run: bash scripts/ci/check-db-isolation.sh
+
+      - name: Row counts before
+        if: env.MODE == 'time-travel'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        # 不用 | tee：GitHub 默认的 bash -e 不带 pipefail，读库失败会被 tee 的成功盖掉
+        run: |
+          bash scripts/ci/d1-table-counts.sh --remote "$D1_NAME" > "$RUNNER_TEMP/before.json"
+          cat "$RUNNER_TEMP/before.json"
+
+      - name: Restore with time travel
+        if: env.MODE == 'time-travel'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: bash scripts/ci/d1-restore.sh "$POINT"
+
+      # 恢复点要是早于某次部署，那次部署补的表结构也跟着回去了，现在的代码会读不到新列。
+      # 这几步和部署里的完全一样、只补不删，已经齐全的库上是空操作。
+      - name: Bring the schema up to date - legacy tables
+        if: env.MODE == 'time-travel'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: bash scripts/ci/rebuild-legacy-schema.sh --remote
+
+      - name: Bring the schema up to date - ai_settings purposes
+        if: env.MODE == 'time-travel'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: bash scripts/ci/rebuild-ai-purposes.sh --remote
+
+      - name: Bring the schema up to date - columns
+        if: env.MODE == 'time-travel'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: bash scripts/ci/ensure-columns.sh --remote
+
+      - name: Bring the schema up to date - migrations
+        if: env.MODE == 'time-travel'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: bash scripts/ci/apply-migrations.sh --remote
+
+      - name: Row counts after
+        if: env.MODE == 'time-travel'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          bash scripts/ci/d1-table-counts.sh --remote "$D1_NAME" > "$RUNNER_TEMP/after.json"
+          echo "行数有变化的表（恢复前 → 恢复后）："
+          jq -r --slurpfile b "$RUNNER_TEMP/before.json" \
+            'to_entries[] | select(.value != ($b[0][.key] // 0)) | "  \(.key)：\($b[0][.key] // 0) → \(.value)"' \
+            "$RUNNER_TEMP/after.json"
+          echo "接下来：手动触发一次部署（Deploy XLearn worker），它会把恢复点之后新加的题库文件导进来、跑一遍线上验证。"
+
+      # ---------------- backup：加密备份导进一个新库 ----------------
+      - name: Fetch the encrypted backup
+        if: env.MODE == 'backup'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash scripts/ci/d1-fetch-backup.sh "$RUNNER_TEMP/backup" "$BACKUP_RUN_ID"
+
+      - name: Create the new database
+        if: env.MODE == 'backup'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          ID=$(bash scripts/ci/d1-create-db.sh "$NEW_DB_NAME")
+          bash scripts/ci/d1-tool-dir.sh "$RUNNER_TEMP/tool" "$NEW_DB_NAME" "$ID"
+
+      - name: Decrypt, import and check every table
+        if: env.MODE == 'backup'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          WRANGLER_DIR="$RUNNER_TEMP/tool" bash scripts/ci/d1-import-backup.sh --remote "$RUNNER_TEMP/backup" "$NEW_DB_NAME"
+          echo "线上库「$D1_NAME」没碰。要切到新库：把 worker/wrangler.toml 的 database_name 改成「$NEW_DB_NAME」推送，"
+          echo "部署会找到新库、绑上去。旧库留着查原因，确认不要了再到 Cloudflare 后台删。"

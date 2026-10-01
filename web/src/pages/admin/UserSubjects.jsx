@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { get, put } from '../../api.js';
 import { Alert, Loading, PageHead } from '../../components/ui.jsx';
+import { beijingDate, formatBeijing } from '../../lib/time.js';
 
 // 单人视角：一个学员能进哪些学科。
 // 新学员入学时一次给他开好几个学科，用这一页。
@@ -19,7 +20,7 @@ export default function UserSubjects() {
       setData(r);
       setPicked(new Set(r.subjects.filter((s) => s.grant_status === 'ACTIVE').map((s) => s.code)));
       setExpires(Object.fromEntries(
-        r.subjects.filter((s) => s.expires_at).map((s) => [s.code, s.expires_at.slice(0, 10)])));
+        r.subjects.filter((s) => s.expires_at).map((s) => [s.code, beijingDate(s.expires_at)])));
     }).catch((e) => setError(e.message));
   }, [id]);
 
@@ -38,7 +39,8 @@ export default function UserSubjects() {
       // 提交全集比"发一次增量再发一次删除"少一步、也漏不掉。
       const subjects = [...picked].map((code) => ({
         code,
-        expiresAt: expires[code] ? `${expires[code]} 23:59:59` : null,
+        // 只发日期：按北京时间那一天结束失效，后端换成世界时存（CR-M7）
+        expiresAt: expires[code] || null,
       }));
       const r = await put(`/admin/users/${id}/subjects`, { subjects });
       setMsg(`已开通 ${r.granted} 个、更新 ${r.updated} 个、撤销 ${r.revoked} 个`);
@@ -87,7 +89,7 @@ export default function UserSubjects() {
                         ? <span className="badge" style={{ marginLeft: 6 }}>学科已停用</span> : null}
                       {s.granted_at ? (
                         <div className="tiny faint">
-                          {s.granted_by_name ? `${s.granted_by_name} 于 ` : ''}{s.granted_at} 开通
+                          {s.granted_by_name ? `${s.granted_by_name} 于 ` : ''}{formatBeijing(s.granted_at)} 开通
                         </div>
                       ) : null}
                     </span>

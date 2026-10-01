@@ -79,6 +79,10 @@ try {
     await page.locator('button.card-pad').first().click();
     await page.waitForSelector('#answerState', { timeout: 15000 });
     check(`${label}｜有答案状态下拉`, await page.locator('#answerState').inputValue(), '待核');
+    // 时间按北京时间显示（CR-M7）：ui-n6.sh 给这一章的题写了世界时 2026-01-01 16:30:00 的确认时间，
+    // 北京时间是第二天 00:30。以前原样显示，日期都差一天。
+    check(`${label}｜确认时间按北京时间显示（世界时 01-01 16:30 → 北京 01-02 00:30）`,
+      (await page.locator('body').innerText()).includes('上次确认：admin · 2026-01-02 00:30'), true);
     const publishOpt = page.locator('#status option[value="已发布"]');
     check(`${label}｜待核时「已发布」点不了`, await publishOpt.isDisabled(), true);
     // 触控目标 44px（CLAUDE.md）：下拉是新加的，不能比别的控件矮
@@ -110,6 +114,11 @@ try {
     await page.waitForSelector('#status', { timeout: 15000 });
     check(`${label}｜停用的题「已发布」点不了`,
       await page.locator('#status option[value="已发布"]').isDisabled(), true);
+    // 停用时间是刚才写下的世界时，页面上要是北京时间：和这里另算的北京时间差不出两分钟
+    const retiredShown = ((await page.locator('body').innerText()).match(/这道题 (\d{4}-\d{2}-\d{2} \d{2}:\d{2}) 由/) || [])[1];
+    const bjNow = Date.now() + 8 * 3600e3;
+    check(`${label}｜停用时间按北京时间显示（「${retiredShown}」）`,
+      Boolean(retiredShown) && Math.abs(Date.parse(`${retiredShown.replace(' ', 'T')}:00Z`) - bjNow) < 2 * 60e3, true);
     const restoreBtn = page.locator('button', { hasText: '恢复这道题' });
     check(`${label}｜有恢复按钮`, await restoreBtn.count(), 1);
     await restoreBtn.click();

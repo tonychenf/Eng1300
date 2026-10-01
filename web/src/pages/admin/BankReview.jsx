@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api, get, patch, post } from '../../api.js';
 import { Alert, Loading, StatusBadge } from '../../components/ui.jsx';
+import { formatBeijing } from '../../lib/time.js';
 
 export default function BankReview() {
   const { examId } = useParams();
@@ -445,7 +446,7 @@ function QuestionEditor({ question, tagLibrary, onClose, onSaved }) {
           </select>
           {question.answer_reviewed_by ? (
             <p className="tiny faint" style={{ marginTop: 4 }}>
-              上次确认：{question.answer_reviewed_by} · {question.answer_reviewed_at}
+              上次确认：{question.answer_reviewed_by} · {formatBeijing(question.answer_reviewed_at)}
             </p>
           ) : null}
         </div>
@@ -484,7 +485,7 @@ function QuestionEditor({ question, tagLibrary, onClose, onSaved }) {
           {question.retired_at ? (
             <>
               <p className="small">
-                这道题 {question.retired_at} 由 {question.retired_by || '—'} 停用：学员组卷和练习抽不到它，
+                这道题 {formatBeijing(question.retired_at)} 由 {question.retired_by || '—'} 停用：学员组卷和练习抽不到它，
                 错题本里也不显示。
               </p>
               <button className="btn" onClick={restore} disabled={busy}>恢复这道题</button>

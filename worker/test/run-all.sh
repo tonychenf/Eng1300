@@ -37,11 +37,11 @@ REPO_DIR="$(cd "$WORKER_DIR/.." && pwd)"
 # m2-smoke 69 秒）。第一版凭感觉排，cr-h2-publish 和 n3-rebuild 排在最后，
 # 其余都跑完了还要等它俩三四分钟。以后加了新套件，按它的实测用时插进来。
 SERVER_SUITES=(n5-items deploy-local n6-content h4-seed-guard n6b-upload n3-rebuild n2-grants m4-smoke
-  m5-smoke n3-pack n4-parity m3-smoke n7d-ai-purposes n5b-assets m6-acceptance cr-auth-limits
-  prod-e2e-local n1-subjects m2-smoke d1-lib db-isolation bank-files-guard)
+  m5-smoke n3-pack n4-parity restore-local m3-smoke n7d-ai-purposes n5b-assets m6-acceptance cr-auth-limits
+  prod-e2e-local n1-subjects m2-smoke d1-lib d1-ops-guard db-isolation bank-files-guard)
 UI_SUITES=(ui-items ui-rich ui-n6 ui-n6b ui-smoke ui-subjects)   # 同上，按实测用时（94 秒 … 49 秒）
 NODE_TESTS=(grade-items.test.mjs rich-text.test.mjs docx-import.test.mjs normalizers.test.mjs
-  ai-purposes.test.mjs auth-guard.test.mjs quota-degrade.mjs essay-parse.mjs)
+  ai-purposes.test.mjs auth-guard.test.mjs quota-degrade.mjs essay-parse.mjs beijing-time.test.mjs)
 
 JOBS=4; UI=0; ONLY=()
 SUITE_TIMEOUT=${SUITE_TIMEOUT:-1200}
@@ -76,7 +76,7 @@ done
 # test/ 下每个测试文件都得在上面三张清单之一里。漏登记的套件回归时不会跑，而且不会有任何提示——
 # prod-e2e.sh 就是这样一次都没跑成过、四个里程碑没人发现（踩坑记录第十八节）。
 # 不是测试的文件（替身、参照物、被 ui-*.sh 调起的浏览器脚本）登记在 NOT_TESTS 里。
-NOT_TESTS=(run-all.sh ai-stub.mjs blueprint-reference.mjs)
+NOT_TESTS=(run-all.sh ai-stub.mjs cf-api-stub.mjs blueprint-reference.mjs)
 if [ ${#ONLY[@]} -eq 0 ]; then
   for f in "$WORKER_DIR"/test/*.sh "$WORKER_DIR"/test/*.mjs; do
     b=$(basename "$f"); n=${b%.sh}

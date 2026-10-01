@@ -1,0 +1,67 @@
+name: D1 recovery drill
+
+# 恢复演练（CR-M6）：在一次性的库（xlearn-drill-<运行编号>-*）上把恢复手册里的每条路真走一遍——
+# 按北京时间恢复、撤销、按书签恢复、加密备份导进新库逐表核对，以及该拒绝的都拒绝。跑完删库。
+# 线上库一行都不碰。步骤和断言在 scripts/ci/d1-drill.sh。
+#
+# 改了恢复相关的脚本，推送时自动跑一次（占约一千行写入额度，不调 AI）。
+# 手动触发时可以勾「真实备份」：再把最近一份线上加密备份导进一次性库核对，证明备份真的恢复得了
+# （写入量约等于线上整库的行数）。
+
+on:
+  push:
+    branches:
+      - claude/eng1300-multidisciplinary-platform-ozri7n
+    paths:
+      - '.github/workflows/d1-drill.yml'
+      - 'scripts/ci/d1-*.sh'
+      - 'scripts/ci/apply-migrations.sh'
+  workflow_dispatch:
+    inputs:
+      real_backup:
+        description: '另外把最近一份线上加密备份导进一次性库核对（写入量约等于线上整库行数）'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  actions: read   # 真实备份那一段要下载部署的附件
+
+concurrency:
+  group: d1-drill
+  cancel-in-progress: false
+
+jobs:
+  drill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+        run: npm install --prefix worker --no-audit --no-fund
+
+      - name: Resolve Cloudflare account
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ACCOUNT_ID_SECRET: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: bash scripts/ci/resolve-account.sh
+
+      - name: Fetch the latest production backup
+        if: github.event_name == 'workflow_dispatch' && inputs.real_backup
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash scripts/ci/d1-fetch-backup.sh "$RUNNER_TEMP/real-backup"
+
+      - name: Drill
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          REAL_BACKUP_DIR: ${{ (github.event_name == 'workflow_dispatch' && inputs.real_backup) && format('{0}/real-backup', runner.temp) || '' }}
+          REAL_BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: bash scripts/ci/d1-drill.sh

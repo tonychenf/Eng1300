@@ -158,7 +158,7 @@ adminStatsRouter.get('/export/bank', async (c) => {
     });
   }
 
-  return jsonDownload(c, `eng1300-bank-${new Date().toISOString().slice(0, 10)}.json`, {
+  return jsonDownload(c, `xlearn-bank-${new Date().toISOString().slice(0, 10)}.json`, {
     exportedAt: new Date().toISOString(),
     kind: 'bank',
     filter: { courseCode, examId },
@@ -197,7 +197,7 @@ adminStatsRouter.get('/export/records', async (c) => {
      ${userId ? 'WHERE m.user_id = ?' : ''} ORDER BY m.user_id, m.tag_id`
   ).bind(...binds).all();
 
-  return jsonDownload(c, `eng1300-records-${new Date().toISOString().slice(0, 10)}.json`, {
+  return jsonDownload(c, `xlearn-records-${new Date().toISOString().slice(0, 10)}.json`, {
     exportedAt: new Date().toISOString(),
     kind: 'records',
     filter: { userId },

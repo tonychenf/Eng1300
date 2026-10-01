@@ -274,6 +274,51 @@ check "未到期的照常放行" "$(sget /s/english)" "200"
 sql "UPDATE user_subject_grants SET expires_at=NULL WHERE user_id=$SID AND subject_id=$ENG;" >/dev/null
 
 echo
+echo "== 到期日按北京时间那一天结束（CR-M7） =="
+# 以前后台发 "日期 23:59:59"、原样存，被当成世界时比——选 10 月 1 日到期，北京时间 10 月 2 日早上 8 点才失效。
+# 现在存那一天北京时间 23:59:59 对应的世界时（同一天 15:59:59）。日期从北京时间现算，不写死。
+BJ_TODAY=$(TZ=Asia/Shanghai date +%F)
+BJ_YESTERDAY=$(TZ=Asia/Shanghai date -d '-1 day' +%F)
+put_exp() {
+  curl -s -o /tmp/n2-pe.json -w '%{http_code}' -X PUT "$BASE/admin/users/$SID/subjects" \
+    -H "Authorization: Bearer $ADMIN" -H 'Content-Type: application/json' \
+    -d "{\"subjects\":[{\"code\":\"english\",\"expiresAt\":$1}]}"
+}
+stored_exp() { one "SELECT expires_at FROM user_subject_grants WHERE user_id=$SID AND subject_id=$ENG;"; }
+check "按人设今天（北京时间）到期：存的是今天北京时间 23:59:59 对应的世界时" \
+  "$(put_exp "\"$BJ_TODAY\"")/$(stored_exp)" "200/$BJ_TODAY 15:59:59"
+check "  今天之内照常放行" "$(sget /s/english)" "200"
+check "设昨天（北京时间）到期：已经失效" "$(put_exp "\"$BJ_YESTERDAY\"")/$(sget /s/english)" "200/403"
+check "旧页面发来的「日期 23:59:59」也按北京时间理解" \
+  "$(put_exp "\"$BJ_TODAY 23:59:59\"")/$(stored_exp)" "200/$BJ_TODAY 15:59:59"
+check "不存在的日期：400，库里不动" \
+  "$(put_exp '"2026-02-30"')/$(jq -r '.error' /tmp/n2-pe.json)/$(stored_exp)" "400/invalid_expires_at/$BJ_TODAY 15:59:59"
+check "看不懂的写法：400" "$(put_exp '"下个月"')" "400"
+CODE=$(curl -s -o /tmp/n2-pm.json -w '%{http_code}' -X POST "$BASE/admin/subjects/$ENG/members" \
+  -H "Authorization: Bearer $ADMIN" -H 'Content-Type: application/json' \
+  -d "{\"usernames\":[\"S001\"],\"expiresAt\":\"$BJ_TODAY\"}")
+check "按学科批量开通也一样换算" "$CODE/$(stored_exp)" "200/$BJ_TODAY 15:59:59"
+CODE=$(curl -s -o /tmp/n2-pm.json -w '%{http_code}' -X POST "$BASE/admin/subjects/$ENG/members" \
+  -H "Authorization: Bearer $ADMIN" -H 'Content-Type: application/json' \
+  -d '{"usernames":["S001"],"expiresAt":"2026-13-01"}')
+check "  写错的日期同样 400" "$CODE" "400"
+sql "UPDATE user_subject_grants SET expires_at='2020-01-01 15:59:59' WHERE user_id=$SID AND subject_id=$ENG;" >/dev/null
+sget /s/english /tmp/n2-exp2.json >/dev/null
+check "到期提示里的时间是北京时间（2020-01-01 23:59，不是 15:59:59）" \
+  "$(jq -r '.message' /tmp/n2-exp2.json | grep -c '已于 2020-01-01 23:59 到期')" "1"
+
+# 存量换算（migrations/0016）：只换"日期 23:59:59"这种旧页面写出来的形状，只换一次
+sql "UPDATE user_subject_grants SET expires_at='2099-03-01 23:59:59' WHERE user_id=$SID AND subject_id=$ENG;" >/dev/null
+exec_sql "DELETE FROM seed_state WHERE name = 'm7-grant-expiry-beijing';"
+npx wrangler d1 execute "$D1_NAME" --local --file=migrations/0016_grant_expiry_beijing.sql > /tmp/n2-m7.log 2>&1 \
+  || { echo "  !! 0016 执行失败：$(tail -3 /tmp/n2-m7.log)"; }
+check "存量的「日期 23:59:59」换成那一天北京时间结束的世界时" "$(stored_exp)" "2099-03-01 15:59:59"
+sql "UPDATE user_subject_grants SET expires_at='2099-04-01 23:59:59' WHERE user_id=$SID AND subject_id=$ENG;" >/dev/null
+npx wrangler d1 execute "$D1_NAME" --local --file=migrations/0016_grant_expiry_beijing.sql > /tmp/n2-m7.log 2>&1
+check "  只换一次：门闩合上之后，下一次部署重跑不再动它" "$(stored_exp)" "2099-04-01 23:59:59"
+sql "UPDATE user_subject_grants SET expires_at=NULL WHERE user_id=$SID AND subject_id=$ENG;" >/dev/null
+
+echo
 echo "== 学科停用：拦新会话，不拦已开始的 =="
 CODE=$(curl -s -o /tmp/n2-gen2.json -w '%{http_code}' -X POST "$BASE/exams/generate" \
   -H "Authorization: Bearer $STU" -H 'Content-Type: application/json' -d '{"courseCode":"13000"}')

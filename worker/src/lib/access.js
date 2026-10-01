@@ -17,6 +17,8 @@
 // C 类不能用 403：这些接口本身是合法的，问题在于结果集里不能出现无授权学科的行。
 // 只做 403 的话这三个接口会继续漏数据——学科被撤销了，历史记录里那几次模考还在。
 
+import { utcToBeijing } from './beijing-time.js';
+
 export function isAdmin(user) {
   return user?.role === 'SUPER_ADMIN';
 }
@@ -48,7 +50,7 @@ export async function checkGrant(db, user, subject) {
     const row = await db.prepare("SELECT datetime('now') >= ? AS expired").bind(g.expires_at).first();
     if (row?.expired) {
       return { ok: false, code: 'grant_expired',
-               message: `你对「${subject.name}」的访问已于 ${g.expires_at} 到期，请联系管理员` };
+               message: `你对「${subject.name}」的访问已于 ${utcToBeijing(g.expires_at)} 到期，请联系管理员` };
     }
   }
   return { ok: true };

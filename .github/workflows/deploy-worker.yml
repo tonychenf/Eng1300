@@ -17,6 +17,13 @@ on:
   # 以前这里有一个「强制重新导入全部题库」的开关。导入过的题库文件不许改、导入过的章节
   # 不再重导（CR-H4），那个开关和这条规矩矛盾，去掉了。
   workflow_dispatch:
+    inputs:
+      # 找不到数据库时，只有勾了这个才新建（CR-M15）。平时库不见了是事故：新建一个空库顶上，
+      # 站点看起来一切正常，学员数据却全没了——停下来照 docs/数据恢复手册.md 处理。
+      create_database:
+        description: '首次部署，允许新建数据库（库已经存在时勾了也不会动它）'
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -27,7 +34,8 @@ concurrency:
 
 env:
   WORKER_NAME: xlearn
-  D1_NAME: xlearn
+  # 库名不在这里写：只认 worker/wrangler.toml 的 database_name（deploy job 第一步读进来，CR-M6）。
+  # 从备份恢复到新库后切换过去，就是改那一行；这里另写一份，改一处漏一处。
 
 jobs:
   # CI 测试门（CR-H3）：先跑全套回归，红了就不部署。以前推送即上线，中间没有任何自动测试，
@@ -101,6 +109,12 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Database name (single source - worker/wrangler.toml)
+        run: |
+          N=$(bash scripts/ci/d1-name.sh)
+          echo "D1_NAME=$N" >> "$GITHUB_ENV"
+          echo "数据库：$N"
+
       # 本平台是从 Eng1300 复制改造来的，wrangler.toml 里的 database_id 会原样
       # 带过来。没清掉的话，下面的迁移会直接在 Eng1300 的线上库上建表改表——
       # 而且迁移都写成 IF NOT EXISTS，不会报任何错，流水线全绿、老站数据被静默改坏。
@@ -112,9 +126,15 @@ jobs:
       - name: Check required secrets
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
         run: |
           if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
             echo "::error::缺少仓库 Secret「CLOUDFLARE_API_TOKEN」。请到 Settings → Secrets and variables → Actions 添加后重新运行。"
+            exit 1
+          fi
+          # 部署动库之前要先做加密备份（CR-M6），没有口令就不往下走——这时什么都还没碰
+          if [ -z "$BACKUP_PASSPHRASE" ]; then
+            echo "::error::缺少仓库 Secret「BACKUP_PASSPHRASE」（整库备份的加密口令）。到 Settings → Secrets and variables → Actions 新建，值用密码管理器生成（24 位以上），自己另存一份——存进去就读不回来，丢了备份就打不开。"
             exit 1
           fi
 
@@ -148,9 +168,10 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: bash scripts/ci/ensure-subdomain.sh
 
-      - name: Find or create D1 database
+      - name: Find D1 database (create only when asked)
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ALLOW_CREATE_DB: ${{ github.event_name == 'workflow_dispatch' && inputs.create_database }}
         run: bash scripts/ci/find-or-create-d1.sh
 
       - name: Point wrangler.toml at the database
@@ -163,6 +184,33 @@ jobs:
       # 与"写进 toml 的 ID"是否一致，也能拦住解析步骤本身拿错库的情况。
       - name: Re-check isolation after the database id is filled in
         run: bash scripts/ci/check-db-isolation.sh
+
+      # ---- 动库之前（CR-M6）：下面的重建、补列、迁移、导题库都会写库 ----
+      # 恢复点：这一刻的时间旅行书签打进日志和摘要。这次部署弄坏了数据，d1-restore 填它就回到部署前。
+      # 只读；读不到只告警（按北京时间填时间点照样能恢复）。
+      - name: Record a restore point (time travel bookmark)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: bash scripts/ci/d1-restore-point.sh
+
+      # 整库加密备份，存成本次运行的附件、留 90 天：时间旅行只能回到 7 天内、库被删了也跟着没。
+      # 仓库是公开的，附件谁都能下，所以只上传密文；wrangler 打印的整库下载链接也不进日志。
+      # 失败就停：这时还什么都没写。新建的空库没东西可备份，跳过。
+      - name: Back up the database (encrypted)
+        if: env.D1_JUST_CREATED != 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: bash scripts/ci/d1-backup.sh --remote "$RUNNER_TEMP/d1-backup"
+
+      - name: Keep the encrypted backup for 90 days
+        if: env.D1_JUST_CREATED != 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: d1-backup-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/d1-backup/
+          retention-days: 90
+          if-no-files-found: error
 
       # N3：线上那个库是 N0 时按旧结构建的，迁移里全是 CREATE TABLE IF NOT EXISTS，
       # 对已经存在的表一行都不会改。必须排在迁移之前：0002 里新加的
@@ -197,16 +245,12 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: bash scripts/ci/ensure-columns.sh --remote
 
+      # 迁移全部写成 IF NOT EXISTS / INSERT OR IGNORE，可以反复执行。
+      # 搬进脚本是因为恢复流水线（d1-restore）回滚之后也要跑同一份。
       - name: Apply database migrations
-        working-directory: worker
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: |
-          # 迁移全部写成 IF NOT EXISTS / INSERT OR IGNORE，可以反复执行
-          for f in migrations/*.sql; do
-            echo "── 执行 $f"
-            npx wrangler d1 execute "$D1_NAME" --remote --yes --file="$f"
-          done
+        run: bash scripts/ci/apply-migrations.sh --remote
 
       # 部署排在题库导入之前。导入受 D1 每日写入额度限制，额度耗尽时会失败；
       # 早先它排在前面，一失败后面的部署就整步跳过，连续八次运行的 Worker 代码

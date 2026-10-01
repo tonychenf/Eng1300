@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { get, post, put } from '../../api.js';
 import { Alert, Loading, PageHead } from '../../components/ui.jsx';
+import { formatBeijing } from '../../lib/time.js';
 
 // 三档的分工按**喂给模型的是什么**分，不按学科分。
 // 合法取值与回落链的唯一定义在 worker/src/lib/ai-purposes.js，这里只是配套的界面文案。
@@ -165,7 +166,7 @@ function PurposeCard({ meta, value, onSaved }) {
           {busy === 'test' ? '测试中…' : '连通性测试'}
         </button>
       </div>
-      {value?.updatedAt ? <p className="tiny faint" style={{ marginBottom: 0 }}>最近更新：{value.updatedAt}</p> : null}
+      {value?.updatedAt ? <p className="tiny faint" style={{ marginBottom: 0 }}>最近更新：{formatBeijing(value.updatedAt)}</p> : null}
     </div>
   );
 }

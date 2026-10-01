@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { get } from '../../api.js';
 import { Alert, Empty, Loading, PageHead } from '../../components/ui.jsx';
+import { formatBeijing } from '../../lib/time.js';
 
 const TIER_STYLE = { 已掌握: 'ok', 待巩固: 'warn', 薄弱: 'danger', 未测: 'gray' };
 
@@ -53,7 +54,7 @@ export default function Students() {
                       : <span className="faint">—</span>}
                   </td>
                   <td data-label="最近活动">
-                    <span className="small muted">{s.last_activity || s.last_login_at || '从未使用'}</span>
+                    <span className="small muted">{formatBeijing(s.last_activity || s.last_login_at, '从未使用')}</span>
                   </td>
                   <td data-label="">
                     <button className="btn ghost sm" onClick={() => open(s.id)}>
@@ -100,7 +101,7 @@ export default function Students() {
                     </td>
                     <td data-label="状态">{a.status}</td>
                     <td data-label="客观题">{a.objective_score ?? '—'}</td>
-                    <td data-label="开始时间"><span className="small muted">{a.started_at}</span></td>
+                    <td data-label="开始时间"><span className="small muted">{formatBeijing(a.started_at)}</span></td>
                     <td data-label="用时">
                       {a.duration_seconds ? `${Math.round(a.duration_seconds / 60)} 分钟` : '—'}
                     </td>
