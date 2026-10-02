@@ -12,7 +12,7 @@
 #   4. 备份脚本整库导出、加密 → 导入脚本导进新库 B → 逐表核对 + 再导出逐字节比；
 #      反面：导进非空库、口令不对、目标写成线上库名，都要拒绝
 #   5. （可选）把最近一份线上备份导进库 C 核对：证明真实的备份解得开、导得回去、一行不少。
-#      导不进去时接着诊断：只打印结构信息（d1-dump-inspect.sh），再按外键先父后子重排、导进库 D 试一次
+#      导不进去时接着打印诊断：只有结构信息，没有数据（d1-dump-inspect.sh）
 #
 # 占 D1 写入额度：1–4 段约一千行；第 5 段约等于线上整库的行数。不调 AI。
 # 需要：CLOUDFLARE_API_TOKEN、CLOUDFLARE_ACCOUNT_ID
@@ -186,23 +186,13 @@ if [ -n "${REAL_BACKUP_DIR:-}" ]; then
   check "线上备份解得开、导得回去" "$RC" "0"
   check "  逐表行数和备份一致" "$(grep -c '^核对一' "$T/real.log")" "1"
   check "  再导出来和备份一致" "$(grep -c '^核对二' "$T/real.log")" "1"
+  check "  按原样补回的文本核对过了" "$(grep -c '^核对三' "$T/real.log")" "1"
   if [ "$RC" != "0" ]; then
-    # 2026-10-02 线上备份第一次导不进去，D1 只回 {"D1_RESET_DO":true}。诊断只打印结构，不打印任何数据
+    # 2026-10-02 线上备份第一次导不进去，D1 只回 {"D1_RESET_DO":true}，靠这份诊断查出是父表建在子表后面
     step "5b. 诊断：线上备份的结构（只有表名、条数、字节数，没有数据）"
     BACKUP_PASSPHRASE="${REAL_BACKUP_PASSPHRASE:-}" bash "$HERE/d1-dump-inspect.sh" "$REAL_BACKUP_DIR" > "$T/inspect.log" 2>&1; RC=$?
     show "$T/inspect.log"
     check "诊断跑完了" "$RC" "0"
-    step "5c. 建表语句放最前、数据按外键先父后子重排，再导进一次性库 D"
-    mk d || exit 1
-    START=$(date +%s)
-    BACKUP_PASSPHRASE="${REAL_BACKUP_PASSPHRASE:-}" IMPORT_ORDER=parent-first WRANGLER_DIR="$T/d" PROD_D1_NAME="$PROD" \
-      bash "$HERE/d1-import-backup.sh" --remote "$REAL_BACKUP_DIR" "$(db d)" > "$T/real-d.log" 2>&1; RC=$?
-    show "$T/real-d.log"
-    echo "     用了 $(( $(date +%s) - START )) 秒"
-    check "重排之后导得进去" "$RC" "0"
-    check "  逐表行数和备份一致" "$(grep -c '^核对一' "$T/real-d.log")" "1"
-    check "  再导出来和备份一致" "$(grep -c '^核对二' "$T/real-d.log")" "1"
-    check "  按原样补回的文本核对过了" "$(grep -c '^核对三' "$T/real-d.log")" "1"
   fi
 fi
 

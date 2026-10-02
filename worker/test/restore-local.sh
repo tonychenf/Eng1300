@@ -120,6 +120,7 @@ check "导入成功" "$RC" "0"
 check "  逐表行数核对过了" "$(grep -c '^核对一' "$T/imp.log")" "1"
 check "  再导出来，数据和备份逐行相同" "$(grep -c -E '^核对二：导进去再导出来，[0-9]+ 行数据和备份逐行相同' "$T/imp.log")" "1"
 check "  按原样补回的那 3 处文本核对过了" "$(grep -c '^核对三：3 处' "$T/imp.log")" "1"
+check "  默认先按外键先父后子重排再导" "$(grep -c '^导入顺序：建表语句 [0-9]* 句放最前' "$T/imp.log")" "1"
 check "（前提）套在 npx 外面的那层记下了导入发出的命令" "$(( $(wc -l < "$T/cmds-imp-b.log" 2>/dev/null || echo 0) >= 2 ))" "1"
 check "导入发给 wrangler 的每条命令都不超过 40000 字节（最长 $(maxlen "$T/cmds-imp-b.log")）" \
   "$(( $(maxlen "$T/cmds-imp-b.log") <= 40000 ))" "1"
@@ -263,12 +264,12 @@ check "  照出外键开着、每句立刻查时有语句出错，重排之后 0
 check "  诊断的输出里找不到明文（只有表名、条数、字节数）" \
   "$(grep -c -e "$MARK" -e 'RT01' -e '大段文字' -e '反应式' "$T/inspect.log" "$T/inspect-bk.log" | awk -F: '{s += $2} END {print s}')" "0"
 bash "$CI/d1-tool-dir.sh" "$T/h" xlearn-rt-h
-RC=$(imp "$T/bk-ooo" h)
-check "原样导（默认）：导不进去——和线上一样" "$RC/$(grep -c '导入失败' "$T/imp.log")" "1/1"
+RC=$(IMPORT_ORDER=as-is imp "$T/bk-ooo" h)
+check "原样导（IMPORT_ORDER=as-is）：导不进去——和线上一样" "$RC/$(grep -c '导入失败' "$T/imp.log")" "1/1"
 bash "$CI/d1-tool-dir.sh" "$T/i" xlearn-rt-i
-RC=$(IMPORT_ORDER=parent-first imp "$T/bk-ooo" i)
+RC=$(imp "$T/bk-ooo" i)
 sed 's/^/     /' "$T/imp.log" | grep -E '^ *(导入顺序|核对)' | cut -c1-160
-check "重排导（IMPORT_ORDER=parent-first）：导得进去、三道核对都过" \
+check "默认导入（先父后子重排）：导得进去、三道核对都过" \
   "$RC/$(grep -c -E '^(核对一|核对二|核对三：3 处)' "$T/imp.log")" "0/3"
 check "  每张表的行数和 A 一样" "$(counts i)" "$A_COUNTS"
 check "  刁钻的几行、长文本、\\rightarrow 原样回来了" "$(q i "$TRICKY")$(q i "$TRICKY2")" "$A_TRICKY$A_TRICKY2"
