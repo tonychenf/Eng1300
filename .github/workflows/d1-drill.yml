@@ -15,6 +15,7 @@ on:
     paths:
       - '.github/workflows/d1-drill.yml'
       - 'scripts/ci/d1-*.sh'
+      - 'scripts/ci/d1-*.py'
       - 'scripts/ci/apply-migrations.sh'
   workflow_dispatch:
     inputs:

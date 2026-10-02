@@ -223,5 +223,57 @@ RC=$(imp "$T/bk-miss" g)
 check "一处补丁落空（主键对不上）：核对三报红" "$RC/$(grep -c '处导进去的值和备份不一致' "$T/imp.log")" "1/1"
 
 echo
+echo "== 线上那样的备份：父表建在子表后面（2026-10-02 演练照出线上备份导不进新库） =="
+# 线上库跑过 N3 的旧表重建，questions、knowledge_points 拆掉重建后在 sqlite_master 里排到了子表后面；导出按建表
+# 顺序写，子表的数据就排在父表的建表语句前面。拿 A 的备份造一份同样顺序的：两张表的建表和数据挪到所有数据之后，
+# 考点的行倒过来（子考点在父考点前面）
+BACKUP_PASSPHRASE="$BACKUP_PASSPHRASE" bash "$CI/d1-dump-inspect.sh" "$T/bk" > "$T/inspect-bk.log" 2>&1
+check "（对照）正常的备份：诊断说子表的数据没有排在父表前面" "$(grep -c '^诊断：子表的数据排在父表前面：没有$' "$T/inspect-bk.log")" "1"
+GNUPGHOME="$G" gpg --batch --quiet --pinentry-mode loopback --passphrase-fd 3 --decrypt \
+  --output "$T/plain.sql" "$(ls "$T/bk"/*.gpg)" 3< <(printf '%s' "$BACKUP_PASSPHRASE") 2>/dev/null
+python3 - "$T/plain.sql" "$T/plain-ooo.sql" "$CI/d1-dump-tool.py" <<'PY'
+import sys, importlib.util
+spec = importlib.util.spec_from_file_location('tool', sys.argv[3]); t = importlib.util.module_from_spec(spec); spec.loader.exec_module(t)
+_, text, _ = t.read(sys.argv[1]); st = t.split(text)
+moved = {'questions', 'knowledge_points'}
+keep = [s for s in st if not (s.table in moved and s.kind in ('CREATE TABLE', 'INSERT'))]
+blk = ([s for s in st if s.table in moved and s.kind == 'CREATE TABLE']
+       + [s for s in st if s.table == 'questions' and s.kind == 'INSERT']
+       + list(reversed([s for s in st if s.table == 'knowledge_points' and s.kind == 'INSERT'])))
+last = max(i for i, s in enumerate(keep) if s.kind == 'INSERT' and s.table != 'sqlite_sequence')
+out = keep[:last + 1] + blk + keep[last + 1:]
+assert sorted(s.text for s in out) == sorted(s.text for s in st)
+open(sys.argv[2], 'w', encoding='utf-8', errors='surrogateescape').write(
+    ''.join(s.text if s.text.endswith('\n') else s.text + '\n' for s in out))
+PY
+rm -f "$T/plain.sql"
+mkdir -p "$T/bk-ooo"
+GNUPGHOME="$G" gpg --batch --quiet --pinentry-mode loopback --passphrase-fd 3 --symmetric --cipher-algo AES256 \
+  --output "$T/bk-ooo/$NF" "$T/plain-ooo.sql" 3< <(printf '%s' "$BACKUP_PASSPHRASE")
+jq --arg f "$NF" --arg p "$(sha256sum "$T/plain-ooo.sql" | cut -d' ' -f1)" \
+   --arg c "$(sha256sum "$T/bk-ooo/$NF" | cut -d' ' -f1)" '.file = $f | .plainSha256 = $p | .cipherSha256 = $c' \
+   "$T/bk/manifest.json" > "$T/bk-ooo/manifest.json"
+rm -f "$T/plain-ooo.sql"
+BACKUP_PASSPHRASE="$BACKUP_PASSPHRASE" bash "$CI/d1-dump-inspect.sh" "$T/bk-ooo" > "$T/inspect.log" 2>&1; RC=$?
+sed 's/^/     /' "$T/inspect.log" | grep -E '子表的数据|立刻查' | cut -c1-160
+check "诊断跑完了，照出子表的数据排在父表前面" \
+  "$RC/$(grep -c '^诊断：子表的数据排在父表前面：.*question_items→questions' "$T/inspect.log")" "0/1"
+check "  照出外键开着、每句立刻查时有语句出错，重排之后 0 句" \
+  "$(grep -c -E '^诊断：（普通 SQLite，外键开着）每句单独提交、立刻查：[1-9][0-9]* 句出错' "$T/inspect.log")/$(grep -c '^诊断：按外键先父后子重排之后，同样每句单独提交、立刻查：0 句出错' "$T/inspect.log")" "1/1"
+check "  诊断的输出里找不到明文（只有表名、条数、字节数）" \
+  "$(grep -c -e "$MARK" -e 'RT01' -e '大段文字' -e '反应式' "$T/inspect.log" "$T/inspect-bk.log" | awk -F: '{s += $2} END {print s}')" "0"
+bash "$CI/d1-tool-dir.sh" "$T/h" xlearn-rt-h
+RC=$(imp "$T/bk-ooo" h)
+check "原样导（默认）：导不进去——和线上一样" "$RC/$(grep -c '导入失败' "$T/imp.log")" "1/1"
+bash "$CI/d1-tool-dir.sh" "$T/i" xlearn-rt-i
+RC=$(IMPORT_ORDER=parent-first imp "$T/bk-ooo" i)
+sed 's/^/     /' "$T/imp.log" | grep -E '^ *(导入顺序|核对)' | cut -c1-160
+check "重排导（IMPORT_ORDER=parent-first）：导得进去、三道核对都过" \
+  "$RC/$(grep -c -E '^(核对一|核对二|核对三：3 处)' "$T/imp.log")" "0/3"
+check "  每张表的行数和 A 一样" "$(counts i)" "$A_COUNTS"
+check "  刁钻的几行、长文本、\\rightarrow 原样回来了" "$(q i "$TRICKY")$(q i "$TRICKY2")" "$A_TRICKY$A_TRICKY2"
+check "  导入的日志里找不到明文" "$(leaks "$T/imp.log")" "0"
+
+echo
 echo "== 小结: $PASS 通过, $FAIL 失败 =="
 [ "$FAIL" -eq 0 ]

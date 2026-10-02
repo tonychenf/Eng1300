@@ -180,6 +180,8 @@ PATH="$FAKE_PATH" BACKUP_PASSPHRASE=0123456789abcdefXYZ bash "$CI/d1-import-back
 check "密文和 manifest 的校验和对不上：停" "$RC/$(grep -c '校验和' "$T/i.log")/$(n_npx)" "1/1/0"
 PATH="$FAKE_PATH" BACKUP_PASSPHRASE=0123456789abcdefXYZ bash "$CI/d1-import-backup.sh" --remote "$T/nope" xlearn-restored-1 > "$T/i.log" 2>&1; RC=$?
 check "备份目录不存在：停" "$RC/$(n_npx)" "1/0"
+PATH="$FAKE_PATH" BACKUP_PASSPHRASE=0123456789abcdefXYZ IMPORT_ORDER=parents bash "$CI/d1-import-backup.sh" --remote "$T/fakebk" xlearn-restored-1 > "$T/i.log" 2>&1; RC=$?
+check "导入顺序填错（IMPORT_ORDER=parents）：停在最前面" "$RC/$(grep -c 'IMPORT_ORDER 只能是' "$T/i.log")/$(n_npx)" "1/1/0"
 
 echo
 echo "== d1-query-chunks.sh：分批发、按原顺序合并、对不上就停（假 npx 像线上那样整条收下命令） =="

@@ -17,10 +17,15 @@
 #
 # 用法：d1-import-backup.sh --remote|--local <备份目录（d1-backup.sh 的输出）> <目标库名>
 # 需要：BACKUP_PASSPHRASE
-# 可选：WRANGLER_DIR（在哪个目录跑 wrangler，默认仓库的 worker/）、PROD_D1_NAME（默认读 wrangler.toml）
+# 可选：WRANGLER_DIR（在哪个目录跑 wrangler，默认仓库的 worker/）、PROD_D1_NAME（默认读 wrangler.toml）、
+#       IMPORT_ORDER（as-is：原样导，默认；parent-first：建表语句放最前、数据按外键先父后子重排再导，见 d1-dump-tool.py）
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 WORKER="$(cd "$HERE/../../worker" && pwd)"
+case "${IMPORT_ORDER:-as-is}" in
+  as-is|parent-first) ;;
+  *) echo "::error::IMPORT_ORDER 只能是 as-is 或 parent-first，拿到的是「${IMPORT_ORDER}」"; exit 1 ;;
+esac
 case "${1:-}" in
   --remote) MODE=--remote ;;
   --local)  MODE=--local ;;
@@ -70,8 +75,18 @@ N=$(jq -r '.[0].results[0].n // "读不到"' "$T/n.json")
 [ "$N" = "0" ] || { echo "::error::目标库「$TARGET」不是空库（已有 $N 张表），拒绝往里导"; exit 1; }
 
 # ── 导入
+# 2026-10-02 演练照出：线上那份备份导不进新库。线上库跑过 N3 的旧表重建，questions、knowledge_points 在
+# sqlite_master 里排到了子表后面，导出按建表顺序写，子表的数据就排在父表的建表语句前面——外键开着时往子表插
+# 一行，父表还没建就报 no such table（本地照样复现）。parent-first 先把建表语句全放最前、数据按外键先父后子排。
+IMPORT_FILE="$T/dump.sql"
+if [ "${IMPORT_ORDER:-as-is}" = "parent-first" ]; then
+  python3 "$HERE/d1-dump-tool.py" reorder "$T/dump.sql" "$T/reordered.sql" > "$T/reorder.log" 2>&1 \
+    || { echo "::error::重排失败：$(tail -3 "$T/reorder.log" | tr '\n' ' ' | head -c 400)"; exit 1; }
+  sed 's/^/导入顺序：/' "$T/reorder.log"
+  IMPORT_FILE="$T/reordered.sql"
+fi
 START=$(date +%s)
-if ! npx wrangler d1 execute "$TARGET" "$MODE" --file "$T/dump.sql" -y > "$T/import.log" 2>&1; then
+if ! npx wrangler d1 execute "$TARGET" "$MODE" --file "$IMPORT_FILE" -y > "$T/import.log" 2>&1; then
   echo "::error::导入失败（链接已涂掉）："; tail -20 "$T/import.log" | redact
   exit 1
 fi
