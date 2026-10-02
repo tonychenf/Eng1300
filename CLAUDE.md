@@ -515,9 +515,11 @@ status 那条三值 CHECK 改不动（上一条），所以同 `answer_state` �
 看见直接显示 `xxx_at`、对它 slice 的就红。授权到期日按"北京时间那一天结束"存成世界时（`worker/src/lib/beijing-time.js`
 的 `expiryToUtc`：那一天的 15:59:59），写错的日期 400；以前什么字符串都原样存进去再拿去比大小。存量的由迁移 0016 换算一次（门闩）。
 
-**D1 的两处限制，报错都不直观。** 复合查询的项数有上限：三十几张表一条 `UNION ALL` 报 `too many terms in compound SELECT`，
+**D1 的三处限制，报错都不直观。** 复合查询的项数有上限：三十几张表一条 `UNION ALL` 报 `too many terms in compound SELECT`，
 改成每条语句十个标量子查询。`wrangler d1 execute --json` 失败时**错误写在 stdout**（`{"error":{"text":…}}`），stderr 里只有代理告警——
-只看 stderr 的话报错是空的。
+只看 stderr 的话报错是空的。**线上的 `--command` 是整条原样发给 D1 的，本地会先拆成一句一句**（翻 wrangler 源码确认）：
+D1 一条 SQL 最长 100 KB、命令行一个参数最长 128 KB，这两个上限本地永远跑不出来。很多句拼起来的查询（按表逐张查、
+按主键逐个核对）一行一句写进文件，交给 `scripts/ci/d1-query-chunks.sh` 分批发，每批不超过 40 KB（踩坑记录第二十四节第 9 条）。
 
 **加一行数据让断言变红时，先看懂再改期望值。** 0013 给生化建课程行之后
 `m2-smoke` 的"普通用户可读课程列表"从 1 变成 2——不是计数过时了，是

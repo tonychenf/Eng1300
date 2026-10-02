@@ -12,6 +12,8 @@
 #      导出只读，不占写入额度。
 #   3. 备份末尾"按原样补回"的那些文本（d1-backup.sh 里有来由），逐个查一遍导进去的值和原样一致——
 #      导出器会把它们写走样，而走样的值再导出、写法一模一样，第 2 道看不出来。
+#      期望值留在本地，发给 D1 的只是"按主键取回十六进制"，一句一百来字节、和文本多长无关，分批发
+#      （以前把原文十六进制整个塞进一条命令，文本越多越长，D1 和命令行都有长度上限：d1-query-chunks.sh）。
 #
 # 用法：d1-import-backup.sh --remote|--local <备份目录（d1-backup.sh 的输出）> <目标库名>
 # 需要：BACKUP_PASSPHRASE
@@ -109,15 +111,24 @@ NFIX=$(grep -c . "$T/fixups.sql" || true)
 [ "$NFIX" = "$(jq -r '.fixups // 0' "$DIR/manifest.json")" ] \
   || { echo "::error::备份里补回的文本有 $NFIX 处，manifest 记的是 $(jq -r '.fixups // 0' "$DIR/manifest.json") 处"; exit 1; }
 if [ "$NFIX" -gt 0 ]; then
-  sed -E 's/^UPDATE ("[A-Za-z0-9_]+") SET ("[A-Za-z0-9_]+") = CAST\(X('"'"'[0-9A-F]*'"'"') AS TEXT\) WHERE (.+);$/SELECT (SELECT hex(\2) FROM \1 WHERE \4) = \3 AS ok;/' \
-    "$T/fixups.sql" > "$T/verify-fixups.sql"
+  # 第 n 处补丁 → 「SELECT n AS i, hex(列) AS h FROM 表 WHERE 主键」发给 D1；「n 十六进制」留在本地比
+  RE='^([0-9]+) UPDATE ("[A-Za-z0-9_]+") SET ("[A-Za-z0-9_]+") = CAST\(X'"'"'([0-9A-F]*)'"'"' AS TEXT\) WHERE (.+);$'
+  awk '{ print NR " " $0 }' "$T/fixups.sql" | sed -E "s/$RE/SELECT \1 AS i, hex(\3) AS h FROM \2 WHERE \5;/" > "$T/verify-fixups.sql"
+  awk '{ print NR " " $0 }' "$T/fixups.sql" | sed -E "s/$RE/\1 \4/" > "$T/expected.txt"
   # 用 --command 不用 --file：线上的 --file 走导入接口，不回查询结果
-  if ! npx wrangler d1 execute "$TARGET" "$MODE" --json --command "$(tr '\n' ' ' < "$T/verify-fixups.sql")" > "$T/vf.json" 2> "$T/vf.err"; then
-    echo "::error::核对补回的文本时查询失败：$(jq -r '.error.text // empty' "$T/vf.json" 2>/dev/null | head -c 300)"; exit 1
+  if ! WRANGLER_DIR="$PWD" bash "$HERE/d1-query-chunks.sh" "$MODE" "$TARGET" "$T/verify-fixups.sql" > "$T/vf.json" 2> "$T/vf.err"; then
+    echo "::error::核对补回的文本时查询失败：$(tail -3 "$T/vf.err" | tr '\n' ' ' | head -c 600)"; exit 1
   fi
-  OK=$(jq '[.[].results[0].ok] | map(select(. == 1)) | length' "$T/vf.json" 2>/dev/null || echo 0)
-  [ "$OK" = "$NFIX" ] || { echo "::error::按原样补回的 $NFIX 处文本里，只有 $OK 处和备份一致"; exit 1; }
-  echo "核对三：$NFIX 处会被导出改写的文本，导进去的值和原样一致"
+  # 主键对不上（补丁落空）时那一句查不到行，取不到值，同样算不一致
+  BAD=$(jq -r --rawfile exp "$T/expected.txt" '
+    ([.[].results[] | {(.i | tostring): .h}] | add // {}) as $got
+    | [$exp | split("\n")[] | select(length > 0) | split(" ") | select($got[.[0]] != (.[1] // "")) | .[0]]
+    | join(",")' "$T/vf.json") || { echo "::error::读不懂核对补回文本的查询结果"; exit 1; }
+  if [ -n "$BAD" ]; then
+    echo "::error::按原样补回的 $NFIX 处文本里，有 $(tr ',' '\n' <<<"$BAD" | grep -c .) 处导进去的值和备份不一致（第 $BAD 处补丁）"
+    exit 1
+  fi
+  echo "核对三：$NFIX 处会被导出改写的文本，导进去的值和原样一致；查询$(sed -n 's/^分批：//p' "$T/vf.err" | tail -1)"
 else
   echo "核对三：没有会被导出改写的文本"
 fi

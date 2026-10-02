@@ -6,8 +6,13 @@
 # 线上那条路由 d1-drill 在一次性库上证明。
 #
 # 另外证明每道核对都会红：
-#   导进非空库、口令不对、密文被改过、manifest 的行数对不上、导回去再导出和备份不一样（类型被改写）。
+#   导进非空库、口令不对、密文被改过、manifest 的行数对不上、导回去再导出和备份不一样（类型被改写）、
+#   补回的文本丢了、补回落空（主键对不上）。
 # 以及明文不落地：密文里找不到明文，脚本的临时目录里也找不到。
+#
+# 命令的长短（2026-10-02）：线上的 d1 execute --command 是整条发给 D1 的（本地 wrangler 先拆成一句一句，
+# 所以本地跑不出 D1 的长度上限），一个命令行参数最长 128 KB。这里给 npx 套一层记录，断言备份和导入发给
+# wrangler 的每条命令都不超过 40000 字节；再把上限调小，证明分批前后备份逐字节相同、核对照样能做完。
 set -uo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 REPO_DIR="$(cd "$ROOT_DIR/.." && pwd)"
@@ -33,12 +38,25 @@ q() {  # q <库> <sql>：结果数组（JSON）
   (cd "$T/$1" && npx wrangler d1 execute "xlearn-rt-$1" --local --json --command "$2" 2>/dev/null) | jq -c '.[0].results'
 }
 counts() { WRANGLER_DIR="$T/$1" bash "$CI/d1-table-counts.sh" --local "xlearn-rt-$1"; }
-imp() {  # imp <备份目录> <库> → 输出进 $T/imp.log，打印退出码
-  TMPDIR="$T/tmp" WRANGLER_DIR="$T/$2" PROD_D1_NAME=xlearn \
+imp() {  # imp <备份目录> <库> → 输出进 $T/imp.log，打印退出码；发给 wrangler 的命令记进 $CMD_LOG
+  CMD_LOG="${CMD_LOG:-$T/cmds-imp.log}" PATH="$T/bin:$PATH" TMPDIR="$T/tmp" WRANGLER_DIR="$T/$2" PROD_D1_NAME=xlearn \
     bash "$CI/d1-import-backup.sh" --local "$1" "xlearn-rt-$2" > "$T/imp.log" 2>&1; echo $?
 }
 leaks() { grep -r -a -l -e "$MARK" -e 'RT01' "$@" 2>/dev/null | wc -l; }   # 有几个文件里能找到明文
-mkdir -p "$T/tmp"
+maxlen() { if [ -s "$1" ]; then cut -d' ' -f1 "$1" | sort -n | tail -1; else echo 0; fi; }   # 记下的命令里最长的字节数
+mkdir -p "$T/tmp" "$T/bin"
+# 套在 npx 外面的一层：每条 --command 记一行「字节数 开头」，再原样交给真的 npx
+export REAL_NPX; REAL_NPX=$(command -v npx)
+cat > "$T/bin/npx" <<'SH'
+#!/usr/bin/env bash
+prev=""
+for a in "$@"; do
+  [ "$prev" = "--command" ] && printf '%s %s\n' "$(printf '%s' "$a" | wc -c)" "$(printf '%s' "$a" | head -c 40 | tr '\n' ' ')" >> "$CMD_LOG"
+  prev="$a"
+done
+exec "$REAL_NPX" "$@"
+SH
+chmod +x "$T/bin/npx"
 
 echo "== 准备：本地库 A，迁移，导生化第 1 章，造几行刁钻的数据 =="
 D1_NAME=xlearn-rt-a WRANGLER_DIR="$T/a" bash "$CI/apply-migrations.sh" --local > "$T/mig.log" 2>&1 \
@@ -55,6 +73,12 @@ x a "INSERT INTO users (username, password_hash, role) VALUES ('RT01', 'it''s \"
      INSERT INTO exam_parsing_notes (exam_id, note) VALUES ('biochem-ch01', '第一行
 第二行：$MARK 😀 100% ''单'' \"双\" \\n（字面的反斜杠 n）');
      INSERT INTO system_settings (key, value, description) VALUES ('rt-null', '值', NULL);" || exit 1
+# 另两处要按原样补回的：主键是文本的一条（公式里的 \rightarrow 带出字面的 \r），和一段 24 KB 的长文本——
+# 十六进制 48 KB，以前核对三把它原样塞进一条命令
+x a "INSERT INTO system_settings (key, value, description) VALUES ('rt-arrow', '反应式：
+A \\rightarrow B', NULL);
+     INSERT INTO exam_parsing_notes (exam_id, note) VALUES ('biochem-ch01',
+       '大段文字' || char(10) || replace(hex(zeroblob(4000)), '0', '反') || ' 公式 \\nu ' || char(10) || '结尾');" || exit 1
 A_COUNTS=$(counts a) || exit 1
 echo "     库 A：$(jq length <<<"$A_COUNTS") 张表、$(jq '[.[]] | add' <<<"$A_COUNTS") 行"
 TRICKY="SELECT u.password_hash, n.note, s.description IS NULL AS desc_null
@@ -62,34 +86,66 @@ TRICKY="SELECT u.password_hash, n.note, s.description IS NULL AS desc_null
          WHERE u.username = 'RT01' AND n.note LIKE '%往返标记%' AND s.key = 'rt-null';"
 A_TRICKY=$(q a "$TRICKY")
 check "（前提）刁钻的那几行在 A 里" "$(jq length <<<"$A_TRICKY")" "1"
+TRICKY2="SELECT (SELECT hex(value) FROM system_settings WHERE key = 'rt-arrow') AS arrow,
+                (SELECT hex(note) FROM exam_parsing_notes WHERE substr(note, 1, 4) = '大段文字') AS big;"
+A_TRICKY2=$(q a "$TRICKY2")
+check "（前提）带 \\rightarrow 的那条在 A 里，长文本的十六进制超过 40000 字节" \
+  "$(jq -r '.[0] | "\(.arrow != null)/\(((.big // "") | length) > 40000)"' <<<"$A_TRICKY2")" "true/true"
 
 echo
 echo "== 备份：导出、加密 =="
 export BACKUP_PASSPHRASE="本地往返测试的口令-$$-0123456789"
 GPG_DIRS_BEFORE=$(ls -d /tmp/xlearn-gpg.* 2>/dev/null | grep -v -x "$G" | LC_ALL=C sort)
-TMPDIR="$T/tmp" D1_NAME=xlearn-rt-a WRANGLER_DIR="$T/a" bash "$CI/d1-backup.sh" --local "$T/bk" > "$T/backup.log" 2>&1; RC=$?
+CMD_LOG="$T/cmds-backup.log" PATH="$T/bin:$PATH" TMPDIR="$T/tmp" D1_NAME=xlearn-rt-a WRANGLER_DIR="$T/a" \
+  bash "$CI/d1-backup.sh" --local "$T/bk" > "$T/backup.log" 2>&1; RC=$?
 sed 's/^/     /' "$T/backup.log"
 check "备份成功" "$RC" "0"
+check "（前提）套在 npx 外面的那层记下了备份发出的命令" "$(( $(wc -l < "$T/cmds-backup.log" 2>/dev/null || echo 0) >= 2 ))" "1"
+check "备份发给 wrangler 的每条命令都不超过 40000 字节（最长 $(maxlen "$T/cmds-backup.log")）" \
+  "$(( $(maxlen "$T/cmds-backup.log") <= 40000 ))" "1"
 check "目录里只有密文和 manifest" "$(ls "$T/bk" | sed -E 's/^xlearn-rt-a-[0-9]{8}-[0-9]{6}\.sql\.gpg$/密文/' | LC_ALL=C sort | paste -sd, -)" "manifest.json,密文"
 check "manifest 记的每张表的行数就是 A 的行数" "$(jq -S -c .tables "$T/bk/manifest.json")" "$(jq -S -c . <<<"$A_COUNTS")"
 check "manifest 的总行数" "$(jq .rows "$T/bk/manifest.json")" "$(jq '[.[]] | add' <<<"$A_COUNTS")"
 # 导出器把"换行 + 字面的 \n"写走样（d1-backup.sh 里有来由），刁钻的那条存疑正是这种，要按原样补回
-check "manifest 记下 1 处要按原样补回的文本（就是同时有换行和字面 \\n 的那条）" "$(jq .fixups "$T/bk/manifest.json")" "1"
+check "manifest 记下 3 处要按原样补回的文本（同时有换行和字面 \\n 或 \\r 的那三条）" "$(jq .fixups "$T/bk/manifest.json")" "3"
 check "密文和 manifest 里都找不到明文" "$(leaks "$T/bk")" "0"
 check "脚本的临时目录里没留下明文" "$(leaks "$T/tmp")" "0"
 check "gpg 的工作目录也删了" "$(ls -d /tmp/xlearn-gpg.* 2>/dev/null | grep -v -x "$G" | LC_ALL=C sort)" "$GPG_DIRS_BEFORE"
 
 echo
 echo "== 导进空库 B：解密、导入、逐表核对、再导出比 =="
-RC=$(imp "$T/bk" b)
+RC=$(CMD_LOG="$T/cmds-imp-b.log" imp "$T/bk" b)
 sed 's/^/     /' "$T/imp.log"
 check "导入成功" "$RC" "0"
 check "  逐表行数核对过了" "$(grep -c '^核对一' "$T/imp.log")" "1"
 check "  再导出来，数据和备份逐行相同" "$(grep -c -E '^核对二：导进去再导出来，[0-9]+ 行数据和备份逐行相同' "$T/imp.log")" "1"
-check "  按原样补回的那 1 处文本核对过了" "$(grep -c '^核对三：1 处' "$T/imp.log")" "1"
+check "  按原样补回的那 3 处文本核对过了" "$(grep -c '^核对三：3 处' "$T/imp.log")" "1"
+check "（前提）套在 npx 外面的那层记下了导入发出的命令" "$(( $(wc -l < "$T/cmds-imp-b.log" 2>/dev/null || echo 0) >= 2 ))" "1"
+check "导入发给 wrangler 的每条命令都不超过 40000 字节（最长 $(maxlen "$T/cmds-imp-b.log")）" \
+  "$(( $(maxlen "$T/cmds-imp-b.log") <= 40000 ))" "1"
 check "B 每张表的行数和 A 一样" "$(counts b)" "$A_COUNTS"
 check "刁钻的那几行原样回来了（换行、引号、反斜杠、emoji、NULL）" "$(q b "$TRICKY")" "$A_TRICKY"
+check "带 \\rightarrow 的那条和 24 KB 的长文本原样回来了" "$(q b "$TRICKY2")" "$A_TRICKY2"
 check "解密出来的明文没留在临时目录" "$(leaks "$T/tmp")" "0"
+
+echo
+echo "== 分批：上限调小，备份逐字节相同，核对照样做完 =="
+CMD_LOG="$T/cmds-small.log" D1_SQL_BUDGET=12000 PATH="$T/bin:$PATH" TMPDIR="$T/tmp" D1_NAME=xlearn-rt-a WRANGLER_DIR="$T/a" \
+  bash "$CI/d1-backup.sh" --local "$T/bk-small" > "$T/backup-small.log" 2>&1; RC=$?
+grep '^查找' "$T/backup-small.log" | sed 's/^/     /'
+NB=$(sed -n -E 's/^查找会被导出改写的文本：.*分 ([0-9]+) 批.*$/\1/p' "$T/backup-small.log")
+DMAX=$(grep " SELECT '" "$T/cmds-small.log" | cut -d' ' -f1 | sort -n | tail -1)
+check "上限调到 12000 字节：备份成功" "$RC" "0"
+check "  查找分了不止一批，每批都不超过 12000 字节（${NB:-?} 批，最长 ${DMAX:-?}）" \
+  "$(( ${NB:-0} >= 2 && ${DMAX:-99999} <= 12000 ))" "1"
+check "  明文和不分批那份逐字节相同（补回的文本一处不差）" \
+  "$(jq -r .plainSha256 "$T/bk-small/manifest.json" 2>/dev/null)" "$(jq -r .plainSha256 "$T/bk/manifest.json")"
+bash "$CI/d1-tool-dir.sh" "$T/f" xlearn-rt-f
+RC=$(D1_SQL_BUDGET=100 imp "$T/bk-small" f)
+grep '^核对三' "$T/imp.log" | sed 's/^/     /'
+check "上限调到 100 字节导进空库 F：成功，3 处补回的文本每处单独一批、逐个核对过" \
+  "$RC/$(grep -c -E '^核对三：3 处.*分 3 批' "$T/imp.log")" "0/1"
+check "  F 里那两条长短文本也原样回来了" "$(q f "$TRICKY2")" "$A_TRICKY2"
 
 echo
 echo "== 该红的都红 =="
@@ -147,7 +203,24 @@ jq --arg f "$NF" --arg p "$(sha256sum "$T/plain-nofix.sql" | cut -d' ' -f1)" \
 rm -f "$T/plain-nofix.sql"
 bash "$CI/d1-tool-dir.sh" "$T/e" xlearn-rt-e
 RC=$(imp "$T/bk-nofix" e)
-check "备份里按原样补回的文本丢了：核对三报红" "$RC/$(grep -c '备份里补回的文本有 0 处，manifest 记的是 1 处' "$T/imp.log")" "1/1"
+check "备份里按原样补回的文本丢了：核对三报红" "$RC/$(grep -c '备份里补回的文本有 0 处，manifest 记的是 3 处' "$T/imp.log")" "1/1"
+
+# 核对三能红（补回落空）：一处补丁的主键改成库里没有的，那条 UPDATE 一行都没改到
+GNUPGHOME="$G" gpg --batch --quiet --pinentry-mode loopback --passphrase-fd 3 --decrypt \
+  --output "$T/plain.sql" "$(ls "$T/bk"/*.gpg)" 3< <(printf '%s' "$BACKUP_PASSPHRASE") 2>/dev/null
+sed -E "s/^(UPDATE \"system_settings\" SET \"value\" = CAST\(X'[0-9A-F]+' AS TEXT\) WHERE \"key\" = )'rt-arrow';\$/\1'rt-nope';/" \
+  "$T/plain.sql" > "$T/plain-miss.sql"; rm -f "$T/plain.sql"
+check "（前提）改掉了一处补丁的主键" "$(grep -c "WHERE \"key\" = 'rt-nope';\$" "$T/plain-miss.sql")" "1"
+mkdir -p "$T/bk-miss"
+GNUPGHOME="$G" gpg --batch --quiet --pinentry-mode loopback --passphrase-fd 3 --symmetric --cipher-algo AES256 \
+  --output "$T/bk-miss/$NF" "$T/plain-miss.sql" 3< <(printf '%s' "$BACKUP_PASSPHRASE")
+jq --arg f "$NF" --arg p "$(sha256sum "$T/plain-miss.sql" | cut -d' ' -f1)" \
+   --arg c "$(sha256sum "$T/bk-miss/$NF" | cut -d' ' -f1)" '.file = $f | .plainSha256 = $p | .cipherSha256 = $c' \
+   "$T/bk/manifest.json" > "$T/bk-miss/manifest.json"
+rm -f "$T/plain-miss.sql"
+bash "$CI/d1-tool-dir.sh" "$T/g" xlearn-rt-g
+RC=$(imp "$T/bk-miss" g)
+check "一处补丁落空（主键对不上）：核对三报红" "$RC/$(grep -c '处导进去的值和备份不一致' "$T/imp.log")" "1/1"
 
 echo
 echo "== 小结: $PASS 通过, $FAIL 失败 =="

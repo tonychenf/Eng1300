@@ -19,7 +19,8 @@
 # 需要：D1_NAME、BACKUP_PASSPHRASE（至少 16 个字符）
 # 可选：WRANGLER_DIR（在哪个目录跑 wrangler，默认仓库的 worker/）、BACKUP_BOOKMARK（写进 manifest）
 set -euo pipefail
-WORKER="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../worker" && pwd)"
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+WORKER="$(cd "$HERE/../../worker" && pwd)"
 case "${1:-}" in
   --remote) MODE=--remote ;;
   --local)  MODE=--local ;;
@@ -89,8 +90,9 @@ mapfile -t WITH_ROWS < <(jq -r 'to_entries[] | select(.value > 0) | .key' <<<"$T
 if [ "${#WITH_ROWS[@]}" -gt 0 ]; then
   for t in "${WITH_ROWS[@]}"; do [[ "$t" =~ ^[A-Za-z0-9_]+$ ]] || { echo "::error::表名不认识：$t"; exit 1; }; done
   q_json "$(printf 'PRAGMA table_info("%s");' "${WITH_ROWS[@]}")" "读表结构" || exit 1
-  # 每张表一条查询：主键用 quote() 取成 SQL 字面量，会被改写的格子取 hex()，其余格子是 NULL
-  DETECT=$(jq -r --args '[$ARGS.positional, .] | transpose[] | .[0] as $t | .[1].results as $cols
+  # 每张表一条查询：主键用 quote() 取成 SQL 字面量，会被改写的格子取 hex()，其余格子是 NULL。
+  # 一行一句写进文件、分批发：32 张表拼成一条是 111 KB，贴着 D1 和命令行的长度上限（d1-query-chunks.sh 里有来由）
+  jq -r --args '[$ARGS.positional, .] | transpose[] | .[0] as $t | .[1].results as $cols
     | ($cols | map(select(.name | test("^[A-Za-z0-9_]+$") | not)) | length) as $bad
     | if $bad > 0 then error("表 \($t) 有认不出的列名") else . end
     | ([$cols[] | select(.pk > 0)] | sort_by(.pk) | map(.name)) as $pk
@@ -100,8 +102,13 @@ if [ "${#WITH_ROWS[@]}" -gt 0 ]; then
       + (if ($pk | length) > 0 then ($pk | map("quote(\"\(.)\") AS \"__pk_\(.)\"") | join(", ")) else "NULL AS \"__nopk\"" end)
       + ", " + ($names | map("CASE WHEN \(lossy(.)) THEN hex(\"\(.)\") END AS \"\(.)\"") | join(", "))
       + " FROM \"\($t)\" WHERE " + ($names | map(lossy(.)) | join(" OR ")) + ";"' \
-    "${WITH_ROWS[@]}" < "$T/q.json") || { echo "::error::拼不出查找语句"; exit 1; }
-  q_json "$DETECT" "查找会被导出改写的文本" || exit 1
+    "${WITH_ROWS[@]}" < "$T/q.json" > "$T/detect.sql" || { echo "::error::拼不出查找语句"; exit 1; }
+  if ! WRANGLER_DIR="${WRANGLER_DIR:-$WORKER}" bash "$HERE/d1-query-chunks.sh" "$MODE" "$D1_NAME" "$T/detect.sql" \
+         > "$T/q.json" 2> "$T/q.err"; then
+    echo "::error::查找会被导出改写的文本失败：$(tail -3 "$T/q.err" | tr '\n' ' ' | head -c 600)"
+    exit 1
+  fi
+  echo "查找会被导出改写的文本：${#WITH_ROWS[@]} 张表，$(sed -n 's/^分批：//p' "$T/q.err" | tail -1)"
   if jq -e '[.[].results[] | select(has("__nopk"))] | length > 0' "$T/q.json" >/dev/null; then
     echo "::error::没有主键的表里有会被导出改写的文本，没法按原样补回：$(jq -r '[.[].results[] | select(has("__nopk")) | .__t] | unique | join(",")' "$T/q.json")"
     exit 1

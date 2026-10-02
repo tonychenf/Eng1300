@@ -55,6 +55,22 @@ if [ "${FAKE_NPX_MODE:-}" = tt ]; then
   esac
   exit 0
 fi
+case "${FAKE_NPX_MODE:-}" in
+  chunks|chunks-short|chunks-fail)
+    # 像线上那样整条收下 --command（不拆句），每句回一个结果、结果里带上那句原文好核对顺序；
+    # 每次的字节数记进 $FAKE_NPX_LOG.len。chunks-short 每次少回一个；chunks-fail 第 2 次像 D1 那样
+    # 把错误写在 stdout、退出码 1
+    prev=""; cmd=""
+    for a in "$@"; do [ "$prev" = "--command" ] && cmd="$a"; prev="$a"; done
+    printf '%s\n' "$(printf '%s' "$cmd" | wc -c)" >> "$FAKE_NPX_LOG.len"
+    if [ "$FAKE_NPX_MODE" = chunks-fail ] && [ "$(grep -c '^wrangler d1 execute' "$FAKE_NPX_LOG")" = 2 ]; then
+      echo '{"error":{"text":"D1_ERROR: statement too long: SQLITE_TOOBIG"}}'; exit 1
+    fi
+    printf '%s\n' "$cmd" | jq -R -s -c --arg m "$FAKE_NPX_MODE" '
+      split("\n") | map(select(length > 0)) | map({results: [{q: .}], success: true})
+      | if $m == "chunks-short" then .[1:] else . end'
+    exit 0 ;;
+esac
 echo "假 npx：不该调到 wrangler" >&2
 exit 1
 NPX
@@ -164,6 +180,39 @@ PATH="$FAKE_PATH" BACKUP_PASSPHRASE=0123456789abcdefXYZ bash "$CI/d1-import-back
 check "密文和 manifest 的校验和对不上：停" "$RC/$(grep -c '校验和' "$T/i.log")/$(n_npx)" "1/1/0"
 PATH="$FAKE_PATH" BACKUP_PASSPHRASE=0123456789abcdefXYZ bash "$CI/d1-import-backup.sh" --remote "$T/nope" xlearn-restored-1 > "$T/i.log" 2>&1; RC=$?
 check "备份目录不存在：停" "$RC/$(n_npx)" "1/0"
+
+echo
+echo "== d1-query-chunks.sh：分批发、按原顺序合并、对不上就停（假 npx 像线上那样整条收下命令） =="
+qc() {  # qc <语句文件> → stdout 进 $T/qc.json、stderr 进 $T/qc.err，打印退出码
+  : > "$FAKE_NPX_LOG"; : > "$FAKE_NPX_LOG.len"
+  PATH="$FAKE_PATH" bash "$CI/d1-query-chunks.sh" --remote xlearn-x "$1" > "$T/qc.json" 2> "$T/qc.err"; echo $?
+}
+n_exec() { grep -c '^wrangler d1 execute' "$FAKE_NPX_LOG" || true; }
+order() { jq -c '[.[].results[0].q | capture("SELECT (?<n>[0-9]+)").n | tonumber]' "$T/qc.json" 2>/dev/null; }
+printf 'SELECT %d AS n, '"'"'abcdefghijklmnop'"'"' AS pad;\n' 1 2 3 4 5 > "$T/five.sql"   # 每句 41 字节，连换行 42
+RC=$(FAKE_NPX_MODE=chunks qc "$T/five.sql")
+check "不设上限（默认 40000）：5 句一批发完" "$RC/$(n_exec)" "0/1"
+RC=$(FAKE_NPX_MODE=chunks D1_SQL_BUDGET=100 qc "$T/five.sql")
+check "上限 100 字节：分 3 批发（2 + 2 + 1 句）" "$RC/$(n_exec)" "0/3"
+check "  每批都不超过 100 字节（最长 $(sort -n "$FAKE_NPX_LOG.len" | tail -1)）" "$(( $(sort -n "$FAKE_NPX_LOG.len" | tail -1) <= 100 ))" "1"
+check "  结果按原顺序合成一个数组，每句一项" "$(order)" "[1,2,3,4,5]"
+check "  stderr 最后一行报分批情况" "$(tail -1 "$T/qc.err")" "分批：分 3 批（最长 83 字节）"
+{ echo "SELECT 1 AS n;"; printf 'SELECT 2 AS n, '"'"'%0150d'"'"' AS pad;\n' 0; echo "SELECT 3 AS n;"; } > "$T/long.sql"
+RC=$(FAKE_NPX_MODE=chunks D1_SQL_BUDGET=100 qc "$T/long.sql")
+check "单独一句就超过上限：自成一批，一句都没丢、顺序不变" "$RC/$(n_exec)/$(order)" "0/3/[1,2,3]"
+printf '\n\n' > "$T/blank.sql"
+RC=$(FAKE_NPX_MODE=chunks qc "$T/blank.sql")
+check "没有语句：输出空数组，一次 wrangler 都没调" "$RC/$(cat "$T/qc.json")/$(n_exec)" "0/[]/0"
+RC=$(FAKE_NPX_MODE=chunks-short D1_SQL_BUDGET=100 qc "$T/five.sql")
+check "D1 回的结果比发的句子少：停、说清发了几句回了几个、不输出半截结果" \
+  "$RC/$(grep -c '发了 5 句，D1 回了 2 个结果' "$T/qc.err")/$(grep -c . "$T/qc.json")" "1/1/0"
+RC=$(FAKE_NPX_MODE=chunks-fail D1_SQL_BUDGET=100 qc "$T/five.sql")
+check "第 2 批 D1 报错：停在第 2 批、带出 D1 写在 stdout 的报错、不输出半截结果" \
+  "$RC/$(n_exec)/$(grep -c '第 2/3 批.*statement too long' "$T/qc.err")/$(grep -c . "$T/qc.json")" "1/2/1/0"
+RC=$(FAKE_NPX_MODE=chunks D1_SQL_BUDGET=4万 qc "$T/five.sql")
+check "上限不是正整数：停，一次 wrangler 都没调" "$RC/$(n_exec)" "1/0"
+RC=$(FAKE_NPX_MODE=chunks qc "$T/nope.sql")
+check "语句文件不存在：停" "$RC/$(n_exec)" "1/0"
 
 echo
 echo "== d1-name.sh：库名只有一个出处 =="
