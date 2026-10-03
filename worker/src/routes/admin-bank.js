@@ -23,13 +23,17 @@ bankRouter.get('/stats', async (c) => {
      FROM questions GROUP BY course_code, section_type ORDER BY course_code, section_type`
   ).all();
 
+  // 考点分布按学科分开：两个学科里同名的考点是两个考点，按名字并在一起数就把它们混成了一个。
+  // 不属于任何学科的（按理不该有）排在最后、学科码为 null，界面上单列一组，不悄悄丢掉。
   const { results: byTag } = await c.env.DB.prepare(
-    `SELECT k.name, COUNT(*) AS total,
+    `SELECT k.tag_id, k.name, s.code AS subject_code, s.name AS subject_name, COUNT(*) AS total,
             SUM(CASE WHEN q.status = '已发布' THEN 1 ELSE 0 END) AS published
      FROM question_knowledge_points x
      JOIN knowledge_points k ON k.tag_id = x.tag_id
      JOIN questions q ON q.question_id = x.question_id
-     GROUP BY k.name ORDER BY total DESC`
+     LEFT JOIN subjects s ON s.subject_id = k.subject_id
+     GROUP BY k.tag_id
+     ORDER BY s.subject_id IS NULL, s.sort_order, s.subject_id, total DESC, k.name`
   ).all();
 
   const pending = await c.env.DB.prepare(
@@ -172,6 +176,14 @@ bankRouter.patch('/questions/:questionId', async (c) => {
   const existing = await c.env.DB.prepare('SELECT * FROM questions WHERE question_id = ?')
     .bind(questionId).first();
   if (!existing) return c.json({ error: 'not_found' }, 404);
+  // 考点按这道题的学科找、按这个学科建（见下面"考点标签整体替换"）。读不到学科就一个字都不写：
+  // 放到后面再拦的话，题面、答案已经先存进去了，返回的却是失败。
+  if (Array.isArray(body.knowledgePoints) && existing.subject_id == null) {
+    return c.json({
+      error: 'question_without_subject',
+      message: `${questionId} 没有学科，考点不知道该记到哪一科下`,
+    }, 422);
+  }
 
   const fields = [];
   const binds = [];
@@ -320,17 +332,19 @@ bankRouter.patch('/questions/:questionId', async (c) => {
     ).bind(val, questionId, ord).run();
   }
 
-  // 考点标签整体替换
+  // 考点标签整体替换。只在这道题所属的学科里按名字找，找不到就在这个学科下新建。
+  // 以前是全库按名字找、新建的不带学科：生化题打上一个英语考点的名字，挂上的就是英语那个；
+  // 新建的哪一科都不属于，在哪一科的候选列表里都看不到。
   if (Array.isArray(body.knowledgePoints)) {
     await c.env.DB.prepare('DELETE FROM question_knowledge_points WHERE question_id = ?')
       .bind(questionId).run();
     for (const name of body.knowledgePoints) {
-      let tag = await c.env.DB.prepare('SELECT tag_id FROM knowledge_points WHERE name = ?')
-        .bind(name).first();
+      let tag = await c.env.DB.prepare('SELECT tag_id FROM knowledge_points WHERE subject_id = ? AND name = ?')
+        .bind(existing.subject_id, name).first();
       if (!tag) {
         const tagId = `kp-${crypto.randomUUID().slice(0, 8)}`;
-        await c.env.DB.prepare('INSERT INTO knowledge_points (tag_id, name) VALUES (?, ?)')
-          .bind(tagId, name).run();
+        await c.env.DB.prepare('INSERT INTO knowledge_points (tag_id, name, subject_id) VALUES (?, ?, ?)')
+          .bind(tagId, name, existing.subject_id).run();
         tag = { tag_id: tagId };
       }
       await c.env.DB.prepare(
@@ -558,13 +572,33 @@ bankRouter.post('/exams/:examId/unpublish', async (c) => {
   return c.json({ ok: true });
 });
 
-// 考点标签库
+// 考点标签库：只给这一章所属学科的（校对页的候选列表）。
+//
+// 以前所有学科的考点一起返回，校对生化题时候选里混着英语的"动词时态"，选错了不报错，
+// 生化题就挂上了英语的考点。学科按这一章的课程认定，不让页面自己传：页面传错了，
+// 候选列表和保存时用的学科（题目自己的 subject_id）就对不上。
 bankRouter.get('/knowledge-points', async (c) => {
+  const examId = c.req.query('examId');
+  if (!examId) {
+    return c.json({ error: 'exam_required', message: '要带上 examId：考点按学科分开，得知道是给哪一章选' }, 400);
+  }
+  const subject = await c.env.DB.prepare(
+    `SELECT s.subject_id, s.code, s.name
+       FROM exams e JOIN courses co ON co.course_code = e.course_code
+       LEFT JOIN subjects s ON s.subject_id = co.subject_id
+      WHERE e.exam_id = ?`
+  ).bind(examId).first();
+  if (!subject) return c.json({ error: 'not_found' }, 404);
+  // 课程没挂学科就说不清该列哪一科的，不回落成"全部列出来"——那正是要修的毛病
+  if (subject.subject_id === null) {
+    return c.json({ error: 'course_without_subject', message: `${examId} 所属的课程没有挂学科，列不出考点` }, 422);
+  }
   const { results } = await c.env.DB.prepare(
     `SELECT k.tag_id, k.name, COUNT(x.question_id) AS question_count
      FROM knowledge_points k
      LEFT JOIN question_knowledge_points x ON x.tag_id = k.tag_id
+     WHERE k.subject_id = ?
      GROUP BY k.tag_id, k.name ORDER BY question_count DESC, k.name`
-  ).all();
-  return c.json({ knowledgePoints: results });
+  ).bind(subject.subject_id).all();
+  return c.json({ subject: { code: subject.code, name: subject.name }, knowledgePoints: results });
 });

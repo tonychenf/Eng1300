@@ -112,8 +112,9 @@ const subjectCode = kpFile.subjectCode || path.basename(subjectDir);
 // 题目里写的标签有两种：单层学科写裸名（"阅读理解"），分层学科写全路径
 // （"蛋白质化学/肽与肽键"）。两种都要认。
 //
-// 裸名在分层学科里会撞（第 2 章也可能有"结构"），所以**撞了就不给解析**：
-// 挑一个是错的——挂错考点不报错，表现是练习按考点筛选时抽到别的章的题。
+// 同一学科里考点不许重名，挂在不同的章下也不行（第 2 章也想要一个"结构"）：库里 (subject_id, name)
+// 唯一，第二个根本存不下——INSERT OR IGNORE 会把它悄悄丢掉，挂在它上面的题要么外键报错，
+// 要么（下面按"学科 + 名字"现查时）挂到前一个上去。所以生成时就拒绝，让出题人改个名字。
 const kpById = new Map(kps.map((k) => [k.tagId, k]));
 const pathOf = (k) => {
   const parts = [];
@@ -124,13 +125,17 @@ const pathOf = (k) => {
   return parts.join('/');
 };
 const kpByName = new Map();
-const ambiguous = new Set();
+const claimName = (key, k) => {
+  const had = kpByName.get(key);
+  if (had && had !== k.tagId) {
+    throw new Error(`考点文件里「${key}」同时是 ${had} 和 ${k.tagId}：同一学科里考点不能重名（库里存不下两个），请改个名字`);
+  }
+  kpByName.set(key, k.tagId);
+};
 for (const k of kps) {
-  kpByName.set(pathOf(k), k.tagId);
-  if (kpByName.has(k.name) && kpByName.get(k.name) !== k.tagId) ambiguous.add(k.name);
-  else if (!ambiguous.has(k.name)) kpByName.set(k.name, k.tagId);
+  claimName(pathOf(k), k);
+  claimName(k.name, k);
 }
-for (const name of ambiguous) kpByName.delete(name);
 // 父考点要排在子考点前面：kpLines 用 INSERT OR IGNORE，父行还没进库时
 // parent_tag_id 指向一个不存在的 tag_id，而 D1 默认不强制外键，不会报错。
 const seen = new Set();
@@ -143,10 +148,21 @@ for (const k of kps) {
 // N3：考点带学科。原来 name 是全局 UNIQUE，多学科之后必撞；改成
 // (subject_id, name) 唯一之后，subject_id 留空的话 SQLite 认为 NULL 各不相同，
 // 唯一约束等于没有——所以这里必须现取，不能省。
+const subjectSql = `(SELECT subject_id FROM subjects WHERE code = ${q(subjectCode)})`;
+// 挂考点（题目挂考点、子考点挂章）按"学科 + 名字"现查编号，查不到才用文件里写的编号。
+//
+// 后台校对时新建的考点也带学科。以后知识点文件里加了同名的——比如管理员先在校对页给上传的第 2 章
+// 建了"核酸的分子组成"，后来有人把第 2 章补进文件——文件里那一行会因为 (subject_id, name) 唯一
+// 被 INSERT OR IGNORE 丢掉，库里没有文件写的那个编号。照文件编号挂的话，挂题目、挂子考点的那句
+// 都外键报错，这一章导不进来，部署红在导题库。同一学科里同名就是同一个考点，所以先按名字查；
+// 查不到（文件里改过名字）再用文件的编号，和以前一样——编号也不在就照旧外键报错，不会悄悄挂空。
+const tagIdSql = (tagId) =>
+  `COALESCE((SELECT tag_id FROM knowledge_points WHERE subject_id = ${subjectSql} ` +
+  `AND name = ${q(kpById.get(tagId).name)}), ${q(tagId)})`;
 const kpLines = kps.map(
   (k, i) => `INSERT OR IGNORE INTO knowledge_points (tag_id, name, subject_id, parent_tag_id, sort_order) VALUES (` +
-    `${q(k.tagId)}, ${q(k.name)}, (SELECT subject_id FROM subjects WHERE code = ${q(subjectCode)}), ` +
-    `${q(k.parentTagId)}, ${n(k.sortOrder ?? i)});`
+    `${q(k.tagId)}, ${q(k.name)}, ${subjectSql}, ` +
+    `${k.parentTagId ? tagIdSql(k.parentTagId) : 'NULL'}, ${n(k.sortOrder ?? i)});`
 );
 // 把内容指纹作为最后一条语句写进种子文件本身。
 //
@@ -360,7 +376,7 @@ for (const file of files) {
         const tagId = kpByName.get(tag);
         if (!tagId) { unknownTags.add(tag); continue; }
         lines.push(
-          `INSERT OR IGNORE INTO question_knowledge_points (question_id, tag_id) VALUES (${q(qu.questionId)}, ${q(tagId)});`
+          `INSERT OR IGNORE INTO question_knowledge_points (question_id, tag_id) VALUES (${q(qu.questionId)}, ${tagIdSql(tagId)});`
         );
       }
     }
@@ -382,12 +398,7 @@ for (const file of files) {
 }
 
 if (unknownTags.size) {
-  for (const t of unknownTags) {
-    const last = String(t).split('/').pop();
-    console.error(ambiguous.has(last)
-      ? `错误：考点标签「${t}」对应多个考点，请写成全路径（父名/子名）`
-      : `错误：考点标签「${t}」不在 knowledge-points.json 中`);
-  }
+  for (const t of unknownTags) console.error(`错误：考点标签「${t}」不在 knowledge-points.json 中`);
   process.exit(1);
 }
 

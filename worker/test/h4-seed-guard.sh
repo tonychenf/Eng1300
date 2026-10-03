@@ -291,5 +291,72 @@ check "有拒绝、又没处可记：退出码非 0" "$?" "1"
 cp "$WORK/en.bak" "$EF"
 
 echo
+echo "== 后台校对时建过的考点，和知识点文件里后来加的同名 =="
+# 校对时新建的考点带学科（2026-10-03 起）。管理员先给上传的第 2 章建了"核酸化学""核酸的分子组成"，
+# 后来有人把第 2 章补进知识点文件、加了第 2 章的题库文件。库里 (subject_id, name) 唯一，文件里那两行
+# 被 INSERT OR IGNORE 丢掉，文件写的编号在库里不存在——种子照文件编号挂（子考点挂章、题目挂考点）的话，
+# 外键报错、这一章导不进来，部署红在导题库。同一学科里同名就是同一个考点，要挂到库里已有的那个上。
+# 文件里再加一个不撞名的"核酸的二级结构"：它自己进得了库，但它的章（文件写 kp-02）被挡掉了——
+# 子考点挂章那一句也得按名字找。只有这个考点照得出这一处：撞了名的子考点整行被丢掉，
+# 它挂章的那句外键根本不检查（先只撞了"核酸的分子组成"时，把这处改回照编号，这一段照样全绿）。
+BIO_KP="$BOX/$BIO/knowledge-points.json"
+exec_sql "INSERT INTO knowledge_points (tag_id, name, subject_id) VALUES
+  ('kp-hand-ch02', '核酸化学', (SELECT subject_id FROM subjects WHERE code = 'biochem')),
+  ('kp-hand-0201', '核酸的分子组成', (SELECT subject_id FROM subjects WHERE code = 'biochem'));"
+add_kps() {   # JSON 数组：追加到副本的生化知识点文件末尾
+  python3 - "$BIO_KP" "$1" <<'PY'
+import json, sys
+p = sys.argv[1]
+d = json.load(open(p, encoding='utf-8'))
+d['points'] += json.loads(sys.argv[2])
+json.dump(d, open(p, 'w', encoding='utf-8'), ensure_ascii=False, indent=2)
+PY
+}
+add_kps '[{"tagId": "kp-02", "name": "核酸化学", "parentTagId": null, "level": 1, "chapterNo": 2},
+          {"tagId": "kp-02-01", "name": "核酸的分子组成", "parentTagId": "kp-02", "level": 2},
+          {"tagId": "kp-02-02", "name": "核酸的二级结构", "parentTagId": "kp-02", "level": 2}]'
+cp "$BIO_KP" "$WORK/kp-ch02.json"
+clone_group "$BF" biochem-ch02 new
+read -r Q2 Q2B < <(python3 - "$BOX/$BIO/groups/biochem-ch02.json" <<'PY'
+import json, sys
+p = sys.argv[1]
+d = json.load(open(p, encoding='utf-8'))
+qa, qb = d['sections'][0]['questions'][:2]
+qa['knowledgePoints'] = ['核酸化学/核酸的分子组成']
+qb['knowledgePoints'] = ['核酸化学/核酸的二级结构']
+json.dump(d, open(p, 'w', encoding='utf-8'), ensure_ascii=False, indent=2)
+print(qa['questionId'], qb['questionId'])
+PY
+)
+echo "     新章节的 $Q2 挂「核酸化学/核酸的分子组成」（库里已有后台建的同名 kp-hand-0201），"
+echo "     $Q2B 挂「核酸化学/核酸的二级结构」（不撞名，但它的章撞了）"
+seed_run
+grep -E '::error::|FOREIGN KEY' "$SEED_LOG" | head -3 | sed 's/^/     /'
+check "导题库成功：改过的知识点文件和新章节都导进来了" "$SEED_RC/$(imported)" "0/2"
+check "新章节进了库" "$(one "SELECT COUNT(*) FROM exams WHERE exam_id = 'biochem-ch02';")" "1"
+check "  那道题挂在后台建的那个考点上" \
+  "$(one "SELECT group_concat(tag_id) FROM question_knowledge_points WHERE question_id = '$Q2';")" "kp-hand-0201"
+check "  文件里撞了名的两个编号没有另建出来（同一学科存不下同名的第二个）" \
+  "$(one "SELECT COUNT(*) FROM knowledge_points WHERE tag_id IN ('kp-02', 'kp-02-01');")" "0"
+check "  不撞名的子考点进了库，挂在后台建的那个章下" \
+  "$(one "SELECT parent_tag_id FROM knowledge_points WHERE tag_id = 'kp-02-02';")" "kp-hand-ch02"
+check "  挂它的那道题挂上了它" \
+  "$(one "SELECT group_concat(tag_id) FROM question_knowledge_points WHERE question_id = '$Q2B';")" "kp-02-02"
+check "  这一章挂考点的条数和文件里一致" \
+  "$(one "SELECT COUNT(*) FROM question_knowledge_points WHERE question_id IN (SELECT question_id FROM questions WHERE exam_id = 'biochem-ch02');")" \
+  "$(jq '[.sections[].questions[] | .questionId as $q | (.knowledgePoints // [])[] | "\($q)|\(.)"] | unique | length' \
+      "$BOX/$BIO/groups/biochem-ch02.json")"
+
+echo
+echo "== 知识点文件里同一学科有两个同名的考点：生成时就拒绝 =="
+# 库里存不下第二个（理由同上），挂在它上面的题会挂到前一个上去。让出题人改名字，不替他挑。
+add_kps '[{"tagId": "kp-02-03", "name": "肽与肽键", "parentTagId": "kp-02", "level": 2}]'
+seed_run
+check "导题库停在生成那一步、一个文件都没导" "$SEED_RC/$(imported)" "1/0"
+check "  报错点了名：哪个名字、哪两个编号" \
+  "$(grep -q '「肽与肽键」同时是 kp-01-04 和 kp-02-03' "$SEED_LOG" && echo 有 || echo 没有)" "有"
+cp "$WORK/kp-ch02.json" "$BIO_KP"
+
+echo
 echo "== 小结: $PASS 通过, $FAIL 失败 =="
 [ "$FAIL" -eq 0 ]

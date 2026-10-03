@@ -8,7 +8,8 @@ export default function BankReview() {
   const { examId } = useParams();
   const navigate = useNavigate();
   const [data, setData] = useState(null);
-  const [tags, setTags] = useState([]);
+  // 考点库只有这一章所属学科的（学科由服务端按这一章的课程认定）
+  const [kpLib, setKpLib] = useState({ subject: null, names: [] });
   const [selected, setSelected] = useState(null);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
@@ -21,10 +22,11 @@ export default function BankReview() {
 
   useEffect(() => {
     load().catch((e) => setError(e.message));
-    get('/admin/bank/knowledge-points')
-      .then((r) => setTags(r.knowledgePoints.map((k) => k.name)))
-      .catch(() => {});
-  }, [load]);
+    // 读不出来要说：静默吞掉的话候选列表是空的，看着像"这个学科还没有考点"
+    get(`/admin/bank/knowledge-points?examId=${encodeURIComponent(examId)}`)
+      .then((r) => setKpLib({ subject: r.subject, names: r.knowledgePoints.map((k) => k.name) }))
+      .catch((e) => setError(`考点列表读不出来：${e.message}`));
+  }, [load, examId]);
 
   const allQuestions = useMemo(
     () => (data ? data.sections.flatMap((s) => s.questions.map((q) => ({ ...q, section: s }))) : []),
@@ -145,7 +147,8 @@ export default function BankReview() {
         <QuestionEditor
           key={current.question_id}
           question={current}
-          tagLibrary={tags}
+          tagLibrary={kpLib.names}
+          tagSubject={kpLib.subject}
           onClose={() => setSelected(null)}
           onSaved={async () => { await load(); setSelected(null); }}
         />
@@ -237,7 +240,7 @@ function answerSummary(q) {
   return text.length > 60 ? `${text.slice(0, 60)}…` : text;
 }
 
-function QuestionEditor({ question, tagLibrary, onClose, onSaved }) {
+function QuestionEditor({ question, tagLibrary, tagSubject, onClose, onSaved }) {
   const [form, setForm] = useState({
     stem: question.stem || '',
     options: question.options || [],
@@ -410,7 +413,7 @@ function QuestionEditor({ question, tagLibrary, onClose, onSaved }) {
         </div>
 
         <div className="field">
-          <label>考点标签</label>
+          <label>考点标签{tagSubject ? `（${tagSubject.name}）` : ''}</label>
           <div className="row" style={{ marginBottom: 8 }}>
             {form.knowledgePoints.map((k) => (
               <span className="tag" key={k}>
@@ -422,7 +425,8 @@ function QuestionEditor({ question, tagLibrary, onClose, onSaved }) {
             {form.knowledgePoints.length === 0 ? <span className="small faint">尚未标注</span> : null}
           </div>
           <div className="row" style={{ flexWrap: 'nowrap' }}>
-            <input className="input" list="kp-library" value={newTag} placeholder="输入或选择考点"
+            <input className="input" list="kp-library" value={newTag}
+              placeholder={tagSubject ? `输入或选择${tagSubject.name}的考点` : '输入或选择考点'}
               onChange={(e) => setNewTag(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addTag(); } }} />
             <button type="button" className="btn ghost sm" onClick={addTag}>添加</button>
@@ -430,6 +434,11 @@ function QuestionEditor({ question, tagLibrary, onClose, onSaved }) {
           <datalist id="kp-library">
             {tagLibrary.map((t) => <option key={t} value={t} />)}
           </datalist>
+          {tagSubject ? (
+            <p className="tiny faint" style={{ marginTop: 4 }}>
+              候选只有{tagSubject.name}的考点；列表里没有的名字，保存后成为{tagSubject.name}的新考点。
+            </p>
+          ) : null}
         </div>
 
         {/* 答案状态与题目状态是两个维度（§6.4.10）：

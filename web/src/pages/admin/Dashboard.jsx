@@ -24,6 +24,15 @@ export default function Dashboard() {
   const byAnswer = stats.byAnswerState || [];
   const noAnswer = byAnswer.reduce((n, r) => n + (r.no_answer || 0), 0);
   const unreviewed = byAnswer.reduce((n, r) => n + (r.unreviewed || 0), 0);
+  // 考点分布按学科分组：混在一排分不清哪个考点是哪一科的。接口已经按学科排好序，
+  // 这里按出现顺序分组；不属于任何学科的（按理不该有）单列一组，不悄悄丢掉。
+  const tagGroups = [];
+  for (const t of stats.byTag) {
+    const key = t.subject_code ?? '';
+    let g = tagGroups.find((x) => x.key === key);
+    if (!g) { g = { key, name: t.subject_name ?? '未归学科', tags: [] }; tagGroups.push(g); }
+    g.tags.push(t);
+  }
 
   return (
     <>
@@ -101,13 +110,18 @@ export default function Dashboard() {
 
       <div className="card card-pad">
         <h2 style={{ fontSize: 16, marginBottom: 12 }}>考点分布</h2>
-        <div className="row">
-          {stats.byTag.map((t) => (
-            <span key={t.name} className="tag">
-              {t.name}<b>{t.total}</b>
-            </span>
-          ))}
-        </div>
+        {tagGroups.map((g, i) => (
+          <div key={g.key} data-subject={g.key} style={i ? { marginTop: 16 } : undefined}>
+            <h3 style={{ fontSize: 14, marginBottom: 8 }}>{g.name}（{g.tags.length} 个）</h3>
+            <div className="row">
+              {g.tags.map((t) => (
+                <span key={t.tag_id} className="tag">
+                  {t.name}<b>{t.total}</b>
+                </span>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     </>
   );

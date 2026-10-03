@@ -14,6 +14,13 @@ const PASS = process.env.UI_PASS;
 const BIO_GROUP = process.env.UI_BIO_GROUP;
 const BIO_LABEL = process.env.UI_BIO_LABEL;
 const WANT_UNREVIEWED = process.env.UI_UNREVIEWED;
+// 考点按学科（2026-10-03）：两个学科各自的考点名（从知识点文件现算）、学科名、一章英语
+const EN_GROUP = process.env.UI_EN_GROUP;
+const BIO_SUBJECT = process.env.UI_BIO_SUBJECT;
+const EN_SUBJECT = process.env.UI_EN_SUBJECT;
+const BIO_KPS = JSON.parse(process.env.UI_BIO_KPS);
+const EN_KPS = JSON.parse(process.env.UI_EN_KPS);
+const sorted = (xs) => JSON.stringify([...xs].sort());
 
 let pass = 0, fail = 0;
 const check = (desc, got, want) => {
@@ -48,6 +55,20 @@ try {
     check(`${label}｜待核数字对得上`,
       /待人工核对\s*\n?\s*(\d+)/.exec(dash)?.[1], WANT_UNREVIEWED);
     check(`${label}｜看板不横向滚动`, await noHScroll(page), true);
+
+    // ── 看板的考点分布按学科分组（以前两科的标签混在一排）──
+    for (const [code, name, kps] of [['biochem', BIO_SUBJECT, BIO_KPS], ['english', EN_SUBJECT, EN_KPS]]) {
+      const group = page.locator(`[data-subject="${code}"]`);
+      const found = await group.count();
+      check(`${label}｜考点分布里有「${name}」一组`, found, 1);
+      // 没有这一组时不去读它：innerText 会干等 30 秒再抛错，后面的检查一条都跑不到
+      const names = found ? await group.locator('.tag').evaluateAll(
+        (ts) => ts.map((t) => (t.firstChild?.textContent || '').trim())) : [];
+      check(`${label}｜  这一组非空，而且都是${name}的考点`,
+        names.length > 0 && names.every((n) => kps.includes(n)), true);
+      check(`${label}｜  组标题写着学科和个数`,
+        found ? (await group.locator('h3').innerText()).trim() : '（没有这一组）', `${name}（${names.length} 个）`);
+    }
 
     // ── 题库列表：内容组显示 label，不显示年月 ──
     await page.goto(`${BASE}/admin/bank`, { waitUntil: 'networkidle' });
@@ -94,6 +115,18 @@ try {
     check(`${label}｜确认之后「已发布」能选了`, await publishOpt.isDisabled(), false);
     check(`${label}｜校对页不横向滚动`, await noHScroll(page), true);
 
+    // ── 考点按学科：候选只有这一章所属学科的（以前英语、生化的混在一个列表里）──
+    const kpOptions = async () => {
+      await page.waitForFunction(() => document.querySelectorAll('#kp-library option').length > 0,
+        null, { timeout: 15000 });
+      return sorted(await page.locator('#kp-library option').evaluateAll((os) => os.map((o) => o.value)));
+    };
+    const kpLabel = async () => (await page.locator('label', { hasText: '考点标签' }).innerText()).trim();
+    check(`${label}｜生化题的考点标题带学科名`, await kpLabel(), `考点标签（${BIO_SUBJECT}）`);
+    check(`${label}｜生化题的候选正好是生化知识点文件里的考点`, await kpOptions(), sorted(BIO_KPS));
+    check(`${label}｜  说清了列表里没有的名字会成为${BIO_SUBJECT}的新考点`,
+      (await page.locator('body').innerText()).includes(`保存后成为${BIO_SUBJECT}的新考点`), true);
+
     // ── 单题停用 / 恢复（CR-H4）──
     // 按钮要真的在、够点（44px）；点下去先要确认（题会从学员那边消失）；停用后列表上看得出来、
     // 「已发布」点不了（先恢复）；恢复回得去。三种宽度各走一遍，每一轮自己恢复干净。
@@ -124,6 +157,13 @@ try {
     await restoreBtn.click();
     await page.waitForFunction(() => !document.querySelector('[data-retired="1"]'), null, { timeout: 15000 });
     check(`${label}｜恢复后列表上没有停用的题了`, await page.locator('[data-retired="1"]').count(), 0);
+
+    // ── 考点按学科：英语那一章的候选只有英语的 ──
+    await page.goto(`${BASE}/admin/bank/${EN_GROUP}`, { waitUntil: 'networkidle' });
+    await page.locator('button.card-pad').first().click();
+    await page.waitForSelector('#kp-library', { state: 'attached', timeout: 15000 });
+    check(`${label}｜英语题的考点标题带学科名`, await kpLabel(), `考点标签（${EN_SUBJECT}）`);
+    check(`${label}｜英语题的候选正好是英语知识点文件里的考点`, await kpOptions(), sorted(EN_KPS));
 
     // ── 重置密码的一次性口令（N7a）──
     //

@@ -50,11 +50,16 @@ npx wrangler d1 execute "$D1_NAME" --local --file=test/fixtures/publish-all.sql 
 
 source "$ROOT_DIR/test/lib/d1.sh"   # sql / one / exec_sql（读库失败会在 stderr 报出来）
 BIO_LABEL=$(one "SELECT label FROM exams WHERE exam_id='biochem-ch01';")
+# 考点按学科（2026-10-03）：期望的候选从两个知识点文件现算，学科名用来对校对页的标题
+kp_names() { jq -c '[.points[].name]' "$ROOT_DIR/../data/subjects/$1/knowledge-points.json"; }
+BIO_SUBJECT=$(one "SELECT name FROM subjects WHERE code='biochem';")
+EN_SUBJECT=$(one "SELECT name FROM subjects WHERE code='english';")
 UNREVIEWED=$(one "SELECT COUNT(*) FROM questions WHERE answer_state='待核';")
 # 时间按北京时间显示（CR-M7）：确认时间写一个固定的世界时，跨零点——北京时间是第二天 00:30
 exec_sql "UPDATE questions SET answer_reviewed_by = 'admin', answer_reviewed_at = '2026-01-01 16:30:00'
            WHERE exam_id = 'biochem-ch01';" || exit 1
 [ -n "$BIO_LABEL" ] || { echo "生化内容组没进库"; exit 1; }
+[ -n "$BIO_SUBJECT" ] && [ -n "$EN_SUBJECT" ] || { echo "读不到学科名（生化「$BIO_SUBJECT」英语「$EN_SUBJECT」）"; exit 1; }
 [ "${UNREVIEWED:-0}" -gt 0 ] || { echo "一道待核的题都没有，这套测不出东西"; exit 1; }
 echo "  生化内容组：$BIO_LABEL，待核 $UNREVIEWED 题"
 
@@ -85,4 +90,6 @@ done
 echo "== 浏览器检查 =="
 UI_BASE="http://127.0.0.1:$PORT" UI_USER=admin UI_PASS=adminpass123 \
   UI_BIO_GROUP=biochem-ch01 UI_BIO_LABEL="$BIO_LABEL" UI_UNREVIEWED="$UNREVIEWED" \
+  UI_EN_GROUP=13000-2026-04 UI_BIO_SUBJECT="$BIO_SUBJECT" UI_EN_SUBJECT="$EN_SUBJECT" \
+  UI_BIO_KPS="$(kp_names biochem)" UI_EN_KPS="$(kp_names english)" \
   node test/ui-n6-admin.mjs

@@ -617,6 +617,127 @@ check "不存在的题：404" \
 exec_sql "DELETE FROM wrong_items WHERE question_id='$RQ';"
 
 echo
+echo "== 考点按学科分开：校对页的候选、保存、看板的考点分布 =="
+# 用户 2026-10-03 提的：校对选考点时英语和生化的混在一起，选错了不报错，题就挂到别的学科的考点上；
+# 保存时全库按名字找，新建的考点哪一科都不属于。期望值从两个知识点文件现算，不从库里取。
+KP_EN_FILE="$ROOT_DIR/../data/subjects/english/knowledge-points.json"
+KP_BIO_FILE="$ROOT_DIR/../data/subjects/biochem/knowledge-points.json"
+file_names() { jq -r '[.points[].name] | sort | join("|")' "$1"; }
+lib() { adm "$BASE/admin/bank/knowledge-points?examId=$1"; }
+lib_names() { lib "$1" | jq -r '[.knowledgePoints[].name] | sort | join("|")'; }
+subject_of_links() {   # 题号 → 它挂的考点都属于哪些学科
+  one "SELECT group_concat(DISTINCT COALESCE(s.code, '无学科')) FROM question_knowledge_points x
+         JOIN knowledge_points k ON k.tag_id = x.tag_id LEFT JOIN subjects s ON s.subject_id = k.subject_id
+        WHERE x.question_id = '$1';"
+}
+links_of() {   # 学科码 考点名 → 那个学科里这个考点挂了几道题
+  one "SELECT COUNT(*) FROM question_knowledge_points x JOIN knowledge_points k ON k.tag_id = x.tag_id
+         JOIN subjects s ON s.subject_id = k.subject_id WHERE s.code = '$1' AND k.name = '$2';"
+}
+tag_ids_of() { one "SELECT group_concat(tag_id) FROM (SELECT tag_id FROM question_knowledge_points WHERE question_id = '$1' ORDER BY tag_id);"; }
+names_json_of() { sql "SELECT k.name FROM question_knowledge_points x JOIN knowledge_points k ON k.tag_id = x.tag_id WHERE x.question_id = '$1';" | jq -c '[.[0].results[].name]'; }
+save_tags() { admj -X PATCH "$BASE/admin/bank/questions/$1" -d "$(jq -nc --argjson n "$2" '{knowledgePoints: $n}')"; }
+
+check "（前提）两个知识点文件里没有同名的考点（否则下面分不出是哪一科的）" \
+  "$(comm -12 <(jq -r '.points[].name' "$KP_EN_FILE" | sort) <(jq -r '.points[].name' "$KP_BIO_FILE" | sort) | wc -l)" "0"
+check "不带 examId：400（不再一股脑全给）" \
+  "$(adm -o /dev/null -w '%{http_code}' "$BASE/admin/bank/knowledge-points")" "400"
+check "不存在的章：404" \
+  "$(adm -o /dev/null -w '%{http_code}' "$BASE/admin/bank/knowledge-points?examId=no-such-exam")" "404"
+check "生化那一章：候选正好是生化知识点文件里的考点" "$(lib_names biochem-ch01)" "$(file_names "$KP_BIO_FILE")"
+check "  返回的学科是生化" "$(lib biochem-ch01 | jq -r '.subject.code')" "biochem"
+check "英语那一章：候选正好是英语知识点文件里的考点" "$(lib_names 13000-2026-04)" "$(file_names "$KP_EN_FILE")"
+check "  返回的学科是英语" "$(lib 13000-2026-04 | jq -r '.subject.code')" "english"
+# 题数：生化各章文件里"题目-考点"的对数（同一道题写重了的只算一次）
+check "生化候选的题数加起来等于生化题库文件里挂考点的次数" \
+  "$(lib biochem-ch01 | jq -r '[.knowledgePoints[].question_count] | add')" \
+  "$(jq -s '[.[].sections[].questions[] | .questionId as $q | (.knowledgePoints // [])[] | "\($q)|\(split("/") | last)"] | unique | length' \
+      "$ROOT_DIR"/../data/subjects/biochem/groups/*.json)"
+
+adm "$BASE/admin/bank/stats" > /tmp/n6-kp-stats.json
+check "看板考点分布：每一项都带学科" "$(jq -r '[.byTag[] | select(.subject_code == null)] | length' /tmp/n6-kp-stats.json)" "0"
+check "  生化那一组非空，而且都是生化文件里的考点" \
+  "$(jq -r --slurpfile f "$KP_BIO_FILE" '[.byTag[] | select(.subject_code == "biochem") | .name] as $n
+     | if ($n | length) == 0 then "空" else ($n - [$f[0].points[].name] | length) end' /tmp/n6-kp-stats.json)" "0"
+check "  英语那一组非空，而且都是英语文件里的考点" \
+  "$(jq -r --slurpfile f "$KP_EN_FILE" '[.byTag[] | select(.subject_code == "english") | .name] as $n
+     | if ($n | length) == 0 then "空" else ($n - [$f[0].points[].name] | length) end' /tmp/n6-kp-stats.json)" "0"
+
+# 保存：挑对方学科里挂了题的考点名（挂了题，看板上那一项才会出现），存到这一科的题上。
+# 旧代码全库按名字找，会挂到对方学科那个考点上——下面"属于哪一科"那两条就是盯这个的。
+EN_NAME=$(one "SELECT k.name FROM knowledge_points k JOIN subjects s ON s.subject_id = k.subject_id
+                 JOIN question_knowledge_points x ON x.tag_id = k.tag_id
+                WHERE s.code = 'english' GROUP BY k.tag_id ORDER BY COUNT(*) DESC, k.name LIMIT 1;")
+BIO_NAME=$(one "SELECT k.name FROM knowledge_points k JOIN subjects s ON s.subject_id = k.subject_id
+                  JOIN question_knowledge_points x ON x.tag_id = k.tag_id
+                 WHERE s.code = 'biochem' GROUP BY k.tag_id ORDER BY COUNT(*) DESC, k.name LIMIT 1;")
+BQ=$(one "SELECT question_id FROM questions WHERE exam_id = 'biochem-ch01' ORDER BY ord DESC LIMIT 1;")
+EQ=$(one "SELECT question_id FROM questions WHERE exam_id = '13000-2026-04' ORDER BY ord LIMIT 1;")
+BQ_TAGS=$(names_json_of "$BQ"); BQ_IDS=$(tag_ids_of "$BQ")
+EQ_TAGS=$(names_json_of "$EQ"); EQ_IDS=$(tag_ids_of "$EQ")
+EN_LINKS=$(links_of english "$EN_NAME"); BIO_LINKS=$(links_of biochem "$BIO_NAME")
+KP_TOTAL=$(one "SELECT COUNT(*) FROM knowledge_points;")
+echo "     生化题 $BQ（原有 $BQ_TAGS）存英语考点「$EN_NAME」（挂着 $EN_LINKS 道）"
+echo "     英语题 $EQ（原有 $EQ_TAGS）存生化考点「$BIO_NAME」（挂着 $BIO_LINKS 道）"
+check "（前提）两个样本都挑到了，而且两边的考点都挂着题" \
+  "$([ -n "$BQ" ] && [ -n "$EQ" ] && [ "${EN_LINKS:-0}" -gt 0 ] && [ "${BIO_LINKS:-0}" -gt 0 ] && echo yes)" "yes"
+
+R=$(save_tags "$BQ" "$(jq -nc --arg n "$EN_NAME" '[$n]')")
+check "生化题存英语考点的名字：保存成功" "$(echo "$R" | jq -r '.ok')" "true"
+check "  挂上的是生化的考点，不是英语那个" "$(subject_of_links "$BQ")" "biochem"
+check "  英语那个考点挂的题数没变" "$(links_of english "$EN_NAME")" "$EN_LINKS"
+check "  新建的出现在生化的候选里" \
+  "$(lib biochem-ch01 | jq -r --arg n "$EN_NAME" '[.knowledgePoints[] | select(.name == $n)] | length')" "1"
+check "  英语的候选还是文件里那些" "$(lib_names 13000-2026-04)" "$(file_names "$KP_EN_FILE")"
+check "  看板上这个名字分成两项，一科一项（旧的按名字并成了一项）" \
+  "$(adm "$BASE/admin/bank/stats" | jq -r --arg n "$EN_NAME" '[.byTag[] | select(.name == $n) | .subject_code] | sort | join(",")')" \
+  "biochem,english"
+
+R=$(save_tags "$EQ" "$(jq -nc --arg n "$BIO_NAME" '[$n]')")
+check "英语题存生化考点的名字：保存成功" "$(echo "$R" | jq -r '.ok')" "true"
+check "  挂上的是英语的考点，不是生化那个" "$(subject_of_links "$EQ")" "english"
+check "  生化那个考点挂的题数没变" "$(links_of biochem "$BIO_NAME")" "$BIO_LINKS"
+
+NEW_NAME="N6新考点-$$"
+R=$(save_tags "$BQ" "$(jq -nc --arg n "$NEW_NAME" '[$n]')")
+check "全新的名字：保存成功" "$(echo "$R" | jq -r '.ok')" "true"
+check "  建在题目所属的学科下" \
+  "$(one "SELECT COALESCE(s.code, '无学科') FROM knowledge_points k LEFT JOIN subjects s ON s.subject_id = k.subject_id WHERE k.name = '$NEW_NAME';")" \
+  "biochem"
+
+# 题目读不到学科：一个字都不写（题面也不能先存进去、再报失败）
+exec_sql "UPDATE questions SET subject_id = NULL WHERE question_id = '$BQ';"
+R=$(admj -w '\n%{http_code}' -X PATCH "$BASE/admin/bank/questions/$BQ" -d '{"stem":"不该存进去","knowledgePoints":["随便"]}')
+check "题目没有学科：422 question_without_subject" \
+  "$(echo "$R" | tail -1)/$(echo "$R" | head -n -1 | jq -r '.error')" "422/question_without_subject"
+check "  题面没被改" "$(one "SELECT COUNT(*) FROM questions WHERE question_id = '$BQ' AND stem = '不该存进去';")" "0"
+exec_sql "UPDATE questions SET subject_id = (SELECT subject_id FROM subjects WHERE code = 'biochem') WHERE question_id = '$BQ';"
+
+# 存回原来的考点名：在本学科里找得到，挂回原来那几个编号，不新建
+save_tags "$BQ" "$BQ_TAGS" >/dev/null
+save_tags "$EQ" "$EQ_TAGS" >/dev/null
+check "存回原来的名字：生化题挂回原来那几个考点" "$(tag_ids_of "$BQ")" "$BQ_IDS"
+check "存回原来的名字：英语题挂回原来那几个考点" "$(tag_ids_of "$EQ")" "$EQ_IDS"
+check "  这一轮只新建了三个考点（两个借名字的、一个全新的）" \
+  "$(one "SELECT COUNT(*) FROM knowledge_points;")" "$((KP_TOTAL + 3))"
+exec_sql "DELETE FROM knowledge_points WHERE tag_id NOT IN (SELECT tag_id FROM question_knowledge_points)
+            AND ((name = '$EN_NAME' AND subject_id = (SELECT subject_id FROM subjects WHERE code = 'biochem'))
+              OR (name = '$BIO_NAME' AND subject_id = (SELECT subject_id FROM subjects WHERE code = 'english'))
+              OR name = '$NEW_NAME');"
+check "收尾：考点表回到两个文件的考点数" "$(one "SELECT COUNT(*) FROM knowledge_points;")" \
+  "$(( $(jq '.points | length' "$KP_EN_FILE") + $(jq '.points | length' "$KP_BIO_FILE") ))"
+
+# 不属于任何学科的考点（按理不该有）：看板上单列在最后，不悄悄丢掉。
+# 给它挂上一整章的题：按题数倒序排的话它会排到前面去，"排在最后"才说明是按学科排的
+# （只挂一道题时，改之前的代码按题数倒序也把它排在最后——这条就是那样碰巧绿过一次的）。
+exec_sql "INSERT INTO knowledge_points (tag_id, name) VALUES ('kp-n6-orphan', 'N6无学科');
+          INSERT INTO question_knowledge_points (question_id, tag_id)
+            SELECT question_id, 'kp-n6-orphan' FROM questions WHERE exam_id = '13000-2026-04';"
+check "不属于任何学科的考点：看板上排在最后、带着空的学科码" \
+  "$(adm "$BASE/admin/bank/stats" | jq -r '.byTag[-1] | "\(has("subject_code"))/\(.subject_code)/\(.name)"')" "true/null/N6无学科"
+exec_sql "DELETE FROM question_knowledge_points WHERE tag_id = 'kp-n6-orphan'; DELETE FROM knowledge_points WHERE tag_id = 'kp-n6-orphan';"
+
+echo
 echo "== 服务还活着 =="
 # 中间任何一步把 workerd 弄崩了，后面的断言会以"实际 000"成片变红，
 # 而真正的原因在 dev 日志里。这一条把它挑明。
