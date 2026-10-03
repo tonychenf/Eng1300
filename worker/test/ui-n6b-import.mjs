@@ -98,6 +98,13 @@ try {
     check(`${label}｜入库成功`, doneText.includes('已入库 34 道题'), true);
     check(`${label}｜AI 生成了候选答案`, /生成 34 \/ 34 道/.test(doneText), true);
     check(`${label}｜说清楚落在待核`, doneText.includes('待核'), true);
+    // 考点和答案同一次调用要（2026-10-03：考点由题库里的题产生），结果里要说出来。
+    // 新起的名字只在第一轮断：这套没导任何考点，第一轮（手机）起的「替身新考点」后面几轮就是已有的了
+    check(`${label}｜AI 结果里说了 34 道带上了考点、要校对时确认`,
+      doneText.includes('34 道题带上了 AI 给的考点，校对时一并确认'), true);
+    if (label === '手机') {
+      check(`${label}｜  并列出新起的考点名`, /新起了 1 个考点：替身新考点/.test(doneText), true);
+    }
     // 这一条是硬约束在界面上的落点：不能让人以为 AI 跑完就能发布了
     check(`${label}｜明确说要逐题人工确认才能发布`,
       doneText.includes('逐题人工确认之后才能发布'), true);

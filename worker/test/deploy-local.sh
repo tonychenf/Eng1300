@@ -281,6 +281,27 @@ deploy 4 || exit 1
 check "线上验证全过" "$VERIFY_RC/$(verify_fails 4)" "0/"
 
 echo
+echo "== 线上验证能红：考点（2026-10-03） =="
+# ① 一个有题挂着的考点不属于任何学科：哪一科的备选里都看不到它。只该红"属于某个学科"那一条——
+#    备选那条按学科比，这个考点两边都不在，照样对得上。
+KP0=$(one "SELECT k.tag_id FROM knowledge_points k JOIN question_knowledge_points x ON x.tag_id = k.tag_id
+            WHERE k.subject_id IS NOT NULL ORDER BY k.tag_id LIMIT 1;")
+KP0_SUBJ=$(one "SELECT subject_id FROM knowledge_points WHERE tag_id = '$KP0';")
+exec_sql "UPDATE knowledge_points SET subject_id = NULL WHERE tag_id = '$KP0';"
+bash "$CI/verify-deployment.sh" > "$WORK/verify-kp-subject.log" 2>&1; RC=$?
+check "有题挂着的考点 $KP0 不属于任何学科：线上验证失败，红的就是这一条" \
+  "$RC/$(grep -c '^  FAIL 看板上每个考点都属于某个学科' "$WORK/verify-kp-subject.log")/$(grep -c '^  FAIL' "$WORK/verify-kp-subject.log")" "1/1/1"
+exec_sql "UPDATE knowledge_points SET subject_id = $KP0_SUBJ WHERE tag_id = '$KP0';"
+# ② 一章挂在没有学科的课程下：备选接口说不清是哪一科的，备选那条要红并点名这一章
+exec_sql "INSERT INTO courses (course_code, course_name) VALUES ('dl-nosubj', 'deploy-local 无学科课程');
+  INSERT INTO exams (exam_id, course_code, title, label, order_key, meta, year, month, source_file, status, origin)
+    VALUES ('dl-nosubj-1', 'dl-nosubj', '无学科', '无学科的一章', 1, NULL, 0, 0, 'x.docx', '待校对', 'UPLOAD');"
+bash "$CI/verify-deployment.sh" > "$WORK/verify-kp-course.log" 2>&1; RC=$?
+check "有一章挂在没有学科的课程下：线上验证失败，红的就是备选那一条、并点名这一章" \
+  "$RC/$(grep '^  FAIL 每一章校对页的备选' "$WORK/verify-kp-course.log" | grep -c 'dl-nosubj-1（读不到学科')/$(grep -c '^  FAIL' "$WORK/verify-kp-course.log")" "1/1/1"
+exec_sql "DELETE FROM exams WHERE exam_id = 'dl-nosubj-1'; DELETE FROM courses WHERE course_code = 'dl-nosubj';"
+
+echo
 echo "== 线上验证能红：库里的章节和题库文件对不上（CR-M16） =="
 # 期望从文件现算，所以加文件不会让它红（上面第 2 次部署已证明）；该红的是导入丢了东西。
 # 删新章节里的一道题（它没人做过，子表只有这三张）

@@ -593,12 +593,18 @@ bankRouter.get('/knowledge-points', async (c) => {
   if (subject.subject_id === null) {
     return c.json({ error: 'course_without_subject', message: `${examId} 所属的课程没有挂学科，列不出考点` }, 422);
   }
+  // 备选只列本学科**有题挂着**的考点（用户 2026-10-03：考点由题库里的题产生），按出现次数从高到低。
+  // 没有题挂着的不列：生化的章名"蛋白质化学"是给子考点挂的，题都挂在子考点上；AI 起的名字
+  // 在校对时被换掉以后就没有题了，也不该再出现在备选里。
+  // exam_count = 这一章有几道挂着它，界面拿它分"这一章用到的"和"本学科其他的"。
   const { results } = await c.env.DB.prepare(
-    `SELECT k.tag_id, k.name, COUNT(x.question_id) AS question_count
+    `SELECT k.tag_id, k.name, COUNT(*) AS question_count,
+            SUM(CASE WHEN q.exam_id = ? THEN 1 ELSE 0 END) AS exam_count
      FROM knowledge_points k
-     LEFT JOIN question_knowledge_points x ON x.tag_id = k.tag_id
+     JOIN question_knowledge_points x ON x.tag_id = k.tag_id
+     JOIN questions q ON q.question_id = x.question_id
      WHERE k.subject_id = ?
      GROUP BY k.tag_id, k.name ORDER BY question_count DESC, k.name`
-  ).bind(subject.subject_id).all();
+  ).bind(examId, subject.subject_id).all();
   return c.json({ subject: { code: subject.code, name: subject.name }, knowledgePoints: results });
 });

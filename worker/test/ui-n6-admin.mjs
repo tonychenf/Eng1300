@@ -14,7 +14,7 @@ const PASS = process.env.UI_PASS;
 const BIO_GROUP = process.env.UI_BIO_GROUP;
 const BIO_LABEL = process.env.UI_BIO_LABEL;
 const WANT_UNREVIEWED = process.env.UI_UNREVIEWED;
-// 考点按学科（2026-10-03）：两个学科各自的考点名（从知识点文件现算）、学科名、一章英语
+// 考点按学科（2026-10-03）：两个学科各自的备选（题库文件里的题挂过的考点，现算）、学科名、一章英语
 const EN_GROUP = process.env.UI_EN_GROUP;
 const BIO_SUBJECT = process.env.UI_BIO_SUBJECT;
 const EN_SUBJECT = process.env.UI_EN_SUBJECT;
@@ -68,6 +68,9 @@ try {
         names.length > 0 && names.every((n) => kps.includes(n)), true);
       check(`${label}｜  组标题写着学科和个数`,
         found ? (await group.locator('h3').innerText()).trim() : '（没有这一组）', `${name}（${names.length} 个）`);
+      const counts = found ? (await group.locator('.tag b').allInnerTexts()).map(Number) : [];
+      check(`${label}｜  组内按出现次数从高到低（${counts.join(',')}）`,
+        counts.length > 0 && counts.every((n, i) => i === 0 || counts[i - 1] >= n), true);
     }
 
     // ── 题库列表：内容组显示 label，不显示年月 ──
@@ -115,17 +118,73 @@ try {
     check(`${label}｜确认之后「已发布」能选了`, await publishOpt.isDisabled(), false);
     check(`${label}｜校对页不横向滚动`, await noHScroll(page), true);
 
-    // ── 考点按学科：候选只有这一章所属学科的（以前英语、生化的混在一个列表里）──
-    const kpOptions = async () => {
-      await page.waitForFunction(() => document.querySelectorAll('#kp-library option').length > 0,
-        null, { timeout: 15000 });
-      return sorted(await page.locator('#kp-library option').evaluateAll((os) => os.map((o) => o.value)));
+    // ── 考点：点一下考点栏就弹出本学科全部备选，而且**屏幕上看得见**（2026-10-03）──
+    // 上一版用 datalist：候选在页面代码里，人却看不见（不打字、不点小箭头就不弹出）。那时这里断的是
+    // "候选在代码里"，一直是绿的，用户一看说"没有备选项"。所以现在断的是看得见、点得动。
+    // 这道题的答案状态上面刚改成了已确认（没保存），所以这一段**不点保存**——保存在英语那段做。
+    const kpField = page.locator('.field', { has: page.locator('label', { hasText: '考点标签' }) });
+    const kpLabel = async () => (await kpField.locator('label').first().innerText()).trim();
+    const panel = page.locator('#kp-panel');
+    const options = panel.locator('[role="option"]');
+    const optNames = () => options.locator('.kp-name').allInnerTexts();
+    const chips = async () => (await kpField.locator('.tag').allInnerTexts()).map((t) => t.replace('×', '').trim());
+    // 面板弹不出来时只让这几条红、不去点它——等不到就抛错的话，后面几十条一条都跑不到（踩坑记录第二十五节）
+    const openPicker = async () => {
+      if (!(await page.locator('#kp-input').count())) return false;
+      await page.locator('#kp-input').click();
+      return panel.waitFor({ state: 'visible', timeout: 5000 }).then(() => true, () => false);
     };
-    const kpLabel = async () => (await page.locator('label', { hasText: '考点标签' }).innerText()).trim();
     check(`${label}｜生化题的考点标题带学科名`, await kpLabel(), `考点标签（${BIO_SUBJECT}）`);
-    check(`${label}｜生化题的候选正好是生化知识点文件里的考点`, await kpOptions(), sorted(BIO_KPS));
-    check(`${label}｜  说清了列表里没有的名字会成为${BIO_SUBJECT}的新考点`,
-      (await page.locator('body').innerText()).includes(`保存后成为${BIO_SUBJECT}的新考点`), true);
+    check(`${label}｜点开之前没有弹出备选`, await panel.count(), 0);
+    const bioOpened = await openPicker();
+    check(`${label}｜点一下考点栏就弹出备选面板`, bioOpened, true);
+    if (bioOpened) {
+    const kpNames = await optNames();
+    check(`${label}｜点一下考点栏就弹出备选：正好是生化题库里的题挂过的考点`, sorted(kpNames), sorted(BIO_KPS));
+    let kpShown = 0;
+    for (let i = 0; i < kpNames.length; i++) if (await options.nth(i).isVisible()) kpShown++;
+    check(`${label}｜  每一个都看得见（不是藏在输入提示里）`, kpNames.length > 0 && kpShown === kpNames.length, true);
+    const firstBox = await options.first().boundingBox();
+    const viewport = page.viewportSize();
+    check(`${label}｜  第一个就在屏幕上，不用滚动`,
+      Boolean(firstBox) && firstBox.y >= 0 && firstBox.y + firstBox.height <= viewport.height, true);
+    const kpCounts = (await options.locator('.kp-count').allInnerTexts()).map((t) => parseInt(t, 10));
+    check(`${label}｜  按出现次数从高到低（${kpCounts.join(',')}）`,
+      kpCounts.length > 0 && kpCounts.every((n, i) => i === 0 || kpCounts[i - 1] >= n), true);
+    const rowHeights = await options.evaluateAll((os) => os.map((o) => o.getBoundingClientRect().height));
+    check(`${label}｜  每一行够点（44px）`, Math.min(...rowHeights) >= 44, true);
+    // 点一下选上、再点一下取消：挑一个这道题还没挂的。按位置点，不按文字找——一个名字可能是另一个的一部分
+    const chipsBefore = await chips();
+    const pickAt = kpNames.findIndex((n) => !chipsBefore.includes(n));
+    const pick = kpNames[pickAt];
+    await options.nth(pickAt).click();
+    check(`${label}｜点一下选上：标签里多了「${pick}」`, (await chips()).includes(pick), true);
+    check(`${label}｜  面板还开着，方便接着选`, await panel.isVisible(), true);
+    check(`${label}｜  选中的那一行标出来了`, await options.nth(pickAt).getAttribute('aria-selected'), 'true');
+    await options.nth(pickAt).click();
+    check(`${label}｜再点一下取消`, JSON.stringify(await chips()), JSON.stringify(chipsBefore));
+    const frag = pick.slice(0, 2);
+    await page.fill('#kp-input', frag);
+    const filtered = await optNames();
+    check(`${label}｜输入「${frag}」是筛选：只剩带这两个字的`,
+      filtered.length > 0 && filtered.length <= kpNames.length && filtered.every((n) => n.includes(frag)), true);
+    await page.fill('#kp-input', '界面测试新考点');
+    const newOpt = panel.locator('.kp-new');
+    check(`${label}｜列表里没有的名字给出「新建」`,
+      (await newOpt.count()) === 1 && (await newOpt.innerText()).includes('界面测试新考点'), true);
+    await newOpt.click();
+    check(`${label}｜  点了就加进标签`, (await chips()).includes('界面测试新考点'), true);
+    await kpField.locator('button[aria-label="移除 界面测试新考点"]').click();
+    check(`${label}｜  去掉之后标签回到原样（这里不保存）`, JSON.stringify(await chips()), JSON.stringify(chipsBefore));
+    await page.locator('#kp-input').press('Escape');
+    check(`${label}｜按 Esc 收起`, await panel.count(), 0);
+    await openPicker();
+    await page.locator('label[for="expl"]').click();
+    check(`${label}｜点面板外面收起`, await panel.count(), 0);
+    check(`${label}｜  说清了列表里没有的名字会成为本学科的新考点`,
+      (await kpField.innerText()).includes('保存后成为本学科的新考点'), true);
+    check(`${label}｜弹出过备选之后页面也不横向滚动`, await noHScroll(page), true);
+    }
 
     // ── 单题停用 / 恢复（CR-H4）──
     // 按钮要真的在、够点（44px）；点下去先要确认（题会从学员那边消失）；停用后列表上看得出来、
@@ -158,12 +217,34 @@ try {
     await page.waitForFunction(() => !document.querySelector('[data-retired="1"]'), null, { timeout: 15000 });
     check(`${label}｜恢复后列表上没有停用的题了`, await page.locator('[data-retired="1"]').count(), 0);
 
-    // ── 考点按学科：英语那一章的候选只有英语的 ──
+    // ── 考点：英语那一章的备选只有英语的；选一个保存，真的挂上了（再去掉保存，恢复原样）──
+    // 英语这道题本来就是已确认，保存时整张表单原样发回去，不影响别的断言。
     await page.goto(`${BASE}/admin/bank/${EN_GROUP}`, { waitUntil: 'networkidle' });
-    await page.locator('button.card-pad').first().click();
-    await page.waitForSelector('#kp-library', { state: 'attached', timeout: 15000 });
+    const enCard = page.locator('button.card-pad').first();
+    const cardTags = async () => (await enCard.locator('.tag').allInnerTexts()).map((t) => t.trim());
+    await enCard.click();
+    await page.waitForSelector('#answerState', { timeout: 15000 });
     check(`${label}｜英语题的考点标题带学科名`, await kpLabel(), `考点标签（${EN_SUBJECT}）`);
-    check(`${label}｜英语题的候选正好是英语知识点文件里的考点`, await kpOptions(), sorted(EN_KPS));
+    const enOpened = await openPicker();
+    check(`${label}｜英语题点一下考点栏也弹出备选面板`, enOpened, true);
+    if (enOpened) {
+    const enNames = await optNames();
+    check(`${label}｜英语题的备选正好是导进来的英语题挂过的考点`, sorted(enNames), sorted(EN_KPS));
+    const enBefore = await chips();
+    const enAt = enNames.findIndex((n) => !enBefore.includes(n));
+    const enPick = enNames[enAt];
+    await options.nth(enAt).click();
+    const saveBtn = page.locator('button', { hasText: /^保存$/ });
+    await saveBtn.click();
+    await page.waitForSelector('#kp-input', { state: 'detached', timeout: 15000 });
+    check(`${label}｜选上「${enPick}」保存，题卡上挂上了`, (await cardTags()).includes(enPick), true);
+    await enCard.click();
+    await page.waitForSelector('#kp-input', { timeout: 15000 });
+    await kpField.locator(`button[aria-label="移除 ${enPick}"]`).click();
+    await saveBtn.click();
+    await page.waitForSelector('#kp-input', { state: 'detached', timeout: 15000 });
+    check(`${label}｜  去掉再保存，回到原来那几个`, sorted(await cardTags()), sorted(enBefore));
+    }
 
     // ── 重置密码的一次性口令（N7a）──
     //

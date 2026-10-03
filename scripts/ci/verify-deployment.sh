@@ -226,6 +226,30 @@ if [ -n "${ADMIN_TOKEN:-}" ]; then
     check "看板能按学科报答案进度（N6 的新字段上线了）" \
       "$(echo "$STATS" | jq -r 'has("byAnswerState")')" "true"
 
+    # ---- 考点按学科（2026-10-03）----
+    # 用户在线上校对页看不到备选（那次是界面的毛病：备选藏在浏览器的输入提示里，人看不见）。
+    # 我们连不上线上，"线上到底有没有备选"只能靠这里打进部署日志。
+    # ① 看板上的考点都属于某个学科：不属于任何学科的考点，在哪一科的备选里都看不到。
+    check "看板上每个考点都属于某个学科" \
+      "$(echo "$STATS" | jq -r 'if (.byTag | type) == "array" then [.byTag[] | select(.subject_code == null)] | length else "看板没有考点分布" end')" "0"
+    # ② 每一章的备选 = 这一科有题挂着的考点：一个学科只要有一道题挂着考点，它的每一章都该有备选。
+    #    期望从看板的考点分布算，实际从备选接口读——两个接口、两套查询，互相对照。
+    #    章节列表读不到时不能当成"没有章节要查"：那样这条永远是绿的。
+    KP_BAD=""
+    N_EX=$(jq -r '.exams | length' "$T/all-exams.json" 2>/dev/null || echo 0)
+    [ "${N_EX:-0}" -gt 0 ] || KP_BAD="读不到章节列表，一章都没查"
+    for EID in $(jq -r '.exams[]?.exam_id' "$T/all-exams.json" 2>/dev/null); do
+      LIB=$(curl -sS -m 20 "$WORKER_URL/api/admin/bank/knowledge-points?examId=$EID" \
+        -H "Authorization: Bearer $TOKEN" || echo '{}')
+      SC=$(echo "$LIB" | jq -r '.subject.code // empty' 2>/dev/null)
+      if [ -z "$SC" ]; then KP_BAD="$KP_BAD $EID（读不到学科：$(echo "$LIB" | head -c 80)）"; continue; fi
+      WANT=$(echo "$STATS" | jq -r --arg s "$SC" '[.byTag[] | select(.subject_code == $s) | .name] | unique | join("|")')
+      GOT=$(echo "$LIB" | jq -r '[.knowledgePoints[].name] | unique | join("|")')
+      [ "$GOT" = "$WANT" ] || KP_BAD="$KP_BAD $EID（备选 $(echo "$LIB" | jq -r '.knowledgePoints | length') 个，看板上这一科 $(echo "$STATS" | jq -r --arg s "$SC" '[.byTag[] | select(.subject_code == $s)] | length') 个）"
+    done
+    check "每一章校对页的备选都是本学科有题挂着的考点（和看板对得上，共 ${N_EX:-0} 章）" "${KP_BAD:-全部对得上}" "全部对得上"
+    echo "     （考点：$(echo "$STATS" | jq -r '[.byTag[]? | .subject_name] | group_by(.) | map("\(.[0]) \(length) 个") | join("，")')）"
+
     # ---- N2 学科权限 ----
     # 迁移里那段"给既有学员补授权"在线上到底生效没有，只有这几条能证明。
     # 补漏了的话现象是学员打不开任何学科，而流水线其余断言全绿。

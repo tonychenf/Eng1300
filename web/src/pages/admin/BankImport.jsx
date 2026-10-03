@@ -200,7 +200,8 @@ function ParseReport({ title, data }) {
       </div>
       {data.questionsWithoutTags > 0 ? (
         <p className="tiny muted">
-          没有考点的题不会进专项练习（练习按考点抽题）。校对时补上标签。
+          上传的资料里没有考点。入库后 AI 生成答案时会顺带给出考点，校对时确认；
+          没有考点的题不会进专项练习（练习按考点抽题）。
         </p>
       ) : null}
 
@@ -262,6 +263,22 @@ function AiReport({ data }) {
         {data.withoutExplanation?.length
           ? ` 其中 ${data.withoutExplanation.length} 道只有答案、没有解析，校对时可以补。` : ''}
       </p>
+      {/* 考点和答案是同一次调用要的（用户 2026-10-03：考点由题库里的题产生）。
+          新起了哪些名字要摆出来：它们会成为本学科的考点，出现在每道题的备选里。 */}
+      {data.knowledgePointsFailed ? (
+        <p className="small" style={{ color: 'var(--warn)' }}>
+          考点存的时候出错了：{data.knowledgePointsFailed}。可能只存进去一部分，校对时逐题看一眼。
+        </p>
+      ) : typeof data.withKnowledgePoints === 'number' ? (
+        <p className="small">
+          {data.withKnowledgePoints} 道题带上了 AI 给的考点，校对时一并确认。
+          {data.newKnowledgePoints?.length
+            ? ` 新起了 ${data.newKnowledgePoints.length} 个考点：${data.newKnowledgePoints.slice(0, 10).join('、')}`
+              + `${data.newKnowledgePoints.length > 10 ? ' 等' : ''}。` : ''}
+          {data.withoutKnowledgePoints?.length
+            ? ` ${data.withoutKnowledgePoints.length} 道没给出能用的考点，校对时从备选里选。` : ''}
+        </p>
+      ) : null}
       {/* 实际用的是哪一档配置要显眼。回落时管理员以为在用自己配的模型，
           而时延、账单、效果都来自另一个——不说出来，这三样对不上时没有任何线索。 */}
       {data.purpose ? (

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api, get, patch, post } from '../../api.js';
 import { Alert, Loading, StatusBadge } from '../../components/ui.jsx';
@@ -9,7 +9,7 @@ export default function BankReview() {
   const navigate = useNavigate();
   const [data, setData] = useState(null);
   // 考点库只有这一章所属学科的（学科由服务端按这一章的课程认定）
-  const [kpLib, setKpLib] = useState({ subject: null, names: [] });
+  const [kpLib, setKpLib] = useState({ subject: null, items: [] });
   const [selected, setSelected] = useState(null);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
@@ -24,7 +24,7 @@ export default function BankReview() {
     load().catch((e) => setError(e.message));
     // 读不出来要说：静默吞掉的话候选列表是空的，看着像"这个学科还没有考点"
     get(`/admin/bank/knowledge-points?examId=${encodeURIComponent(examId)}`)
-      .then((r) => setKpLib({ subject: r.subject, names: r.knowledgePoints.map((k) => k.name) }))
+      .then((r) => setKpLib({ subject: r.subject, items: r.knowledgePoints }))
       .catch((e) => setError(`考点列表读不出来：${e.message}`));
   }, [load, examId]);
 
@@ -147,7 +147,7 @@ export default function BankReview() {
         <QuestionEditor
           key={current.question_id}
           question={current}
-          tagLibrary={kpLib.names}
+          tagLibrary={kpLib.items}
           tagSubject={kpLib.subject}
           onClose={() => setSelected(null)}
           onSaved={async () => { await load(); setSelected(null); }}
@@ -261,7 +261,6 @@ function QuestionEditor({ question, tagLibrary, tagSubject, onClose, onSaved }) 
       altAnswers: (it.altAnswers || []).join('、'),
     })),
   });
-  const [newTag, setNewTag] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
 
@@ -413,7 +412,7 @@ function QuestionEditor({ question, tagLibrary, tagSubject, onClose, onSaved }) 
         </div>
 
         <div className="field">
-          <label>考点标签{tagSubject ? `（${tagSubject.name}）` : ''}</label>
+          <label htmlFor="kp-input">考点标签{tagSubject ? `（${tagSubject.name}）` : ''}</label>
           <div className="row" style={{ marginBottom: 8 }}>
             {form.knowledgePoints.map((k) => (
               <span className="tag" key={k}>
@@ -424,21 +423,12 @@ function QuestionEditor({ question, tagLibrary, tagSubject, onClose, onSaved }) 
             ))}
             {form.knowledgePoints.length === 0 ? <span className="small faint">尚未标注</span> : null}
           </div>
-          <div className="row" style={{ flexWrap: 'nowrap' }}>
-            <input className="input" list="kp-library" value={newTag}
-              placeholder={tagSubject ? `输入或选择${tagSubject.name}的考点` : '输入或选择考点'}
-              onChange={(e) => setNewTag(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addTag(); } }} />
-            <button type="button" className="btn ghost sm" onClick={addTag}>添加</button>
-          </div>
-          <datalist id="kp-library">
-            {tagLibrary.map((t) => <option key={t} value={t} />)}
-          </datalist>
-          {tagSubject ? (
-            <p className="tiny faint" style={{ marginTop: 4 }}>
-              候选只有{tagSubject.name}的考点；列表里没有的名字，保存后成为{tagSubject.name}的新考点。
-            </p>
-          ) : null}
+          <KpPicker value={form.knowledgePoints} onChange={(v) => set('knowledgePoints', v)}
+            library={tagLibrary} subject={tagSubject} />
+          <p className="tiny faint" style={{ marginTop: 4 }}>
+            点输入框列出{tagSubject ? tagSubject.name : '本学科'}的全部考点（按出现次数从高到低），
+            点一下选上、再点一下取消；列表里没有的，输入名字点「添加」，保存后成为本学科的新考点。
+          </p>
         </div>
 
         {/* 答案状态与题目状态是两个维度（§6.4.10）：
@@ -518,11 +508,96 @@ function QuestionEditor({ question, tagLibrary, tagSubject, onClose, onSaved }) 
       </div>
     </div>
   );
+}
 
-  function addTag() {
-    const name = newTag.trim();
-    if (!name || form.knowledgePoints.includes(name)) { setNewTag(''); return; }
-    set('knowledgePoints', [...form.knowledgePoints, name]);
-    setNewTag('');
+// 考点选择（用户 2026-10-03：点一下考点栏，就列出这个学科的全部备选考点）。
+//
+// 以前用的是浏览器自带的输入提示（datalist）：候选在页面里，但不打字、不点那个小箭头就看不见，
+// 用户以为"没有备选项"。当时的测试只断了"候选在页面代码里"，没断"人看得见"，所以一直是绿的。
+//
+// 备选按出现次数从高到低（和题库总览一致），先列"这一章用到的"，再列"本学科其他的"。
+// 点一下选上、再点一下取消；面板开着不关，方便连选几个。输入文字是筛选，列表里没有的名字
+// 点「添加」（或回车）——保存后成为本学科的新考点。点面板外面、按 Esc 或「收起」关掉。
+function KpPicker({ value, onChange, library, subject }) {
+  const [open, setOpen] = useState(false);
+  const [text, setText] = useState('');
+  const boxRef = useRef(null);
+  const panelRef = useRef(null);
+  useEffect(() => {
+    if (!open) return undefined;
+    // 手机上考点栏常在屏幕下沿，面板在它下面展开就落到屏幕外了——看不见等于没有备选
+    panelRef.current?.scrollIntoView({ block: 'nearest' });
+    const onDown = (e) => { if (boxRef.current && !boxRef.current.contains(e.target)) setOpen(false); };
+    document.addEventListener('pointerdown', onDown);
+    return () => document.removeEventListener('pointerdown', onDown);
+  }, [open]);
+
+  const q = text.trim();
+  const hit = (k) => !q || k.name.toLowerCase().includes(q.toLowerCase());
+  const inExam = library.filter((k) => k.exam_count > 0 && hit(k));
+  const others = library.filter((k) => !(k.exam_count > 0) && hit(k));
+  const known = Boolean(q) && (library.some((k) => k.name === q) || value.includes(q));
+  const subj = subject?.name || '本学科';
+
+  const toggle = (name) => onChange(value.includes(name) ? value.filter((x) => x !== name) : [...value, name]);
+  function addTyped() {
+    if (!q) return;
+    if (!value.includes(q)) onChange([...value, q]);
+    setText('');
   }
+
+  return (
+    <div className="kp-picker" ref={boxRef} onKeyDown={(e) => { if (e.key === 'Escape') setOpen(false); }}>
+      <div className="row" style={{ flexWrap: 'nowrap' }}>
+        <input id="kp-input" className="input" value={text} autoComplete="off"
+          role="combobox" aria-expanded={open} aria-controls="kp-panel"
+          placeholder={`点这里选${subj}的考点，或输入新考点`}
+          onFocus={() => setOpen(true)} onClick={() => setOpen(true)}
+          onChange={(e) => { setText(e.target.value); setOpen(true); }}
+          onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addTyped(); } }} />
+        <button type="button" className="btn ghost" onClick={addTyped} disabled={!q}>添加</button>
+      </div>
+      {open ? (
+        <div id="kp-panel" ref={panelRef} className="kp-panel" role="listbox" aria-multiselectable="true"
+          aria-label={`${subj}的考点`}>
+          {q && !known ? (
+            <button type="button" className="kp-option kp-new" onClick={addTyped}>
+              <span className="kp-check" aria-hidden="true">＋</span>
+              <span className="kp-name">新建「{q}」</span>
+            </button>
+          ) : null}
+          <KpGroup title="这一章用到的" items={inExam} value={value} onToggle={toggle} />
+          <KpGroup title="本学科其他的" items={others} value={value} onToggle={toggle} />
+          {!inExam.length && !others.length ? (
+            <p className="small faint kp-empty">
+              {library.length ? '没有匹配的考点，' : `${subj}还没有考点，`}输入名字点「添加」新建。
+            </p>
+          ) : null}
+          <div className="kp-panel-foot">
+            <button type="button" className="btn ghost" onClick={() => setOpen(false)}>收起</button>
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function KpGroup({ title, items, value, onToggle }) {
+  if (!items.length) return null;
+  return (
+    <div className="kp-group">
+      <div className="kp-group-title tiny muted">{title}（{items.length}）</div>
+      {items.map((k) => {
+        const on = value.includes(k.name);
+        return (
+          <button type="button" key={k.tag_id} role="option" aria-selected={on}
+            className={`kp-option${on ? ' on' : ''}`} onClick={() => onToggle(k.name)}>
+            <span className="kp-check" aria-hidden="true">{on ? '✓' : ''}</span>
+            <span className="kp-name">{k.name}</span>
+            <span className="kp-count tiny">{k.question_count} 题</span>
+          </button>
+        );
+      })}
+    </div>
+  );
 }

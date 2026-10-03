@@ -271,6 +271,34 @@ h1, h2, h3 { margin: 0; line-height: 1.35; }
   padding: 0 2px; font-size: 14px; line-height: 1;
 }
 
+/* 校对页的考点选择：点输入框弹出本学科全部备选（BankReview.jsx 的 KpPicker）。
+   面板跟在输入框下面、占满宽度，不浮在别的控件上：手机上编辑框本身就在滚动，浮层容易被裁掉。 */
+.kp-panel {
+  margin-top: 6px; padding: 6px;
+  border: 1px solid var(--line); border-radius: var(--radius);
+  background: #fff; box-shadow: var(--shadow);
+  max-height: 320px; overflow-y: auto;
+}
+.kp-group + .kp-group { margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--line); }
+.kp-group-title { padding: 4px 10px; }
+.kp-option {
+  display: flex; align-items: center; gap: 8px; width: 100%;
+  min-height: var(--tap); padding: 8px 10px;
+  border: 0; border-radius: 8px; background: transparent;
+  text-align: left; cursor: pointer;
+}
+.kp-option:hover { background: var(--page); }
+.kp-option.on { background: var(--primary-tint); color: var(--primary-dark); font-weight: 600; }
+.kp-check { flex: none; width: 1.2em; text-align: center; color: var(--primary); }
+.kp-name { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.kp-count { flex: none; color: var(--muted); font-weight: 400; }
+.kp-new { color: var(--primary); }
+.kp-empty { margin: 0; padding: 8px 10px; }
+.kp-panel-foot {
+  display: flex; justify-content: flex-end;
+  margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--line);
+}
+
 /* 底部固定操作条：移动端把主操作固定在拇指可达处 */
 .sticky-actions {
   position: sticky; bottom: 0; z-index: 20;

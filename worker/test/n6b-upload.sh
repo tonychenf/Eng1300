@@ -182,6 +182,10 @@ check "34 道全部记进失败清单" "$(echo "$FAILED" | jq -r '.failures | le
 check "题面一道没丢" "$(one "SELECT COUNT(*) FROM questions WHERE exam_id='biochem-ch01';")" "34"
 
 # ③ 正常路径
+# 2026-10-03：考点和答案同一次调用要（用户：考点由题库里的题产生）。先放一个本学科已有的考点进库
+# （种子文件里的编号），看 AI 照抄已有的名字时，是不是挂到已有的那个上，而不是另起一个。
+BIO_ID=$(one "SELECT subject_id FROM subjects WHERE code='biochem';")
+exec_sql "INSERT INTO knowledge_points (tag_id, name, subject_id) VALUES ('kp-01-04', '肽与肽键', $BIO_ID);"
 setai ''
 OK=$(gen)
 check "正常时全部生成" "$(echo "$OK" | jq -r '.generated')" "34"
@@ -206,11 +210,45 @@ check "没有一道是只有答案没解析的" "$(echo "$OK" | jq -r '.withoutE
 check "解析不是一两个字的敷衍" \
   "$(one "SELECT COUNT(*) FROM questions WHERE exam_id='biochem-ch01' AND LENGTH(answer_explanation) < 8;")" "0"
 
+# ③之一点五 考点也一并给出。替身同样**只在提示词要了 knowledgePoints 时才回**——
+# 提示里要考点的那句被删掉，下面这几条立刻红。
+OFQ="SELECT question_id FROM questions WHERE exam_id='biochem-ch01'"
+PROMPTS=$(curl -s "http://127.0.0.1:$STUB_PORT/last-prompt" | jq -r '.prompts | join("\n")')
+check "提示里要了考点，并带上了本学科已有的考点名" \
+  "$(printf '%s' "$PROMPTS" | grep -c '本学科已有的考点.*肽与肽键' | awk '{print ($1 > 0)}')" "1"
+check "34 道都带上了 AI 给的考点" \
+  "$(echo "$OK" | jq -r '.withKnowledgePoints')/$(one "SELECT COUNT(DISTINCT question_id) FROM question_knowledge_points WHERE question_id IN ($OFQ);")" "34/34"
+check "  没有一道是没给考点的" "$(echo "$OK" | jq -r '.withoutKnowledgePoints | length')" "0"
+check "照抄已有的名字时挂到已有的那个上，没另起一个" \
+  "$(one "SELECT (SELECT COUNT(*) FROM knowledge_points WHERE name='肽与肽键') || '/' ||
+                 (SELECT COUNT(*) FROM question_knowledge_points WHERE tag_id='kp-01-04');")" "1/34"
+check "新名字在生化下只建了一个、编号带 kp-ai-（34 道题起的是同一个名字）" \
+  "$(one "SELECT COUNT(*) || '/' || MIN(substr(k.tag_id, 1, 6)) || '/' || MIN(s.code)
+            FROM knowledge_points k JOIN subjects s ON s.subject_id = k.subject_id WHERE k.name='替身新考点';")" \
+  "1/kp-ai-/biochem"
+check "  返回里报了新起的考点" "$(echo "$OK" | jq -c '.newKnowledgePoints')" '["替身新考点"]'
+check "  返回的说明里提到了考点" "$(echo "$OK" | jq -r '.message' | grep -c '带上了 AI 给的考点')" "1"
+
 # ③之二 N7d：文字型资料该走「文字解析 AI」。现在只配了图片解析那档，所以是回落——
 # **回落必须报出来**，否则管理员以为在用自己配的模型，而时延与账单来自另一个。
 check "报出了这份资料是文字型" "$(echo "$OK" | jq -r '.mediaKind')" "text"
 check "文字型走文字解析那一档" "$(echo "$OK" | jq -r '.purpose')" "PARSING"
 check "并且说明这是回落（那一档没配）" "$(echo "$OK" | jq -r '.purposeFellBack')" "true"
+
+# ③之二点五 考点给得不像样：照抄示例的"…"、"考点1"这类占位名、空串、超长、不是数组。答案照常落库，
+# 考点一个都不收、逐题报出来。收下的话它们会成为本学科的考点，出现在每道题的备选里。
+exec_sql "UPDATE questions SET answer_state='缺答案', answer=NULL WHERE exam_id='biochem-ch01';
+          DELETE FROM question_knowledge_points WHERE question_id IN ($OFQ);"
+KP_BEFORE=$(one "SELECT COUNT(*) FROM knowledge_points;")
+setai '/kpbad/'
+BADKP=$(gen)
+check "考点不像样时答案照常生成" "$(echo "$BADKP" | jq -r '.generated')" "34"
+check "  考点一个都没挂上" \
+  "$(echo "$BADKP" | jq -r '.withKnowledgePoints')/$(one "SELECT COUNT(*) FROM question_knowledge_points WHERE question_id IN ($OFQ);")" "0/0"
+check "  也没建出新考点（占位名、空串、超长的都不收）" "$(one "SELECT COUNT(*) FROM knowledge_points;")" "$KP_BEFORE"
+check "  逐题报出没给出能用的考点" "$(echo "$BADKP" | jq -r '.withoutKnowledgePoints | length')" "34"
+check "  说明里点出来了" "$(echo "$BADKP" | jq -r '.message' | grep -c '没给出能用的考点')" "1"
+setai ''
 
 # 单独配上文字解析那档之后，就不该再回落了
 curl -s -o /dev/null -X PUT "$BASE/admin/ai/settings/TEXT_PARSING" -H "Authorization: Bearer $ADMIN" \
@@ -221,6 +259,9 @@ OK2=$(gen)
 check "配上文字解析之后用的就是它" "$(echo "$OK2" | jq -r '.purpose')" "TEXT_PARSING"
 check "不再标记为回落" "$(echo "$OK2" | jq -r '.purposeFellBack')" "false"
 check "换了一档照样全部生成" "$(echo "$OK2" | jq -r '.generated')" "34"
+check "  考点又挂上了，已有的名字不再新建" \
+  "$(echo "$OK2" | jq -r '"\(.withKnowledgePoints)/\(.newKnowledgePoints | length)"')/$(one "SELECT COUNT(*) FROM knowledge_points WHERE name='替身新考点';")" \
+  "34/0/1"
 # 新档要真的能存进库——ai_settings.purpose 上有 CHECK，没放宽的话这一行插不进去，
 # 而接口会回 500 而不是保存成功
 check "新档真的落库了" \
@@ -283,10 +324,22 @@ rows_of() {
 # 条件写错时"要删的那一章删干净了"照样成立，只有旁边这一章会少东西。
 UP2=$(up 'subjectCode=biochem&groupId=biochem-keep&label=%E5%8F%82%E7%85%A7&orderKey=2&filename=keep.docx')
 check "（前提）参照章节传进来了" "$(echo "$UP2" | jq -r '.ok')" "true"
-# 上传不会产生考点关联和图片（管线只抽文字），这两张表的行是后台校对时才有的。
-# 各挂一行，否则删这两张表的语句删的是空集，写错了也看不出来。
-BIO_ID=$(one "SELECT subject_id FROM subjects WHERE code='biochem';")
+# 上传不会产生图片（管线只抽文字）；考点关联上面 AI 那段挂了 biochem-ch01 的，参照章节没跑 AI、一条没有。
+# 两章各挂一行手动的，否则删这两张表的语句在参照章节上删的是空集，写错了也看不出来。
 exec_sql "INSERT INTO knowledge_points (tag_id, name, subject_id) VALUES ('kp-del-test', '删除测试考点', $BIO_ID);"
+# AI 起的考点（kp-ai- 开头）：删这一章时，只被这一章用的清掉；别的章还在用的、有学员掌握度记录的留着
+# （后者删了会撞外键，整个删除失败）。AI 那段起的「替身新考点」再挂到参照章节上一道题，算"别的章还在用"。
+NEW_AI=$(one "SELECT tag_id FROM knowledge_points WHERE name='替身新考点';")
+exec_sql "INSERT INTO question_knowledge_points (question_id, tag_id) VALUES ('biochem-keep-q01', '$NEW_AI');
+  INSERT INTO knowledge_points (tag_id, name, subject_id) VALUES
+    ('kp-ai-del00001', 'AI删除测试', $BIO_ID), ('kp-ai-del00002', '有掌握度的AI考点', $BIO_ID);
+  INSERT INTO question_knowledge_points (question_id, tag_id) VALUES ('biochem-ch01-q02', 'kp-ai-del00001');
+  INSERT INTO user_knowledge_mastery (user_id, course_code, tag_id) VALUES
+    ((SELECT id FROM users WHERE username='admin'), (SELECT course_code FROM exams WHERE exam_id='biochem-ch01'), 'kp-ai-del00002');"
+check "（前提）三种 AI 考点都摆好了：只这一章用的、别的章也在用的、有掌握度记录的" \
+  "$(one "SELECT (SELECT COUNT(*) FROM question_knowledge_points WHERE tag_id='kp-ai-del00001') || '/' ||
+                 (SELECT COUNT(*) FROM question_knowledge_points WHERE tag_id='$NEW_AI' AND question_id='biochem-keep-q01') || '/' ||
+                 (SELECT COUNT(*) FROM user_knowledge_mastery WHERE tag_id='kp-ai-del00002');")" "1/1/1"
 for g in biochem-ch01 biochem-keep; do
   exec_sql "INSERT INTO question_knowledge_points (question_id, tag_id) VALUES ('$g-q01', 'kp-del-test');"
   exec_sql "INSERT INTO question_assets (question_id, asset_key, subject_id, kind, path, alt)
@@ -359,14 +412,21 @@ EXP=$(one "SELECT (SELECT COUNT(*) FROM questions WHERE exam_id='biochem-ch01') 
                   (SELECT COUNT(*) FROM question_items WHERE question_id IN
                      (SELECT question_id FROM questions WHERE exam_id='biochem-ch01')) || '/' ||
                   (SELECT COUNT(*) FROM exam_parsing_notes WHERE exam_id='biochem-ch01');")
+# 考点关联现在不止手动挂的那一条（AI 那段给每道题都挂了），从库里现算
+KPL=$(one "SELECT COUNT(*) FROM question_knowledge_points WHERE question_id IN (SELECT question_id FROM questions WHERE exam_id='biochem-ch01');")
 R=$(DEL biochem-ch01)
 check "没发布、没人做过：删得掉" "$(echo "$R" | jq -r '.ok')" "true"
 check "  报的删除数与删之前库里的对得上（题/单元/存疑/原文/图/考点）" \
   "$(echo "$R" | jq -r '[.deleted.questions, .deleted.items, .deleted.parsingNotes, .deleted.sources,
-                          .deleted.assets, .deleted.knowledgePointLinks] | map(tostring) | join("/")')" "$EXP/1/1/1"
+                          .deleted.assets, .deleted.knowledgePointLinks] | map(tostring) | join("/")')" "$EXP/1/1/$KPL"
 check "8 张表里这一章一行不剩" "$(rows_of biochem-ch01)" "0/0/0/0/0/0/0/0"
 check "参照章节原封不动" "$(rows_of biochem-keep)" "$KEEP_BEFORE"
 check "考点本身还在（它不属于哪一章）" "$(one "SELECT COUNT(*) FROM knowledge_points WHERE tag_id='kp-del-test';")" "1"
+check "AI 考点：只被这一章用的清掉了，删除数也报了" \
+  "$(echo "$R" | jq -r '.deleted.aiKnowledgePoints')/$(one "SELECT COUNT(*) FROM knowledge_points WHERE tag_id='kp-ai-del00001';")" "1/0"
+check "  别的章还在用的留着" "$(one "SELECT COUNT(*) FROM knowledge_points WHERE tag_id='$NEW_AI';")" "1"
+check "  有学员掌握度记录的留着" "$(one "SELECT COUNT(*) FROM knowledge_points WHERE tag_id='kp-ai-del00002';")" "1"
+check "  不是 AI 起的（种子编号）没人用了也留着" "$(one "SELECT COUNT(*) FROM knowledge_points WHERE tag_id='kp-01-04';")" "1"
 check "校对页取不到了" "$(curl -s -o /dev/null -w '%{http_code}' \
   "$BASE/admin/bank/exams/biochem-ch01" -H "Authorization: Bearer $ADMIN")" "404"
 check "原文留存也取不到了" "$(curl -s "$BASE/admin/bank/import/biochem-ch01/source" \

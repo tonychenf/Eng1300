@@ -284,8 +284,23 @@ importRouter.post('/exams/:examId/ai-answers', async (c) => {
       ORDER BY subject_id DESC LIMIT 1`
   ).bind(subject.subject_id).first();
 
-  const { generated, failures, withoutExplanation } = await generateAnswers(c.env, {
-    questions, subjectId: subject.subject_id, prompt, purpose: wantPurpose,
+  // 本学科已有的考点名，带进提示里让 AI 优先照抄（ai-answer.js 的 kpRule）。按出现次数从高到低，
+  // 最多 200 个，免得提示越来越长。只要子考点：生化的章名"蛋白质化学"下面挂着子考点，题不挂它。
+  // AI 起过、后来在校对时被换掉的（kp-ai- 开头、已经没有题挂着）不再递给它，免得被人否掉的名字又回来。
+  const { results: kpRows } = await db.prepare(
+    `SELECT k.name, COUNT(x.question_id) AS n
+       FROM knowledge_points k LEFT JOIN question_knowledge_points x ON x.tag_id = k.tag_id
+      WHERE k.subject_id = ?
+        AND NOT EXISTS (SELECT 1 FROM knowledge_points ch WHERE ch.parent_tag_id = k.tag_id)
+      GROUP BY k.tag_id
+     HAVING n > 0 OR substr(k.tag_id, 1, 6) <> 'kp-ai-'
+      ORDER BY n DESC, k.sort_order, k.name
+      LIMIT 200`
+  ).bind(subject.subject_id).all();
+  const kpNames = kpRows.map((r) => r.name);
+
+  const { generated, failures, withoutExplanation, withoutKnowledgePoints } = await generateAnswers(c.env, {
+    questions, subjectId: subject.subject_id, prompt, purpose: wantPurpose, kpNames,
   });
 
   // 落库：一律 待核 + 来源 AI。**绝不自动发布**（§6.4.10 的硬约束）。
@@ -319,6 +334,41 @@ importRouter.post('/exams/:examId/ai-answers', async (c) => {
   }
   for (let i = 0; i < st.length; i += BATCH) await db.batch(st.slice(i, i + BATCH));
 
+  // 考点：挂到题上（只加不删——管理员先手动挂过的留着），和 AI 答案一样等人校对：
+  // 题目答案没确认就发布不了，学员那边抽不到。按"学科 + 名字"找，没有就在这个学科下新建，
+  // 编号带 kp-ai- 前缀——删这一章时据此清掉它带进来、已经没人用的考点。
+  // 挂考点那句按名字现查编号，不拿这里生成的编号：同名的考点早就在库里时，新建那句被忽略，
+  // 照生成的编号挂就会外键报错。
+  // 考点存不进去不让整件事失败（答案已经落库了），但要报出来，不能悄悄没了。分批写的，前几批可能已经进去了，
+  // 所以失败时几道带上了考点是"不知道"（null），不报 0——0 是合法结果，回落成 0 等于把不知道说成一道都没有。
+  const kpWanted = generated.filter((g) => g.knowledgePoints?.length);
+  const known = new Set(kpNames);
+  const newNames = [...new Set(kpWanted.flatMap((g) => g.knowledgePoints))].filter((n) => !known.has(n));
+  let knowledgePointsFailed = null;
+  let createdNames = [];
+  if (kpWanted.length) {
+    const { results: existing } = await db.prepare('SELECT name FROM knowledge_points WHERE subject_id = ?')
+      .bind(subject.subject_id).all();
+    const inSubject = new Set(existing.map((r) => r.name));
+    createdNames = newNames.filter((n) => !inSubject.has(n));
+    const kst = createdNames.map((name) => db.prepare(
+      'INSERT OR IGNORE INTO knowledge_points (tag_id, name, subject_id) VALUES (?, ?, ?)'
+    ).bind(`kp-ai-${crypto.randomUUID().slice(0, 8)}`, name, subject.subject_id));
+    for (const g of kpWanted) {
+      for (const name of g.knowledgePoints) {
+        kst.push(db.prepare(
+          `INSERT OR IGNORE INTO question_knowledge_points (question_id, tag_id)
+           SELECT ?, tag_id FROM knowledge_points WHERE subject_id = ? AND name = ?`
+        ).bind(g.questionId, subject.subject_id, name));
+      }
+    }
+    try {
+      for (let i = 0; i < kst.length; i += BATCH) await db.batch(kst.slice(i, i + BATCH));
+    } catch (e) {
+      knowledgePointsFailed = String(e.message || e).slice(0, 200);
+    }
+  }
+
   return c.json({
     ok: true,
     generated: generated.length,
@@ -330,11 +380,19 @@ importRouter.post('/exams/:examId/ai-answers', async (c) => {
     purpose: settings._usedPurpose || wantPurpose,
     purposeFellBack: Boolean(settings._fallback),
     withoutExplanation,
+    withKnowledgePoints: knowledgePointsFailed ? null : kpWanted.length,
+    withoutKnowledgePoints,
+    newKnowledgePoints: knowledgePointsFailed ? null : createdNames,
+    knowledgePointsFailed,
     // 说清楚这些答案还不能用。界面上要显眼——"AI 生成完了"很容易被读成"可以发布了"。
     message: `生成了 ${generated.length} 道的候选答案，全部落在「待核」——` +
       `逐题人工确认之后才能发布。` +
       (failures.length ? `另有 ${failures.length} 道没生成出来，仍是缺答案。` : '') +
-      (withoutExplanation.length ? `其中 ${withoutExplanation.length} 道只有答案、没有解析。` : ''),
+      (withoutExplanation.length ? `其中 ${withoutExplanation.length} 道只有答案、没有解析。` : '') +
+      (knowledgePointsFailed
+        ? `考点存的时候出错了（${knowledgePointsFailed}），可能只存进去一部分，校对时逐题看一眼。`
+        : (kpWanted.length ? `${kpWanted.length} 道带上了 AI 给的考点，校对时一并确认。` : '') +
+          (withoutKnowledgePoints.length ? `${withoutKnowledgePoints.length} 道没给出能用的考点，校对时从备选里选。` : '')),
   });
 });
 
@@ -393,6 +451,14 @@ importRouter.delete('/exams/:examId', async (c) => {
     db.prepare('DELETE FROM exam_parsing_notes WHERE exam_id = ?').bind(examId),
     db.prepare('DELETE FROM content_group_sources WHERE exam_id = ?').bind(examId),
     db.prepare('DELETE FROM exams WHERE exam_id = ?').bind(examId),
+    // AI 给上传的题起的考点（kp-ai- 开头），题删了就没人用了，一起清掉。只清没有任何题、
+    // 掌握度记录挂着、下面也没有子考点的——别的章还在用的留着；种子文件里的、管理员手动建的不动。
+    // 必须排在删题目-考点那句后面。substr 比前缀，不用 LIKE（下划线是 LIKE 的通配符）。
+    db.prepare(`DELETE FROM knowledge_points
+      WHERE substr(tag_id, 1, 6) = 'kp-ai-'
+        AND tag_id NOT IN (SELECT tag_id FROM question_knowledge_points)
+        AND tag_id NOT IN (SELECT tag_id FROM user_knowledge_mastery)
+        AND tag_id NOT IN (SELECT parent_tag_id FROM knowledge_points WHERE parent_tag_id IS NOT NULL)`),
   ]);
   // 读不到行数就报 null，不报 0：0 是合法结果（这一章本来就没有图），
   // 回落成 0 等于把"不知道"说成"一行都没有"
@@ -403,7 +469,7 @@ importRouter.delete('/exams/:examId', async (c) => {
     label: exam.label,
     deleted: {
       items: n(0), assets: n(1), knowledgePointLinks: n(2), questions: n(3),
-      sections: n(4), parsingNotes: n(5), sources: n(6),
+      sections: n(4), parsingNotes: n(5), sources: n(6), aiKnowledgePoints: n(8),
     },
   });
 });

@@ -11,6 +11,7 @@
 //   /fail/v1/chat/completions 返回 500
 //   /wrongshape/v1/chat/completions  返回**合法 JSON 但形状不对**
 //   /echo/v1/chat/completions  作文批改把提示里的 JSON 示例原样抄回来（CR-M11），别的照常回
+//   /kpbad/v1/chat/completions 给上传的题出答案时，答案照常、考点给得不像样（照抄示例、占位名、不是数组）
 //
 // 最后那条是 N6b 加的，它测的东西和 /bad/ 不一样：/bad/ 是"解析不出来"，
 // 而真实服务商更常见的失败是"回了一个像模像样的 JSON，字段数对不上题"。
@@ -57,7 +58,17 @@ function reply(promptText) {
   // 就被替身盖住了，线上换成真模型才会发现一片空解析。
   const wantsExpl = promptText.includes('explanation');
   const EXPL = '替身解析：这里本该说清楚为什么选它，长度要够过下限。';
-  const withExpl = (o) => JSON.stringify(wantsExpl ? { ...o, explanation: EXPL } : o);
+  // 2026-10-03：考点也是同一次调用要的（用户：考点由题库里的题产生）。和解析一样，
+  // **只在提示词真的要了 knowledgePoints 时才回**。回两个：提示里列出的第一个已有考点
+  // （照抄名字——验"复用已有的、不另起一个"），加一个固定的新名字（验"在本学科下新建、只建一次"）。
+  const wantsKp = promptText.includes('knowledgePoints');
+  const firstKnown = promptText.match(/本学科已有的考点[^：]*：([^、。]+)/)?.[1];
+  const KPS = [...(firstKnown ? [firstKnown] : []), '替身新考点'];
+  const withExpl = (o) => JSON.stringify({
+    ...o,
+    ...(wantsExpl ? { explanation: EXPL } : {}),
+    ...(wantsKp ? { knowledgePoints: KPS } : {}),
+  });
 
   if (promptText.includes('请给出正确选项')) {
     const m = promptText.match(/^\s*([A-Z])\s*[.、．]/m);
@@ -139,6 +150,14 @@ const server = http.createServer((req, res) => {
       content = promptText.includes('批改这篇自考英语作文') && promptText.includes(MARK)
         ? promptText.slice(promptText.lastIndexOf(MARK) + MARK.length).trim()
         : reply(promptText);
+    } else if (req.url.startsWith('/kpbad/')) {
+      // 答案照常，只让考点这一处出事：选择题回一个字符串（不是数组），别的题回照抄示例的"…"、
+      // 占位名、空串、超长的名字。这些一个都不该收——收下的话会成为本学科的考点，出现在每道题的备选里。
+      const o = JSON.parse(reply(promptText));
+      o.knowledgePoints = promptText.includes('请给出正确选项')
+        ? '替身考点（不是数组）'
+        : ['…', '考点1', '知识点', '', 'x'.repeat(30)];
+      content = JSON.stringify(o);
     } else if (req.url.startsWith('/wrongshape/')) {
       // 合法 JSON、字段名也对，就是数量不对（少给一项）。
       if (promptText.includes('请给出正确选项')) {

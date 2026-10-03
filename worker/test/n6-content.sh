@@ -622,7 +622,13 @@ echo "== 考点按学科分开：校对页的候选、保存、看板的考点�
 # 保存时全库按名字找，新建的考点哪一科都不属于。期望值从两个知识点文件现算，不从库里取。
 KP_EN_FILE="$ROOT_DIR/../data/subjects/english/knowledge-points.json"
 KP_BIO_FILE="$ROOT_DIR/../data/subjects/biochem/knowledge-points.json"
-file_names() { jq -r '[.points[].name] | sort | join("|")' "$1"; }
+# 备选只列有题挂着的考点（2026-10-03：考点由题库里的题产生），期望值从题库文件现算：
+# 这几个文件里的题挂过的考点名（全路径取最后一段——库里存的是最后一段）
+used_names() { jq -rs '[.[].sections[].questions[] | (.knowledgePoints // [])[] | split("/") | last] | unique | join("|")' "$@"; }
+BIO_GROUPS=("$ROOT_DIR"/../data/subjects/biochem/groups/*.json)
+EN_GROUPS=()
+for e in 00015-2015-04 00015-2016-04 00015-2019-10 13000-2026-04; do EN_GROUPS+=("$ROOT_DIR/../data/subjects/english/groups/$e.json"); done
+desc_sorted() { jq -r "[$1] | . == (sort | reverse)"; }   # 一串数是不是从高到低
 lib() { adm "$BASE/admin/bank/knowledge-points?examId=$1"; }
 lib_names() { lib "$1" | jq -r '[.knowledgePoints[].name] | sort | join("|")'; }
 subject_of_links() {   # 题号 → 它挂的考点都属于哪些学科
@@ -644,21 +650,36 @@ check "不带 examId：400（不再一股脑全给）" \
   "$(adm -o /dev/null -w '%{http_code}' "$BASE/admin/bank/knowledge-points")" "400"
 check "不存在的章：404" \
   "$(adm -o /dev/null -w '%{http_code}' "$BASE/admin/bank/knowledge-points?examId=no-such-exam")" "404"
-check "生化那一章：候选正好是生化知识点文件里的考点" "$(lib_names biochem-ch01)" "$(file_names "$KP_BIO_FILE")"
+check "生化那一章：候选正好是生化题库文件里的题挂过的考点" "$(lib_names biochem-ch01)" "$(used_names "${BIO_GROUPS[@]}")"
 check "  返回的学科是生化" "$(lib biochem-ch01 | jq -r '.subject.code')" "biochem"
-check "英语那一章：候选正好是英语知识点文件里的考点" "$(lib_names 13000-2026-04)" "$(file_names "$KP_EN_FILE")"
+check "英语那一章：候选正好是导进来的英语题挂过的考点" "$(lib_names 13000-2026-04)" "$(used_names "${EN_GROUPS[@]}")"
 check "  返回的学科是英语" "$(lib 13000-2026-04 | jq -r '.subject.code')" "english"
 # 题数：生化各章文件里"题目-考点"的对数（同一道题写重了的只算一次）
 check "生化候选的题数加起来等于生化题库文件里挂考点的次数" \
   "$(lib biochem-ch01 | jq -r '[.knowledgePoints[].question_count] | add')" \
   "$(jq -s '[.[].sections[].questions[] | .questionId as $q | (.knowledgePoints // [])[] | "\($q)|\(split("/") | last)"] | unique | length' \
       "$ROOT_DIR"/../data/subjects/biochem/groups/*.json)"
+CHAPTER=$(jq -r '[.points[] | select(.parentTagId == null) | .name][0]' "$KP_BIO_FILE")
+check "生化的章名「$CHAPTER」没有题挂着，不在备选里" \
+  "$(lib biochem-ch01 | jq -r --arg n "$CHAPTER" '[.knowledgePoints[] | select(.name == $n)] | length')" "0"
+check "备选按出现次数从高到低（生化）" "$(lib biochem-ch01 | desc_sorted '.knowledgePoints[].question_count')" "true"
+check "备选按出现次数从高到低（英语）" "$(lib 13000-2026-04 | desc_sorted '.knowledgePoints[].question_count')" "true"
+check "本章题数：英语这一章挂考点的次数加起来等于它的题库文件里的" \
+  "$(lib 13000-2026-04 | jq -r '[.knowledgePoints[].exam_count] | add')" \
+  "$(jq '[.sections[].questions[] | .questionId as $q | (.knowledgePoints // [])[] | "\($q)|\(split("/") | last)"] | unique | length' \
+      "$ROOT_DIR/../data/subjects/english/groups/13000-2026-04.json")"
+check "  别的章用到、这一章没用的也列着（本章题数为 0）" \
+  "$(lib 13000-2026-04 | jq -r '[.knowledgePoints[] | select(.exam_count == 0)] | length > 0')" "true"
 
 adm "$BASE/admin/bank/stats" > /tmp/n6-kp-stats.json
 check "看板考点分布：每一项都带学科" "$(jq -r '[.byTag[] | select(.subject_code == null)] | length' /tmp/n6-kp-stats.json)" "0"
 check "  生化那一组非空，而且都是生化文件里的考点" \
   "$(jq -r --slurpfile f "$KP_BIO_FILE" '[.byTag[] | select(.subject_code == "biochem") | .name] as $n
      | if ($n | length) == 0 then "空" else ($n - [$f[0].points[].name] | length) end' /tmp/n6-kp-stats.json)" "0"
+check "看板考点分布：生化那一组按出现次数从高到低" \
+  "$(desc_sorted '.byTag[] | select(.subject_code == "biochem") | .total' < /tmp/n6-kp-stats.json)" "true"
+check "  英语那一组也是" \
+  "$(desc_sorted '.byTag[] | select(.subject_code == "english") | .total' < /tmp/n6-kp-stats.json)" "true"
 check "  英语那一组非空，而且都是英语文件里的考点" \
   "$(jq -r --slurpfile f "$KP_EN_FILE" '[.byTag[] | select(.subject_code == "english") | .name] as $n
      | if ($n | length) == 0 then "空" else ($n - [$f[0].points[].name] | length) end' /tmp/n6-kp-stats.json)" "0"
@@ -688,7 +709,7 @@ check "  挂上的是生化的考点，不是英语那个" "$(subject_of_links "
 check "  英语那个考点挂的题数没变" "$(links_of english "$EN_NAME")" "$EN_LINKS"
 check "  新建的出现在生化的候选里" \
   "$(lib biochem-ch01 | jq -r --arg n "$EN_NAME" '[.knowledgePoints[] | select(.name == $n)] | length')" "1"
-check "  英语的候选还是文件里那些" "$(lib_names 13000-2026-04)" "$(file_names "$KP_EN_FILE")"
+check "  英语的候选还是那些" "$(lib_names 13000-2026-04)" "$(used_names "${EN_GROUPS[@]}")"
 check "  看板上这个名字分成两项，一科一项（旧的按名字并成了一项）" \
   "$(adm "$BASE/admin/bank/stats" | jq -r --arg n "$EN_NAME" '[.byTag[] | select(.name == $n) | .subject_code] | sort | join(",")')" \
   "biochem,english"

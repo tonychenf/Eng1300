@@ -47,26 +47,41 @@ const EXPL_RULE =
   '同时给出解析，写进 explanation 字段：说清楚为什么是这个答案，' +
   '**面向做错的学生**，两到四句，不要复述题干。';
 
-function askFor(question, shape) {
+// 考点也一起要（用户 2026-10-03：考点由题库里的题产生），同样不另跑一轮。
+// 提示里带上本学科已有的考点名，合适的就原样照抄——同一个知识点起两个名字，
+// 备选里就会出现两个只差一个字的考点，练习按考点抽题时也会被拆成两份。
+export const KP_MAX = 3;
+const KP_NAME_MAX = 20;
+function kpRule(kpNames) {
+  const known = kpNames.length
+    ? `本学科已有的考点（合适的就原样照抄名字，都不合适才起新名字）：${kpNames.join('、')}。`
+    : '本学科还没有考点，按题意起名字。';
+  return `另外给出这道题考查的考点，写进 knowledgePoints 字段：1 到 ${KP_MAX} 个，` +
+    `每个是一个简短的名词短语（不超过 ${KP_NAME_MAX} 个字），不要写题型。` + known;
+}
+
+function askFor(question, shape, kpNames = []) {
   const stem = question.stem || '';
   const opts = (question.options || []).join('\n');
+  const KP = ',"knowledgePoints":["…"]';
+  const tail = EXPL_RULE + kpRule(kpNames);
   switch (shape.kind) {
     case 'CHOICE':
       return `下面是一道单项选择题，请给出正确选项。\n题干：${stem}\n选项：\n${opts}\n\n` +
-        '只输出 JSON：{"choice":"A","explanation":"…"}，choice 必须是上面选项里出现过的那个字母。'
-        + EXPL_RULE;
+        `只输出 JSON：{"choice":"A","explanation":"…"${KP}}，choice 必须是上面选项里出现过的那个字母。`
+        + tail;
     case 'BLANKS':
       return `下面是一道填空题，题干里的 ＿ 表示要填的空，共 ${shape.count} 个。\n` +
-        `题干：${stem}\n\n只输出 JSON：{"blanks":["第1空","第2空",...],"explanation":"…"}，` +
+        `题干：${stem}\n\n只输出 JSON：{"blanks":["第1空","第2空",...],"explanation":"…"${KP}}，` +
         `blanks 的长度必须正好是 ${shape.count}，顺序与题干里的空一致。每一项只写答案本身。`
-        + EXPL_RULE;
+        + tail;
     case 'POINTS':
       return `下面是一道主观题，评分按采分点命中计。\n题干：${stem}\n\n` +
-        `只输出 JSON：{"points":["采分点1","采分点2",...],"explanation":"…"}，共 ${shape.count} 条，` +
-        '每条是一句可独立判定命中与否的要点，不要写成一整段话。' + EXPL_RULE;
+        `只输出 JSON：{"points":["采分点1","采分点2",...],"explanation":"…"${KP}}，共 ${shape.count} 条，` +
+        '每条是一句可独立判定命中与否的要点，不要写成一整段话。' + tail;
     default:
       return `下面是一道简答题。\n题干：${stem}\n\n` +
-        '只输出 JSON：{"answer":"参考答案","explanation":"…"}。' + EXPL_RULE;
+        `只输出 JSON：{"answer":"参考答案","explanation":"…"${KP}}。` + tail;
   }
 }
 
@@ -83,6 +98,28 @@ function shapeExplanation(data) {
   return v.length >= 8 ? v : '';
 }
 
+// 模型会照抄提示里的 JSON 示例（CLAUDE.md "替身的盲区"）：示例里写的是 ["…"]，原样抄回来
+// 就是一个叫"…"的考点。"考点1""知识点"这类占位名同理。这些一律不收——收下的话，
+// 它会作为本学科的新考点出现在每一道题的备选里。
+const KP_PLACEHOLDER = /^(?:[.…。·・\-_*~\s]+|(?:考点|知识点)(?:名称?|名字)?\s*\d*|x+)$/i;
+
+/**
+ * 考点和解析一样是**可缺的**：没给、给的不像样，答案照样落库，这道题记进"没有考点"那一栏。
+ * 回的是全路径（"蛋白质化学/肽与肽键"）时取最后一段——库里存的是最后一段。
+ */
+export function shapeKnowledgePoints(data) {
+  const raw = data?.knowledgePoints;
+  if (!Array.isArray(raw)) return [];
+  const out = [];
+  for (const v of raw) {
+    const s = String(v ?? '').split('/').pop().trim().replace(/\s+/g, ' ');
+    if (s.length < 2 || s.length > KP_NAME_MAX || KP_PLACEHOLDER.test(s)) continue;
+    if (!out.includes(s)) out.push(s);
+    if (out.length === KP_MAX) break;
+  }
+  return out;
+}
+
 /** 把 AI 的返回对到题目的形状上。对不上就抛错——由调用方按题记账，不写半个答案。 */
 export function shapeAnswer(data, question, shape) {
   const bad = (why) => {
@@ -96,7 +133,7 @@ export function shapeAnswer(data, question, shape) {
     // 必须是这道题真有的选项。回一个 E 而题目只有 A-D，是明确的错答，不是"也许对"。
     const labels = (question.options || []).map((o) => String(o).trim().slice(0, 1).toUpperCase());
     if (labels.length && !labels.includes(v)) bad(`回了 ${v}，而这道题的选项是 ${labels.join('/')}`);
-    return { answer: v, items: null, explanation: shapeExplanation(data) };
+    return { answer: v, items: null, explanation: shapeExplanation(data), knowledgePoints: shapeKnowledgePoints(data) };
   }
   if (shape.kind === 'BLANKS') {
     const arr = data?.blanks;
@@ -104,7 +141,7 @@ export function shapeAnswer(data, question, shape) {
     if (arr.length !== shape.count) bad(`要 ${shape.count} 个空，收到 ${arr.length} 个`);
     const vals = arr.map((x) => String(x ?? '').trim());
     if (vals.some((x) => !x)) bad('有空的项');
-    return { answer: null, items: vals, explanation: shapeExplanation(data) };
+    return { answer: null, items: vals, explanation: shapeExplanation(data), knowledgePoints: shapeKnowledgePoints(data) };
   }
   if (shape.kind === 'POINTS') {
     const arr = data?.points;
@@ -112,11 +149,11 @@ export function shapeAnswer(data, question, shape) {
     if (arr.length !== shape.count) bad(`要 ${shape.count} 个采分点，收到 ${arr.length} 个`);
     const vals = arr.map((x) => String(x ?? '').trim());
     if (vals.some((x) => !x)) bad('有空的采分点');
-    return { answer: null, items: vals, explanation: shapeExplanation(data) };
+    return { answer: null, items: vals, explanation: shapeExplanation(data), knowledgePoints: shapeKnowledgePoints(data) };
   }
   const v = String(data?.answer ?? '').trim();
   if (!v) bad('answer 是空的');
-  return { answer: v, items: null, explanation: shapeExplanation(data) };
+  return { answer: v, items: null, explanation: shapeExplanation(data), knowledgePoints: shapeKnowledgePoints(data) };
 }
 
 /**
@@ -124,12 +161,14 @@ export function shapeAnswer(data, question, shape) {
  * 返回 { generated, failures }，**不抛错**：题面已经在库里了，
  * 生成不出来的题留在缺答案就好——这次失败没有改变调用方要的那个结果。
  */
-export async function generateAnswers(env, { questions, subjectId, prompt, purpose = 'TEXT_PARSING' }) {
+export async function generateAnswers(env, { questions, subjectId, prompt, purpose = 'TEXT_PARSING', kpNames = [] }) {
   const failures = [];
   const generated = [];
   // 答案生成出来了、解析没有的题。单独一栏报出来，不混进 failures——
   // 混进去的话"这道题还要重跑"和"这道题只是少段解析"就分不开了。
   const withoutExplanation = [];
+  // 考点同理：答案有了、考点没给出能用的，单独一栏
+  const withoutKnowledgePoints = [];
   await mapLimit(questions, ANSWER_GEN_CONCURRENCY, async (q) => {
     const shape = shapeOf(q);
     try {
@@ -138,16 +177,17 @@ export async function generateAnswers(env, { questions, subjectId, prompt, purpo
         feature: 'answer_generate',
         messages: [
           { role: 'system', content: prompt?.system_prompt || DEFAULT_SYSTEM },
-          { role: 'user', content: askFor(q, shape) },
+          { role: 'user', content: askFor(q, shape, kpNames) },
         ],
       });
       const shaped = shapeAnswer(data, q, shape);
       if (!shaped.explanation) withoutExplanation.push({ questionId: q.questionId, ord: q.ord });
+      if (!shaped.knowledgePoints.length) withoutKnowledgePoints.push({ questionId: q.questionId, ord: q.ord });
       generated.push({ questionId: q.questionId, shape: shape.kind, ...shaped });
     } catch (e) {
       failures.push({ questionId: q.questionId, ord: q.ord, reason: e.code || 'ai_failed',
         message: String(e.message || e).slice(0, 200) });
     }
   });
-  return { generated, failures, withoutExplanation };
+  return { generated, failures, withoutExplanation, withoutKnowledgePoints };
 }

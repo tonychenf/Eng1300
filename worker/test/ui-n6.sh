@@ -50,8 +50,12 @@ npx wrangler d1 execute "$D1_NAME" --local --file=test/fixtures/publish-all.sql 
 
 source "$ROOT_DIR/test/lib/d1.sh"   # sql / one / exec_sql（读库失败会在 stderr 报出来）
 BIO_LABEL=$(one "SELECT label FROM exams WHERE exam_id='biochem-ch01';")
-# 考点按学科（2026-10-03）：期望的候选从两个知识点文件现算，学科名用来对校对页的标题
-kp_names() { jq -c '[.points[].name]' "$ROOT_DIR/../data/subjects/$1/knowledge-points.json"; }
+# 考点按学科（2026-10-03）：期望的备选从题库文件现算——导进来的那几章里的题挂过的考点
+# （全路径取最后一段）。没有题挂着的（生化的章名）不在备选里。学科名用来对校对页的标题
+used_names() { jq -cs '[.[].sections[].questions[] | (.knowledgePoints // [])[] | split("/") | last] | unique' "$@"; }
+G="$ROOT_DIR/../data/subjects"
+BIO_KPS=$(used_names "$G"/biochem/groups/*.json)
+EN_KPS=$(used_names "$G/english/groups/00015-2015-04.json" "$G/english/groups/13000-2026-04.json")
 BIO_SUBJECT=$(one "SELECT name FROM subjects WHERE code='biochem';")
 EN_SUBJECT=$(one "SELECT name FROM subjects WHERE code='english';")
 UNREVIEWED=$(one "SELECT COUNT(*) FROM questions WHERE answer_state='待核';")
@@ -91,5 +95,5 @@ echo "== 浏览器检查 =="
 UI_BASE="http://127.0.0.1:$PORT" UI_USER=admin UI_PASS=adminpass123 \
   UI_BIO_GROUP=biochem-ch01 UI_BIO_LABEL="$BIO_LABEL" UI_UNREVIEWED="$UNREVIEWED" \
   UI_EN_GROUP=13000-2026-04 UI_BIO_SUBJECT="$BIO_SUBJECT" UI_EN_SUBJECT="$EN_SUBJECT" \
-  UI_BIO_KPS="$(kp_names biochem)" UI_EN_KPS="$(kp_names english)" \
+  UI_BIO_KPS="$BIO_KPS" UI_EN_KPS="$EN_KPS" \
   node test/ui-n6-admin.mjs
