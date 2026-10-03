@@ -68,6 +68,12 @@ else
   [ "$(echo "$GEN" | jq -r '.failures | length')" = "0" ] \
     || echo "     失败明细：$(echo "$GEN" | jq -c '.failures' | head -c 800)"
   check "每道都带了解析" "$(echo "$GEN" | jq -r '.withoutExplanation | length')" "0"
+  # 考点也是同一次调用要的（2026-10-03：考点由题库里的题产生）。真模型照不照要求给、给的像不像样，
+  # 只有这里测得到——替身是照我们要的形状回的
+  check "每道都带了考点" "$(echo "$GEN" | jq -r '.withoutKnowledgePoints | length')" "0"
+  [ "$(echo "$GEN" | jq -r '.withoutKnowledgePoints | length')" = "0" ] \
+    || echo "     没给出能用考点的：$(echo "$GEN" | jq -c '.withoutKnowledgePoints')"
+  echo "     新起的考点：$(echo "$GEN" | jq -r '(.newKnowledgePoints // []) | join("、")')"
 
   # 回库核对：接口说"生成了"不等于库里真有，也不等于形状对
   REV=$(api "$WORKER_URL/api/admin/bank/exams/$GID" "${A[@]}")
@@ -79,13 +85,23 @@ else
     "$(echo "$REV" | jq -r "$Q_ALL | map(select((.answer_explanation // \"\") | length < 8)) | length")" "0"
   check "填空题每个空都有答案" \
     "$(echo "$REV" | jq -r "$Q_ALL | map(select(.question_type == \"fill_text\") | .items[] | select((.answer // \"\") == \"\")) | length")" "0"
+  check "每道题上真的挂着考点" \
+    "$(echo "$REV" | jq -r "$Q_ALL | map(select((.knowledgePoints // []) | length == 0)) | length")" "0"
+  KPLIB=$(api "$WORKER_URL/api/admin/bank/knowledge-points?examId=$GID" "${A[@]}")
+  check "校对页的备选里有这一章的考点，学科是生化" \
+    "$(echo "$KPLIB" | jq -r '"\(.subject.code)/\([.knowledgePoints[] | select(.exam_count > 0)] | length > 0)"')" "biochem/true"
   check "选择题的答案是一个选项字母" \
     "$(echo "$REV" | jq -r "$Q_ALL | map(select(.question_type == \"single_choice\") | (.answer // \"\")) | map(test(\"^[A-D]\$\")) | (length > 0 and all)")" "true"
   # AI 出的内容打出来：好不好得人看，这里只能证明形状对
-  echo "$REV" | jq -r "$Q_ALL[] | \"     [\(.question_type)] 答案：\(if .question_type == \"fill_text\" then ([.items[].answer] | join(\" / \")) else (.answer // \"\") end | .[0:60])｜解析：\((.answer_explanation // \"\") | .[0:80])\""
+  echo "$REV" | jq -r "$Q_ALL[] | \"     [\(.question_type)] 答案：\(if .question_type == \"fill_text\" then ([.items[].answer] | join(\" / \")) else (.answer // \"\") end | .[0:60])｜解析：\((.answer_explanation // \"\") | .[0:80])｜考点：\((.knowledgePoints // []) | join(\"、\"))\""
 
-  CODE=$(del_probe)
+  # 删除的返回要留着看：这次 AI 新起的考点只有测试章节的题挂着，删章节时应该一起清掉，线上不留垃圾
+  DELR=$(curl -sS -m 30 -w '\n%{http_code}' -X DELETE "$WORKER_URL/api/admin/bank/exams/$GID" "${A[@]}")
+  CODE=$(echo "$DELR" | tail -1)
   check "测完删掉测试章节" "$CODE" "200"
+  NEWKP=$(echo "$GEN" | jq -r '(.newKnowledgePoints // []) | length')
+  check "  这次新起的 AI 考点跟着清掉了（新起 $NEWKP 个）" \
+    "$(echo "$DELR" | head -n -1 | jq -r --argjson n "$NEWKP" '(.deleted.aiKnowledgePoints // -1) >= $n')" "true"
   check "删干净了：校对页取不到" \
     "$(curl -sS -m 30 -o /dev/null -w '%{http_code}' "$WORKER_URL/api/admin/bank/exams/$GID" "${A[@]}")" "404"
 fi
