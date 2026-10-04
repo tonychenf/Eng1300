@@ -2,7 +2,10 @@ import { Hono } from 'hono';
 import { requireAuth } from '../lib/auth.js';
 import { requireCourseAccess, optionalCourseAccess, requireAttemptAccess, accessibleCourseFilter } from '../lib/access.js';
 import { masteryTier } from '../lib/mastery.js';
-import { gradeEssay, analyzeWrong, assessAbility } from '../lib/tutor.js';
+import { gradeEssay, gradeScorePoints, withPointReasons, analyzeWrong, assessAbility } from '../lib/tutor.js';
+import { gradeQuestion } from '../lib/grade.js';
+import { loadItemRows } from '../lib/question-items.js';
+import { sectionScoresFromDb } from '../lib/section-scores.js';
 import { loadAssetRows } from '../lib/stem-assets.js';
 import { mapLimit } from '../lib/ai.js';
 import { wrongItemVisibleSql } from '../lib/pickable.js';
@@ -11,6 +14,10 @@ import { loadPackByCourse, aiGradedTypes, typeInClause } from '../lib/subject-pa
 // 错题分析的并发上限。20 条分四批约 15 秒，既压住总时长，
 // 也不至于把供应商的速率限制打爆。
 const WRONG_ANALYZE_CONCURRENCY = 5;
+
+// 采分点式主观题批改的并发上限。一张生化卷 9 道，3 路约 3 轮、十几秒；
+// 和错题分析是先后跑的，同时在外的请求不超过 5 个（Workers 同时只开 6 个连接）。
+const SUBJECTIVE_CONCURRENCY = 3;
 
 export const studyRouter = new Hono();
 studyRouter.use('/wrongbook/*', requireAuth);
@@ -141,23 +148,32 @@ studyRouter.post('/ai/attempts/:id/run', async (c) => {
   if (a.user_id !== me.id) return c.json({ error: 'forbidden' }, 403);
   if (a.status === '进行中') return c.json({ error: 'not_submitted', message: '尚未交卷' }, 409);
 
-  const result = { essay: null, wrongItems: { done: 0, failed: 0 } };
+  const result = { essay: null, subjective: null, wrongItems: { done: 0, failed: 0 } };
   // 哪些题型要 AI 判分由学科声明。蓝本写死 = 'essay'，生化的名词解释和问答也要
   // AI 判，而它们不叫 essay——写死的话那些题永远等不到批改，状态一直停在"待判"，
   // 不报错，只是分数少了一块。
   const pack = await loadPackByCourse(c.env.DB, a.course_code);
   const aiTypes = typeInClause(aiGradedTypes(pack), 'q');
 
-  // 1) 作文
-  const { results: essays } = await c.env.DB.prepare(
-    `SELECT aq.question_id, q.stem, s.writing_prompt, r.user_answer, r.ai_judged
+  const { results: aiRows } = await c.env.DB.prepare(
+    `SELECT aq.question_id, aq.score_per_question, q.question_type, q.answer, q.stem,
+            s.writing_prompt, r.user_answer, r.ai_judged
        FROM attempt_questions aq
        JOIN questions q ON q.question_id = aq.question_id
        JOIN sections s ON s.section_id = aq.section_id
        LEFT JOIN answer_records r ON r.attempt_id = aq.attempt_id AND r.question_id = aq.question_id
-      WHERE aq.attempt_id = ? AND ${aiTypes.sql}`
+      WHERE aq.attempt_id = ? AND ${aiTypes.sql}
+      ORDER BY aq.ord`
   ).bind(attemptId, ...aiTypes.binds).all();
 
+  // 按题型声明的判分策略分派。以前不分：要 AI 的题一律当英语作文按维度打分，生化的
+  // 名词解释、问答（采分点式）当场抛 rubric_not_implemented，永远停在"待批改"。
+  const strategyOf = (row) => pack.typeOf(row.question_type).gradingStrategy;
+  const essays = aiRows.filter((row) => strategyOf(row) === 'AI_DIMENSION');
+  const pointRows = aiRows.filter((row) => strategyOf(row) === 'AI_SCORE_POINTS');
+  const unwired = aiRows.filter((row) => !['AI_DIMENSION', 'AI_SCORE_POINTS'].includes(strategyOf(row)));
+
+  // 1) 作文（维度加权）
   for (const e of essays) {
     if (e.ai_judged) { result.essay = { status: 'already' }; continue; }
     if (!String(e.user_answer || '').trim()) {
@@ -192,7 +208,72 @@ studyRouter.post('/ai/attempts/:id/run', async (c) => {
     }
   }
 
-  // 2) 错题分析
+  // 2) 采分点式主观题（名词解释、问答……）：逐题调模型判命中，再走唯一的判分循环算分
+  if (pointRows.length || unwired.length) {
+    const sub = {
+      total: pointRows.length + unwired.length, graded: 0, blank: 0, already: 0, failed: 0, score: 0,
+      failures: [],
+    };
+    // 别的 AI 策略（如 AI_LEVEL_BANDED）还没接批改：说出来，不让它悄悄停在"待批改"
+    for (const row of unwired) {
+      if (row.ai_judged) { sub.already++; continue; }
+      sub.failed++;
+      sub.failures.push({ questionId: row.question_id, error: 'grading_not_wired',
+        detail: `判分策略 ${strategyOf(row)} 还没有接上 AI 批改` });
+    }
+    const todo = pointRows.filter((row) => {
+      if (row.ai_judged) { sub.already++; return false; }
+      return true;
+    });
+    const itemsBy = await loadItemRows(c.env.DB, todo.map((row) => row.question_id));
+    const assetsBy = await loadAssetRows(c.env.DB, todo.map((row) => row.question_id));
+    const writes = [];
+    const markGraded = (row, g, aiComment) => c.env.DB.prepare(
+      `UPDATE answer_records SET is_correct = ?, score = ?, score_rate = ?, item_results = ?,
+              ai_judged = 1, ai_score = ?, ai_comment = ?
+        WHERE attempt_id = ? AND question_id = ?`
+    ).bind(g.isCorrect, g.score, g.scoreRate, g.itemResults ? JSON.stringify(g.itemResults) : null,
+           g.score, aiComment, attemptId, row.question_id);
+
+    // 并发跑，有上限：一张生化卷 9 道主观题，真实服务商一次 3-4 秒，串行要 30 秒以上。
+    await mapLimit(todo, SUBJECTIVE_CONCURRENCY, async (row) => {
+      // 没写就是 0 分，不必花 AI 的钱（同作文）
+      if (!String(row.user_answer || '').trim()) {
+        writes.push(markGraded(row, { isCorrect: 0, score: 0, scoreRate: 0, itemResults: null }, '未作答'));
+        sub.blank++;
+        return;
+      }
+      try {
+        const items = itemsBy.get(row.question_id) || [];
+        const ai = await gradeScorePoints(c.env, pack, {
+          stem: row.stem, assets: assetsBy.get(row.question_id) || [], answer: row.user_answer,
+          items, where: `题目 ${row.question_id}`,
+        });
+        const g = gradeQuestion(pack, row, row.user_answer, row.score_per_question, { items, aiResult: ai });
+        const graded = { ...g, itemResults: withPointReasons(g.itemResults, ai.points) };
+        writes.push(markGraded(row, graded, JSON.stringify({
+          strategy: 'AI_SCORE_POINTS', points: ai.points, rubricVersion: pack.rubricVersion,
+        })));
+        sub.graded++;
+        sub.score += g.score;
+      } catch (err) {
+        // 带上错误原文：ai_bad_shape 的信息里有模型实际回了什么，是查"没读懂"的唯一线索。
+        // 不落分、不标已批改：下次点按钮会重试这一道。
+        sub.failed++;
+        sub.failures.push({
+          questionId: row.question_id,
+          error: err.code || String(err),
+          detail: String(err.message || err).slice(0, 300),
+        });
+      }
+    });
+    // 一个 batch 写完：逐题 .run() 的话一张卷就是 9 次往返
+    if (writes.length) await c.env.DB.batch(writes);
+    sub.score = Math.round(sub.score * 100) / 100;
+    result.subjective = sub;
+  }
+
+  // 3) 错题分析
   const { results: pending } = await c.env.DB.prepare(
     `SELECT w.id, w.question_id, q.stem, q.options, q.answer, s.passage_text,
             r.user_answer,
@@ -237,7 +318,8 @@ studyRouter.post('/ai/attempts/:id/run', async (c) => {
     }
   });
 
-  // 作文批改完要把总分补上
+  // 批改完把总分、待批改数和各部分得分补上。各部分得分以前不重算，批完了报告上还写着"待批改"。
+  const sectionScores = await sectionScoresFromDb(c.env.DB, attemptId, pack);
   await c.env.DB.prepare(
     `UPDATE attempts SET
        total_score = (SELECT COALESCE(SUM(score), 0) FROM answer_records WHERE attempt_id = ?),
@@ -246,9 +328,10 @@ studyRouter.post('/ai/attempts/:id/run', async (c) => {
                        LEFT JOIN answer_records r ON r.attempt_id = aq.attempt_id
                                                  AND r.question_id = aq.question_id
                       WHERE aq.attempt_id = ? AND ${aiTypes.sql}
-                        AND COALESCE(r.ai_judged, 0) = 0)
+                        AND COALESCE(r.ai_judged, 0) = 0),
+       section_scores = ?
      WHERE attempt_id = ?`
-  ).bind(attemptId, attemptId, ...aiTypes.binds, attemptId).run();
+  ).bind(attemptId, attemptId, ...aiTypes.binds, JSON.stringify(sectionScores), attemptId).run();
 
   return c.json({ ok: true, ...result });
 });

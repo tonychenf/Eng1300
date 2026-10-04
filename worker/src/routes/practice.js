@@ -156,10 +156,13 @@ practiceRouter.get('/practice/:id', async (c) => {
   const loaded = await loadPractice(c, c.req.param('id'));
   if (loaded.error) return c.json({ error: loaded.error }, loaded.status);
   const a = loaded.attempt;
+  // 已答数算全部，正确率只在判得出对错的题里算：自己对照的题（练习不判分的主观题）
+  // 算进分母的话，写得再好正确率也往下掉。
   const stat = await c.env.DB.prepare(
     `SELECT COUNT(*) AS answered,
+            SUM(CASE WHEN is_correct IS NOT NULL THEN 1 ELSE 0 END) AS graded,
             SUM(CASE WHEN is_correct = 1 THEN 1 ELSE 0 END) AS correct
-       FROM answer_records WHERE attempt_id = ? AND is_correct IS NOT NULL`
+       FROM answer_records WHERE attempt_id = ?`
   ).bind(a.attempt_id).first();
   return c.json({
     attempt: {
@@ -169,7 +172,7 @@ practiceRouter.get('/practice/:id', async (c) => {
       status: a.status,
       startedAt: a.started_at,
     },
-    stats: { answered: stat?.answered || 0, correct: stat?.correct || 0 },
+    stats: { answered: stat?.answered || 0, graded: stat?.graded || 0, correct: stat?.correct || 0 },
   });
 });
 
@@ -224,6 +227,10 @@ practiceRouter.get('/practice/:id/next', async (c) => {
       ord,
       questionId: q.question_id,
       questionType: q.question_type,
+      typeName: pack.typeOf(q.question_type).name,
+      // 作答控件以题型声明为准（同 exam.js loadPaper）：按题型名猜，生化名词解释会被当成选择题、整页白屏
+      inputWidget: pack.typeOf(q.question_type).widget,
+      needsAi: pack.typeOf(q.question_type).needsAi,
       stem: q.stem,
       options: q.options ? JSON.parse(q.options) : null,
       items: items.map((it) => ({
@@ -300,6 +307,10 @@ practiceRouter.post('/practice/:id/answer', async (c) => {
 
   return c.json({
     isCorrect,
+    // 练习不调 AI（不计分，见上），要 AI 判的题（生化名词解释、问答）在这里判不出对错。
+    // 以前前端把 isCorrect=null 当成"答错了"，写得再对也是一个红叉——现在明说"自己对照"，
+    // 参考答案就是下面 items 里的采分点。
+    selfCheck: Boolean(g.pendingAi),
     // 多单元题要能逐项标红，所以把得分率与逐项结果一起给前端。
     // 没有得分单元的题这两个字段是 0/1 和 null，前端走原来那条"整题对错"的显示路径。
     scoreRate: g.scoreRate,

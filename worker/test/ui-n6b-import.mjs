@@ -58,6 +58,16 @@ try {
     check(`${label}｜提示里说得出差哪些`,
       (await page.locator('body').innerText()).includes('还差：'), true);
 
+    // 传不了的学科灰着、选不了，唯一能传的替人选上（2026-10-04）。以前英语能选，传上去才被拒；
+    // 提示写的是"解析管线""扫描件 OCR"，用户读成了"解析只用英语"。
+    const en = page.locator('#imp-subject option[value="english"]');
+    check(`${label}｜英语那一项在、是灰的（选不了）`, `${await en.count()}/${await en.isDisabled()}`, '1/true');
+    check(`${label}｜英语那一项写明了不支持在这里上传`, (await en.innerText()).includes('不支持在这里上传'), true);
+    check(`${label}｜唯一能传的生化替人选上了`, await page.locator('#imp-subject').inputValue(), 'biochem');
+    const hint = page.locator('[data-testid="subject-hint"]');
+    check(`${label}｜学科下面的提示看得见、说的是只支持 Word 章节习题集`,
+      (await hint.isVisible()) && (await hint.innerText()).includes('只支持 Word'), true);
+
     await page.selectOption('#imp-subject', 'biochem');
     await page.fill('#imp-gid', gid);
     await page.fill('#imp-label', `浏览器实测 ${label}`);

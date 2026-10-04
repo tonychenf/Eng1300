@@ -41,7 +41,7 @@ export default function UserHome() {
         </div>
       )}
       <p className="small muted" style={{ marginTop: 24 }}>
-模拟考试、专项练习、错题本与能力评估都已可用。作文批改与错题解析需要在成绩报告页手动触发一次 AI。
+模拟考试、专项练习、错题本与能力评估都已可用。主观题的 AI 批改与错题解析，在成绩报告页手动触发一次。
       </p>
     </>
   );

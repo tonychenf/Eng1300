@@ -32,7 +32,9 @@ export default function BankImport() {
       .then((r) => {
         const list = (r.subjects || []).filter((s) => s.status === '启用');
         setSubjects(list);
-        if (list.length === 1) set('subjectCode', list[0].code);
+        // 只有一个传得了的学科时替人选上（英语传不了，选它没有意义）
+        const can = list.filter((s) => s.uploadable);
+        if (can.length === 1) set('subjectCode', can[0].code);
       })
       .catch((e) => setError(e.message));
   }, []);
@@ -96,12 +98,17 @@ export default function BankImport() {
             disabled={Boolean(busy)}
             onChange={(e) => set('subjectCode', e.target.value)}>
             <option value="">请选择</option>
+            {/* 传不了的学科灰着、选不了：能不能传由服务端按学科的导入方式说（/admin/subjects 的
+                uploadable），页面不写死"英语"。以前英语能选，传上去才被拒 */}
             {subjects.map((s) => (
-              <option key={s.code} value={s.code}>{s.name}（{s.code}）</option>
+              <option key={s.code} value={s.code} disabled={!s.uploadable}>
+                {s.name}（{s.code}）{s.uploadable ? '' : '——不支持在这里上传'}
+              </option>
             ))}
           </select>
-          <p className="tiny faint" style={{ marginTop: 4 }}>
-            用哪条解析管线由学科决定。英语走的是扫描件 OCR 那条，本系统里没有实现，选了会被拒。
+          <p className="tiny faint" style={{ marginTop: 4 }} data-testid="subject-hint">
+            目前只支持 Word（.docx）格式的章节习题集，例如生物化学。
+            英语题来自扫描的历年试卷，已经整理好随系统导入，不在这里上传。
           </p>
         </div>
 

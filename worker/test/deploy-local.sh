@@ -302,6 +302,20 @@ check "有一章挂在没有学科的课程下：线上验证失败，红的就�
 exec_sql "DELETE FROM exams WHERE exam_id = 'dl-nosubj-1'; DELETE FROM courses WHERE course_code = 'dl-nosubj';"
 
 echo
+echo "== 线上验证能红：有已发布章节的课程没有组卷模板（2026-10-04） =="
+# 生化的模板就是这么漏的：写在仓库文件里、从没进过库，学员点「生成试卷」才知道，线上验证一直绿。
+# 这里把英语 13000 的模板挪走来模拟（这个库里生化还没发布，按不变量它不该被点名）。
+exec_sql "CREATE TABLE dl_tpl AS SELECT * FROM exam_template_items WHERE course_code = '13000';
+          DELETE FROM exam_template_items WHERE course_code = '13000';"
+bash "$CI/verify-deployment.sh" > "$WORK/verify-tpl.log" 2>&1; RC=$?
+check "13000 有已发布章节却没有组卷模板：线上验证失败，红的就是这一条、并点名这门课" \
+  "$RC/$(grep '^  FAIL 有已发布章节的课程都配了组卷模板' "$WORK/verify-tpl.log" | grep -c '没有模板：13000）')/$(grep -c '^  FAIL' "$WORK/verify-tpl.log")" "1/1/1"
+exec_sql "INSERT INTO exam_template_items SELECT * FROM dl_tpl; DROP TABLE dl_tpl;"
+bash "$CI/verify-deployment.sh" > "$WORK/verify-tpl-back.log" 2>&1; RC=$?
+check "模板放回去：这一条又过了，并打出每门已发布的课能不能凑够题" \
+  "$RC/$(grep -c '^  OK   有已发布章节的课程都配了组卷模板' "$WORK/verify-tpl-back.log")/$(grep -c '（13000 组卷：凑得够' "$WORK/verify-tpl-back.log")" "0/1/1"
+
+echo
 echo "== 线上验证能红：库里的章节和题库文件对不上（CR-M16） =="
 # 期望从文件现算，所以加文件不会让它红（上面第 2 次部署已证明）；该红的是导入丢了东西。
 # 删新章节里的一道题（它没人做过，子表只有这三张）

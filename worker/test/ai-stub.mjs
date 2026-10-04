@@ -12,6 +12,15 @@
 //   /wrongshape/v1/chat/completions  返回**合法 JSON 但形状不对**
 //   /echo/v1/chat/completions  作文批改把提示里的 JSON 示例原样抄回来（CR-M11），别的照常回
 //   /kpbad/v1/chat/completions 给上传的题出答案时，答案照常、考点给得不像样（照抄示例、占位名、不是数组）
+//   /stats                     采分点批改调用的次数与最大并发（?reset=1 清零）
+//
+// 采分点式主观题批改（生化名词解释、问答，2026-10-04）按**学生答案里的记号**决定怎么回，
+// 好让一张卷里几道题各走一条路，而不是整次运行只能走一条：
+//   【全对】全部答到   【全错】全部没答到（带理由）   【坏键】少一个采分点、多一个不存在的
+//   【照抄】把提示里的 JSON 示例原样抄回来           【非对象】points 回成一句话
+//   【单号】单号采分点答到、双号没答到
+//   没有记号：答案里原样出现了哪个采分点的话，哪个就算答到（照采分点写的全中、跑题的一个不中）
+// 每次故意慢 300 毫秒，好让并发上限测得出来（瞬间返回的话永远只有一个在飞）。
 //
 // 最后那条是 N6b 加的，它测的东西和 /bad/ 不一样：/bad/ 是"解析不出来"，
 // 而真实服务商更常见的失败是"回了一个像模像样的 JSON，字段数对不上题"。
@@ -20,6 +29,32 @@
 import http from 'node:http';
 
 const PORT = Number(process.argv[2] || 8899);
+
+// 采分点批改：从提示里读出采分点序号（JSON 示例的键）和学生答案，按记号回
+const POINTS_MARK = '逐个判断学生答案有没有答到';
+function replyPoints(promptText) {
+  const JSON_MARK = '只输出这个 JSON：';
+  const example = promptText.slice(promptText.lastIndexOf(JSON_MARK) + JSON_MARK.length).trim();
+  const ords = Object.keys(JSON.parse(example).points);
+  const answer = promptText.match(/学生答案：\n([\s\S]*?)\n\n采分点共/)?.[1] || '';
+  // 采分点原文：提示里形如"1.（权重 2）……"的那几行
+  const text = Object.fromEntries([...promptText.matchAll(/^(\d+)\.（[^）]*）(.*)$/gm)].map((m) => [m[1], m[2]]));
+  if (answer.includes('【照抄】')) return example;
+  if (answer.includes('【非对象】')) return JSON.stringify({ points: '基本都答到了' });
+  const hitOf = (ord) => (answer.includes('【全对】') ? true
+    : answer.includes('【全错】') ? false
+      : answer.includes('【单号】') ? Number(ord) % 2 === 1
+        : Boolean(text[ord]) && answer.includes(text[ord]));
+  const points = {};
+  for (const o of ords) {
+    points[o] = { hit: hitOf(o), reason: hitOf(o) ? `替身：第 ${o} 点答到了` : `替身：第 ${o} 点没有提到` };
+  }
+  if (answer.includes('【坏键】')) { delete points[ords[0]]; points['99'] = { hit: true, reason: '多出来的' }; }
+  return JSON.stringify({ points });
+}
+let pointsInflight = 0;
+let pointsMaxInflight = 0;
+let pointsCalls = 0;
 
 function reply(promptText) {
   if (promptText.includes('批改这篇自考英语作文')) {
@@ -115,6 +150,12 @@ const server = http.createServer((req, res) => {
     res.end(JSON.stringify({ prompt: lastPrompt, prompts: allPrompts }));
     return;
   }
+  if (req.url.startsWith('/stats')) {
+    if (req.url.includes('reset=1')) { pointsMaxInflight = 0; pointsCalls = 0; }
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ pointsCalls, pointsMaxInflight, pointsInflight }));
+    return;
+  }
   let body = '';
   req.on('data', (c) => { body += c; });
   req.on('end', () => {
@@ -138,6 +179,21 @@ const server = http.createServer((req, res) => {
     lastPrompt = promptText;
     allPrompts.push(promptText);
     if (allPrompts.length > 50) allPrompts.shift();
+
+    if (promptText.includes(POINTS_MARK) && !req.url.startsWith('/bad/')) {
+      pointsCalls++;
+      pointsInflight++;
+      pointsMaxInflight = Math.max(pointsMaxInflight, pointsInflight);
+      setTimeout(() => {
+        pointsInflight--;
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+          choices: [{ message: { role: 'assistant', content: replyPoints(promptText) } }],
+          usage: { prompt_tokens: 100, completion_tokens: 50 },
+        }));
+      }, 300);
+      return;
+    }
 
     let content;
     if (req.url.startsWith('/bad/')) {

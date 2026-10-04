@@ -221,6 +221,16 @@ console.log('== B10 受限选择 ==');
   const broken = [item(1, { answer: '中等', grading_strategy: 'ENUM', params: { options: ['高', '低'] } })];
   throws('标准答案不在枚举里抛错',
     () => gradeQuestion(makePack(), Q, answers({ 1: '高' }), 1, { items: broken }), 'enum_answer_not_in_options');
+  // 生化第 1 章的题库文件把枚举写在 params.enum 里（q04、q05），导入过的文件改不了（CR-H4）。
+  // 以前只认 options，这两道一判分就抛错：练习交答案 500、整卷交卷 500。
+  const legacy = [item(1, { answer: '低', grading_strategy: 'ENUM', params: { enum: ['高', '低'] } })];
+  const lg = (a) => gradeQuestion(makePack(), Q, answers({ 1: a }), 1, { items: legacy });
+  check('枚举写在 params.enum 里：答对判对', lg('低').scoreRate, 1);
+  check('枚举写在 params.enum 里：答错判错', lg('高').scoreRate, 0);
+  check('枚举写在 params.enum 里：枚举外的照样说明原因', lg('中等').itemResults[0].items[0].note, '不在题干给定的选项里');
+  const both = [item(1, { answer: '低', grading_strategy: 'ENUM', params: { options: ['高', '低'], enum: ['低', '中'] } })];
+  throws('options 和 enum 都写了却不一致：抛错，不挑一个用',
+    () => gradeQuestion(makePack(), Q, answers({ 1: '低' }), 1, { items: both }), 'group_params_conflict');
 }
 
 console.log('== B11 采分点评分 ==');

@@ -3,8 +3,15 @@ import { validateAssets } from '../lib/stem-assets.js';
 import { ANSWER_CONFIRMED, isAnswerState, isAnswerSource } from '../lib/pickable.js';
 import { shapeContentGroup, ORDER_BY_RECENT } from '../lib/content-group.js';
 import { inputGroupsWithoutAnswer } from '../lib/question-items.js';
+import { examReadiness } from '../lib/paper.js';
 
 export const bankRouter = new Hono();
+
+// 每门课现在能不能组出一张卷（只读体检）。生化的组卷模板漏装过一次（2026-10-04 才补上），
+// 学员点「生成试卷」才知道；部署后的线上验证靠这个接口把"有已发布章节却没有模板"报红。
+bankRouter.get('/exam-readiness', async (c) => {
+  return c.json({ courses: await examReadiness(c.env.DB) });
+});
 
 // 题库总览：按课程统计（PRD §5.3.3）
 bankRouter.get('/stats', async (c) => {

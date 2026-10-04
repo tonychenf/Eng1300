@@ -12,10 +12,19 @@ export const enumGrader = {
   strategy: 'ENUM',
   needsAi: false,
   gradeGroup(group, ctx) {
-    const options = groupParam(group, 'options');
+    // 枚举值写在 params.options 里，也认 params.enum：生化第 1 章的题库文件写的是 enum
+    // （导入过的文件不许改，CR-H4），而这里以前只认 options——q04、q05 一判分就抛错，
+    // 练习交答案 500、整卷交卷 500（2026-10-04 浏览器实测照出来的）。两个都写了就必须一致。
+    const named = groupParam(group, 'options');
+    const legacy = groupParam(group, 'enum');
+    if (named !== undefined && legacy !== undefined && JSON.stringify(named) !== JSON.stringify(legacy)) {
+      throw fail('group_params_conflict',
+        `单元组 ${group.key} 的 params.options ${JSON.stringify(named)} 与 params.enum ${JSON.stringify(legacy)} 不一致`);
+    }
+    const options = named !== undefined ? named : legacy;
     if (!Array.isArray(options) || !options.length) {
       throw fail('enum_options_missing',
-        `单元组 ${group.key} 要按枚举判，但 params.options 是 ${JSON.stringify(options)}`);
+        `单元组 ${group.key} 要按枚举判，但 params.options / params.enum 是 ${JSON.stringify(options)}`);
     }
     const allowed = new Set(options.map((o) => ctx.canon(o)).filter((o) => o !== ''));
     if (!allowed.size) throw fail('enum_options_missing', `单元组 ${group.key} 的 options 归一化之后是空的`);

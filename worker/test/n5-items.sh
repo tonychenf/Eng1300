@@ -83,14 +83,17 @@ echo "== 英语的组卷模板照搬迁入，行为必须与 exam_templates 完�
 # 先确认旧表真有行：两张空表也能让下面的比对全绿，那测的是"迁移没跑"
 check "旧表里确实有模板（否则下面几条是空断言）" \
   "$([ "$(one 'SELECT COUNT(*) FROM exam_templates;')" -ge 7 ] && echo 有 || echo 无)" "有"
-check "模板项数与旧表一致" "$(one 'SELECT COUNT(*) FROM exam_template_items;')" "$(one 'SELECT COUNT(*) FROM exam_templates;')"
+# 只比英语那几门课：旧表 exam_templates 里只有英语，生化的模板是 0017 另装的（2026-10-04），
+# 不圈定范围的话这两条把"库里只有英语的模板"当成了不变量，生化一装就红
+EN_TPL="course_code IN (SELECT course_code FROM exam_templates)"
+check "英语的模板项数与旧表一致" "$(one "SELECT COUNT(*) FROM exam_template_items WHERE $EN_TPL;")" "$(one 'SELECT COUNT(*) FROM exam_templates;')"
 check "对不上的行数为 0" "$(one "
   SELECT COUNT(*) FROM exam_templates t LEFT JOIN exam_template_items i
     ON i.course_code = t.course_code AND i.ord = t.ord
    WHERE i.ord IS NULL OR i.question_count <> t.question_count
       OR i.score_per_question <> t.score_per_question
       OR i.filter <> '{\"sectionTypes\":[\"' || t.section_type || '\"]}';")" "0"
-check "抽题单位全是整组抽（英语现状）" "$(one "SELECT COUNT(*) FROM exam_template_items WHERE pick_unit <> 'SECTION';")" "0"
+check "英语的抽题单位全是整组抽" "$(one "SELECT COUNT(*) FROM exam_template_items WHERE $EN_TPL AND pick_unit <> 'SECTION';")" "0"
 check "配分方式全部来自模板" "$(one "SELECT COUNT(*) FROM exam_template_items WHERE score_mode <> 'FROM_TEMPLATE';")" "0"
 
 echo

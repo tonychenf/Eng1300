@@ -194,6 +194,27 @@ if [ -n "${ADMIN_TOKEN:-}" ]; then
     check "已发布的章节没有未处理的解析存疑" \
       "$(jq -r '[.exams[].open_notes] | add // 0' "$T/published.json" 2>/dev/null)" "0"
 
+    # 组卷模板（2026-10-04）：生化的模板写在仓库文件里、从没进过库，学员点「生成试卷」才知道，
+    # 这里一直是绿的。不变量是"有已发布章节的课程都配了组卷模板"；按现在已发布的题凑不凑得够
+    # 只打信息不判红——停用、撤回是管理员的正常操作，新章节发布前凑不够也正常。
+    curl -sS -m 30 -o "$T/readiness.json" "$WORKER_URL/api/admin/bank/exam-readiness" \
+      -H "Authorization: Bearer $TOKEN" || true
+    if ! jq -e '.courses | type == "array"' "$T/readiness.json" >/dev/null 2>&1; then
+      echo "  FAIL 读不到组卷体检（收到的前 200 字：$(head -c 200 "$T/readiness.json" 2>/dev/null)）"; FAIL=1
+    else
+      NO_TPL=$(jq -r '[.courses[] | select(.publishedExams > 0 and .templateItems == 0) | .courseCode] | join("、")' "$T/readiness.json")
+      if [ -z "$NO_TPL" ]; then
+        echo "  OK   有已发布章节的课程都配了组卷模板"
+      else
+        echo "  FAIL 有已发布章节的课程都配了组卷模板（没有模板：$NO_TPL）"; FAIL=1
+      fi
+      jq -r '.courses[] | select(.publishedExams > 0) | "     （" + .courseCode + " 组卷："
+        + (if .problem then "模板有问题：" + .problem elif .ready then "凑得够" else "凑不够" end)
+        + (if (.parts | length) > 0 then "，" + ([.parts[] | .label + " " + (.available | tostring)
+             + (if .pickUnit == "SECTION" then " 篇可选" else "/" + (.required | tostring) end)] | join("、")) else "" end)
+        + "）"' "$T/readiness.json"
+    fi
+
     # ---- N1 学科骨架 ----
     # 线上没有这几条的话，学科层是不是真的上线了只能靠猜
     SUBJ=$(curl -sS -m 20 "$WORKER_URL/api/me/subjects" -H "Authorization: Bearer $TOKEN" || echo '{}')

@@ -132,6 +132,13 @@ R1B=$(au "$BASE/attempts/$A1/report")
 check "批改后待批改数归零" "$(echo "$R1B" | jq -r '.attempt.pendingAi')" "0"
 OBJ=$(echo "$R1B" | jq -r '.attempt.objectiveScore'); TOT=$(echo "$R1B" | jq -r '.attempt.totalScore')
 check "总分 = 客观题 + 作文" "$(awk -v t="$TOT" -v o="$OBJ" -v e="$ESSAY" 'BEGIN{print (t>o && (t-o-e)<0.05 && (t-o-e)>-0.05) ? 1 : 0}')" "1"
+# 各部分得分批完要重算（2026-10-04）：以前只补总分，写作那部分批完了还标着待批改、0 分。
+# 写作是哪一部分从卷面找（作文题所在的部分），分数对的是批改返回的作文分。
+ESSAY_SEC=$(echo "$R1B" | jq -r '[.sections[] | select(any(.questions[]; .questionType == "essay")) | .sectionOrd][0]')
+check "批完作文，写作那部分不再待批改、得分 = 作文分" \
+  "$(echo "$R1B" | jq -r --argjson o "$ESSAY_SEC" '.sectionScores[] | select(.sectionOrd == $o) | "\(.pendingAi)/\(.score)"')" "0/$ESSAY"
+check "  英语作文批完 is_correct 照旧是 NULL（作文不分对错），报告里按\"批过没有\"判" \
+  "$(echo "$R1B" | jq -r '[.sections[].questions[] | select(.questionType == "essay") | "\(.isCorrect)/\(.aiJudged)"][0]')" "null/true"
 
 echo "== 错题本 =="
 W=$(au "$BASE/wrongbook?courseCode=13000")

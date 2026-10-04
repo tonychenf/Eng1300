@@ -1,6 +1,7 @@
 // 后台学科管理。挂在 /api/admin/subjects 下，鉴权由 admin 路由组统一挂。
 import { Hono } from 'hono';
 import { SUBJECT_CODE_RE } from '../lib/subject.js';
+import { PIPELINES } from '../import/index.js';
 
 export const adminSubjectsRouter = new Hono();
 
@@ -26,7 +27,14 @@ adminSubjectsRouter.get('/', async (c) => {
               WHERE g.subject_id = s.subject_id AND g.status = 'ACTIVE') AS member_count
        FROM subjects s ORDER BY s.sort_order, s.subject_id`
   ).all();
-  return c.json({ subjects: results });
+  // 能不能在后台上传：看这个学科声明的导入管线本仓库有没有实现，和上传接口用同一份注册表
+  // （import/index.js），不在页面上写死"英语传不了"——以后加一个用 Word 的学科，自动可选。
+  return c.json({
+    subjects: results.map((s) => {
+      const pipeline = Object.hasOwn(PIPELINES, s.ingest_pipeline ?? '') ? PIPELINES[s.ingest_pipeline] : null;
+      return { ...s, uploadable: Boolean(pipeline), uploadAccepts: pipeline?.accepts || null };
+    }),
+  });
 });
 
 adminSubjectsRouter.post('/', async (c) => {

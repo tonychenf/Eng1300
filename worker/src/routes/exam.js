@@ -52,7 +52,9 @@ async function loadAttempt(db, attemptId, userId) {
 }
 
 // 整卷内容：按部分分组，附带已保存的答案
-async function loadPaper(db, attemptId, { withAnswers = true, withCorrect = false } = {}) {
+// pack 用来带上每道题的作答控件与"要不要 AI"：前端以前按题型名猜控件（不是选择、不是填空就当选择题），
+// 生化的名词解释、问答没有选项，一渲染就整页白屏。控件以学科的题型声明为准（input_widget）。
+async function loadPaper(db, attemptId, { withAnswers = true, withCorrect = false, pack } = {}) {
   const { results } = await db.prepare(
     `SELECT aq.ord, aq.section_ord, aq.score_per_question,
             q.question_id, q.question_type, q.stem, q.options,
@@ -89,10 +91,17 @@ async function loadPaper(db, attemptId, { withAnswers = true, withCorrect = fals
       };
       sections.push(sec);
     }
+    const type = pack.typeOf(row.question_type);
     const q = {
       ord: row.ord,
       questionId: row.question_id,
       questionType: row.question_type,
+      typeName: type.name,
+      inputWidget: type.widget,
+      needsAi: type.needsAi,
+      // 这道题在本卷值几分（§6.4.7：分值由模板给、记在 attempt_questions 上）。
+      // 报告页要按题加总"客观题满分""主观题满分"，不能再写死"作文 30 分"。
+      points: row.score_per_question,
       stem: row.stem,
       options: row.options ? JSON.parse(row.options) : null,
       // 题干里的 ![key] 要换成图，所以把资源一并带过去。alt 也要给：
@@ -350,6 +359,7 @@ examRouter.get('/attempts/:id', async (c) => {
   const submitted = fresh.attempt.status !== '进行中';
   const sections = await loadPaper(c.env.DB, fresh.attempt.attempt_id, {
     withAnswers: true, withCorrect: submitted,
+    pack: await loadPackByCourse(c.env.DB, fresh.attempt.course_code),
   });
 
   return c.json({
@@ -424,7 +434,9 @@ examRouter.get('/attempts/:id/report', async (c) => {
   }
 
   const a = (await loadAttempt(c.env.DB, c.req.param('id'), me.id)).attempt;
-  const sections = await loadPaper(c.env.DB, a.attempt_id, { withAnswers: true, withCorrect: true });
+  const sections = await loadPaper(c.env.DB, a.attempt_id, {
+    withAnswers: true, withCorrect: true, pack: await loadPackByCourse(c.env.DB, a.course_code),
+  });
 
   // 与历史平均比：只看已交卷的模考
   const hist = await c.env.DB.prepare(
@@ -470,9 +482,13 @@ examRouter.get('/history', async (c) => {
   // 跨学科聚合：只能过滤行，不能整个接口 403。
   // 少了这层过滤，学科授权被撤销之后，历史记录里那几次模考照样列出来。
   const acc = accessibleCourseFilter(me, 'attempts');
+  // max_score：这张卷的满分，从实际上卷的题现加（§6.4.7）。历史页以前写死"/ 70"（英语客观题满分），
+  // 生化一张卷客观题 50 分、总分 100，照那个分母显示全错。
   const { results } = await c.env.DB.prepare(
     `SELECT attempt_id, course_code, mode, status, difficulty, started_at, submitted_at,
-            duration_seconds, objective_score, total_score, pending_ai
+            duration_seconds, objective_score, total_score, pending_ai,
+            (SELECT COALESCE(SUM(aq.score_per_question), 0) FROM attempt_questions aq
+              WHERE aq.attempt_id = attempts.attempt_id) AS max_score
        FROM attempts WHERE user_id = ? AND ${acc.sql} ORDER BY started_at DESC LIMIT 50`
   ).bind(me.id, ...acc.binds).all();
   return c.json({ attempts: results });

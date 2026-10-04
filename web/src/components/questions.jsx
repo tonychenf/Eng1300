@@ -55,7 +55,25 @@ function parseItemAnswer(raw) {
 }
 
 const INPUT_KINDS = ['BLANK', 'OPTION'];
+const JUDGE_KINDS = ['SCORE_POINT', 'STEP'];
 const inputItemsOf = (q) => (q.items || []).filter((it) => INPUT_KINDS.includes(it.kind));
+const judgeItemsOf = (q) => (q.items || []).filter((it) => JUDGE_KINDS.includes(it.kind));
+
+/**
+ * 这道题用哪种作答控件。以学科的题型声明为准（服务端带来的 inputWidget），其次看得分单元。
+ *
+ * 以前按题型名猜：不是作文、不是 fill_text 就当选择题。生化的名词解释、问答没有选项，
+ * 按选择题渲染时 options 是 null，一 map 就整页白屏（2026-10-04 浏览器实测）。
+ * 最后一条兜底同理：没声明控件、也没有选项的题给一个文本框，绝不按选择题渲染。
+ */
+function widgetOf(q) {
+  if (inputItemsOf(q).length) return 'blanks';
+  if (q.questionType === 'essay') return 'essay';   // 英语作文：按词数统计、写作提示
+  if (q.inputWidget === 'textarea' || judgeItemsOf(q).length) return 'long';
+  if (q.inputWidget === 'text' || q.questionType === 'fill_text') return 'text';
+  if (q.options?.length) return 'choice';
+  return 'long';
+}
 
 /**
  * 这道题算不算作答了。
@@ -75,16 +93,19 @@ export function hasAnswer(q, value) {
  * 一道题。
  * review=false 时可作答；review=true 时只读并标出对错。
  */
-export function Question({ q, compact, value, onChange, review }) {
+export function Question({ q, compact, value, onChange, review, pendingLabel }) {
   const answered = review ? q.userAnswer : value;
   const blanks = inputItemsOf(q);
+  const widget = widgetOf(q);
 
   return (
     <div className="q-card">
       <div style={{ display: 'flex', alignItems: 'flex-start' }}>
         <span className="q-num">{q.ord}</span>
         <div style={{ flex: 1, minWidth: 0 }}>
-          {q.questionType === 'fill_text' ? (
+          {/* "给定词"只属于英语的词形改写（题干就是那个词）。生化的填空题干是一句带＿的话，
+              有一空一框的得分单元，走下面普通题干——以前它也被套上"给定词："加粗。 */}
+          {widget === 'text' && q.questionType === 'fill_text' ? (
             <div className="q-stem">
               给定词：<strong className="mono"><RichText text={q.stem} assets={q.assets} /></strong>
             </div>
@@ -96,16 +117,18 @@ export function Question({ q, compact, value, onChange, review }) {
             </div>
           )}
 
-          {review ? <Verdict q={q} /> : null}
+          {review ? <Verdict q={q} pendingLabel={pendingLabel} /> : null}
         </div>
       </div>
 
       <div style={{ marginTop: 10 }}>
-        {blanks.length ? (
+        {widget === 'blanks' ? (
           <MultiBlank q={q} items={blanks} value={answered} onChange={onChange} review={review} />
-        ) : q.questionType === 'essay' ? (
+        ) : widget === 'essay' ? (
           <Essay q={q} value={answered} onChange={onChange} review={review} />
-        ) : q.questionType === 'fill_text' ? (
+        ) : widget === 'long' ? (
+          <LongAnswer q={q} value={answered} onChange={onChange} review={review} />
+        ) : widget === 'text' ? (
           <FillBlank q={q} value={answered} onChange={onChange} review={review} />
         ) : compact ? (
           <LetterRow q={q} value={answered} onChange={onChange} review={review} />
@@ -126,11 +149,16 @@ export function Question({ q, compact, value, onChange, review }) {
   );
 }
 
-function Verdict({ q }) {
+function Verdict({ q, pendingLabel = '待批改' }) {
   if (q.isCorrect === null || q.isCorrect === undefined) {
-    return <span className="badge gray" style={{ marginTop: 6 }}>待批改</span>;
+    // 英语作文批完 is_correct 仍是 NULL（作文不分对错），以前批完了还显示"待批改"
+    if (q.aiJudged && q.score !== null && q.score !== undefined) {
+      return <span className="badge info" style={{ marginTop: 6 }}>AI 批改 {q.score} 分</span>;
+    }
+    return <span className="badge gray" style={{ marginTop: 6 }}>{pendingLabel}</span>;
   }
-  if (q.isCorrect === 1) return <span className="badge ok" style={{ marginTop: 6 }}>答对 +{q.score}</span>;
+  // 练习不计分（score 是 0），只写"答对"；以前显示"答对 +0"
+  if (q.isCorrect === 1) return <span className="badge ok" style={{ marginTop: 6 }}>答对{q.score ? ` +${q.score}` : ''}</span>;
   // 部分分（§6.4.5）：答错但拿到分的题，只写"答错"会让学生以为这题 0 分。
   // 学科不给部分分时 scoreRate 只会是 0 或 1，这一支走不到。
   if (q.scoreRate > 0 && q.scoreRate < 1) {
@@ -211,10 +239,32 @@ function ItemBreakdown({ q }) {
             <span className={`badge ${it.hit === 1 ? 'ok' : 'danger'}`}>{it.hit === 1 ? '命中' : '未命中'}</span>
             <span style={{ marginLeft: 8 }}>{desc?.answer || `第 ${it.ord} 点`}</span>
             {it.note ? <span className="tiny muted" style={{ marginLeft: 8 }}>（{it.note}）</span> : null}
+            {/* AI 逐点给的理由：答到了哪句、缺了什么。学生要看得懂"为什么这一点没给分" */}
+            {it.reason ? <div className="tiny muted point-reason">{it.reason}</div> : null}
           </div>
         );
       }))}
     </div>
+  );
+}
+
+// 整段作答（名词解释、问答、解答题）：一个大文本框，按字数统计（中文不按空格分词）。
+// 判分时才按采分点拆，所以这里只存一整段原文，不是 {"序号":"答案"}。
+function LongAnswer({ q, value, onChange, review }) {
+  if (review) {
+    return (
+      <div className="passage long-answer" style={{ background: '#fafbfc', padding: 12, borderRadius: 8 }}>
+        {q.userAnswer || '（未作答）'}
+      </div>
+    );
+  }
+  const chars = String(value || '').replace(/\s/g, '').length;
+  return (
+    <>
+      <textarea className="textarea long-answer-input" style={{ minHeight: 160 }} value={value || ''}
+        placeholder="在此作答" onChange={(e) => onChange(e.target.value)} />
+      <div className="tiny muted" style={{ textAlign: 'right' }}>{chars} 字</div>
+    </>
   );
 }
 
@@ -289,7 +339,11 @@ function Essay({ q, value, onChange, review }) {
         <div className="passage" style={{ background: '#fafbfc', padding: 12, borderRadius: 8 }}>
           {q.userAnswer || '（未作答）'}
         </div>
-        <p className="tiny muted">作文评分需要 AI 批改，本期尚未开放，暂不计入总分。</p>
+        <p className="tiny muted">
+          {q.aiJudged
+            ? `AI 已批改，得 ${q.score ?? 0} 分。`
+            : '作文由 AI 批改：在成绩报告页点「批改作文」，批完计入总分。'}
+        </p>
       </>
     );
   }

@@ -65,8 +65,10 @@ export default function PracticeRun() {
         answer,
       });
       setFeedback(r);
+      // 自己对照的题（练习不判分的主观题）算已答，不进正确率的分母（同服务端 /practice/:id 的口径）
       setStats((s) => ({
         answered: (s?.answered || 0) + 1,
+        graded: (s?.graded || 0) + (r.isCorrect === null ? 0 : 1),
         correct: (s?.correct || 0) + (r.isCorrect === 1 ? 1 : 0),
       }));
     } catch (e) {
@@ -84,7 +86,8 @@ export default function PracticeRun() {
   }
 
   const answered = stats?.answered || 0;
-  const accuracy = answered ? Math.round((stats.correct / answered) * 100) : 0;
+  const graded = stats?.graded ?? answered;
+  const accuracy = graded ? Math.round((stats.correct / graded) * 100) : 0;
   // 阶段以最新一次出题为准；还没出题时用会话概况里的，避免先闪一个占位文案
   const stage = current?.stage || sessionStage;
   const q = current?.question;
@@ -103,7 +106,7 @@ export default function PracticeRun() {
             ) : <span className="muted">载入中…</span>}
           </div>
           <div className="exam-sub">
-            已答 {answered} 题{answered ? ` · 正确率 ${accuracy}%` : ''}
+            已答 {answered} 题{graded ? ` · 正确率 ${accuracy}%` : ''}
           </div>
         </div>
         <button className="btn ghost sm" onClick={end} disabled={busy}>结束练习</button>
@@ -139,15 +142,47 @@ export default function PracticeRun() {
               <div className="card">
                 <div className="tiny muted" style={{ padding: '12px 16px 0' }}>{q.sectionType}</div>
                 <Question
-                  q={feedback ? { ...q, userAnswer: answer, isCorrect: feedback.isCorrect,
-                                  correctAnswer: feedback.correctAnswer, explanation: null, score: 0 } : q}
+                  q={feedback ? {
+                    ...q, userAnswer: answer, isCorrect: feedback.isCorrect,
+                    correctAnswer: feedback.correctAnswer, explanation: null, score: 0,
+                    // 逐空对错和每空的标准答案都在交答案的返回里。以前没并进来：多空题全答对了，
+                    // 题卡上每个空照样标"错"、也不给标准答案
+                    itemResults: feedback.itemResults,
+                    items: (q.items || []).map((it) => ({
+                      ...it, answer: feedback.items?.find((x) => x.ord === it.ord)?.answer ?? null,
+                    })),
+                  } : q}
                   value={answer}
                   onChange={setAnswer}
                   review={Boolean(feedback)}
+                  pendingLabel="练习不判分"
                 />
               </div>
 
-              {feedback ? (
+              {feedback?.selfCheck ? (
+                // 要按采分点判的题（生化名词解释、问答）：练习不调 AI，判不出对错。
+                // 以前这里一律写"答错了"，写得再对也是一个红叉——现在明说，把采分点摆出来让学员自己对照。
+                <div className="card card-pad self-check" style={{ marginTop: 12 }}>
+                  <div className="row" style={{ marginBottom: 8 }}>
+                    <span className="badge info">练习不判分</span>
+                    {feedback.knowledgePoints.map((k) => (
+                      <span key={k} className="tag">{k}</span>
+                    ))}
+                  </div>
+                  <p className="small" style={{ marginTop: 0 }}>
+                    这类题按采分点给分，练习时不打分。对照下面的参考答案，看看自己答到了几点；
+                    模拟考试交卷后可以让 AI 逐点批改。
+                  </p>
+                  <div className="tiny muted" style={{ marginBottom: 4 }}>参考答案（采分点）</div>
+                  <ol className="small score-points" style={{ marginTop: 0 }}>
+                    {(feedback.items || []).filter((it) => it.kind === 'SCORE_POINT' || it.kind === 'STEP')
+                      .map((it) => <li key={it.ord}>{it.answer}</li>)}
+                  </ol>
+                  {feedback.explanation ? (
+                    <div className="passage" style={{ marginTop: 4 }}>{feedback.explanation}</div>
+                  ) : null}
+                </div>
+              ) : feedback ? (
                 <div className="card card-pad" style={{ marginTop: 12 }}>
                   <div className="row" style={{ marginBottom: 8 }}>
                     {feedback.isCorrect === 1
@@ -157,7 +192,7 @@ export default function PracticeRun() {
                       <span key={k} className="tag">{k}</span>
                     ))}
                   </div>
-                  {feedback.isCorrect !== 1 ? (
+                  {feedback.isCorrect !== 1 && feedback.correctAnswer ? (
                     <p className="small" style={{ marginTop: 0 }}>
                       正确答案：<strong>{feedback.correctAnswer}</strong>
                     </p>

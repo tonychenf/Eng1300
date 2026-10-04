@@ -261,3 +261,51 @@ export async function planPaper(db, { courseCode, userId, difficulty = '随机',
 
   return { parts, warnings, knowledgePointCount: usedTags.size };
 }
+
+/**
+ * 每门课"现在能不能组出一张卷"（后台与部署后的线上验证用，只读）。
+ *
+ * 和 planPaper 用同一套候选判据（candidateSections / candidateQuestions），不另写一份：
+ * 两份判据改一处忘一处，这里说"能组"、学员点下去却 422。
+ * 返回 [{ courseCode, courseName, subjectCode, publishedExams, templateItems,
+ *         parts: [{ ord, label, pickUnit, required, available, ok }], ready, problem }]。
+ * 模板配错（认不出的筛选条件等）不抛错，记在 problem 里——这是体检，不是组卷。
+ */
+export async function examReadiness(db) {
+  const { results: courses } = await db.prepare(
+    `SELECT co.course_code, co.course_name, s.code AS subject_code,
+            (SELECT COUNT(*) FROM exams e WHERE e.course_code = co.course_code AND e.status = '已发布')
+              AS published_exams
+       FROM courses co LEFT JOIN subjects s ON s.subject_id = co.subject_id
+      ORDER BY s.sort_order, co.course_code`
+  ).all();
+  const out = [];
+  for (const co of courses) {
+    const { results: rows } = await db.prepare(
+      `SELECT course_code, ord, label, filter, question_count, score_mode, score_per_question, pick_unit
+         FROM exam_template_items WHERE course_code = ? ORDER BY ord`
+    ).bind(co.course_code).all();
+    const entry = {
+      courseCode: co.course_code, courseName: co.course_name, subjectCode: co.subject_code,
+      publishedExams: co.published_exams, templateItems: rows.length, parts: [], ready: false, problem: null,
+    };
+    try {
+      for (const row of rows) {
+        const item = toTemplateItem(row);
+        const available = item.pickUnit === 'SECTION'
+          ? (await candidateSections(db, co.course_code, item)).length
+          : (await candidateQuestions(db, co.course_code, item)).length;
+        const ok = item.pickUnit === 'SECTION' ? available >= 1 : available >= item.questionCount;
+        entry.parts.push({
+          ord: item.ord, label: item.label, pickUnit: item.pickUnit,
+          required: item.questionCount, available, ok,
+        });
+      }
+      entry.ready = rows.length > 0 && entry.parts.every((p) => p.ok);
+    } catch (e) {
+      entry.problem = String(e.message || e).slice(0, 200);
+    }
+    out.push(entry);
+  }
+  return out;
+}

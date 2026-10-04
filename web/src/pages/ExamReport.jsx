@@ -35,9 +35,14 @@ export default function ExamReport() {
       if (r.essay?.status === 'graded') parts.push(`作文 ${r.essay.total} 分`);
       else if (r.essay?.status === 'blank') parts.push('作文未作答，记 0 分');
       else if (r.essay?.status === 'failed') parts.push('作文批改失败，可稍后重试');
+      // 采分点式主观题（生化名词解释、问答……）一题一个结果，汇总着说
+      const sub = r.subjective;
+      if (sub?.graded) parts.push(`主观题批改了 ${sub.graded} 道，共得 ${sub.score} 分`);
+      if (sub?.blank) parts.push(`${sub.blank} 道主观题没作答，记 0 分`);
+      if (sub?.failed) parts.push(`${sub.failed} 道主观题批改失败，可稍后再点一次重试`);
       if (r.wrongItems?.done) parts.push(`${r.wrongItems.done} 道错题已生成解析`);
       if (r.wrongItems?.failed) parts.push(`${r.wrongItems.failed} 道错题解析失败`);
-      const ok = r.essay?.status !== 'failed' && !r.wrongItems?.failed;
+      const ok = r.essay?.status !== 'failed' && !sub?.failed && !r.wrongItems?.failed;
       setAiMsg({ kind: ok ? 'success' : 'error', text: parts.join('，') || '没有需要处理的内容' });
       setRep(await get(`/attempts/${attemptId}/report`));
     } catch (e) {
@@ -49,7 +54,18 @@ export default function ExamReport() {
   if (!rep) return <Loading label="正在生成报告" />;
 
   const { attempt, sectionScores, history, knowledgePoints, sections } = rep;
-  const objectiveMax = sectionScores.reduce((n, s) => n + (s.pendingAi ? 0 : s.maxScore), 0);
+  // 满分按题现加（每道题在本卷的分值由模板给，记在 attempt_questions 上）。以前写死"作文 30 分"、
+  // 按"待批改的部分"扣出客观题满分——生化一张卷 9 道主观题 50 分，两样都不对。
+  const all = sections.flatMap((s) => s.questions);
+  const sum = (qs) => Math.round(qs.reduce((n, q) => n + (Number(q.points) || 0), 0) * 100) / 100;
+  const aiQs = all.filter((q) => q.needsAi);
+  const pendingQs = aiQs.filter((q) => !q.aiJudged);
+  const objectiveMax = sum(all.filter((q) => !q.needsAi));
+  const paperMax = sum(all);
+  const pendingPts = sum(pendingQs);
+  // 只剩英语作文没批时照旧说"作文"，别的（生化名词解释、问答）说"主观题"
+  const essayOnly = pendingQs.length > 0 && pendingQs.every((q) => q.questionType === 'essay');
+  const pending = attempt.pendingAi > 0;
   const pct = objectiveMax ? Math.round((attempt.objectiveScore / objectiveMax) * 100) : 0;
   const weak = knowledgePoints.filter((k) => k.correct / k.total < 0.6);
 
@@ -67,21 +83,40 @@ export default function ExamReport() {
 
       <div className="card card-pad" style={{ marginBottom: 16 }}>
         <div className="spread">
-          <div>
-            <div className="small muted">客观题得分</div>
-            <div className="score-big">
-              {attempt.objectiveScore}
-              <span className="small muted" style={{ fontWeight: 400 }}> / {objectiveMax}</span>
+          {pending || !aiQs.length ? (
+            <div>
+              <div className="small muted">{aiQs.length ? '客观题得分' : '得分'}</div>
+              <div className="score-big">
+                {attempt.objectiveScore}
+                <span className="small muted" style={{ fontWeight: 400 }}> / {objectiveMax}</span>
+              </div>
+              <div className="tiny muted">正确率 {pct}%</div>
             </div>
-            <div className="tiny muted">正确率 {pct}%</div>
-          </div>
-          {attempt.pendingAi > 0 ? (
-            <span className="badge gray">作文 30 分待 AI 批改</span>
+          ) : (
+            // 主观题都批完了：总分 = 各题得分之和（服务端批改完重算的 total_score）
+            <div>
+              <div className="small muted">总分</div>
+              <div className="score-big" data-testid="total-score">
+                {attempt.totalScore}
+                <span className="small muted" style={{ fontWeight: 400 }}> / {paperMax}</span>
+              </div>
+              <div className="tiny muted">
+                客观题 {attempt.objectiveScore} / {objectiveMax}（正确率 {pct}%）
+                · 主观题 {Math.round((attempt.totalScore - attempt.objectiveScore) * 100) / 100} / {sum(aiQs)}
+              </div>
+            </div>
+          )}
+          {pending ? (
+            <span className="badge gray" data-testid="pending-badge">
+              {essayOnly ? `作文 ${pendingPts} 分待 AI 批改` : `主观题 ${pendingQs.length} 道（${pendingPts} 分）待 AI 批改`}
+            </span>
           ) : null}
         </div>
         <div className="row" style={{ marginTop: 12 }}>
           <button className="btn sm" onClick={runAi} disabled={aiBusy}>
-            {aiBusy ? 'AI 处理中…' : attempt.pendingAi > 0 ? '批改作文并生成错题解析' : '重新生成 AI 解析'}
+            {aiBusy ? 'AI 处理中…'
+              : pending ? (essayOnly ? '批改作文并生成错题解析' : 'AI 批改主观题并生成错题解析')
+                : '重新生成 AI 解析'}
           </button>
           <Link className="btn ghost sm" to={path('/wrongbook')}>错题本</Link>
           <Link className="btn ghost sm" to={path('/assessment')}>能力评估</Link>
