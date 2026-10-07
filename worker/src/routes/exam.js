@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { planPaper } from '../lib/paper.js';
 import { gradeQuestion } from '../lib/grade.js';
 import { loadItemRows } from '../lib/question-items.js';
+import { answerKey } from '../lib/answer-key.js';
 import { loadAssetRows } from '../lib/stem-assets.js';
 import { loadPackByCourse, settingInt as packSettingInt } from '../lib/subject-pack.js';
 import { requireAuth } from '../lib/auth.js';
@@ -127,6 +128,10 @@ async function loadPaper(db, attemptId, { withAnswers = true, withCorrect = fals
         const src = (itemRows.get(row.question_id) || []).find((x) => x.item_ord === it.ord);
         it.answer = src ? src.answer : null;
       }
+      // 按组的标准答案：候选池（"从这几个里任填 N 个"）、无序并列的空，各空没有自己的答案，
+      // 只看 it.answer 的话答错了什么都不给（2026-10-07）。分组和判分是同一套（answer-key.js）。
+      q.answerKey = answerKey({ answer: row.correct_answer }, itemRows.get(row.question_id) || [],
+        { defaultStrategy: type.gradingStrategy }).groups;
       q.aiJudged = Boolean(row.ai_judged);
       q.aiComment = row.ai_comment;
     }

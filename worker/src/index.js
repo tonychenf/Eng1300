@@ -1,5 +1,4 @@
 import { Hono } from 'hono';
-import { cors } from 'hono/cors';
 import bcrypt from 'bcryptjs';
 import { signToken, requireAuth, requireSuperAdmin, isQuotaError, bestEffortWrite } from './lib/auth.js';
 import { bankRouter } from './routes/admin-bank.js';
@@ -17,9 +16,22 @@ import { accessibleSubjectFilter, accessibleCourseFilter, writeGrantWithAudit, u
 import { pickableSql, wrongItemVisibleSql } from './lib/pickable.js';
 
 const app = new Hono();
-app.use('/api/*', cors());
+// 安全响应头（CR L2）。接口回的是 JSON：不让浏览器猜类型、不让别的网站把它嵌进框里、
+// 跳到别的网站时不带完整地址。页面和静态资源不经过 Worker（只有 /api/* 先到这里），
+// 它们的响应头写在 web/public/_headers（构建时拷进 worker/public），那里还有 CSP。
+// 以前这里挂着不带参数的 cors()：任何网站都能从浏览器调接口。前端和接口同源（本地开发走 vite 的代理），
+// 用不着跨域，去掉——没有跨域响应头，别的网站的页面里就读不到接口的返回。
+app.use('*', async (c, next) => {
+  await next();
+  c.res.headers.set('X-Content-Type-Options', 'nosniff');
+  c.res.headers.set('X-Frame-Options', 'DENY');
+  c.res.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+});
 
 const MAX_LOGIN_FAILURES = 5;
+// 用户名不存在时拿它比对密码，好让"不存在"和"密码错"一样慢（CR L3）。代价必须和真实密码一致（10），
+// 否则两种情况的耗时照样分得开。这串哈希对应的口令谁都不知道，也没有账号用它。
+const DUMMY_HASH = '$2a$10$qtQnyzFgkVNPmzHBF4bBUu6zZYP6pnC7lzWFVIbv3j0baPkaHv9Ia';
 const LOCK_MINUTES = 10;
 // 建号与登录共用一条用户名规则：不合规则的名字不可能是真账号
 const USERNAME_RULE = /^[A-Za-z0-9_]{3,20}$/;
@@ -87,7 +99,10 @@ app.post('/api/auth/login', async (c) => {
 
   const user = await c.env.DB.prepare('SELECT * FROM users WHERE username = ?')
     .bind(username).first();
-  const ok = user && !user.disabled && (await bcrypt.compare(password, user.password_hash));
+  // 用户名不存在时也比对一次密码（CR L3）：以前不存在就直接跳过比对，回得明显更快，
+  // 等于告诉对方"这个账号不存在"。拿一个同样代价（10）的假哈希去比，两种情况一样慢。
+  const passOk = await bcrypt.compare(password, user?.password_hash || DUMMY_HASH);
+  const ok = Boolean(user) && !user.disabled && passOk;
 
   if (!ok) {
     const fails = (attempt?.fail_count || 0) + 1;
@@ -104,8 +119,9 @@ app.post('/api/auth/login', async (c) => {
       // 该返回 401 就返回 401，不要变成一句看不懂的 503。
       .catch((err) => { if (!isQuotaError(err)) throw err; });
 
-    // 账号被禁用与密码错误分开提示；用户名不存在与密码错误统一提示，避免账号枚举
-    if (user?.disabled) return c.json({ error: 'account_disabled' }, 403);
+    // 用户名不存在与密码错误统一提示，避免账号枚举。"已停用"只告诉知道密码的人（CR L3）：
+    // 以前密码随便填就能问出某个账号停用了没有
+    if (user?.disabled && passOk) return c.json({ error: 'account_disabled' }, 403);
     return c.json({ error: 'invalid_credentials' }, 401);
   }
 

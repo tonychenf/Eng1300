@@ -276,9 +276,20 @@ check "发布被拒" "$CODE" "422"
 check "错误码是 question_type_not_declared" "$(jq -r '.error' /tmp/n3-pub.json)" "question_type_not_declared"
 check "说清楚是哪一道题、什么题型" "$(jq -r '.message' /tmp/n3-pub.json | grep -c 'no_such_type')" "1"
 check "被拒时题目没有被发布出去" "$(one "SELECT status FROM questions WHERE question_id='pk-q1';")" "草稿"
-# 声明这个题型之后，同一卷就能发布——这一对才证明拦的是"没声明"而不是别的
+# 声明了、却没配判分策略：整个学科的能力包读不出来，这门课一道题都判不了分。
+# 2026-10-07 起确认、发布前要用判分器把标准答案判一遍，得先读能力包——读不出来要拒绝并说清坏在哪，
+# 不能是 500"服务器内部错误"（全套回归照出来的：自检刚接上时这里就是 500）
 exec_sql "INSERT INTO subject_question_types (subject_id,type_code,name,input_widget,normalizers,sort_order)
           VALUES ($ENG,'no_such_type','临时题型','text','[]',9);"
+CODE=$(adm -o /tmp/n3-pub.json -w '%{http_code}' -X POST "$BASE/admin/bank/exams/pk-e/publish")
+check "声明了却没配判分策略：发布被拒（不是 500）" "$CODE" "422"
+check "  说清是能力包坏了、坏在哪个题型的判分策略" \
+  "$(jq -r '"\(.error)|\(.message)"' /tmp/n3-pub.json | grep -c '^subject_pack_broken|.*no_such_type.*判分策略')" "1"
+check "  被拒时题目没有被发布出去" "$(one "SELECT status FROM questions WHERE question_id='pk-q1';")" "草稿"
+CODE=$(admj -o /tmp/n3-pub.json -w '%{http_code}' -X PATCH "$BASE/admin/bank/questions/pk-q1" -d '{"answer":"a"}')
+check "  改已确认题的答案同样拒绝、同样说清（不是 500）" "$CODE|$(jq -r '.error' /tmp/n3-pub.json)" "422|subject_pack_broken"
+# 配上判分策略才算声明完整，同一卷就能发布——这一对才证明拦的是"没声明"而不是别的
+exec_sql "UPDATE subject_question_types SET grading_strategy='EXACT' WHERE subject_id=$ENG AND type_code='no_such_type';"
 CODE=$(adm -o /dev/null -w '%{http_code}' -X POST "$BASE/admin/bank/exams/pk-e/publish")
 check "声明之后同一卷能发布" "$CODE" "200"
 exec_sql "DELETE FROM subject_question_types WHERE subject_id=$ENG AND type_code='no_such_type';"

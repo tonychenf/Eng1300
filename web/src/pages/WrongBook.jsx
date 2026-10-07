@@ -130,12 +130,18 @@ export default function WrongBook() {
                         })}
                       </div>
                     ) : (
-                      <p className="small">
-                        你的答案：<strong className="mono">{it.lastAnswer || '（未作答）'}</strong>
-                        <span style={{ marginLeft: 12 }}>
-                          正确答案：<strong className="mono">{it.correctAnswer}</strong>
-                        </span>
-                      </p>
+                      // 多空题以前原样显示：你的答案是 {"1":"碳"} 代码、正确答案一栏空着（答案逐空存在
+                      // 得分单元里）。服务端拼好人话版本（answer-key.js），这里只管显示（2026-10-07）。
+                      <div className="stack small" style={{ gap: 4, marginBottom: 10 }}>
+                        <div>
+                          你的答案：<strong className="mono" data-testid="wb-my-answer">
+                            {it.lastAnswerText || it.lastAnswer || '（未作答）'}</strong>
+                        </div>
+                        <div>
+                          正确答案：<strong className="mono" data-testid="wb-answer-key">
+                            {it.answerKeyText || it.correctAnswer || '（题库里没有录入）'}</strong>
+                        </div>
+                      </div>
                     )}
 
                     {it.errorAnalysis ? (

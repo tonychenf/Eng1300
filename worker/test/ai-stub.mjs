@@ -114,7 +114,10 @@ function reply(promptText) {
     return withExpl({ blanks: Array.from({ length: n }, (_, i) => `替身第${i + 1}空`) });
   }
   if (promptText.includes('每条是一句可独立判定命中与否的要点')) {
-    const n = Number(promptText.match(/共\s*(\d+)\s*条/)?.[1] || 1);
+    // 两种问法：已有采分点的题要"共 N 条"；还没有采分点的（上传的名词解释、问答，2026-10-07）
+    // 要"A 到 B 条"、条数由模型定——替身回 A+1 条，落在范围里、又不贴着边
+    const range = promptText.match(/(\d+)\s*到\s*(\d+)\s*条/);
+    const n = range ? Number(range[1]) + 1 : Number(promptText.match(/共\s*(\d+)\s*条/)?.[1] || 1);
     return withExpl({ points: Array.from({ length: n }, (_, i) => `替身采分点${i + 1}`) });
   }
   if (promptText.includes('下面是一道简答题')) return withExpl({ answer: '替身参考答案' });

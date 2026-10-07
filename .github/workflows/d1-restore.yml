@@ -47,13 +47,13 @@ permissions:
 jobs:
   register:
     if: github.event_name == 'push'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - run: echo "推送只为让 GitHub 认得这条流水线，什么都没做。要恢复数据请手动触发，见 docs/数据恢复手册.md。"
 
   restore:
     if: github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 40
     # 和部署同一组：恢复和部署不会同时跑。只加在这个 job 上——加在整条流水线上的话，推送时那次
     # 注册运行也要排在部署后面，排队时再来一次部署它就被取消了。
@@ -67,7 +67,7 @@ jobs:
       NEW_DB_NAME: ${{ inputs.new_db_name }}
       CONFIRM_NAME: ${{ inputs.confirm }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Database name (single source - worker/wrangler.toml)
         run: |
@@ -77,7 +77,7 @@ jobs:
       - name: Check the inputs before touching anything
         run: bash scripts/ci/d1-restore-check-inputs.sh
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: '22'
 

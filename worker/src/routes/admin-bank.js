@@ -2,10 +2,32 @@ import { Hono } from 'hono';
 import { validateAssets } from '../lib/stem-assets.js';
 import { ANSWER_CONFIRMED, isAnswerState, isAnswerSource } from '../lib/pickable.js';
 import { shapeContentGroup, ORDER_BY_RECENT } from '../lib/content-group.js';
-import { inputGroupsWithoutAnswer } from '../lib/question-items.js';
+import { inputGroupsWithoutAnswer, loadItemRows, JUDGE_KINDS } from '../lib/question-items.js';
 import { examReadiness } from '../lib/paper.js';
+import { answerKeyProblems } from '../lib/answer-check.js';
+import { loadPackByCourse, loadPacksForCourses } from '../lib/subject-pack.js';
+import { isQuotaError } from '../lib/auth.js';
 
 export const bankRouter = new Hono();
+
+// 标准答案自检要先读这门课的能力包。能力包读不出来（题型没配判分策略、配置 JSON 写坏了……）时，
+// 这门课的题一道都判不了分，自检也就做不了：确认、发布照样拒绝，但要说清是能力包坏了、坏在哪——
+// 以前这里直接抛出去，管理员只看到一句"服务器内部错误"（n3-pack 照出来的）。
+// 只认能力包加载器自己报的错（带 code）；数据库的错、额度用尽照常抛给全局处理。
+async function packForCheck(c, courseCode) {
+  try {
+    return { pack: await loadPackByCourse(c.env.DB, courseCode) };
+  } catch (e) {
+    if (!e?.code || isQuotaError(e)) throw e;
+    return {
+      refusal: c.json({
+        error: 'subject_pack_broken',
+        message: `课程 ${courseCode} 的能力包读不出来，判不了分，确认、发布、增删采分点都做不了。` +
+          `先在后台「学科配置」把它改好：${String(e.message).replace(/^[a-z_]+: /, '')}`,
+      }, 422),
+    };
+  }
+}
 
 // 每门课现在能不能组出一张卷（只读体检）。生化的组卷模板漏装过一次（2026-10-04 才补上），
 // 学员点「生成试卷」才知道；部署后的线上验证靠这个接口把"有已发布章节却没有模板"报红。
@@ -72,14 +94,61 @@ bankRouter.get('/stats', async (c) => {
        FROM questions WHERE retired_at IS NOT NULL`
   ).first();
 
+  const ungradable = await publishedUngradable(c.env.DB);
+
   return c.json({
     byCourse, byType, byTag, byAnswerState: answers,
     unresolvedNotes: pending?.n || 0,
     publishedWithoutConfirmedAnswer: leak?.n || 0,
     retiredQuestions: retired?.n || 0,
     retiredButPublished: retired?.published || 0,
+    publishedUngradable: ungradable.length,
+    publishedUngradableSample: ungradable.slice(0, 10),
   });
 });
+
+/**
+ * 已发布的题里，按标准答案作答都拿不到满分的（answer-check.js，2026-10-07）。
+ *
+ * 和上面两个一样**永远应该是 0**，线上验证断它。确认、发布两道关已经拦了，这里是给别的入口留的后手：
+ * 种子导入、测试夹具直接改库、以后加的什么路。第 1 章 q04、q05 那次（题库写的是 params.enum、
+ * 判分器只认 options）就是从种子进来、一路发布、学员一交答案才 500 的。
+ * 能力包读不出来的那门课，它的每道题都算一条，说清是能力包的问题——不让整个看板 500。
+ */
+async function publishedUngradable(db) {
+  const { results: qs } = await db.prepare(
+    `SELECT question_id, course_code, exam_id, ord, question_type, answer FROM questions
+      WHERE status = '已发布' AND retired_at IS NULL`
+  ).all();
+  if (!qs.length) return [];
+  const { results: itemRows } = await db.prepare(
+    `SELECT i.* FROM question_items i JOIN questions q ON q.question_id = i.question_id
+      WHERE q.status = '已发布' AND q.retired_at IS NULL ORDER BY i.question_id, i.item_ord`
+  ).all();
+  const itemsBy = new Map();
+  for (const r of itemRows) {
+    if (!itemsBy.has(r.question_id)) itemsBy.set(r.question_id, []);
+    itemsBy.get(r.question_id).push(r);
+  }
+  const packs = new Map();
+  for (const code of new Set(qs.map((q) => q.course_code))) {
+    try {
+      packs.set(code, (await loadPacksForCourses(db, [code])).get(code));
+    } catch (e) {
+      packs.set(code, { error: String(e?.message || e) });
+    }
+  }
+  const out = [];
+  for (const q of qs) {
+    const pack = packs.get(q.course_code);
+    const where = `${q.exam_id} 第${q.ord}题`;
+    const problems = !pack || pack.error
+      ? [`${where}：课程 ${q.course_code} 的能力包读不出来（${pack?.error || '没有这门课'}）`]
+      : answerKeyProblems(pack, q, itemsBy.get(q.question_id) || [], where);
+    if (problems.length) out.push({ questionId: q.question_id, problems });
+  }
+  return out;
+}
 
 // 试卷列表，支持按课程/状态筛选
 bankRouter.get('/exams', async (c) => {
@@ -160,6 +229,14 @@ bankRouter.get('/exams/:examId', async (c) => {
     });
   }
 
+  // 题型按什么判：校对页要知道哪些题该有采分点（名词解释、问答），好让管理员给没有采分点的题补上。
+  // 读不出能力包不拦校对页（题面、答案照样要能看能改），只是不标这一项。
+  let pack = null;
+  try { pack = await loadPackByCourse(c.env.DB, exam.course_code); } catch { pack = null; }
+  const pointsTypeOf = (code) => {
+    try { return pack ? pack.typeOf(code).gradingStrategy === 'AI_SCORE_POINTS' : false; } catch { return false; }
+  };
+
   const shaped = sections.map((s) => ({
     ...s,
     questions: questions
@@ -169,6 +246,7 @@ bankRouter.get('/exams/:examId', async (c) => {
         options: q.options ? JSON.parse(q.options) : null,
         knowledgePoints: q.tag_names ? q.tag_names.split('||') : [],
         items: itemsBy.get(q.question_id) || [],
+        pointsType: pointsTypeOf(q.question_type),
       })),
   }));
 
@@ -262,6 +340,8 @@ bankRouter.patch('/questions/:questionId', async (c) => {
   const existingItems = (await c.env.DB.prepare(
     'SELECT * FROM question_items WHERE question_id = ? ORDER BY item_ord'
   ).bind(questionId).all()).results || [];
+  // 改之前的样子：下面的标准答案自检要分清"这次改坏了"和"本来就是坏的"，说法不一样
+  const itemsBefore = existingItems.map((r) => ({ ...r }));
 
   const itemWrites = [];
   if ('items' in body) {
@@ -299,6 +379,100 @@ bankRouter.patch('/questions/:questionId', async (c) => {
         itemWrites.push(['alt_answers', v, ord]);
         row.alt_answers = v;
       }
+      if ('weight' in patchItem) {
+        // 权重只给采分点、步骤改：候选池（SET）组内的空权重必须齐平（判分器会拒），
+        // 在这里开口子等于让人一不小心把一道题改得判不了分。
+        if (!JUDGE_KINDS.includes(row.item_kind)) {
+          return c.json({
+            error: 'item_weight_not_editable',
+            message: `第 ${ord} 个单元是${row.item_kind === 'BLANK' ? '填空的空' : row.item_kind}，权重不在这里改`,
+          }, 400);
+        }
+        const w = Number(patchItem.weight);
+        if (!Number.isFinite(w) || w <= 0) {
+          return c.json({ error: 'invalid_item_weight', message: `第 ${ord} 个采分点的权重要是正数，收到 ${JSON.stringify(patchItem.weight)}` }, 400);
+        }
+        itemWrites.push(['weight', w, ord]);
+        row.weight = w;
+      }
+    }
+  }
+
+  // ---- 采分点的增删（2026-10-07）----
+  // 上传进来的名词解释、问答，采分点是 AI 拆的，拆多了、拆少了都得能纠正；老的上传章节一个采分点都没有
+  // （只有一整段参考答案），要能在这里补上——否则这类题进了卷子，AI 每次批改都失败。
+  // 只增删判定单元（采分点 / 步骤）：填空的空对应题干里的＿，增删空等于改题干，不在这里做。
+  // 学员做过的题不增删：作答记录里的逐点结果按序号记，删掉一个点、旧报告就对不上了。改文字、改权重照样可以。
+  const removeOrds = 'removeItems' in body ? body.removeItems : [];
+  const adds = 'addItems' in body ? body.addItems : [];
+  if (!Array.isArray(removeOrds) || !Array.isArray(adds)) {
+    return c.json({ error: 'invalid_items', message: 'removeItems、addItems 要是数组' }, 400);
+  }
+  const itemDeletes = [];
+  const itemInserts = [];
+  if (removeOrds.length || adds.length) {
+    const used = await c.env.DB.prepare('SELECT 1 AS x FROM answer_records WHERE question_id = ? LIMIT 1')
+      .bind(questionId).first();
+    if (used) {
+      return c.json({
+        error: 'item_structure_locked',
+        message: '学员已经做过这道题，不能增删采分点（改文字、改权重可以）。要改结构，停用这道题，再加一道新题',
+      }, 409);
+    }
+    for (const raw of removeOrds) {
+      const ord = Number(raw);
+      const i = existingItems.findIndex((r) => Number(r.item_ord) === ord);
+      if (i < 0 || !JUDGE_KINDS.includes(existingItems[i].item_kind)) {
+        return c.json({
+          error: 'unknown_item_ord',
+          message: `这道题没有第 ${JSON.stringify(raw)} 个采分点可删（只能删采分点、步骤）`,
+        }, 400);
+      }
+      existingItems.splice(i, 1);
+      itemDeletes.push(ord);
+    }
+    if (adds.length) {
+      const { pack, refusal } = await packForCheck(c, existing.course_code);
+      if (refusal) return refusal;
+      let type;
+      try {
+        type = pack.typeOf(existing.question_type);
+      } catch (e) {
+        if (!e?.code) throw e;
+        return c.json({ error: e.code, message: String(e.message).replace(/^[a-z_]+: /, '') }, 422);
+      }
+      if (type.gradingStrategy !== 'AI_SCORE_POINTS') {
+        return c.json({
+          error: 'points_not_supported',
+          message: `题型「${type.name}」不按采分点判分，不能加采分点`,
+        }, 400);
+      }
+      if (existingItems.some((r) => !JUDGE_KINDS.includes(r.item_kind))) {
+        return c.json({
+          error: 'points_not_supported',
+          message: '这道题是逐空作答的，不能再加采分点（两类单元混在一道题里，判分时拆不出每个单元对应哪段作答）',
+        }, 400);
+      }
+      const judges = existingItems.filter((r) => JUDGE_KINDS.includes(r.item_kind));
+      const kind = judges.length && judges.every((r) => r.item_kind === 'STEP') ? 'STEP' : 'SCORE_POINT';
+      let next = Math.max(0, ...existingItems.map((r) => Number(r.item_ord)), ...itemDeletes) + 1;
+      for (const a of adds) {
+        const text = String(a?.answer ?? '').trim();
+        if (!text) {
+          return c.json({ error: 'invalid_items', message: '新加的采分点没有内容' }, 400);
+        }
+        const w = a?.weight === undefined || a?.weight === null || a?.weight === '' ? 1 : Number(a.weight);
+        if (!Number.isFinite(w) || w <= 0) {
+          return c.json({ error: 'invalid_item_weight', message: `新加的采分点权重要是正数，收到 ${JSON.stringify(a.weight)}` }, 400);
+        }
+        const row = {
+          question_id: questionId, item_ord: next, subject_id: existing.subject_id, item_kind: kind,
+          grading_strategy: null, group_key: null, answer: text, alt_answers: null, weight: w, params: null,
+        };
+        existingItems.push(row);
+        itemInserts.push(row);
+        next += 1;
+      }
     }
   }
 
@@ -327,17 +501,54 @@ bankRouter.patch('/questions/:questionId', async (c) => {
     }
   }
 
+  // 标准答案自检（2026-10-07）：答案齐了还不够，要用判分器把它判一遍、拿得到满分才算数。
+  // 上面那道只看"有没有"，看不出"受限选择的答案不在给定的几个里""候选池两个写法归一化后撞了"
+  // "名词解释没有采分点"——这些题确认了、发布了，学员一交答案就 500 或永远批不完。
+  // 只在动到判分的请求上查（确认、发布、改答案、改得分单元）：只改考点、改解析的请求不该被
+  // 一道早就有问题的题卡住——那种题由整卷发布和看板（publishedUngradable）兜着。
+  // 校对页保存时整张表单都发过来，所以"动没动到判分"看的是请求里有没有这些键，不是值变没变。
+  const gradingTouched = ['answer', 'answerState', 'status', 'items', 'addItems', 'removeItems']
+    .some((k) => k in body);
+  if (nextAnswerState === ANSWER_CONFIRMED && gradingTouched) {
+    const { pack, refusal } = await packForCheck(c, existing.course_code);
+    if (refusal) return refusal;
+    const after = { ...existing, ...('answer' in body ? { answer: body.answer } : {}) };
+    const problems = answerKeyProblems(pack, after, existingItems, '这道题');
+    if (problems.length) {
+      const confirming = existing.answer_state !== ANSWER_CONFIRMED;
+      const publishing = body.status === '已发布' && existing.status !== '已发布';
+      const wasBroken = !confirming && answerKeyProblems(pack, existing, itemsBefore, '这道题').length > 0;
+      return c.json({
+        error: 'answer_key_unusable',
+        message: (confirming ? '标准答案判不出满分，确认不了：'
+          : publishing ? '标准答案判不出满分，发布不了：'
+          : wasBroken ? '这道题标着「已确认」，标准答案却判不出满分。改好它，或者把答案状态退回「待核」再保存：'
+          : '这样改完，已确认的答案就判不出满分了（要这样改，请把答案状态一并退回「待核」）：')
+          + problems.join('；'),
+        problems,
+      }, 422);
+    }
+  }
+
   if (fields.length) {
     binds.push(questionId);
     await c.env.DB.prepare(`UPDATE questions SET ${fields.join(', ')} WHERE question_id = ?`)
       .bind(...binds).run();
   }
 
-  for (const [col, val, ord] of itemWrites) {
-    await c.env.DB.prepare(
-      `UPDATE question_items SET ${col} = ? WHERE question_id = ? AND item_ord = ?`
-    ).bind(val, questionId, ord).run();
-  }
+  // 得分单元一个 batch 写完：删、改、加要么全成、要么全不成——删了旧点没加上新点，题就判不了了
+  const itemStmts = [
+    ...itemDeletes.map((ord) => c.env.DB.prepare(
+      'DELETE FROM question_items WHERE question_id = ? AND item_ord = ?').bind(questionId, ord)),
+    ...itemWrites.map(([col, val, ord]) => c.env.DB.prepare(
+      `UPDATE question_items SET ${col} = ? WHERE question_id = ? AND item_ord = ?`).bind(val, questionId, ord)),
+    ...itemInserts.map((r) => c.env.DB.prepare(
+      `INSERT INTO question_items (question_id, item_ord, subject_id, item_kind, grading_strategy, group_key,
+                                   answer, alt_answers, weight, params)
+       VALUES (?, ?, ?, ?, NULL, NULL, ?, NULL, ?, NULL)`
+    ).bind(questionId, r.item_ord, r.subject_id, r.item_kind, r.answer, r.weight)),
+  ];
+  if (itemStmts.length) await c.env.DB.batch(itemStmts);
 
   // 考点标签整体替换。只在这道题所属的学科里按名字找，找不到就在这个学科下新建。
   // 以前是全库按名字找、新建的不带学科：生化题打上一个英语考点的名字，挂上的就是英语那个；
@@ -482,6 +693,30 @@ bankRouter.post('/exams/:examId/publish', async (c) => {
         error: 'item_answer_missing',
         message: `有 ${itemProblems.length} 处得分单元标着「已确认」却没有标准答案，发布被拒`,
         problems: itemProblems.slice(0, 20),
+      }, 422);
+    }
+  }
+
+  // 标准答案自检（2026-10-07，answer-check.js）：确认过的题，按标准答案作答也得拿满分。
+  // 和上面"确认了却没有答案"是同一类矛盾，所以同样整卷拒绝、不扣下；要先发别的题，
+  // 把有问题的那几道退回「待核」（待核的题不随整卷发布）。
+  const { results: confirmedQs } = await c.env.DB.prepare(
+    `SELECT question_id, ord, question_type, answer FROM questions
+      WHERE exam_id = ? AND status != '存疑' AND answer_state = ? AND retired_at IS NULL
+      ORDER BY ord`
+  ).bind(examId, ANSWER_CONFIRMED).all();
+  if (confirmedQs.length) {
+    const { pack, refusal } = await packForCheck(c, exam.course_code);
+    if (refusal) return refusal;
+    const itemsBy = await loadItemRows(c.env.DB, confirmedQs.map((q) => q.question_id));
+    const keyProblems = confirmedQs.flatMap((q) =>
+      answerKeyProblems(pack, q, itemsBy.get(q.question_id) || [], `第${q.ord}题`));
+    if (keyProblems.length) {
+      return c.json({
+        error: 'answer_key_unusable',
+        message: `有 ${keyProblems.length} 处标准答案判不出满分，发布被拒。改好之后再发布，` +
+          '或者先把这几道退回「待核」（待核的题不随整卷发布）',
+        problems: keyProblems.slice(0, 20),
       }, 422);
     }
   }

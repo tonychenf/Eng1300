@@ -28,6 +28,11 @@ export function targetItems(question) {
   return inputs.length ? inputs : items;
 }
 
+// 按采分点判分的题（名词解释、问答）还没有采分点时，让 AI 拆几条（2026-10-07）。
+// 以前这类题要的是"一整段参考答案"：进了卷子，AI 批改按采分点判、一个采分点都没有，每次都失败。
+export const POINTS_MIN = 2;
+export const POINTS_MAX = 6;
+
 /** 一道题要 AI 回什么形状，取决于它的题型与得分单元。 */
 export function shapeOf(question) {
   const items = question.items || [];
@@ -36,6 +41,8 @@ export function shapeOf(question) {
     return { kind: 'BLANKS', count: targets.length };
   }
   if (targets.length) return { kind: 'POINTS', count: targets.length };
+  // 题型按采分点判、题上还没有采分点：条数让 AI 按题的分量定，拆出来的落库成新的采分点（newItems）
+  if (question.wantPoints) return { kind: 'POINTS', count: 0, min: POINTS_MIN, max: POINTS_MAX };
   if (question.options && question.options.length) return { kind: 'CHOICE', count: 1 };
   // 既没有单元也没有选项：一句话的简答，要一个整体答案
   return { kind: 'TEXT', count: 1 };
@@ -76,6 +83,12 @@ function askFor(question, shape, kpNames = []) {
         `blanks 的长度必须正好是 ${shape.count}，顺序与题干里的空一致。每一项只写答案本身。`
         + tail;
     case 'POINTS':
+      if (!shape.count) {
+        return `下面是一道${question.typeName || '主观题'}，学生写一段话作答，评分按采分点命中计。\n题干：${stem}\n\n` +
+          `只输出 JSON：{"points":["采分点1","采分点2",...],"explanation":"…"${KP}}，` +
+          `${shape.min} 到 ${shape.max} 条（按这道题的分量定，名词解释一般 2 到 3 条，问答一般 4 到 6 条），` +
+          '每条是一句可独立判定命中与否的要点，不要写成一整段话，也不要两条说同一件事。' + tail;
+      }
       return `下面是一道主观题，评分按采分点命中计。\n题干：${stem}\n\n` +
         `只输出 JSON：{"points":["采分点1","采分点2",...],"explanation":"…"${KP}}，共 ${shape.count} 条，` +
         '每条是一句可独立判定命中与否的要点，不要写成一整段话。' + tail;
@@ -146,10 +159,19 @@ export function shapeAnswer(data, question, shape) {
   if (shape.kind === 'POINTS') {
     const arr = data?.points;
     if (!Array.isArray(arr)) bad(`要 points 数组，收到 ${typeof arr}`);
-    if (arr.length !== shape.count) bad(`要 ${shape.count} 个采分点，收到 ${arr.length} 个`);
+    if (shape.count && arr.length !== shape.count) bad(`要 ${shape.count} 个采分点，收到 ${arr.length} 个`);
+    if (!shape.count && (arr.length < shape.min || arr.length > shape.max)) {
+      bad(`要 ${shape.min} 到 ${shape.max} 个采分点，收到 ${arr.length} 个`);
+    }
     const vals = arr.map((x) => String(x ?? '').trim());
     if (vals.some((x) => !x)) bad('有空的采分点');
-    return { answer: null, items: vals, explanation: shapeExplanation(data), knowledgePoints: shapeKnowledgePoints(data) };
+    // 照抄示例（"采分点1""采分点2"）就是没拆：收下的话，这道题就按两句占位话判分
+    if (vals.some((x) => /^采分点\s*\d*$/.test(x))) bad('采分点是示例里的占位名，没有真的拆');
+    if (new Set(vals).size !== vals.length) bad('有两条一模一样的采分点');
+    return {
+      answer: null, items: vals, newItems: !shape.count,
+      explanation: shapeExplanation(data), knowledgePoints: shapeKnowledgePoints(data),
+    };
   }
   const v = String(data?.answer ?? '').trim();
   if (!v) bad('answer 是空的');

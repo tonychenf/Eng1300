@@ -43,10 +43,13 @@ jobs:
   # 这个 job 不碰任何 Secret：测试只用本地库和本地服务，线上凭据不该出现在跑测试的机器上。
   # 浏览器实测（ui-*）不在这里跑——它们写死了开发沙箱里的 Chromium 路径；改前端时在本地跑 --ui。
   test:
-    runs-on: ubuntu-latest
+    # 固定在 24.04（2026-10-07）：GitHub 10 月 19 日起把 ubuntu-latest 换成 26.04，自带工具的版本会跟着变
+    #（sqlite、python、openssl……部署里的备份加密、导出重排都靠它们）。要换就专门换一次、看着它跑绿，
+    # 不让它在哪次推送时悄悄换掉。d1-drill、d1-restore、prod-e2e 同样固定。
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           # 下一步要拿推送前的版本比对，浅克隆取不到它
           fetch-depth: 0
@@ -57,7 +60,7 @@ jobs:
       - name: Imported question-bank files must not change
         run: bash scripts/ci/check-bank-files.sh "${{ github.event.before }}" "${{ github.sha }}"
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: '22'
 
@@ -89,7 +92,7 @@ jobs:
         # 流水线日志有长度上限，汇总表之外的细节——每套的完整输出、dev 日志、读库走向——在这里。
         # 只传日志：失败套件的沙箱里有 node_modules 的软链，整个目录传上去会把依赖一起打包。
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: regression-logs
           path: |
@@ -101,11 +104,11 @@ jobs:
   deploy:
     # 测试红了就不部署（CR-H3）。手动触发的部署也一样要先过测试。
     needs: test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: '22'
 
@@ -205,7 +208,7 @@ jobs:
 
       - name: Keep the encrypted backup for 90 days
         if: env.D1_JUST_CREATED != 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: d1-backup-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/d1-backup/

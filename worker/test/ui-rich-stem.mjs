@@ -28,7 +28,13 @@ try {
   for (const [width, height, label] of WIDTHS) {
     const ctx = await browser.newContext({ viewport: { width, height } });
     const page = await ctx.newPage();
-    await page.goto(`${BASE}/login`, { waitUntil: 'networkidle' });
+    // CSP（CR L2，2026-10-07）：被它拦下的图、字体、样式不报页面错误，只在控制台留一句 Refused to …
+    // 题干里的图和 KaTeX（字体 + 内联样式）是最容易被拦的两样，所以在这一套里盯着
+    const csp = [];
+    page.on('console', (m) => { if (/Content Security Policy/i.test(m.text())) csp.push(m.text().slice(0, 120)); });
+    const loginResp = await page.goto(`${BASE}/login`, { waitUntil: 'networkidle' });
+    check(`${label}｜（前提）页面带着 CSP（没有它下面"没拦下东西"就说明不了什么）`,
+      /script-src 'self'/.test(loginResp.headers()['content-security-policy'] || ''), true);
     await page.fill('#username', USER);
     await page.fill('#password', PASS);
     await page.click('button[type="submit"]');
@@ -54,7 +60,10 @@ try {
     check(`${label}｜图注显示出来`, (await card.innerText()).includes('构造图'), true);
 
     // ── G4：KaTeX ──
+    // KaTeX 按需加载（CR L1）：题干先出来、公式先按原文显示，KaTeX 那一块取回来才换成排好的。等它，最多 10 秒
+    await card.locator('.katex').first().waitFor({ state: 'visible', timeout: 10000 }).catch(() => {});
     check(`${label}｜公式交给 KaTeX 排了`, await card.locator('.katex').count() > 0, true);
+    check(`${label}｜排好之后不再留着公式原文的占位`, await card.locator('.math-pending').count(), 0);
     // 分式排出来的标志是 .mfrac；只断 .katex 存在的话，
     // 一个没排出分式的 KaTeX（比如把 \frac 当普通文字）也会过
     check(`${label}｜排出来的是分式`, await card.locator('.katex .mfrac').count() > 0, true);
@@ -69,6 +78,7 @@ try {
         () => document.documentElement.scrollWidth > window.innerWidth + 1);
       check('手机｜页面没有横向滚动', overflow, false);
     }
+    check(`${label}｜CSP 没拦下任何东西（图、公式的字体和内联样式都加载了）`, csp.join(' | ') || '无', '无');
     await ctx.close();
   }
 } finally {

@@ -87,6 +87,8 @@ check "不是 zip 的文件" \
      --data-binary 'this is not a docx' | jq -r '.error')" "bad_zip"
 check "未登录传不进来" \
   "$(curl -s -o /dev/null -w '%{http_code}' -X POST "$BASE/admin/bank/import?$Q" --data-binary "@$DOCX")" "401"
+# CR L8（2026-10-07）"超过上限的读之前就拒"在 test/upload-size.test.mjs 里测：要发一个声明的长度比实际
+# 长的请求，本地的 wrangler dev 一收到这种请求整个进程就挂了（试过：后面所有请求都没有响应），线上由边缘节点挡着。
 
 echo
 echo "== 试解析（dryRun）：出结果但不落库 =="
@@ -200,6 +202,23 @@ check "50 个空都填上了" \
   "$(one "SELECT COUNT(*) FROM question_items i JOIN questions q ON q.question_id=i.question_id WHERE q.exam_id='biochem-ch01' AND i.item_kind='BLANK' AND i.answer IS NOT NULL;")" "50"
 check "返回里说清楚还要人工确认" "$(echo "$OK" | jq -r '.message' | grep -c '待核')" "1"
 
+# ③之零 名词解释、问答（按采分点判的题型）由 AI 拆成采分点（2026-10-07）。以前要的是一整段参考答案、
+# 一个采分点都没有——这样的题发布了、进了卷子，交卷后 AI 按采分点批改，每次都批不了。
+# 哪些题型按采分点判，从库里的题型声明现查，不写死"名词解释、问答"
+PT_TYPES=$(one "SELECT group_concat(quote(type_code)) FROM subject_question_types WHERE subject_id = $BIO_ID AND grading_strategy = 'AI_SCORE_POINTS';")
+N_PT=$(one "SELECT COUNT(*) FROM questions WHERE exam_id='biochem-ch01' AND question_type IN ($PT_TYPES);")
+check "（前提）这一章有按采分点判的题（$N_PT 道：$PT_TYPES）" "$(( N_PT > 0 ))" "1"
+check "每一道都拆出了 2 到 6 个有内容的采分点（以前一个都没有）" \
+  "$(one "SELECT COUNT(*) FROM questions q WHERE q.exam_id='biochem-ch01' AND q.question_type IN ($PT_TYPES)
+            AND (SELECT COUNT(*) FROM question_items i WHERE i.question_id = q.question_id
+                  AND i.item_kind = 'SCORE_POINT' AND trim(COALESCE(i.answer, '')) <> '') BETWEEN 2 AND 6;")" "$N_PT"
+check "  返回里报了几道拆了采分点" "$(echo "$OK" | jq -r '.withNewPoints')" "$N_PT"
+check "  说明里点出来了，提醒校对时可以增删" "$(echo "$OK" | jq -r '.message' | grep -c '拆成了采分点.*可以增删')" "1"
+check "  这类题不再另存一整段参考答案（和种子导入的第 1 章一样，答案就是采分点）" \
+  "$(one "SELECT COUNT(*) FROM questions WHERE exam_id='biochem-ch01' AND question_type IN ($PT_TYPES) AND answer IS NOT NULL;")" "0"
+PT_PROMPT=$(curl -s "http://127.0.0.1:$STUB_PORT/last-prompt" | jq -r '[.prompts[] | select(contains("学生写一段话作答，评分按采分点命中计"))] | length')
+check "  问 AI 的是\"拆成几条采分点\"，不是\"给一段参考答案\"" "$(( PT_PROMPT >= N_PT ))" "1"
+
 # ③之一 N7c：解析要和答案一起生成。三处（报告页、错题本、练习页）都读 answer_explanation，
 # 之前它一直是空的。替身**只在提示词真的要了 explanation 时**才回，
 # 所以这几条同时守着"提示词里还要着解析"这件事——去掉那句，替身就不回，这里立刻红。
@@ -302,6 +321,50 @@ check "种子来源的内容组拒绝生成" \
   "$(exec_sql "UPDATE exams SET origin='SEED' WHERE exam_id='biochem-ch01';"; \
      curl -s -X POST "$GEN_URL" -H "Authorization: Bearer $ADMIN" | jq -r '.error')" "not_uploaded"
 exec_sql "UPDATE exams SET origin='UPLOAD' WHERE exam_id='biochem-ch01';"
+
+echo
+echo "== 采分点：校对时改文字、改权重、增删；没有采分点确认不了（2026-10-07） =="
+# AI 拆的采分点可能拆多、拆少、拆错，校对页要能纠正；老的上传章节一个采分点都没有，要能补上。
+TQ=$(one "SELECT question_id FROM questions WHERE exam_id='biochem-ch01' AND question_type IN ($PT_TYPES) ORDER BY ord LIMIT 1;")
+TQ2=$(one "SELECT question_id FROM questions WHERE exam_id='biochem-ch01' AND question_type IN ($PT_TYPES) ORDER BY ord LIMIT 1 OFFSET 1;")
+patchq() { curl -s -X PATCH "$BASE/admin/bank/questions/$1" -H "Authorization: Bearer $ADMIN" -H 'Content-Type: application/json' -d "$2"; }
+N0=$(one "SELECT COUNT(*) FROM question_items WHERE question_id='$TQ';")
+MAXO=$(one "SELECT MAX(item_ord) FROM question_items WHERE question_id='$TQ';")
+R=$(patchq "$TQ" '{"items":[{"ord":2,"answer":"改过的第二点","weight":2}],"removeItems":[1],"addItems":[{"answer":"新加的一点","weight":1.5}]}')
+check "删第 1 点、改第 2 点、加一点，一次保存成功" "$(echo "$R" | jq -r '.ok // .message')" "true"
+check "  第 1 点没了，总数不变（删一加一）" \
+  "$(one "SELECT SUM(item_ord = 1) || '/' || COUNT(*) FROM question_items WHERE question_id='$TQ';")" "0/$N0"
+check "  第 2 点的文字和权重改了" \
+  "$(one "SELECT answer || '/' || printf('%g', weight) FROM question_items WHERE question_id='$TQ' AND item_ord = 2;")" "改过的第二点/2"
+check "  新加的一点编在最后（原来最大的序号 + 1）、权重 1.5、是采分点" \
+  "$(one "SELECT item_ord || '/' || printf('%g', weight) || '/' || item_kind FROM question_items WHERE question_id='$TQ' AND answer='新加的一点';")" \
+  "$((MAXO + 1))/1.5/SCORE_POINT"
+FQ=$(one "SELECT question_id FROM questions WHERE exam_id='biochem-ch01' AND question_type='fill_text' ORDER BY ord LIMIT 1;")
+check "填空的空不在这里改权重（候选池组内权重要齐平，开口子就可能改得判不了分）" \
+  "$(patchq "$FQ" '{"items":[{"ord":1,"weight":3}]}' | jq -r '.error')" "item_weight_not_editable"
+check "填空题不能加采分点" "$(patchq "$FQ" '{"addItems":[{"answer":"x"}]}' | jq -r '.error')" "points_not_supported"
+check "新加的采分点没写内容：拒绝" "$(patchq "$TQ" '{"addItems":[{"answer":"  "}]}' | jq -r '.error')" "invalid_items"
+check "删一个不存在的点：拒绝" "$(patchq "$TQ" '{"removeItems":[99]}' | jq -r '.error')" "unknown_item_ord"
+check "权重写成 0：拒绝" "$(patchq "$TQ" '{"items":[{"ord":2,"weight":0}]}' | jq -r '.error')" "invalid_item_weight"
+# 一个采分点都没有的题（老的上传章节就是这样）：确认不了，并说清要补采分点
+ALL2=$(one "SELECT json_group_array(item_ord) FROM question_items WHERE question_id='$TQ2';")
+patchq "$TQ2" "{\"removeItems\":$ALL2}" > /dev/null
+check "（前提）把第二道的采分点全删了（待核的题可以删光）" "$(one "SELECT COUNT(*) FROM question_items WHERE question_id='$TQ2';")" "0"
+NC=$(patchq "$TQ2" '{"answerState":"已确认"}')
+check "没有采分点：确认不了（以前确认、发布一路畅通，进了卷子每次批改都失败）" \
+  "$(echo "$NC" | jq -r '.error')/$(echo "$NC" | jq -r '.message' | grep -c '没有采分点')" "answer_key_unusable/1"
+check "  库里还是待核" "$(one "SELECT answer_state FROM questions WHERE question_id='$TQ2';")" "待核"
+OKC=$(patchq "$TQ2" '{"answerState":"已确认","addItems":[{"answer":"补上的第一点"},{"answer":"补上的第二点","weight":2}]}')
+check "补上采分点、同一次保存里确认：成功" "$(echo "$OKC" | jq -r '.ok // .message')" "true"
+check "  两个点都进库了、状态是已确认" \
+  "$(one "SELECT (SELECT COUNT(*) FROM question_items WHERE question_id='$TQ2') || '/' || answer_state FROM questions WHERE question_id='$TQ2';")" "2/已确认"
+check "已确认的题再删光采分点：不让（说清这样改完判不出满分）" \
+  "$(patchq "$TQ2" "{\"removeItems\":$(one "SELECT json_group_array(item_ord) FROM question_items WHERE question_id='$TQ2';")}" | jq -r '.error')" "answer_key_unusable"
+check "  一个点都没少" "$(one "SELECT COUNT(*) FROM question_items WHERE question_id='$TQ2';")" "2"
+check "校对页知道这两道题按采分点判（要不要显示采分点编辑）" \
+  "$(curl -s "$BASE/admin/bank/exams/biochem-ch01" -H "Authorization: Bearer $ADMIN" \
+     | jq -r --arg a "$TQ" --arg f "$FQ" '[.sections[].questions[] | select(.question_id == $a or .question_id == $f) | "\(.question_type)=\(.pointsType)"] | sort | join(",")')" \
+  "fill_text=false,$(one "SELECT question_type FROM questions WHERE question_id='$TQ';")=true"
 
 echo
 echo "== 删除上传的内容组（CR-M4） =="

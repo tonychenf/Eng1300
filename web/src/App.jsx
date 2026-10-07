@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { useAuth } from './auth.jsx';
 import { SubjectProvider, useSubject } from './subject.jsx';
@@ -16,19 +17,21 @@ import PracticeRun from './pages/PracticeRun.jsx';
 import PracticeSummary from './pages/PracticeSummary.jsx';
 import WrongBook from './pages/WrongBook.jsx';
 import Assessment from './pages/Assessment.jsx';
-import Dashboard from './pages/admin/Dashboard.jsx';
-import Subjects from './pages/admin/Subjects.jsx';
-import SubjectMembers from './pages/admin/SubjectMembers.jsx';
-import UserSubjects from './pages/admin/UserSubjects.jsx';
-import SubjectPack from './pages/admin/SubjectPack.jsx';
-import BankList from './pages/admin/BankList.jsx';
-import BankImport from './pages/admin/BankImport.jsx';
-import BankReview from './pages/admin/BankReview.jsx';
-import Users from './pages/admin/Users.jsx';
-import AISettings from './pages/admin/AISettings.jsx';
-import SystemSettings from './pages/admin/SystemSettings.jsx';
-import Students from './pages/admin/Students.jsx';
-import Export from './pages/admin/Export.jsx';
+// 后台页面按需加载（CR L1，2026-10-07）：学员从来用不到它们，以前却每次打开登录页都要一并下载。
+// 管理员进到 /admin 时才去取，每页一小块。
+const Dashboard = lazy(() => import('./pages/admin/Dashboard.jsx'));
+const Subjects = lazy(() => import('./pages/admin/Subjects.jsx'));
+const SubjectMembers = lazy(() => import('./pages/admin/SubjectMembers.jsx'));
+const UserSubjects = lazy(() => import('./pages/admin/UserSubjects.jsx'));
+const SubjectPack = lazy(() => import('./pages/admin/SubjectPack.jsx'));
+const BankList = lazy(() => import('./pages/admin/BankList.jsx'));
+const BankImport = lazy(() => import('./pages/admin/BankImport.jsx'));
+const BankReview = lazy(() => import('./pages/admin/BankReview.jsx'));
+const Users = lazy(() => import('./pages/admin/Users.jsx'));
+const AISettings = lazy(() => import('./pages/admin/AISettings.jsx'));
+const SystemSettings = lazy(() => import('./pages/admin/SystemSettings.jsx'));
+const Students = lazy(() => import('./pages/admin/Students.jsx'));
+const Export = lazy(() => import('./pages/admin/Export.jsx'));
 
 const ADMIN_NAV = [
   { to: '/admin', label: '题库总览', end: true },
@@ -139,6 +142,7 @@ export default function App() {
       <Route path="/admin/*" element={
         <Guard role="SUPER_ADMIN">
           <Shell nav={ADMIN_NAV} title="后台管理" admin>
+            <Suspense fallback={<div className="empty"><Loading /></div>}>
             <Routes>
               <Route index element={<Dashboard />} />
               <Route path="subjects" element={<Subjects />} />
@@ -158,6 +162,7 @@ export default function App() {
               <Route path="password" element={<ChangePassword />} />
               <Route path="*" element={<Navigate to="/admin" replace />} />
             </Routes>
+            </Suspense>
           </Shell>
         </Guard>
       } />

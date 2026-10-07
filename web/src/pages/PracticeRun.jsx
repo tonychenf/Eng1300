@@ -148,6 +148,8 @@ export default function PracticeRun() {
                     // 逐空对错和每空的标准答案都在交答案的返回里。以前没并进来：多空题全答对了，
                     // 题卡上每个空照样标"错"、也不给标准答案
                     itemResults: feedback.itemResults,
+                    // 候选池、无序并列的空按组给答案（"第 1、2 空可填：……"）
+                    answerKey: feedback.answerKey,
                     items: (q.items || []).map((it) => ({
                       ...it, answer: feedback.items?.find((x) => x.ord === it.ord)?.answer ?? null,
                     })),

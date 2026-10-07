@@ -269,6 +269,9 @@ function AiReport({ data }) {
         {data.failures?.length ? ` 另有 ${data.failures.length} 道没生成出来，仍是「缺答案」。` : ''}
         {data.withoutExplanation?.length
           ? ` 其中 ${data.withoutExplanation.length} 道只有答案、没有解析，校对时可以补。` : ''}
+        {data.withNewPoints
+          ? ` ${data.withNewPoints} 道名词解释、问答由 AI 拆成了采分点（交卷后按采分点批改），校对时逐条看，拆得不对可以增删。`
+          : ''}
       </p>
       {/* 考点和答案是同一次调用要的（用户 2026-10-03：考点由题库里的题产生）。
           新起了哪些名字要摆出来：它们会成为本学科的考点，出现在每道题的备选里。 */}

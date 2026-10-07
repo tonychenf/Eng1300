@@ -151,13 +151,23 @@ FILL_ANS=$(sql "SELECT item_ord AS ord, grading_strategy AS strategy, group_key 
         .out += [$pools[$it.g][(.used[$it.g] // 0)]] | .used[$it.g] = ((.used[$it.g] // 0) + 1)
       else .out += [$it.answer] end) | .out')
 echo "  q06 的答案：$FILL_ANS"
-for v in "${TERMP[@]}" "${FILLP[@]}"; do [ -n "$v" ] && [ "$v" != null ] || { echo "开练习失败"; exit 1; }; done
+# 再开三个：浏览器在这里故意把候选池的一空填错，看页面给不给可填的答案、错题本读不读得懂（2026-10-07）
+FILLW=()
+for i in 1 2 3; do
+  FILLW+=("$(post /practice/start '{"courseCode":"biochem-main","sectionTypes":["填空题"]}' | jq -r '.attemptId')")
+done
+POOL6=$(sql "SELECT params FROM question_items WHERE question_id = '$FILLQ' AND params IS NOT NULL ORDER BY item_ord LIMIT 1;" \
+  | jq -c '.[0].results[0].params | fromjson | .pool')
+STEM6=$(one "SELECT substr(stem, 1, 16) FROM questions WHERE question_id = '$FILLQ';")
+echo "  q06 的候选池：$POOL6"
+for v in "${TERMP[@]}" "${FILLP[@]}" "${FILLW[@]}"; do [ -n "$v" ] && [ "$v" != null ] || { echo "开练习失败"; exit 1; }; done
 
 echo "== 浏览器检查 =="
 UI_BASE="http://127.0.0.1:$PORT" UI_USER=UIB01 UI_PASS="$UI_PASS" \
   UI_EXAMS="$(printf '%s\n' "${EXAMS[@]}" | jq -R . | jq -sc .)" \
   UI_TERMP="$(printf '%s\n' "${TERMP[@]}" | jq -R . | jq -sc .)" \
   UI_FILLP="$(printf '%s\n' "${FILLP[@]}" | jq -R . | jq -sc .)" \
+  UI_FILLW="$(printf '%s\n' "${FILLW[@]}" | jq -R . | jq -sc .)" UI_POOL6="$POOL6" UI_STEM6="$STEM6" \
   UI_FILL_ANS="$FILL_ANS" UI_N_SUBJ="$N_SUBJ" UI_SUBJ_PTS="$SUBJ_PTS" UI_TOTAL="$TOTAL" \
   UI_TERM_SEC="$TERM_SEC" UI_TERM_N="$TERM_N" UI_FILL_SEC="$FILL_SEC" UI_PARTS="$PARTS" \
   node test/ui-bio-exam.mjs

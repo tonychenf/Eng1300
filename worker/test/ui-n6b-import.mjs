@@ -126,10 +126,59 @@ try {
     const box = await page.locator('button', { hasText: '去校对这一章' }).boundingBox();
     check(`${label}｜按钮高度够点`, (box?.height ?? 0) >= 44, true);
 
-    // ── 校对页的「删除内容组」（CR-M4）──
-    // 上传撞 id 时的报错叫人去这里删；以前这个按钮不存在。
+    // ── 校对页的采分点（2026-10-07）──
+    // 上传的名词解释以前只有一整段参考答案、一个采分点都没有，进了卷子 AI 每次都批不了；
+    // 现在 AI 拆采分点，校对页要看得见、能加能删能改。断"看得见、点得动、存得上"。
     await page.locator('button', { hasText: '去校对这一章' }).click();
     await page.waitForURL((u) => u.pathname === `/admin/bank/${gid}`, { timeout: 15000 });
+    const termSec = page.locator('.card', { has: page.locator('h2', { hasText: '名词解释' }) }).first();
+    const firstTerm = termSec.locator('button.card').first();
+    // 校对页是进来之后才去取这一章的题：等它列出来再断，不然断的是"还没加载完"
+    if (await firstTerm.waitFor({ state: 'visible', timeout: 15000 }).then(() => true).catch(() => false)) {
+      await firstTerm.click();
+      const editor = page.locator('.points-editor');
+      const hasEditor = await editor.waitFor({ state: 'visible', timeout: 10000 }).then(() => true).catch(() => false);
+      const rows = editor.locator('.point-row');
+      const n0 = hasEditor ? await rows.count() : 0;
+      check(`${label}｜名词解释打开就是采分点编辑：AI 拆的 2–6 个点都列出来了`, n0 >= 2 && n0 <= 6, true);
+      const addBtn = editor.locator('button', { hasText: '加一个采分点' });
+      // 编辑区或按钮不在时不去点：点一个不存在的东西要等满 30 秒再抛错，整个脚本崩掉、连小结都不打
+      // （拿改之前的代码跑这套时照出来的）。只让这几条红，退回列表接着断后面的
+      if (!hasEditor || (await addBtn.count()) !== 1) {
+        check(`${label}｜「加一个采分点」按钮够点、在屏幕里`, false, true);
+        check(`${label}｜存上了：列表里这道题的答案摘要带着新加的那一点`, false, true);
+        await page.locator('button', { hasText: '返回列表' }).click({ timeout: 5000 }).catch(() => {});
+      } else {
+        const abox = await addBtn.boundingBox();
+        check(`${label}｜「加一个采分点」按钮够点、在屏幕里`,
+          Boolean(abox) && abox.height >= 44 && abox.x >= 0 && abox.x + abox.width <= width, true);
+        await addBtn.click();
+        check(`${label}｜点了多出一行、标着"新加"`,
+          `${await rows.count()}/${await rows.last().locator('.tag', { hasText: '新加' }).isVisible()}`, `${n0 + 1}/true`);
+        await rows.last().locator('textarea.point-text').fill(`浏览器加的一点 ${label}`);
+        check(`${label}｜采分点编辑那一屏不横向滚动`, await noHScroll(page), true);
+        // 记下页面发出去的那次保存：红的时候分得清是页面没发、服务端没存，还是列表没显示
+        let sentBody = null;
+        const onReq = (req) => {
+          if (req.method() === 'PATCH' && req.url().includes('/api/admin/bank/questions/')) sentBody = req.postData();
+        };
+        page.on('request', onReq);
+        await page.locator('.sticky-actions button', { hasText: '保存' }).click();
+        // 存完回到列表（编辑区关掉）再看这一道的摘要
+        await editor.waitFor({ state: 'detached', timeout: 15000 }).catch(() => {});
+        page.off('request', onReq);
+        const cardText = (await firstTerm.textContent().catch(() => '')) || '';
+        const saved = cardText.includes(`浏览器加的一点 ${label}`);
+        check(`${label}｜存上了：列表里这道题的答案摘要带着新加的那一点`, saved, true);
+        if (!saved) {
+          console.log(`    这一道的卡片原文：${cardText.replace(/\s+/g, ' ').slice(0, 300)}`);
+          console.log(`    页面发出的保存里的 addItems：${sentBody === null ? '（没发保存请求）'
+            : JSON.stringify(JSON.parse(sentBody).addItems ?? '（没带）')}`);
+        }
+      }
+    } else {
+      check(`${label}｜校对页列出了名词解释`, false, true);
+    }
     const delBtn = page.locator('button', { hasText: '删除内容组' });
     await delBtn.waitFor({ timeout: 15000 }).catch(() => {});
     // 按钮不在时后面的点击会等满 30 秒再抛错，整个脚本崩掉、连小结都不打。

@@ -3,6 +3,7 @@ import { requireAuth } from '../lib/auth.js';
 import { requireCourseAccess, requireAttemptAccess, accessibleCourseFilter } from '../lib/access.js';
 import { gradeQuestion } from '../lib/grade.js';
 import { loadItemRows } from '../lib/question-items.js';
+import { answerKey } from '../lib/answer-key.js';
 import { loadAssetRows } from '../lib/stem-assets.js';
 import { masteryTier, masteryWrites, tagsOfQuestion } from '../lib/mastery.js';
 import { nextQuestion, scopeTags, scopeQuestionCount } from '../lib/practice.js';
@@ -316,6 +317,8 @@ practiceRouter.post('/practice/:id/answer', async (c) => {
     scoreRate: g.scoreRate,
     itemResults: g.itemResults,
     items: items.map((r) => ({ ord: r.item_ord, kind: r.item_kind, answer: r.answer })),
+    // 按组的标准答案（候选池、无序并列的空各空没有自己的答案），同 exam.js 报告那里
+    answerKey: answerKey(q, items, { defaultStrategy: gradePack.typeOf(q.question_type).gradingStrategy }).groups,
     correctAnswer: q.answer,
     explanation: q.answer_explanation,
     knowledgePoints: names.map((n) => n.name),

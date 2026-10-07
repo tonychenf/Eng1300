@@ -12,6 +12,9 @@ const EXAMS = JSON.parse(process.env.UI_EXAMS);
 const TERMP = JSON.parse(process.env.UI_TERMP);
 const FILLP = JSON.parse(process.env.UI_FILLP);
 const FILL_ANS = JSON.parse(process.env.UI_FILL_ANS);
+const FILLW = JSON.parse(process.env.UI_FILLW);
+const POOL6 = JSON.parse(process.env.UI_POOL6);
+const STEM6 = process.env.UI_STEM6;
 const N_SUBJ = Number(process.env.UI_N_SUBJ);
 const SUBJ_PTS = Number(process.env.UI_SUBJ_PTS);
 const TOTAL = Number(process.env.UI_TOTAL);
@@ -43,6 +46,19 @@ try {
     const errors = [];
     page.on('pageerror', (e) => errors.push(String(e.message || e)));
     page.on('dialog', (d) => d.accept());
+    // 前端拆包（CR L1，2026-10-07）：学员这一路（练习、模考、报告、错题本、历史）下载的脚本里，
+    // 不该有 KaTeX（第 1 章一个公式都没有）和后台页面的代码。断脚本内容、不断文件名：
+    // 以前是一个大包，文件名里看不出它把什么都装进去了
+    const jsSeen = { katex: false, admin: false, bytes: 0 };
+    page.on('response', async (r) => {
+      if (!/\.js(\?|$)/.test(r.url())) return;
+      try {
+        const body = await r.text();
+        jsSeen.bytes += body.length;
+        if (body.includes('KaTeX parse error')) jsSeen.katex = true;
+        if (body.includes('删除内容组')) jsSeen.admin = true;   // 后台校对页上的按钮
+      } catch { /* 跳转时取不到的响应不算 */ }
+    });
 
     await page.goto(`${BASE}/login`, { waitUntil: 'networkidle' });
     await page.fill('#username', USER);
@@ -87,6 +103,45 @@ try {
       await shot(page, width, '2-practice-fill');
     } else {
       check(`${label}｜填空练习出题了`, false, true);
+    }
+
+    // ── 练习：q06 候选池的一空填错（2026-10-07）──
+    // 以前候选池的空各空没有自己的答案，答错了题卡上什么都不给；错题本里「正确答案」是空的、
+    // 「你的答案」是一串 {"1":…} 代码。
+    await page.goto(`${BASE}/app/biochem/practice/${FILLW[i]}/run`, { waitUntil: 'networkidle' });
+    const wCard = page.locator('.q-card').first();
+    if (await shows(wCard)) {
+      const wBoxes = wCard.locator('input.input');
+      // 第 1 空填池子外的词（错），第 2 空填池子里的第二个（顺序不限，算对），第 3 空填标准答案
+      await wBoxes.nth(0).fill('赖氨酸');
+      await wBoxes.nth(1).fill(POOL6[1]);
+      await wBoxes.nth(2).fill(FILL_ANS[2]);
+      await page.click('button:has-text("提交答案")');
+      const hint = wCard.locator('.pool-hint').first();
+      check(`${label}｜候选池的空答错了：看得见可填哪几个（以前什么都不给）`,
+        await shows(hint) ? (await hint.innerText()).trim() : '（没出现）', `第 1、2 空可填：${POOL6.join('、')}（顺序不限）`);
+      await shot(page, width, '2b-practice-pool-wrong');
+    } else {
+      check(`${label}｜填错的那次练习出题了`, false, true);
+    }
+
+    // ── 错题本：q06 的「你的答案」「正确答案」都是人话 ──
+    await page.goto(`${BASE}/app/biochem/wrongbook`, { waitUntil: 'networkidle' });
+    const wb = page.locator('.card', { hasText: STEM6 }).first();
+    if (await shows(wb)) {
+      await wb.locator('button').first().click();
+      await shows(wb.locator('text=你的答案'));
+      // 断展开之后整块看得见的文字，不断某个元素在不在——以前那一块也在，只是写着 {"1":…}、正确答案空着
+      const panel = (await wb.innerText()).replace(/[ \t]+/g, ' ');
+      const lineOf = (head) => panel.split('\n').map((l) => l.trim()).find((l) => l.startsWith(head)) || '（没有这一行）';
+      check(`${label}｜错题本：你的答案逐空写、标出错的那一空（以前是 {"1":…} 代码）`,
+        lineOf('你的答案：'), `你的答案：第 1 空：赖氨酸（错）；第 2 空：${POOL6[1]}（对）；第 3 空：${FILL_ANS[2]}（对）`);
+      check(`${label}｜错题本：展开之后看不到 {" 这种代码`, panel.includes('{"'), false);
+      check(`${label}｜错题本：正确答案不是空的，候选池的几个和第 3 空的答案都在`,
+        [...POOL6, FILL_ANS[2]].every((w) => lineOf('正确答案：').includes(w)), true);
+      await shot(page, width, '2c-wrongbook');
+    } else {
+      check(`${label}｜错题本里有 q06`, false, true);
     }
 
     // ── 模考作答 ──
@@ -159,6 +214,9 @@ try {
       await page.locator('td', { hasText: `${TOTAL} / ${TOTAL}` }).count(), i + 1);
 
     check(`${label}｜整个过程没有页面报错`, errors.join(' | ') || '无', '无');
+    check(`${label}｜学员这一路没下载 KaTeX、也没下载后台页面的代码（以前登录页就得全下完）`,
+      `${jsSeen.katex}/${jsSeen.admin}`, 'false/false');
+    if (i === 0) console.log(`     （学员这一路下载的脚本共 ${Math.round(jsSeen.bytes / 1024)} KB）`);
     await ctx.close();
   }
 } finally {

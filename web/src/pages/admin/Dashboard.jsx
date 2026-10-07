@@ -38,6 +38,22 @@ export default function Dashboard() {
     <>
       <PageHead title="题库总览" desc="预解析材料的入库与校对进度" />
 
+      {/* 已发布的题里，按标准答案作答都拿不到满分的（2026-10-07，后端 answer-check.js 用判分器判一遍）。
+          学员碰上这种题，怎么答都是错的，或者一交答案就报错。正常情况下永远是 0，所以平时不显示。 */}
+      {stats.publishedUngradable > 0 ? (
+        <div style={{ marginBottom: 16 }} data-testid="ungradable-alert">
+          <Alert>
+            有 {stats.publishedUngradable} 道已发布的题，按标准答案作答都拿不到满分（学员怎么答都不对，
+            或者一交答案就报错）。到校对页改好答案，或者先停用这道题：
+            <ul className="small" style={{ margin: '6px 0 0', paddingLeft: 18 }}>
+              {(stats.publishedUngradableSample || []).map((u) => (
+                <li key={u.questionId}>{u.problems.join('；')}</li>
+              ))}
+            </ul>
+          </Alert>
+        </div>
+      ) : null}
+
       <div className="grid-cards" style={{ marginBottom: 20 }}>
         <Stat label="试卷总数" value={totalExams} sub={`已发布 ${publishedExams} 套`} />
         <Stat label="题目总数" value={totalQuestions} sub={`已发布 ${publishedQuestions} 题`} />

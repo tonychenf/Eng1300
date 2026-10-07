@@ -161,6 +161,14 @@ if [ -n "${ADMIN_TOKEN:-}" ]; then
       "$(echo "$STATS" | jq -r '.publishedWithoutConfirmedAnswer')" "0"
     # CR-H4：停用的题退回草稿、整卷发布跳过它，所以"已发布又停用"永远该是 0
     check "没有一道停用的题还在已发布状态" "$(echo "$STATS" | jq -r '.retiredButPublished')" "0"
+    # 2026-10-07：已发布的题，按标准答案作答必须拿得到满分（answer-check.js，用真判分器判一遍）。
+    # 第 1 章 q04、q05 就是答案在、也确认了，判分器却读不懂它的枚举——学员一交答案就 500。
+    # 红的时候把是哪几道、为什么打出来（只有题号和原因，没有学员数据）
+    UNGRADABLE=$(echo "$STATS" | jq -r '.publishedUngradable')
+    check "没有一道已发布的题，按标准答案作答都拿不到满分" "$UNGRADABLE" "0"
+    if [ "$UNGRADABLE" != "0" ]; then
+      echo "$STATS" | jq -r '.publishedUngradableSample[]? | "       \(.questionId)：\(.problems | join("；"))"' | head -10
+    fi
     BIO_PUB=$(echo "$STATS" | jq -r '[.byType[] | select(.course_code == "biochem-main") | .published] | add // 0')
     BIO_CONFIRMED=$(echo "$STATS" | jq -r '.byAnswerState[] | select(.subject_code == "biochem") | .confirmed')
     echo "     （生化 $BIO_TOTAL 道，已确认 $BIO_CONFIRMED 道，已发布 $BIO_PUB 道）"

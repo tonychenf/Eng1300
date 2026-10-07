@@ -4,6 +4,8 @@
 #   M2  重置 / 修改密码、停用之后，旧的登录令牌立即失效
 #   M3  登录锁定按「用户名 + 来源 IP」计，别人锁不住你
 #   M1  组卷限流（每分钟 / 每 24 小时），阈值是系统参数
+#   L3  登录不暴露账号在不在、停没停用（2026-10-07）
+#   L2  安全响应头；别的网站不能再从浏览器调接口（2026-10-07）
 # 查库出错不该被当成"未登录"那条（M5 后半）在 test/auth-guard.test.mjs，那条要替身才测得到。
 set -uo pipefail
 
@@ -36,9 +38,10 @@ login() {   # 用户名 密码 [来源 IP] → 令牌（失败时为空）
     ${3:+-H "CF-Connecting-IP: $3"} -d "{\"username\":\"$1\",\"password\":\"$2\"}" | jq -r '.token // empty'
 }
 
+TT=$(mktemp -d)
 cleanup() {
   if [ -n "${SERVER_PGID:-}" ]; then kill -9 -- "-$SERVER_PGID" 2>/dev/null || true; fi
-  rm -rf "$PERSIST"; rm -f "$ROOT_DIR/.dev.vars"
+  rm -rf "$PERSIST" "$TT"; rm -f "$ROOT_DIR/.dev.vars"
 }
 trap cleanup EXIT
 
@@ -195,6 +198,57 @@ for i in 1 2 3 4 5; do login_code admin wrongpass9 "$IP_A" >/dev/null; done
 check "admin 在 IP-A 被锁" "$(login_code admin admin12345 "$IP_A")" "429"
 npx wrangler d1 execute "$D1_NAME" --local --persist-to "$PERSIST" --file=sql/clear-admin-lockout.sql >/dev/null 2>&1
 check "跑完流水线清锁那一步，admin 在 IP-A 能登录" "$(login_code admin admin12345 "$IP_A")" "200"
+
+echo
+echo "== L3：登录不暴露账号在不在、停没停用（2026-10-07） =="
+# 以前：用户名不存在就跳过密码比对，回得明显更快；停用的账号密码随便填都回"已停用"
+login_err() {   # 用户名 密码 来源 IP → 错误码
+  curl -s -X POST "$BASE/auth/login" -H 'Content-Type: application/json' -H "CF-Connecting-IP: $3" \
+    -d "{\"username\":\"$1\",\"password\":\"$2\"}" | jq -r '.error // "ok"'
+}
+curl -s -o /dev/null -X POST "$BASE/admin/users" -H "Authorization: Bearer $ADMIN" \
+  -H 'Content-Type: application/json' -d '{"username":"S104","password":"student12345","subjects":["english"]}'
+S104=$(one "SELECT id FROM users WHERE username='S104';")
+curl -s -o /dev/null -X PATCH "$BASE/admin/users/$S104/status" -H "Authorization: Bearer $ADMIN" \
+  -H 'Content-Type: application/json' -d '{"disabled":true}'
+check "停用的账号、密码错：和密码错一样回 invalid_credentials（以前密码随便填都回\"已停用\"）" \
+  "$(login_err S104 wrongpass9 203.0.113.40)" "invalid_credentials"
+check "停用的账号、密码对：告诉他已停用" "$(login_err S104 student12345 203.0.113.41)" "account_disabled"
+# 计时：交替各取 5 次，比中位数。"密码错"那边每次换一个来源 IP，免得撞上锁定（锁定后回得飞快）；
+# "不存在"那边每次换一个用户名，道理一样。以前"不存在"回得比"密码错"快一个数量级（不跑密码比对）
+t_of() {   # 用户名 密码 来源 IP → 秒
+  curl -s -o /dev/null -w '%{time_total}' -X POST "$BASE/auth/login" -H 'Content-Type: application/json' \
+    -H "CF-Connecting-IP: $3" -d "{\"username\":\"$1\",\"password\":\"$2\"}"
+}
+: > "$TT/none"; : > "$TT/wrong"
+for i in 1 2 3 4 5; do
+  t_of "NOUSER0$i" wrongpass9 203.0.113.50 >> "$TT/none"; echo >> "$TT/none"
+  t_of S101 wrongpass9 "203.0.113.6$i" >> "$TT/wrong"; echo >> "$TT/wrong"
+done
+MED_NONE=$(sort -n "$TT/none" | sed -n 3p); MED_WRONG=$(sort -n "$TT/wrong" | sed -n 3p)
+echo "     （中位数：用户名不存在 ${MED_NONE}s，密码错 ${MED_WRONG}s）"
+check "用户名不存在和密码错一样慢（不存在的那边至少是密码错那边的一半）" \
+  "$(awk -v a="$MED_NONE" -v b="$MED_WRONG" 'BEGIN {print (a >= b / 2) ? "差不多" : "不存在的明显更快"}')" "差不多"
+
+echo
+echo "== L2：安全响应头；别的网站不能再从浏览器调接口（2026-10-07） =="
+H=$(curl -s -D - -o /dev/null "$BASE/health")
+check "接口带 nosniff、不许被嵌框、跳走时不带完整地址" \
+  "$(echo "$H" | grep -ci '^x-content-type-options: nosniff')/$(echo "$H" | grep -ci '^x-frame-options: DENY')/$(echo "$H" | grep -ci '^referrer-policy: strict-origin-when-cross-origin')" "1/1/1"
+P=$(curl -s -D - -o /dev/null -X OPTIONS "$BASE/auth/login" -H 'Origin: https://evil.example' \
+  -H 'Access-Control-Request-Method: POST' -H 'Access-Control-Request-Headers: authorization,content-type')
+check "别的网站发来的跨域预检：不给 Access-Control-Allow-Origin（以前是 *，任何网站都能调）" \
+  "$(echo "$P" | grep -ci '^access-control-allow-origin')" "0"
+check "  跨域的普通请求也不带" \
+  "$(curl -s -D - -o /dev/null -H 'Origin: https://evil.example' "$BASE/health" | grep -ci '^access-control-allow-origin')" "0"
+SITE="${BASE%/api}"
+PAGE=$(curl -s -D - -o /dev/null "$SITE/")
+check "页面带 CSP：脚本只认本站、不许被别的网站嵌框" \
+  "$(echo "$PAGE" | grep -i '^content-security-policy' | grep -c "script-src 'self'.*frame-ancestors 'none'")/$(echo "$PAGE" | grep -ci '^x-frame-options: DENY')" "1/1"
+check "  前端路由回落出来的页面也带（学员直接打开某一页时走的是这条）" \
+  "$(curl -s -D - -o /dev/null "$SITE/app/english/wrongbook" | grep -ci '^content-security-policy')" "1"
+check "  写响应头的那个文件（_headers）本身不会被下发" \
+  "$(curl -s "$SITE/_headers" | grep -c 'Content-Security-Policy')" "0"
 
 echo
 echo "== 小结: $PASS 通过, $FAIL 失败 =="

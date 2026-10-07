@@ -322,6 +322,8 @@ PROMPT=$(curl -s "$STUB/last-prompt" | jq -r --arg q "$RIGHT_Q" '[.prompts[] | s
 P1=$(jq -r --arg q "$RIGHT_Q" '[.[] | select(.qid == $q and .ord == 1)][0].answer' "$WORK/items.json")
 STEM=$(one "SELECT stem FROM questions WHERE question_id = '$RIGHT_Q';")
 NPTS=$(jq --arg q "$RIGHT_Q" '[.[] | select(.qid == $q and .kind == "SCORE_POINT")] | length' "$WORK/items.json")
+check "学生答案夹在\"学员作答开始 / 结束\"两行标记之间（CR L9：学员不能在答案里给模型下指令）" \
+  "$(printf '%s\n' "$PROMPT" | grep -A1 -xF '<<<学员作答开始>>>' | grep -cF "学生写的一段话：$RIGHT_Q")/$(printf '%s\n' "$PROMPT" | grep -cxF '<<<学员作答结束>>>')" "1/1"
 check "提示词里有题干、第 1 个采分点原文、$NPTS 个采分点各带权重、学生答案，没有\"学生作文\"" \
   "$(printf '%s' "$PROMPT" | grep -cF "$STEM")/$(printf '%s' "$PROMPT" | grep -cF "$P1")/$(printf '%s' "$PROMPT" | grep -c '^[0-9]*\.（权重 ')/$(printf '%s' "$PROMPT" | grep -cF "学生写的一段话：$RIGHT_Q")/$(printf '%s' "$PROMPT" | grep -c '学生作文')" \
   "1/1/$NPTS/1/0"
@@ -387,6 +389,77 @@ check "每一部分都提示可能重复" \
   "$(echo "$GEN2" | jq -r '[.warnings[] | select(test("本次可能重复"))] | length')" "$(jq -r '.items | length' "$TPL_JSON")"
 
 echo
+echo "== 第二张卷交上去：多空题错了一空，错题本和 AI 错题分析看得懂（2026-10-07） =="
+# 以前：多空题的答案逐空存在得分单元里、questions.answer 是空的，错题本「正确答案」一栏空着、
+# 「你的答案」是一串 {"1":"…"}；AI 错题分析拿到的正确答案也是空的，只能自己猜答案再写分析。
+# q06：第 1、2 空是候选池（含硫氨基酸，任填、顺序不限），第 3 空是"硫化氢"（也认 H2S）。
+# 这张卷客观题照题库全答对，只有 q06 第 2 空填错，主观题都不写——错题本里只会有 q06 一道，
+# 错题分析一定轮得到它（一次最多分析 20 道，错题多了轮不轮得到它全看顺序）。
+AID2=$(echo "$GEN2" | jq -r '.attemptId')
+WQ=biochem-ch01-q06
+POOL6=$(jq -r --arg q "$WQ" '.sections[].questions[] | select(.questionId == $q) | .items[] | select(.params.pool) | .params.pool | join("、")' "$BANK_JSON")
+REQ6=$(jq -r --arg q "$WQ" '.sections[].questions[] | select(.questionId == $q) | .items[] | select(.params.pool) | .params.requiredCount' "$BANK_JSON")
+ANS6_3=$(jq -r --arg q "$WQ" '.sections[].questions[] | select(.questionId == $q) | .items[] | select(.ord == 3) | .answer' "$BANK_JSON")
+# 池子里的第二个填在第 1 空：顺序不限，算对。（"、"是多字节字符，tr / cut 按字节切会切坏，一律用 jq）
+P6_1=$(jq -rn --arg p "$POOL6" '$p | split("、")[1]')
+check "（前提）q06 的候选池有 2 个、要填 2 个，第 3 空的答案是硫化氢" \
+  "$(jq -rn --arg p "$POOL6" '$p | split("、") | length')/$REQ6/$ANS6_3" "2/2/硫化氢"
+sql "SELECT aq.question_id AS qid, q.question_type AS qt, q.answer
+       FROM attempt_questions aq JOIN questions q ON q.question_id = aq.question_id
+      WHERE aq.attempt_id = '$AID2' ORDER BY aq.ord;" | jq '.[0].results' > "$WORK/paper2.json"
+node - "$WORK/paper2.json" "$WORK/items.json" "$WQ" "$P6_1" > "$WORK/answers2.tsv" <<'NODE'
+const fs = require('fs');
+const paper = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
+const items = JSON.parse(fs.readFileSync(process.argv[3], 'utf8'));
+const [wq, p1] = [process.argv[4], process.argv[5]];
+for (const q of paper) {
+  const its = items.filter((it) => it.qid === q.qid);
+  let a = null;
+  if (q.qid === wq) a = JSON.stringify({ 1: p1, 2: '赖氨酸', 3: 'H2S' });
+  else if (q.qt === 'single_choice') a = q.answer;
+  else if (q.qt === 'fill_text') {
+    const out = {}; const groups = new Map();
+    for (const it of its) {
+      if (it.strategy === 'SET') { if (!groups.has(it.g)) groups.set(it.g, []); groups.get(it.g).push(it); }
+      else out[it.ord] = it.answer;
+    }
+    for (const list of groups.values()) {
+      const p = JSON.parse(list.find((x) => x.params)?.params || '{}');
+      list.sort((x, y) => x.ord - y.ord).forEach((it, k) => { out[it.ord] = p.pool[k]; });
+    }
+    a = JSON.stringify(out);
+  }
+  if (a !== null) process.stdout.write(`${q.qid}\t${Buffer.from(a).toString('base64')}\n`);
+}
+NODE
+while IFS=$'\t' read -r qid a64; do
+  curl -s -o /dev/null -X PUT "$BASE/attempts/$AID2/answers" -H "Authorization: Bearer $STU" \
+    -H 'Content-Type: application/json' -d "$(jq -n --arg q "$qid" --arg v "$(printf '%s' "$a64" | base64 -d)" '{questionId:$q,answer:$v}')"
+done < "$WORK/answers2.tsv"
+curl -s -o /dev/null -X POST "$BASE/attempts/$AID2/submit" -H "Authorization: Bearer $STU"
+check "（前提）这张卷只有 q06 一道客观题错了" \
+  "$(one "SELECT group_concat(question_id) FROM answer_records WHERE attempt_id = '$AID2' AND is_correct = 0;")" "$WQ"
+curl -s -o /dev/null -X POST "$BASE/ai/attempts/$AID2/run" -H "Authorization: Bearer $STU"
+WB=$(au "$BASE/wrongbook?courseCode=biochem-main" | jq -c --arg q "$WQ" '.items[] | select(.questionId == $q)')
+check "错题本里的正确答案：候选池的 2 个和第 3 空的硫化氢都在（以前是空的）" \
+  "$(echo "$WB" | jq -r --arg p "$POOL6" --arg a "$ANS6_3" '.answerKeyText // "" | [contains($p | split("、")[0]), contains($p | split("、")[1]), contains($a)] | map(select(.)) | length')" "3"
+check "  并且说清第 1、2 空顺序不限" "$(echo "$WB" | jq -r '.answerKeyText // "" | test("第 1、2 空（顺序不限）")')" "true"
+check "错题本里的「你的答案」逐空写出来、标出错的是第 2 空（以前是一串 {\"1\":…}）" \
+  "$(echo "$WB" | jq -r '.lastAnswerText // .lastAnswer')" "第 1 空：${P6_1}（对）；第 2 空：赖氨酸（错）；第 3 空：H2S（对）"
+WSTEM=$(one "SELECT stem FROM questions WHERE question_id = '$WQ';")
+WPROMPT=$(curl -s "$STUB/last-prompt" | jq -r --arg s "$WSTEM" '[.prompts[] | select(contains("分析学生这道题做错的原因") and contains($s))][-1] // ""')
+check "（前提）替身收到了 q06 的错题分析请求" "$( [ -n "$WPROMPT" ] && echo 收到 || echo 没收到)" "收到"
+WKEY=$(printf '%s\n' "$WPROMPT" | grep '^正确答案：' | head -1)
+check "喂给 AI 的正确答案不是空的：候选池的 2 个和硫化氢都在（以前这一行是空的，模型只能自己猜）" \
+  "$(for w in $(jq -rn --arg p "$POOL6" '$p | split("、") | join(" ")') "$ANS6_3"; do printf '%s' "$WKEY" | grep -cF "$w"; done | paste -sd/)" "1/1/1"
+WUSR=$(printf '%s\n' "$WPROMPT" | grep '^学生答案：' | head -1)
+check "喂给 AI 的学生答案逐空写、标出错的那一空，不是 JSON 代码" \
+  "$(printf '%s' "$WUSR" | grep -cF '第 2 空：赖氨酸（错）')/$(printf '%s' "$WUSR" | grep -cF '{"')" "1/0"
+REP2=$(au "$BASE/attempts/$AID2/report")
+check "报告里 q06 带着候选池：可填哪几个、要填几个（以前候选池的空答错了不给答案）" \
+  "$(echo "$REP2" | jq -r --arg q "$WQ" '.sections[].questions[] | select(.questionId == $q) | .answerKey // [] | .[] | select(.kind == "POOL") | "\(.values | join("、"))/\(.required)"')" "$POOL6/$REQ6"
+
+echo
 echo "== 练习：要 AI 判的题，练习里如实说不判分 =="
 PST=$(curl -s -X POST "$BASE/practice/start" -H "Authorization: Bearer $STU" \
   -H 'Content-Type: application/json' -d '{"courseCode":"biochem-main","sectionTypes":["名词解释"]}')
@@ -404,6 +477,56 @@ check "  参考答案就是这道题的采分点，条数和库里一样" \
   "$(one "SELECT COUNT(*) FROM question_items WHERE question_id = '$PQ' AND item_kind = 'SCORE_POINT';")"
 check "  已答算上它、正确率的分母不算它" \
   "$(au "$BASE/practice/$PID" | jq -r '.stats | "\(.answered)/\(.graded)"')" "1/0"
+
+echo
+echo "== 采分点：学员做过的题只能改文字和权重，不能增删（2026-10-07） =="
+# 作答记录里的逐点结果按采分点序号记，删一个点、旧报告就对不上了
+DONE_Q=$(qid_of '【全对】')
+DN=$(one "SELECT COUNT(*) FROM question_items WHERE question_id = '$DONE_Q';")
+LOCK=$(curl -s -X PATCH "$BASE/admin/bank/questions/$DONE_Q" -H "Authorization: Bearer $ADMIN" \
+  -H 'Content-Type: application/json' -d '{"removeItems":[1]}')
+check "学员做过的名词解释：删采分点被拒，说清可以改文字和权重" \
+  "$(echo "$LOCK" | jq -r '.error')/$(echo "$LOCK" | jq -r '.message' | grep -c '改文字、改权重可以')" "item_structure_locked/1"
+check "  一个点都没少" "$(one "SELECT COUNT(*) FROM question_items WHERE question_id = '$DONE_Q';")" "$DN"
+W0=$(one "SELECT printf('%g', weight) FROM question_items WHERE question_id = '$DONE_Q' AND item_ord = 1;")
+check "  改权重可以" \
+  "$(curl -s -X PATCH "$BASE/admin/bank/questions/$DONE_Q" -H "Authorization: Bearer $ADMIN" \
+      -H 'Content-Type: application/json' -d '{"items":[{"ord":1,"weight":3}]}' | jq -r '.ok')/$(one "SELECT printf('%g', weight) FROM question_items WHERE question_id = '$DONE_Q' AND item_ord = 1;")" "true/3"
+exec_sql "UPDATE question_items SET weight = $W0 WHERE question_id = '$DONE_Q' AND item_ord = 1;"
+
+echo
+echo "== 标准答案自检：判分器读不懂的答案，确认、发布、看板都拦得住（2026-10-07） =="
+# 第 1 章 q04 第 3 空是受限选择（高 / 低），答案"低"。把它的枚举改成不含"低"——这就是 2026-10-04 那类事：
+# 答案在、也确认了，判分器却判不出来，学员一交答案就 500。以前确认、发布、看板一道都拦不住。
+EQ=biochem-ch01-q04
+STATS0=$(adm "$BASE/admin/bank/stats")
+check "（前提）看板：已发布的题全都判得出满分（第 1 章 $FILE_N 道整章发布、真实的题库数据）" \
+  "$(echo "$STATS0" | jq -r '.publishedUngradable')" "0"
+EP=$(one "SELECT params FROM question_items WHERE question_id = '$EQ' AND item_ord = 3;")
+check "（前提）q04 第 3 空的枚举是高 / 低、答案是低" \
+  "$(echo "$EP" | jq -c '.enum')/$(one "SELECT answer FROM question_items WHERE question_id = '$EQ' AND item_ord = 3;")" '["高","低"]/低'
+exec_sql "UPDATE question_items SET params = '{\"enum\":[\"高\",\"中\"]}' WHERE question_id = '$EQ' AND item_ord = 3;"
+STATS1=$(adm "$BASE/admin/bank/stats")
+check "看板：已发布却判不出满分的 1 道，点名 q04、说出答案不在枚举里" \
+  "$(echo "$STATS1" | jq -r '"\(.publishedUngradable)/" + ([.publishedUngradableSample[] | select(.questionId == "'$EQ'") | .problems[] | select(test("不在枚举"))] | length | tostring)')" "1/1"
+exec_sql "UPDATE questions SET answer_state = '待核', status = '草稿' WHERE question_id = '$EQ';"
+CF=$(curl -s -X PATCH "$BASE/admin/bank/questions/$EQ" -H "Authorization: Bearer $ADMIN" \
+  -H 'Content-Type: application/json' -d '{"answerState":"已确认"}')
+check "确认不了，说清是哪一空、为什么" \
+  "$(echo "$CF" | jq -r '.error')/$(echo "$CF" | jq -r '.message' | grep -c '确认不了.*#3.*不在枚举')" "answer_key_unusable/1"
+check "  库里还是待核" "$(one "SELECT answer_state FROM questions WHERE question_id = '$EQ';")" "待核"
+# 绕过确认那道关（直接改库，相当于从种子或别的入口进来的），整卷发布那道关也要拦住
+exec_sql "UPDATE questions SET answer_state = '已确认' WHERE question_id = '$EQ';"
+PB=$(curl -s -X POST "$BASE/admin/bank/exams/biochem-ch01/publish" -H "Authorization: Bearer $ADMIN")
+check "整卷发布被拒，点名第 4 题" \
+  "$(echo "$PB" | jq -r '.error')/$(echo "$PB" | jq -r '[.problems[] | select(test("^第4题"))] | length')" "answer_key_unusable/1"
+check "  q04 没被发出去" "$(one "SELECT status FROM questions WHERE question_id = '$EQ';")" "草稿"
+# 改回来：枚举是高 / 低。这时单题发布照常
+exec_sql "UPDATE question_items SET params = '$EP' WHERE question_id = '$EQ' AND item_ord = 3;"
+PQ=$(curl -s -X PATCH "$BASE/admin/bank/questions/$EQ" -H "Authorization: Bearer $ADMIN" \
+  -H 'Content-Type: application/json' -d '{"status":"已发布"}')
+check "改好之后单题发布照常" "$(echo "$PQ" | jq -r '.ok // .message')/$(one "SELECT status FROM questions WHERE question_id = '$EQ';")" "true/已发布"
+check "看板又是 0" "$(adm "$BASE/admin/bank/stats" | jq -r '.publishedUngradable')" "0"
 
 echo
 echo "== 小结: $PASS 通过, $FAIL 失败 =="

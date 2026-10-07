@@ -177,6 +177,11 @@ function Verdict({ q, pendingLabel = '待批改' }) {
   );
 }
 
+// 候选池（"从这几个里任填 N 个"）和无序并列的空：各空没有自己的答案、也不分先后，
+// 按位置在某一空旁边标"正确答案 X"是错的（学生把 X 填在了另一空上照样算对）。
+// 这类组在组的最后一空下面写一行"第 1、2 空可填：……"，组里有一空没对才写（2026-10-07）。
+const GROUP_KEY_KINDS = ['POOL', 'UNORDERED'];
+
 function MultiBlank({ q, items, value, onChange, review }) {
   const current = parseItemAnswer(review ? q.userAnswer : value);
   const resultOf = (ord) => {
@@ -186,12 +191,17 @@ function MultiBlank({ q, items, value, onChange, review }) {
     }
     return null;
   };
+  const groupOf = (ord) => (q.answerKey || []).find((g) => GROUP_KEY_KINDS.includes(g.kind) && g.ords.includes(ord));
   return (
     <div className="stack" style={{ gap: 8 }}>
       {items.map((it) => {
         const r = review ? resultOf(it.ord) : null;
+        const g = review ? groupOf(it.ord) : null;
+        const lastOfGroup = g && it.ord === Math.max(...g.ords);
+        const groupMissed = g && g.ords.some((o) => resultOf(o)?.hit !== 1);
         return (
-          <div key={it.ord} className="row" style={{ gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+          <div key={it.ord} className="stack" style={{ gap: 4 }}>
+          <div className="row" style={{ gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
             <span className="tiny muted" style={{ minWidth: 40 }}>第 {it.ord} 空</span>
             {review ? (
               <span className="small" style={{ flex: '1 1 200px' }}>
@@ -201,7 +211,7 @@ function MultiBlank({ q, items, value, onChange, review }) {
                 ) : (
                   <>
                     <span className="badge danger" style={{ marginLeft: 8 }}>错</span>
-                    {it.answer ? (
+                    {it.answer && !g ? (
                       <span className="tiny muted" style={{ marginLeft: 8 }}>
                         正确答案 <strong className="mono">{it.answer}</strong>
                       </span>
@@ -219,6 +229,12 @@ function MultiBlank({ q, items, value, onChange, review }) {
                 onChange={(e) => onChange(JSON.stringify({ ...current, [it.ord]: e.target.value }))}
               />
             )}
+          </div>
+          {lastOfGroup && groupMissed ? (
+            <div className="tiny muted pool-hint">
+              {g.label}可填：<strong className="mono">{g.values.join('、')}</strong>{g.note ? `（${g.note}）` : ''}
+            </div>
+          ) : null}
           </div>
         );
       })}

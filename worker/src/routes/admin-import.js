@@ -18,6 +18,7 @@ import { ITEM_KINDS } from '../lib/question-items.js';
 import { resolveSettings } from '../lib/ai.js';
 import { purposeForMedia, purposeMeta } from '../lib/ai-purposes.js';
 import { generateAnswers, targetItems } from '../lib/ai-answer.js';
+import { loadPack } from '../lib/subject-pack.js';
 
 export const importRouter = new Hono();
 
@@ -25,7 +26,7 @@ export const importRouter = new Hono();
 const GROUP_ID_RE = /^[a-z][a-z0-9-]{1,63}$/;
 // Worker 单次请求的 CPU 时间有上限，解压加解析都在这个预算里。
 // 一章 docx 通常几十到几百 KB；给到 10MB 已经很宽，超了多半是传错了文件。
-const MAX_BYTES = 10 * 1024 * 1024;
+export const MAX_BYTES = 10 * 1024 * 1024;
 // D1 一批语句的条数上限没有明文保证，分批发，不赌。
 const BATCH = 40;
 
@@ -33,6 +34,14 @@ const bad = (c, status, error, message, extra = {}) =>
   c.json({ error, message, ...extra }, status);
 
 importRouter.post('/import', async (c) => {
+  // 先看请求头里声明的长度，超了直接 413，不把整个文件读进内存再判（CR L8）。排在最前面：
+  // 后面那些查库、校验参数都用不着它，为一个注定被拒的请求先读十几兆没有意义。
+  // 没带长度的（分块传输）读完再判，读文件那里的那道照旧兜着。
+  const declaredBytes = Number(c.req.header('content-length'));
+  if (Number.isFinite(declaredBytes) && declaredBytes > MAX_BYTES) {
+    return bad(c, 413, 'file_too_large',
+      `文件 ${(declaredBytes / 1048576).toFixed(1)}MB，超过上限 ${MAX_BYTES / 1048576}MB`);
+  }
   const me = c.get('user');
   const db = c.env.DB;
   const subjectCode = (c.req.query('subjectCode') || '').trim();
@@ -270,10 +279,16 @@ importRouter.post('/exams/:examId/ai-answers', async (c) => {
     if (!itemsBy.has(r.question_id)) itemsBy.set(r.question_id, []);
     itemsBy.get(r.question_id).push({ ord: r.item_ord, kind: r.item_kind });
   }
+  // 按采分点判分的题型（名词解释、问答）要 AI 拆采分点，而不是给一整段参考答案（2026-10-07）：
+  // 以前要的是整段，题进了卷子，AI 批改按采分点判、一个采分点都没有，每次都批不了。
+  const pack = await loadPack(db, subject.subject_id);
+  const typeOf = (code) => { try { return pack.typeOf(code); } catch { return null; } };
   const questions = rows.map((r) => ({
     questionId: r.question_id,
     ord: r.ord,
     questionType: r.question_type,
+    typeName: typeOf(r.question_type)?.name || null,
+    wantPoints: typeOf(r.question_type)?.gradingStrategy === 'AI_SCORE_POINTS',
     stem: r.stem,
     options: (() => { try { return r.options ? JSON.parse(r.options) : null; } catch { return null; } })(),
     items: itemsBy.get(r.question_id) || [],
@@ -306,6 +321,7 @@ importRouter.post('/exams/:examId/ai-answers', async (c) => {
   // 落库：一律 待核 + 来源 AI。**绝不自动发布**（§6.4.10 的硬约束）。
   const byId = new Map(questions.map((q) => [q.questionId, q]));
   const st = [];
+  const pointBatches = [];
   for (const g of generated) {
     // 解析为空时**不要覆盖**已有的 answer_explanation：校对时人工写过一段，
     // 重跑一次 AI 就把它抹掉，属于"这次失败改变了用户要的结果"。
@@ -322,7 +338,18 @@ importRouter.post('/exams/:examId/ai-answers', async (c) => {
           WHERE question_id = ?`
       ).bind(g.answer, g.questionId));
     }
-    if (g.items) {
+    if (g.items && g.newItems) {
+      // AI 新拆出来的采分点：先清掉这道题的采分点再插，同一道题的删和插放在一个 batch 里——
+      // 两个人同时点了"生成答案"，最后留下的是某一次的整套，不是两次拼起来的半套
+      pointBatches.push([
+        db.prepare("DELETE FROM question_items WHERE question_id = ? AND item_kind IN ('SCORE_POINT', 'STEP')")
+          .bind(g.questionId),
+        ...g.items.map((val, i) => db.prepare(
+          `INSERT INTO question_items (question_id, item_ord, subject_id, item_kind, weight, answer)
+           VALUES (?, ?, ?, 'SCORE_POINT', 1, ?)`
+        ).bind(g.questionId, i + 1, subject.subject_id, val)),
+      ]);
+    } else if (g.items) {
       const targets = targetItems(byId.get(g.questionId));
       g.items.forEach((val, i) => {
         if (!targets[i]) return;
@@ -333,6 +360,7 @@ importRouter.post('/exams/:examId/ai-answers', async (c) => {
     }
   }
   for (let i = 0; i < st.length; i += BATCH) await db.batch(st.slice(i, i + BATCH));
+  for (const b of pointBatches) await db.batch(b);
 
   // 考点：挂到题上（只加不删——管理员先手动挂过的留着），和 AI 答案一样等人校对：
   // 题目答案没确认就发布不了，学员那边抽不到。按"学科 + 名字"找，没有就在这个学科下新建，
@@ -380,6 +408,8 @@ importRouter.post('/exams/:examId/ai-answers', async (c) => {
     purpose: settings._usedPurpose || wantPurpose,
     purposeFellBack: Boolean(settings._fallback),
     withoutExplanation,
+    // 名词解释、问答这类按采分点判的题，AI 拆出了采分点的有几道（校对时逐条看、可增删）
+    withNewPoints: generated.filter((g) => g.newItems).length,
     withKnowledgePoints: knowledgePointsFailed ? null : kpWanted.length,
     withoutKnowledgePoints,
     newKnowledgePoints: knowledgePointsFailed ? null : createdNames,
@@ -389,6 +419,8 @@ importRouter.post('/exams/:examId/ai-answers', async (c) => {
       `逐题人工确认之后才能发布。` +
       (failures.length ? `另有 ${failures.length} 道没生成出来，仍是缺答案。` : '') +
       (withoutExplanation.length ? `其中 ${withoutExplanation.length} 道只有答案、没有解析。` : '') +
+      (generated.some((g) => g.newItems)
+        ? `${generated.filter((g) => g.newItems).length} 道名词解释、问答由 AI 拆成了采分点，校对时逐条看，拆得不对可以增删。` : '') +
       (knowledgePointsFailed
         ? `考点存的时候出错了（${knowledgePointsFailed}），可能只存进去一部分，校对时逐题看一眼。`
         : (kpWanted.length ? `${kpWanted.length} 道带上了 AI 给的考点，校对时一并确认。` : '') +

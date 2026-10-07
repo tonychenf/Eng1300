@@ -5,11 +5,12 @@ import { masteryTier } from '../lib/mastery.js';
 import { gradeEssay, gradeScorePoints, withPointReasons, analyzeWrong, assessAbility } from '../lib/tutor.js';
 import { gradeQuestion } from '../lib/grade.js';
 import { loadItemRows } from '../lib/question-items.js';
+import { answerKey, answerText } from '../lib/answer-key.js';
 import { sectionScoresFromDb } from '../lib/section-scores.js';
 import { loadAssetRows } from '../lib/stem-assets.js';
 import { mapLimit } from '../lib/ai.js';
 import { wrongItemVisibleSql } from '../lib/pickable.js';
-import { loadPackByCourse, aiGradedTypes, typeInClause } from '../lib/subject-pack.js';
+import { loadPackByCourse, loadPacksForCourses, aiGradedTypes, typeInClause } from '../lib/subject-pack.js';
 
 // 错题分析的并发上限。20 条分四批约 15 秒，既压住总时长，
 // 也不至于把供应商的速率限制打爆。
@@ -79,12 +80,25 @@ studyRouter.get('/wrongbook', async (c) => {
                JOIN knowledge_points k ON k.tag_id = x.tag_id
               WHERE x.question_id = w.question_id) AS tag_names,
             (SELECT r.user_answer FROM answer_records r
-              WHERE r.question_id = w.question_id AND r.attempt_id = w.last_attempt_id) AS last_answer
+              WHERE r.question_id = w.question_id AND r.attempt_id = w.last_attempt_id) AS last_answer,
+            (SELECT r.item_results FROM answer_records r
+              WHERE r.question_id = w.question_id AND r.attempt_id = w.last_attempt_id) AS last_item_results
        FROM wrong_items w JOIN questions q ON q.question_id = w.question_id
       WHERE ${where}
       ORDER BY w.updated_at DESC
       LIMIT ? OFFSET ?`
   ).bind(...binds, limit, offset).all();
+
+  // 多空题的答案逐空存在得分单元里（questions.answer 是空的），作答是 {"序号":"答案"}。
+  // 以前原样给前端：「正确答案」一栏空着，「你的答案」是一串代码（2026-10-07）。
+  // 归组要用题型的默认判分策略，跟判分走同一套（answer-key.js 顶部注释），能力包按课程读、每门课读一次。
+  const itemsBy = await loadItemRows(c.env.DB, results.map((r) => r.question_id));
+  // 能力包读不出来只影响"候选池、无序并列的空怎么合成一组"这一点显示，不该让整个错题本打不开
+  let packs = new Map();
+  try { packs = await loadPacksForCourses(c.env.DB, results.map((r) => r.course_code)); } catch { /* 见上 */ }
+  const strategyOf = (r) => {
+    try { return packs.get(r.course_code).typeOf(r.question_type).gradingStrategy; } catch { return null; }
+  };
 
   return c.json({
     total: total?.n || 0,
@@ -99,6 +113,9 @@ studyRouter.get('/wrongbook', async (c) => {
       options: r.options ? JSON.parse(r.options) : null,
       correctAnswer: r.answer,
       lastAnswer: r.last_answer,
+      // 人话版本：多空题逐空写、候选池写明可填哪几个；单答案题就是原文
+      answerKeyText: answerKey(r, itemsBy.get(r.question_id) || [], { defaultStrategy: strategyOf(r) }).text,
+      lastAnswerText: answerText(r.last_answer, itemsBy.get(r.question_id) || [], r.last_item_results),
       explanation: r.answer_explanation,
       knowledgePoints: r.tag_names ? r.tag_names.split('||') : [],
       wrongCount: r.wrong_count,
@@ -275,8 +292,8 @@ studyRouter.post('/ai/attempts/:id/run', async (c) => {
 
   // 3) 错题分析
   const { results: pending } = await c.env.DB.prepare(
-    `SELECT w.id, w.question_id, q.stem, q.options, q.answer, s.passage_text,
-            r.user_answer,
+    `SELECT w.id, w.question_id, q.question_type, q.stem, q.options, q.answer, s.passage_text,
+            r.user_answer, r.item_results,
             (SELECT group_concat(k.name, '||') FROM question_knowledge_points x
                JOIN knowledge_points k ON k.tag_id = x.tag_id
               WHERE x.question_id = w.question_id) AS tag_names
@@ -291,6 +308,9 @@ studyRouter.post('/ai/attempts/:id/run', async (c) => {
 
   // 题目资源一次读好：喂 AI 前要把 ![key] 换成 [图：alt]，逐题读库就是 20 次往返。
   const assetsByQuestion = await loadAssetRows(c.env.DB, pending.map((w) => w.question_id));
+  // 得分单元同理一次读好：多空题的正确答案在这里，questions.answer 是空的。以前喂给模型的
+  // 「正确答案：」是空的、「学生答案：」是 {"1":…}——模型只能自己猜答案再写分析（2026-10-07）。
+  const itemsByQuestion = await loadItemRows(c.env.DB, pending.map((w) => w.question_id));
 
   // 并发跑，不要串行。真实服务商一次调用 3-4 秒，20 条串下来 80 秒以上，
   // 客户端早就超时了——线上实测就是这么失败的，而本地替身瞬间返回，看不出来。
@@ -300,8 +320,11 @@ studyRouter.post('/ai/attempts/:id/run', async (c) => {
         assets: assetsByQuestion.get(w.question_id) || [],
         stem: w.stem,
         options: w.options ? JSON.parse(w.options) : null,
-        userAnswer: w.user_answer,
-        correctAnswer: w.answer,
+        // 逐空写、标出错的是哪一空（判分结果是现成的，省得模型自己重判——它不认得"C"就是"碳"那条别名）
+        userAnswer: answerText(w.user_answer, itemsByQuestion.get(w.question_id) || [], w.item_results),
+        correctAnswer: answerKey(w, itemsByQuestion.get(w.question_id) || [], {
+          defaultStrategy: (() => { try { return pack.typeOf(w.question_type).gradingStrategy; } catch { return null; } })(),
+        }).text,
         knowledgePoints: w.tag_names ? w.tag_names.split('||') : [],
         passage: w.passage_text,
       });

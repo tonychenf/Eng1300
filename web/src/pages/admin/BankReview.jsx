@@ -251,7 +251,8 @@ function QuestionEditor({ question, tagLibrary, tagSubject, onClose, onSaved }) 
     answerSource: question.answer_source || 'OFFICIAL',
     reviewed: Boolean(question.reviewed),
     knowledgePoints: question.knowledgePoints,
-    items: (question.items || []).map((it) => ({
+    // 逐空作答的单元（填空的空、多选的选项）
+    items: (question.items || []).filter((it) => !JUDGE_KINDS.includes(it.kind)).map((it) => ({
       ord: it.ord,
       kind: it.kind,
       strategy: it.strategy,
@@ -260,6 +261,11 @@ function QuestionEditor({ question, tagLibrary, tagSubject, onClose, onSaved }) 
       answer: it.answer ?? '',
       altAnswers: (it.altAnswers || []).join('、'),
     })),
+    // 采分点（名词解释、问答……整段作答、AI 逐点判）。新加的没有序号（ord: null），保存时由服务端编号
+    points: (question.items || []).filter((it) => JUDGE_KINDS.includes(it.kind)).map((it) => ({
+      ord: it.ord, answer: it.answer ?? '', weight: String(it.weight ?? 1),
+    })),
+    removedPoints: [],
   });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -291,14 +297,23 @@ function QuestionEditor({ question, tagLibrary, tagSubject, onClose, onSaved }) 
   async function save() {
     setBusy(true); setError('');
     try {
+      const { points, removedPoints, ...rest } = form;
       await patch(`/admin/bank/questions/${question.question_id}`, {
-        ...form,
+        ...rest,
         options: form.options.length ? form.options : null,
-        items: form.items.map((it) => ({
-          ord: it.ord,
-          answer: it.answer === '' ? null : it.answer,
-          altAnswers: it.altAnswers.split(/[、,，]/).map((x) => x.trim()).filter(Boolean),
-        })),
+        items: [
+          ...form.items.map((it) => ({
+            ord: it.ord,
+            answer: it.answer === '' ? null : it.answer,
+            altAnswers: it.altAnswers.split(/[、,，]/).map((x) => x.trim()).filter(Boolean),
+          })),
+          ...points.filter((p) => p.ord !== null).map((p) => ({ ord: p.ord, answer: p.answer, weight: Number(p.weight) })),
+        ],
+        // 只在真有增删时带上：服务端对"学员做过的题"拒绝增删，空数组也会被当成"要增删"
+        ...(removedPoints.length ? { removeItems: removedPoints } : {}),
+        ...(points.some((p) => p.ord === null)
+          ? { addItems: points.filter((p) => p.ord === null).map((p) => ({ answer: p.answer, weight: Number(p.weight) })) }
+          : {}),
       });
       await onSaved();
     } catch (e) {
@@ -397,13 +412,23 @@ function QuestionEditor({ question, tagLibrary, tagSubject, onClose, onSaved }) 
               ))}
             </div>
           </div>
-        ) : (
+        ) : question.pointsType || form.points.length ? null : (
           <div className="field">
             <label htmlFor="answer">参考答案</label>
             <textarea id="answer" className="textarea" style={{ minHeight: 60 }} value={form.answer}
               onChange={(e) => set('answer', e.target.value)} />
           </div>
         )}
+
+        {question.pointsType || form.points.length ? (
+          <PointsEditor points={form.points} legacyAnswer={question.answer}
+            onChange={(next) => set('points', next)}
+            onRemove={(i) => setForm((f) => ({
+              ...f,
+              points: f.points.filter((_, k) => k !== i),
+              removedPoints: f.points[i].ord === null ? f.removedPoints : [...f.removedPoints, f.points[i].ord],
+            }))} />
+        ) : null}
 
         <div className="field">
           <label htmlFor="expl">解析</label>
@@ -506,6 +531,56 @@ function QuestionEditor({ question, tagLibrary, tagSubject, onClose, onSaved }) 
           <button className="btn ghost" onClick={onClose} disabled={busy}>取消</button>
         </div>
       </div>
+    </div>
+  );
+}
+
+const JUDGE_KINDS = ['SCORE_POINT', 'STEP'];
+
+// 采分点编辑（2026-10-07）。名词解释、问答交卷后由 AI 逐点判"答到没有"，按权重算分。
+// 上传进来的章节，采分点是 AI 拆的，拆多拆少都要能改；老的上传章节只有一整段参考答案、一个采分点都没有，
+// 这样的题进了卷子 AI 每次都批不了——所以这里能加、能删、能改文字和权重。
+// 学员做过的题只能改文字和权重，增删会被服务端拒绝（作答记录按序号记逐点结果）。
+function PointsEditor({ points, legacyAnswer, onChange, onRemove }) {
+  const setAt = (i, patchObj) => onChange(points.map((p, k) => (k === i ? { ...p, ...patchObj } : p)));
+  return (
+    <div className="field points-editor">
+      <label>采分点（交卷后 AI 逐点判，按权重算分）</label>
+      {!points.length ? (
+        <Alert>
+          这道题还没有采分点：这类题交卷后按采分点批改，没有采分点就批不了，也确认、发布不了。
+          {legacyAnswer ? '下面是原来那段参考答案，可以照着拆成几个要点。' : ''}
+        </Alert>
+      ) : (
+        <p className="tiny faint" style={{ marginTop: 0, marginBottom: 8 }}>
+          每一点写一句能单独判断"答到没有"的要点。得分 = 答到的权重 ÷ 总权重 × 这道题的分值。
+        </p>
+      )}
+      {!points.length && legacyAnswer ? (
+        <div className="passage tiny" style={{ marginBottom: 8 }} data-testid="legacy-answer">{legacyAnswer}</div>
+      ) : null}
+      <div className="stack">
+        {points.map((p, i) => (
+          <div key={p.ord ?? `new-${i}`} className="card card-pad point-row" style={{ padding: 10 }}>
+            <div className="row tiny muted" style={{ marginBottom: 6, gap: 6 }}>
+              <strong>第 {i + 1} 点</strong>
+              {p.ord === null ? <span className="tag">新加</span> : null}
+            </div>
+            <textarea className="textarea point-text" style={{ minHeight: 56 }} value={p.answer}
+              placeholder="这一点要答到的内容"
+              onChange={(e) => setAt(i, { answer: e.target.value })} />
+            <div className="row" style={{ marginTop: 6, gap: 8, alignItems: 'center' }}>
+              <label className="tiny muted" htmlFor={`pw-${i}`}>权重</label>
+              <input id={`pw-${i}`} className="input point-weight" type="number" min="0.5" step="0.5"
+                inputMode="decimal" style={{ width: 96 }} value={p.weight}
+                onChange={(e) => setAt(i, { weight: e.target.value })} />
+              <button type="button" className="btn ghost" onClick={() => onRemove(i)}>删除这一点</button>
+            </div>
+          </div>
+        ))}
+      </div>
+      <button type="button" className="btn ghost" style={{ marginTop: 8 }}
+        onClick={() => onChange([...points, { ord: null, answer: '', weight: '1' }])}>加一个采分点</button>
     </div>
   );
 }

@@ -21,6 +21,8 @@ const EN_SUBJECT = process.env.UI_EN_SUBJECT;
 const BIO_KPS = JSON.parse(process.env.UI_BIO_KPS);
 const EN_KPS = JSON.parse(process.env.UI_EN_KPS);
 const sorted = (xs) => JSON.stringify([...xs].sort());
+// 2026-10-07：ui-n6.sh 把一道已发布的英语题的答案清空了（内容组 + 题号），看板要把它点出来
+const BROKEN_WHERE = process.env.UI_BROKEN_WHERE;
 
 let pass = 0, fail = 0;
 const check = (desc, got, want) => {
@@ -55,6 +57,10 @@ try {
     check(`${label}｜待核数字对得上`,
       /待人工核对\s*\n?\s*(\d+)/.exec(dash)?.[1], WANT_UNREVIEWED);
     check(`${label}｜看板不横向滚动`, await noHScroll(page), true);
+    // 已发布却判不出满分的题（标准答案自检，2026-10-07）：看板上要看得见、点得出是哪一道
+    const ung = page.locator('[data-testid="ungradable-alert"]');
+    check(`${label}｜看板点出了已发布却判不出满分的那道题（${BROKEN_WHERE}）`,
+      await ung.isVisible().catch(() => false) ? (await ung.innerText()).includes(BROKEN_WHERE) : '（没有提示）', true);
 
     // ── 看板的考点分布按学科分组（以前两科的标签混在一排）──
     for (const [code, name, kps] of [['biochem', BIO_SUBJECT, BIO_KPS], ['english', EN_SUBJECT, EN_KPS]]) {

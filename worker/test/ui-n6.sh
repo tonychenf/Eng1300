@@ -62,6 +62,13 @@ UNREVIEWED=$(one "SELECT COUNT(*) FROM questions WHERE answer_state='待核';")
 # 时间按北京时间显示（CR-M7）：确认时间写一个固定的世界时，跨零点——北京时间是第二天 00:30
 exec_sql "UPDATE questions SET answer_reviewed_by = 'admin', answer_reviewed_at = '2026-01-01 16:30:00'
            WHERE exam_id = 'biochem-ch01';" || exit 1
+# 2026-10-07：清空一道已发布英语题的答案——它确认过、发布了，标准答案却是空的，学员怎么答都不对。
+# 看板（标准答案自检）要把它点出来。挑 00015-2015-04 里题号最小、没有得分单元的已发布题，不碰后面要看的两章
+BROKEN_Q=$(one "SELECT question_id FROM questions WHERE exam_id = '00015-2015-04' AND status = '已发布'
+                  AND NOT EXISTS (SELECT 1 FROM question_items i WHERE i.question_id = questions.question_id)
+                ORDER BY ord LIMIT 1;")
+BROKEN_WHERE=$(one "SELECT exam_id || ' 第' || ord || '题' FROM questions WHERE question_id = '$BROKEN_Q';")
+exec_sql "UPDATE questions SET answer = '' WHERE question_id = '$BROKEN_Q';" || exit 1
 [ -n "$BIO_LABEL" ] || { echo "生化内容组没进库"; exit 1; }
 [ -n "$BIO_SUBJECT" ] && [ -n "$EN_SUBJECT" ] || { echo "读不到学科名（生化「$BIO_SUBJECT」英语「$EN_SUBJECT」）"; exit 1; }
 [ "${UNREVIEWED:-0}" -gt 0 ] || { echo "一道待核的题都没有，这套测不出东西"; exit 1; }
@@ -95,5 +102,5 @@ echo "== 浏览器检查 =="
 UI_BASE="http://127.0.0.1:$PORT" UI_USER=admin UI_PASS=adminpass123 \
   UI_BIO_GROUP=biochem-ch01 UI_BIO_LABEL="$BIO_LABEL" UI_UNREVIEWED="$UNREVIEWED" \
   UI_EN_GROUP=13000-2026-04 UI_BIO_SUBJECT="$BIO_SUBJECT" UI_EN_SUBJECT="$EN_SUBJECT" \
-  UI_BIO_KPS="$BIO_KPS" UI_EN_KPS="$EN_KPS" \
+  UI_BIO_KPS="$BIO_KPS" UI_EN_KPS="$EN_KPS" UI_BROKEN_WHERE="$BROKEN_WHERE" \
   node test/ui-n6-admin.mjs
