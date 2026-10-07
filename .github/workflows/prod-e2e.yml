@@ -34,13 +34,13 @@ concurrency:
 
 jobs:
   e2e:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       # 线上地址本来就是公开的（README 里写着）。以前这里一直空着，
       # 所以 XLearn 复制过来之后这条流水线一次都没跑成过（#4、#5 都停在下一步）
       WORKER_URL: https://xlearn.eng1300-79fe2787.workers.dev
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       # WORKER_URL 空着的时候，下面每一步都会去请求一个空地址，报出来的是
       # curl 的参数错误，看不出根因。这里先把话说清楚。

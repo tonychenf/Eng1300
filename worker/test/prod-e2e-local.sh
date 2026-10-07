@@ -55,6 +55,19 @@ for f in seed/english-000-knowledge-points.sql seed/english-*-13000-*.sql test/f
 done
 # 实测脚本这里要跑三遍，每遍组一份卷，一分钟内就超过每分钟 3 份。限流不是这一套要测的
 exec_sql "UPDATE system_settings SET value='1000' WHERE key IN ('limit.exam_per_minute', 'limit.exam_per_day');"
+# 生化第 1 章（2026-10-04）：prod-e2e.sh 的生化模考那段要它已发布，和线上一样（线上是 2026-09-25
+# 管理员逐题核完、处理完存疑之后发布的；这里一步到位造出同样的状态）
+BIO_SEED=$(mktemp -d)
+SEED_SUBJECT_DIR="$REPO_DIR/data/subjects/biochem" node "$REPO_DIR/scripts/build-seed-sql.mjs" "$BIO_SEED" >/dev/null 2>&1 \
+  || { echo "生化种子生成失败"; exit 1; }
+for f in "$BIO_SEED"/*.sql; do
+  npx wrangler d1 execute "$D1_NAME" --local --file="$f" >/dev/null 2>&1 || { echo "导入 $f 失败"; exit 1; }
+done
+rm -rf "$BIO_SEED"
+exec_sql "UPDATE questions SET answer_state = '已确认' WHERE course_code = 'biochem-main';
+          UPDATE questions SET status = '草稿' WHERE course_code = 'biochem-main' AND status = '存疑';"
+npx wrangler d1 execute "$D1_NAME" --local --file=test/fixtures/publish-all.sql >/dev/null 2>&1 \
+  || { echo "发布生化第 1 章失败"; exit 1; }
 
 node test/ai-stub.mjs "$STUB_PORT" > /tmp/pe2e-stub.log 2>&1 &
 STUB_PID=$!
@@ -119,9 +132,31 @@ check "  测试章节没有留在库里" "$(probe_left)" "0"
 check "  探针账号开通了英语" \
   "$(one "SELECT g.status FROM user_subject_grants g JOIN users u ON u.id = g.user_id
             JOIN subjects s ON s.subject_id = g.subject_id WHERE u.username = 'PROBE01' AND s.code = 'english';")" "ACTIVE"
-check "  探针真的交了一份卷" \
+check "  探针真的交了一份英语卷" \
   "$(one "SELECT COUNT(*) FROM attempts a JOIN users u ON u.id = a.user_id
-            WHERE u.username = 'PROBE01' AND a.mode = 'EXAM' AND a.status <> '进行中';")" "1"
+            WHERE u.username = 'PROBE01' AND a.mode = 'EXAM' AND a.course_code = '13000' AND a.status <> '进行中';")" "1"
+# 生化模考那段（2026-10-04）：替身照"答案里原样出现了哪个采分点就算答到"回，照参考采分点写的全中、跑题的一个不中
+check "  生化模考那一段也跑到了最后" "$(echo "$OUT" | grep -c 'OK   总分 = 客观题 + 主观题各题得分')" "1"
+# 2026-10-07 加的三条：线上的真题按库里的标准答案判（只错故意错的那一道）、作答里给模型下指令的那道没被骗、
+# 错题本的正确答案和作答是人话。替身照"答案里原样出现了哪个采分点就算答到"回，下指令的那道一个点都不沾
+check "  其中：客观题按库里的标准答案答，只错了故意错一空的那一道" \
+  "$(echo "$OUT" | grep -c 'OK   线上的真题按标准答案判：客观题只错了故意错一空的那一道')" "1"
+check "  其中：在答案里给模型下指令的那道得分率不高" "$(echo "$OUT" | grep -c 'OK   在答案里给模型下指令的那道没被骗')" "1"
+check "  其中：错题本的正确答案不是空的、作答逐空写" "$(echo "$OUT" | grep -c 'OK   错题本里那道填空的正确答案不是空的')" "1"
+check "  其中：错题分析正好分析了故意错的那一道" "$(echo "$OUT" | grep -c 'OK   错题分析：只有故意错的那一道（1 条）')" "1"
+check "  探针账号开通了生化" \
+  "$(one "SELECT g.status FROM user_subject_grants g JOIN users u ON u.id = g.user_id
+            JOIN subjects s ON s.subject_id = g.subject_id WHERE u.username = 'PROBE01' AND s.code = 'biochem';")" "ACTIVE"
+check "  探针交了一份生化卷，两道名词解释批了分（照写的满分、跑题的 0 分），别的主观题记 0 分" \
+  "$(one "SELECT COUNT(DISTINCT a.attempt_id) || '/' || SUM(CASE WHEN r.score_rate = 1 THEN 1 ELSE 0 END) || '/' ||
+                 SUM(CASE WHEN r.ai_judged = 1 THEN 1 ELSE 0 END)
+            FROM attempts a JOIN users u ON u.id = a.user_id
+            JOIN answer_records r ON r.attempt_id = a.attempt_id
+            JOIN questions q ON q.question_id = r.question_id
+           WHERE u.username = 'PROBE01' AND a.course_code = 'biochem-main' AND a.status <> '进行中'
+             AND q.question_type IN ('term_explain', 'short_answer');")" \
+  "1/1/$(one "SELECT COUNT(*) FROM questions WHERE course_code = 'biochem-main' AND status = '已发布'
+                AND question_type IN ('term_explain', 'short_answer');")"
 
 echo
 echo "== prod-e2e.sh 第二遍：上次残留了测试章节，探针的英语授权也被撤了 =="
@@ -172,7 +207,8 @@ check "第四遍：判失败" "$RC" "1"
 check "  红在作文没批改成，原因写着像是抄了示例" \
   "$(echo "$OUT" | grep -c 'FAIL 作文批改未完成（status=failed）.*原样抄')" "1"
 LATEST=$(one "SELECT a.attempt_id FROM attempts a JOIN users u ON u.id = a.user_id
-               WHERE u.username = 'PROBE01' AND a.mode = 'EXAM' ORDER BY a.started_at DESC, a.rowid DESC LIMIT 1;")
+               WHERE u.username = 'PROBE01' AND a.mode = 'EXAM' AND a.course_code = '13000'
+               ORDER BY a.started_at DESC, a.rowid DESC LIMIT 1;")
 check "  库里没有记成「已批改的 0 分」（这份卷的作文还是待批改）" \
   "$(one "SELECT r.ai_judged || '/' || COALESCE(r.score, 'null') FROM answer_records r
             JOIN questions q ON q.question_id = r.question_id
