@@ -376,7 +376,9 @@ check "库里没有 admin：拒绝并说清楚（UPDATE 改了 0 行也不报错
 exec_sql "UPDATE users SET username = 'admin' WHERE username = 'admin_gone';"
 # 顺带：admin 被停用了、又被人试错锁住了（上面那一段锁的 203.0.113.9 还在）
 exec_sql "UPDATE users SET disabled = 1 WHERE username = 'admin';"
-ADMIN_PASSWORD=Reset2026abc bash "$CI/reset-admin-password.sh" --local > "$WORK/reset.log" 2>&1; RC=$?
+# 带上 GITHUB_ACTIONS=true，走的是流水线里那条路：第一版脚本在流水线里多打一行 ::add-mask::<新密码>，
+# 本地不设这个变量就打不出来、这里照样绿，推上去 CI 才红（2026-10-08 PR #2）
+GITHUB_ACTIONS=true ADMIN_PASSWORD=Reset2026abc bash "$CI/reset-admin-password.sh" --local > "$WORK/reset.log" 2>&1; RC=$?
 check "重置成功，并用新密码真登录了一次" "$RC/$(grep -c '用新密码登录 admin 成功' "$WORK/reset.log")" "0/1"
 # 计数要在下面"旧密码不能登录"之前看：那次试错会再记一笔
 check "  解除了停用、清掉了 admin 的登录失败计数" \

@@ -22,7 +22,8 @@ if [ -z "$NEW_PW" ]; then
   echo "::error::Secret「ADMIN_PASSWORD」是空的。先到 Settings → Secrets and variables → Actions 填上新密码，再触发这条流水线。"
   exit 1
 fi
-if [ "${GITHUB_ACTIONS:-}" = "true" ]; then echo "::add-mask::$NEW_PW"; fi
+# 不打 ::add-mask::——新密码来自 Secret，GitHub 本来就替它打码；再打一遍等于把明文写进标准输出，
+# 指望运行器把那一行吞掉（第一版这么写，deploy-local 在 CI 里照出"日志里有新密码"）
 # 和后台改密码同一条规矩（worker/src/index.js）：不然重置成功了，自己再改一次却被拒
 if [ ${#NEW_PW} -lt 8 ] || ! [[ "$NEW_PW" =~ [A-Za-z] ]] || ! [[ "$NEW_PW" =~ [0-9] ]]; then
   echo "::error::Secret 里的新密码不合规矩：至少 8 位，并且同时有字母和数字（长度 ${#NEW_PW}）。没有改动任何东西。"
