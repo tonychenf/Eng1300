@@ -18,10 +18,24 @@ export default function PracticeSummary() {
   const [sum, setSum] = useState(null);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  // 错题的 AI 错因分析（学-1，2026-10-07）：小结一打开就替这一轮做错的题生成。以前只有模考报告页会调，
+  // 练习做错的题永远没有分析。分析失败不影响小结，错题本里每道题还有自己的「生成错因分析」按钮。
+  const [ai, setAi] = useState(null);
 
   useEffect(() => {
     get(`/practice/${attemptId}/summary`).then(setSum).catch((e) => setError(e.message));
   }, [attemptId]);
+
+  const needsAnalysis = !!sum && sum.stats.answered > 0 && sum.stats.accuracy < 100;
+  useEffect(() => {
+    if (!needsAnalysis) return undefined;
+    let alive = true;
+    setAi({ state: 'running' });
+    post(`/ai/attempts/${attemptId}/run`)
+      .then((r) => { if (alive) setAi({ state: 'done', ...(r.wrongItems || { done: 0, failed: 0 }) }); })
+      .catch((e) => { if (alive) setAi({ state: 'error', message: e.message }); });
+    return () => { alive = false; };
+  }, [attemptId, needsAnalysis]);
 
   async function drill(tagId) {
     setBusy(true); setError('');
@@ -57,6 +71,8 @@ export default function PracticeSummary() {
             <Stat label="正确率" value={`${stats.accuracy}%`} />
             <Stat label="覆盖考点" value={stats.knowledgePointCount} />
           </div>
+
+          <AiCard ai={ai} wrongbook={path('/wrongbook')} />
 
           {suggestions.length ? (
             <div className="card card-pad" style={{ marginBottom: 16 }}>
@@ -132,6 +148,29 @@ export default function PracticeSummary() {
         <Link className="btn ghost" to={path('')}>回到首页</Link>
       </div>
     </>
+  );
+}
+
+function AiCard({ ai, wrongbook }) {
+  if (!ai) return null;
+  // 这一轮的错题早就分析过（回头再打开小结），或者错的都是练习不判分的题：没什么可说的
+  if (ai.state === 'done' && !ai.done && !ai.failed) return null;
+  return (
+    <div className="card card-pad" style={{ marginBottom: 16 }} data-testid="practice-ai">
+      <h2 style={{ fontSize: 16, marginBottom: 8 }}>错题的 AI 错因分析</h2>
+      {ai.state === 'running' ? (
+        <p className="small muted" style={{ margin: 0 }}>正在为这一轮做错的题生成错因分析……</p>
+      ) : ai.state === 'error' ? (
+        <p className="small" style={{ margin: 0 }}>
+          这次没生成出来：{String(ai.message).replace(/[。.]$/, "")}。可以稍后到 <Link to={wrongbook}>错题本</Link> 里逐题点「生成错因分析」。
+        </p>
+      ) : (
+        <p className="small" style={{ margin: 0 }}>
+          {ai.done ? <>已为 {ai.done} 道错题生成分析，去 <Link to={wrongbook}>错题本</Link> 看。</> : null}
+          {ai.failed ? <>{ai.done ? ' ' : ''}有 {ai.failed} 道没生成出来，可以在错题本里逐题点「生成错因分析」再试。</> : null}
+        </p>
+      )}
+    </div>
   );
 }
 

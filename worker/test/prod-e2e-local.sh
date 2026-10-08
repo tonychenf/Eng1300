@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # 线上实测的本地彩排（CR-M4）：本地服务 + AI 替身，把流水线里的三个脚本原样跑一遍——
-#   get-admin-token.sh → configure-ai.sh（部署写 AI 配置）→ prod-e2e.sh（线上实测）
+#   ci-account-token.sh（流水线自己的管理员账号）→ configure-ai.sh（部署写 AI 配置）→ prod-e2e.sh（线上实测）
 #
 # 为什么要有这一套：prod-e2e.sh 只在手动触发时对线上跑，XLearn 复制过来之后它一次都没跑成过
 # （地址空着、探针账号没开学科授权），而没有任何东西会发现。这里证明的是**脚本本身**的
@@ -87,10 +87,10 @@ curl -s -o /dev/null -X POST "$BASE/setup" -H 'X-Setup-Token: test-setup-pe2e' \
   -H 'Content-Type: application/json' -d '{"username":"admin","password":"adminpass123"}'
 
 echo
-echo "== 管理员令牌：流水线用的 get-admin-token.sh =="
+echo "== 管理员令牌：流水线用的 ci-account-token.sh（自己的账号，每次随机密码） =="
 ENVF=$(mktemp)
-GITHUB_ENV="$ENVF" WORKER_URL="$URL" ADMIN_PASSWORD=adminpass123 \
-  bash "$REPO_DIR/scripts/ci/get-admin-token.sh" > /tmp/pe2e-token.log 2>&1
+GITHUB_ENV="$ENVF" WORKER_URL="$URL" D1_NAME="$D1_NAME" \
+  bash "$REPO_DIR/scripts/ci/ci-account-token.sh" --local > /tmp/pe2e-token.log 2>&1
 ADMIN_TOKEN=$(grep '^ADMIN_TOKEN=' "$ENVF" | cut -d= -f2-)
 check "拿到了管理员令牌" "$([ -n "$ADMIN_TOKEN" ] && echo yes)" "yes"
 [ -n "$ADMIN_TOKEN" ] || { cat /tmp/pe2e-token.log; exit 1; }
@@ -144,6 +144,8 @@ check "  其中：客观题按库里的标准答案答，只错了故意错一�
 check "  其中：在答案里给模型下指令的那道得分率不高" "$(echo "$OUT" | grep -c 'OK   在答案里给模型下指令的那道没被骗')" "1"
 check "  其中：错题本的正确答案不是空的、作答逐空写" "$(echo "$OUT" | grep -c 'OK   错题本里那道填空的正确答案不是空的')" "1"
 check "  其中：错题分析正好分析了故意错的那一道" "$(echo "$OUT" | grep -c 'OK   错题分析：只有故意错的那一道（1 条）')" "1"
+check "  其中：练习做错的题，错题本逐题按钮生成得出分析" "$(echo "$OUT" | grep -c 'OK   错题本逐题点「生成错因分析」：生成了')" "1"
+check "  其中：练习小结页那一次只分析没点过的那一道、不判分" "$(echo "$OUT" | grep -c 'OK   练习小结页那一次：只分析没点过的那 1 道、不判分')" "1"
 check "  探针账号开通了生化" \
   "$(one "SELECT g.status FROM user_subject_grants g JOIN users u ON u.id = g.user_id
             JOIN subjects s ON s.subject_id = g.subject_id WHERE u.username = 'PROBE01' AND s.code = 'biochem';")" "ACTIVE"

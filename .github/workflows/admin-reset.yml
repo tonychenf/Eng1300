@@ -1,0 +1,91 @@
+name: Reset admin password
+
+# 忘了 admin 密码、或者 admin 被锁住时用（运-2，2026-10-07）。只手动触发。
+#
+# 用法：
+#   1. 到 Settings → Secrets and variables → Actions，把 Secret「ADMIN_PASSWORD」改成新密码
+#      （至少 8 位、字母和数字都要有；Secret 存进去就读不回来，自己另存一份）；
+#   2. 到 Actions → Reset admin password → Run workflow，确认栏填线上库名（worker/wrangler.toml 的 database_name）。
+# 结果：admin 的密码换成 Secret 里的那个、解除停用；已登录的会话全部下线；登录失败计数清零；
+# 最后用新密码真登录一次，证明换上了。
+#
+# 为什么新密码只能走 Secret：仓库是公开的，运行日志和手动触发时填的参数谁都看得见。
+# 部署不再用 admin 的密码（流水线有自己的账号 ci_deploy），所以你在后台改 admin 密码不会弄坏部署，
+# 这条流水线也不必每次跟着跑。
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: '确认：填线上库名（worker/wrangler.toml 的 database_name）'
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  reset:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    # 和部署同一组：不和部署同时改库
+    concurrency:
+      group: deploy-worker
+      cancel-in-progress: false
+    env:
+      # 线上地址本来就是公开的；和 prod-e2e.yml 同一个
+      WORKER_URL: https://xlearn.eng1300-79fe2787.workers.dev
+      CONFIRM_NAME: ${{ inputs.confirm }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Database name (single source - worker/wrangler.toml)
+        run: |
+          N=$(bash scripts/ci/d1-name.sh)
+          echo "D1_NAME=$N" >> "$GITHUB_ENV"
+
+      - name: Check the confirmation before touching anything
+        run: |
+          if [ "$CONFIRM_NAME" != "$D1_NAME" ]; then
+            echo "::error::确认栏填的是「$CONFIRM_NAME」，线上库名是「$D1_NAME」。没有改动任何东西。"
+            exit 1
+          fi
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+        run: npm install --prefix worker --no-audit --no-fund
+
+      - name: Guard against writing to the copied platform's database
+        run: bash scripts/ci/check-db-isolation.sh
+
+      - name: Resolve Cloudflare account
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ACCOUNT_ID_SECRET: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: bash scripts/ci/resolve-account.sh
+
+      - name: Find the database (never creates)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ALLOW_CREATE_DB: 'false'
+        run: bash scripts/ci/find-or-create-d1.sh
+
+      - name: Point wrangler.toml at the database
+        working-directory: worker
+        run: |
+          sed -i "s|^database_id = \".*\"|database_id = \"$D1_DATABASE_ID\"|" wrangler.toml
+          grep '^database_id' wrangler.toml
+
+      - name: Re-check isolation after the database id is filled in
+        run: bash scripts/ci/check-db-isolation.sh
+
+      - name: Reset admin password to the ADMIN_PASSWORD secret
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+          ADMIN_PASS: ${{ secrets.ADMIN_PASS }}
+        run: bash scripts/ci/reset-admin-password.sh --remote

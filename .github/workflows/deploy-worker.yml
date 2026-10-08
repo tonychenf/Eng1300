@@ -5,9 +5,21 @@ name: Deploy XLearn worker
 # 初始化超级管理员，全部自动完成，只需要仓库里配好 Secrets。
 
 on:
+  # 部署只从 main 来（2026-10-07 用户定的）：各会话在自己的 claude/... 分支上开发，开 PR 合进 main。
+  # 以前写死的是某一个会话的分支名，换一个会话、分到新分支名，推上去既不部署也不跑测试，而且不报错。
   push:
     branches:
-      - claude/eng1300-multidisciplinary-platform-ozri7n
+      - main
+    paths:
+      - 'worker/**'
+      - 'web/**'
+      - 'data/**'
+      - 'scripts/**'
+      - '.github/workflows/deploy-worker.yml'
+  # PR 上只跑测试门（deploy job 见下面的 if），合进 main 之前就知道红没红。路径和上面一样（两处同改）
+  pull_request:
+    branches:
+      - main
     paths:
       - 'worker/**'
       - 'web/**'
@@ -29,7 +41,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: deploy-worker
+  # 部署（推送到 main、手动触发）排一队、不互相取消；PR 上的测试各排各的，不挡部署
+  group: ${{ github.event_name == 'pull_request' && format('pr-test-{0}', github.event.pull_request.number) || 'deploy-worker' }}
   cancel-in-progress: false
 
 env:
@@ -58,7 +71,8 @@ jobs:
       # 代码都不部署。真正兜底的是部署时导题库那一步（比对库里的指纹）；这里让它更早红，并且连图片
       # 也看得到——图片随前端上传，改了图已导入的题立刻换图，导题库那一步看不见。
       - name: Imported question-bank files must not change
-        run: bash scripts/ci/check-bank-files.sh "${{ github.event.before }}" "${{ github.sha }}"
+        # PR 上拿目标分支（main）当前的版本比；推送到 main 时拿推送前的版本比
+        run: bash scripts/ci/check-bank-files.sh "${{ github.event.pull_request.base.sha || github.event.before }}" "${{ github.sha }}"
 
       - uses: actions/setup-node@v5
         with:
@@ -102,8 +116,9 @@ jobs:
           if-no-files-found: warn
 
   deploy:
-    # 测试红了就不部署（CR-H3）。手动触发的部署也一样要先过测试。
+    # 测试红了就不部署（CR-H3）。手动触发的部署也一样要先过测试。PR 上只跑测试，不部署。
     needs: test
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
@@ -298,23 +313,15 @@ jobs:
           ADMIN_PASS: ${{ secrets.ADMIN_PASS }}
         run: bash scripts/ci/bootstrap-admin.sh
 
-      - name: Clear admin lockout
-        working-directory: worker
+      # 流水线用自己的管理员账号 ci_deploy（运-2，2026-10-07）：每次现生成随机密码写进库再登录，
+      # 不存、不打日志。以前用 Secret 里的 admin 密码：管理员在后台改了密码，下一次部署就登录不上；
+      # admin 被人试错锁住，还得每次部署替它清锁定——那等于每次部署都给猜密码的人重置一次计数，一并去掉。
+      # 必须排在「Bootstrap super admin」后面：新库上 /api/setup 只在用户表为空时建 admin，先建了
+      # ci_deploy，admin 就永远建不出来。admin 忘了密码走手动流水线 admin-reset.yml。
+      - name: Pipeline account token
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: |
-          # 连续 5 次密码错误会把 admin 锁 10 分钟（migrations/0003）。人在网页上
-          # 试错几次就足以让整条流水线登不进去，所以每次部署先把 admin 的失败计数
-          # 清掉。只清 admin：学员账号被锁由管理员在后台重置密码解决，那个接口
-          # 本身就会一并清掉锁定记录。
-          # 计数按「用户名|来源 IP」记（CR-M3），清哪些行见这个文件
-          npx wrangler d1 execute "$D1_NAME" --remote --yes --file=sql/clear-admin-lockout.sql
-
-      - name: Get admin token
-        env:
-          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
-          ADMIN_PASS: ${{ secrets.ADMIN_PASS }}
-        run: bash scripts/ci/get-admin-token.sh
+        run: bash scripts/ci/ci-account-token.sh --remote
 
       - name: Bootstrap student accounts
         env:

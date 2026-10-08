@@ -11,13 +11,8 @@ name: Restore XLearn database
 # 填错了停在第一步，什么都不碰。确认栏要手输库名，防手滑。
 
 on:
-  # 只为让 GitHub 认得这条流水线：只手动触发的流水线在非默认分支上没跑过一次就没法手动触发。
-  # 推送那一次什么都不做（下面 register 只打一行字）。
-  push:
-    branches:
-      - claude/eng1300-multidisciplinary-platform-ozri7n
-    paths:
-      - '.github/workflows/d1-restore.yml'
+  # 只手动触发。以前多一个推送触发，只为在非默认分支上让 GitHub 认得它（推送那次什么都不做）；
+  # 流水线挪到 main 之后不需要了（2026-10-07）
   workflow_dispatch:
     inputs:
       mode:
@@ -45,18 +40,11 @@ permissions:
   actions: read   # backup 方式要下载流水线附件
 
 jobs:
-  register:
-    if: github.event_name == 'push'
-    runs-on: ubuntu-24.04
-    steps:
-      - run: echo "推送只为让 GitHub 认得这条流水线，什么都没做。要恢复数据请手动触发，见 docs/数据恢复手册.md。"
-
   restore:
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-24.04
     timeout-minutes: 40
-    # 和部署同一组：恢复和部署不会同时跑。只加在这个 job 上——加在整条流水线上的话，推送时那次
-    # 注册运行也要排在部署后面，排队时再来一次部署它就被取消了。
+    # 和部署同一组：恢复和部署不会同时跑
     concurrency:
       group: deploy-worker
       cancel-in-progress: false

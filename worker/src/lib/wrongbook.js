@@ -19,6 +19,9 @@ export async function wrongbookWrites(db, userId, courseCode, entries, { attempt
 
   const writes = [];
 
+  // 再错一次：错因分析标回「待生成」（学-2，2026-10-07）。以前只累计次数，旧分析一直留着——
+  // 第二次错法不一样（上次错第 1 空、这次错第 2 空），学员看到的还是上一次的分析。
+  // 旧的分析文字不清掉：新分析生成之前照旧显示（错题本标"这次又错了，下面还是上一次的分析"），失败了也不至于一片空白。
   for (const questionId of wrong) {
     writes.push(
       db.prepare(
@@ -32,6 +35,7 @@ export async function wrongbookWrites(db, userId, courseCode, entries, { attempt
            corrected = 0,
            last_attempt_id = excluded.last_attempt_id,
            source = excluded.source,
+           ai_status = '待生成',
            updated_at = datetime('now')`
       ).bind(userId, courseCode, questionId, attemptId || null, source || 'EXAM')
     );

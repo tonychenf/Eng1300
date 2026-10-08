@@ -7,12 +7,9 @@ name: AI API smoke test
 #   图片 --[DeepSeek-OCR]--> 纯文本 --[Qwen3-8B]--> 结构化JSON + 考点标签
 
 on:
+  # 只手动触发：会真的调 AI 花钱。以前的推送触发只为在非默认分支上让 GitHub 认得它，流水线
+  # 挪到 main 之后不需要了（2026-10-07）
   workflow_dispatch:
-  push:
-    branches:
-      - claude/eng1300-multidisciplinary-platform-ozri7n
-    paths:
-      - '.github/workflows/ai-smoke-test.yml'
 
 permissions:
   contents: read

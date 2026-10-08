@@ -11,7 +11,7 @@ name: D1 recovery drill
 on:
   push:
     branches:
-      - claude/eng1300-multidisciplinary-platform-ozri7n
+      - main
     paths:
       - '.github/workflows/d1-drill.yml'
       - 'scripts/ci/d1-*.sh'
