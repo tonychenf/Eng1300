@@ -193,7 +193,7 @@ check "  IP-A 随即能用新密码登录" "$(login_code S103 "$NEWPW" "$IP_A")"
 BEFORE=$(one "SELECT COUNT(*) FROM login_attempts;")
 check "用户名不合规则：401" "$(login_code 'no such user!' whatever1 "$IP_A")" "401"
 check "  不合规则的登录不写失败计数（不给人白刷写入额度）" "$(one "SELECT COUNT(*) FROM login_attempts;")" "$BEFORE"
-# 流水线「Clear admin lockout」一步执行的就是 sql/clear-admin-lockout.sql
+# 重置 admin 密码的流水线（admin-reset.yml → reset-admin-password.sh）清锁定执行的就是 sql/clear-admin-lockout.sql
 for i in 1 2 3 4 5; do login_code admin wrongpass9 "$IP_A" >/dev/null; done
 check "admin 在 IP-A 被锁" "$(login_code admin admin12345 "$IP_A")" "429"
 npx wrangler d1 execute "$D1_NAME" --local --persist-to "$PERSIST" --file=sql/clear-admin-lockout.sql >/dev/null 2>&1

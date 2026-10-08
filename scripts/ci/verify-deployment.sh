@@ -41,7 +41,7 @@ fi
 if [ -n "${ADMIN_TOKEN:-}" ]; then
   ROLE=$(curl -sS -m 20 "$WORKER_URL/api/me" -H "Authorization: Bearer $ADMIN_TOKEN" \
     | jq -r '.user.role // "none"' || echo none)
-  check "admin 令牌有效且为超级管理员" "$ROLE" "SUPER_ADMIN"
+  check "流水线账号（${CI_ACCOUNT:-没设 CI_ACCOUNT}）的令牌有效且为超级管理员" "$ROLE" "SUPER_ADMIN"
 
   TOKEN="$ADMIN_TOKEN"
   {
@@ -57,12 +57,14 @@ if [ -n "${ADMIN_TOKEN:-}" ]; then
     # 这条不是凑数：D1 免费版写入额度用尽时，读接口全都正常，只有写会失败，
     # 所以上面那些检查全绿也说明不了站点能用。
     #
-    # 哨兵是 admin 这次登录写下的"最后登录时间"：每次部署都要登录一次（取管理员令牌那步），
+    # 哨兵是流水线账号这次登录写下的"最后登录时间"：每次部署都要登录一次（取令牌那步，ci-account-token.sh），
     # 额度用尽时登录照样放行，只是这一笔写不进去（记账类写入，失败吞掉）。所以它不早于
     # 这次登录的时刻，就说明这次部署的写入落了库；登录本身成没成功说明不了这件事。
     # 以前读的是「教学」AI 配置的更新时间，靠的是它每次部署都被重写——AI 配置改成只补不改
     # 之后（CR-M10）它就不变了。留 60 秒给运行器和 D1 的时钟差。
-    LAST_LOGIN=$(jq -r '[.users[] | select(.username == "admin")][0].last_login_at // ""' "$T/users.json" 2>/dev/null || true)
+    # 2026-10-07 起登录的是流水线账号（运-2），名字由取令牌那步交接过来；没交接上就读不到、当场报红，
+    # 不回落成 admin——admin 现在不是每次部署都登录，拿它比只会恒红或者碰巧绿。
+    LAST_LOGIN=$(jq -r --arg u "${CI_ACCOUNT:-}" '[.users[] | select(.username == $u)][0].last_login_at // ""' "$T/users.json" 2>/dev/null || true)
     if [ -z "${ADMIN_LOGIN_AT:-}" ] || [ -z "$LAST_LOGIN" ]; then
       check "写入已恢复（这次登录的最后登录时间已落库）" \
         "读不到（登录时刻 ${ADMIN_LOGIN_AT:-无}，最后登录时间 ${LAST_LOGIN:-无}）" "读得到"
@@ -70,9 +72,9 @@ if [ -n "${ADMIN_TOKEN:-}" ]; then
       # last_login_at 由 SQLite datetime('now') 生成，是世界时
       LAST_EPOCH=$(date -u -d "${LAST_LOGIN}Z" +%s 2>/dev/null || echo 0)
       if [ "$LAST_EPOCH" -ge $(( ADMIN_LOGIN_AT - 60 )) ]; then
-        echo "  OK   写入已恢复（admin 这次登录写的最后登录时间 $LAST_LOGIN 已落库）"
+        echo "  OK   写入已恢复（流水线账号 $CI_ACCOUNT 这次登录写的最后登录时间 $LAST_LOGIN 已落库）"
       else
-        echo "  FAIL 写入未恢复：admin 最后登录时间停在 $LAST_LOGIN，早于这次登录（$(date -u -d "@$ADMIN_LOGIN_AT" '+%F %T')），说明这次没写进去"
+        echo "  FAIL 写入未恢复：$CI_ACCOUNT 最后登录时间停在 $LAST_LOGIN，早于这次登录（$(date -u -d "@$ADMIN_LOGIN_AT" '+%F %T')），说明这次没写进去"
         FAIL=1
       fi
     fi

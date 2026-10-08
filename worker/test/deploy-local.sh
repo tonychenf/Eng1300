@@ -85,8 +85,8 @@ deploy() {
   step "记下部署前的发布状态" bash "$CI/record-published.sh" --local || return 1
   step "导题库" env SEED_LOCAL=1 bash "$CI/seed-if-changed.sh" || return 1
   step "建超级管理员" bash "$CI/bootstrap-admin.sh" || return 1
-  step "清 admin 锁定" npx wrangler d1 execute "$D1_NAME" --local --file=sql/clear-admin-lockout.sql || return 1
-  step "取管理员令牌" bash "$CI/get-admin-token.sh" || return 1
+  # 流水线自己的账号（运-2）：每次现生成随机密码写进库再登录。不再用 admin 的密码、不再替 admin 清锁定
+  step "取流水线账号令牌" bash "$CI/ci-account-token.sh" --local || return 1
   load_env
   step "建学员" bash "$CI/bootstrap-students.sh" || return 1
   step "写 AI 配置" bash "$CI/configure-ai.sh" || return 1
@@ -171,6 +171,16 @@ T002=$(one "SELECT id FROM users WHERE username = 'T002';")
 api -o /dev/null -X PUT "$BASE/admin/users/$T002/subjects" -H 'Content-Type: application/json' \
   -d '{"subjects":[{"code":"english"}]}'
 check "（前提）撤掉了 T002 的生化" "$(grants_of T002)" "english"
+# 运-2：管理员照需求文档的建议改了自己的密码。以前流水线拿 Secret 里的 admin 密码登录，下一次部署当场登录不上
+ADMIN_JWT=$(curl -s -m 20 -X POST "$BASE/auth/login" -H 'Content-Type: application/json' \
+  -d '{"username":"admin","password":"adminpass123"}' | jq -r '.token // empty')
+CODE=$(curl -s -m 20 -o /dev/null -w '%{http_code}' -X POST "$BASE/me/password" -H "Authorization: Bearer $ADMIN_JWT" \
+  -H 'Content-Type: application/json' -d '{"currentPassword":"adminpass123","newPassword":"Changed2026x"}')
+check "（前提）admin 在后台把自己的密码改了" "$CODE" "200"
+# 有人在猜 admin 的密码、把它锁住了。以前每次部署都替它清掉计数，等于给猜的人重置一次
+exec_sql "INSERT OR REPLACE INTO login_attempts (username, fail_count, locked_until, last_failed_at)
+          VALUES ('admin|203.0.113.9', 5, datetime('now', '+10 minutes'), datetime('now'));"
+OLD_CI_TOKEN="$ADMIN_TOKEN"
 # 内容要改的正确做法：用新的内容组编号加一个新文件（题目、大题编号跟着新编号走）。
 # 英语、生化各加一个：英语用 examId/title，生化用 groupId/label。英语那个专门照 M16——
 # 线上验证以前断"英语 20 套 / 1020 道"，按正规做法加一个英语文件它就红。
@@ -212,12 +222,25 @@ check "停用的 $RQ 还是停用、还是草稿（部署不会让它复活）" 
 check "后台改过的图片解析、教学没被冲掉（M10）" "$(ai_model PARSING)/$(ai_model TUTORING)" "admin-ocr/admin-tutor"
 check "  并且说明了三档都是配过就不动" "$(grep -c '已经配过，不动' "$WORK/deploy-2.log")" "3"
 check "撤掉的 T002 生化没被补回来" "$(grants_of T002)" "english"
+check "admin 改过自己的密码，部署照样全绿：流水线用的是自己的账号（运-2）" \
+  "$(grep -c '^  OK   写入已恢复（流水线账号 ci_deploy' "$WORK/verify-2.log")/$VERIFY_RC" "1/0"
+check "  上一次部署的流水线令牌作废了（每次换密码、令牌版本加一）" \
+  "$(curl -s -m 20 -o /dev/null -w '%{http_code}' "$BASE/me" -H "Authorization: Bearer $OLD_CI_TOKEN")" "401"
+check "  admin 自己的会话没受影响" \
+  "$(curl -s -m 20 "$BASE/me" -H "Authorization: Bearer $(curl -s -m 20 -X POST "$BASE/auth/login" \
+      -H 'Content-Type: application/json' -H 'CF-Connecting-IP: 198.51.100.7' \
+      -d '{"username":"admin","password":"Changed2026x"}' | jq -r '.token // empty')" | jq -r '.user.username // "无"')" "admin"
+check "  部署不再替 admin 清登录失败计数" \
+  "$(one "SELECT fail_count FROM login_attempts WHERE username = 'admin|203.0.113.9';")" "5"
+check "  流水线账号是超级管理员、不算学员" \
+  "$(one "SELECT role || '/' || disabled FROM users WHERE username = 'ci_deploy';")/$(api "$BASE/admin/stats/overview" | jq -r '.overview.students // "读不到"')" \
+  "SUPER_ADMIN/0/10"   # 学员只有部署建的 T001–T010
 check "其他学员的授权没动" "$(grants_of T001)" "biochem,english"
 
 echo
 echo "== 线上验证能红：写入哨兵 =="
 # 额度用尽时登录照样放行，只是"最后登录时间"写不进去——这里直接把它改回一个旧值来模拟
-exec_sql "UPDATE users SET last_login_at = '2000-01-01 00:00:00' WHERE username = 'admin';"
+exec_sql "UPDATE users SET last_login_at = '2000-01-01 00:00:00' WHERE username = 'ci_deploy';"
 bash "$CI/verify-deployment.sh" > "$WORK/verify-sentinel.log" 2>&1; RC=$?
 check "最后登录时间没写进去：线上验证失败" "$RC" "1"
 check "  并且点名是写入没恢复" "$(grep -c '^  FAIL 写入未恢复' "$WORK/verify-sentinel.log")" "1"
@@ -228,7 +251,7 @@ echo "== 线上验证能红：部署改了发布状态 =="
 # 部署前记的是第 2 次部署开头的状态（$R 当时是已发布）。直接改库模拟部署出的错：
 # 把一章冲回了草稿（以前种子整章重导就会这样）
 exec_sql "UPDATE exams SET status = '待校对' WHERE exam_id = '$R';"
-exec_sql "UPDATE users SET last_login_at = datetime('now') WHERE username = 'admin';"
+exec_sql "UPDATE users SET last_login_at = datetime('now') WHERE username = 'ci_deploy';"
 bash "$CI/verify-deployment.sh" > "$WORK/verify-lost.log" 2>&1; RC=$?
 check "部署弄丢了一章已发布：线上验证失败" "$RC" "1"
 check "  并且点名是哪一章" "$(grep '^  FAIL 部署改变了章节的发布状态' "$WORK/verify-lost.log" | grep -c "少了 $R")" "1"
@@ -334,6 +357,40 @@ check "  点名少题的章节和两边的题数" \
 check "  点名库里没有的章节" \
   "$(grep '^  FAIL 题库文件和库里对不上' "$WORK/verify-mismatch.log" | grep -c "$(basename "$EN_SRC" .json)-v3（文件 [0-9]* 道，库里没有这一章）")" "1"
 check "  红的只有这一条" "$(grep -c '^  FAIL' "$WORK/verify-mismatch.log")" "1"
+
+echo
+echo "== 忘了 admin 密码：手动流水线 admin-reset.yml 跑的 reset-admin-password.sh（运-2） =="
+# 以前没有出路：需求文档写"重新运行初始化脚本"，可初始化脚本见到用户表里有人就 409 跳过
+admin_login() { curl -s -m 20 -X POST "$BASE/auth/login" -H 'Content-Type: application/json' \
+  -H 'CF-Connecting-IP: 198.51.100.7' -d "{\"username\":\"admin\",\"password\":\"$1\"}"; }
+OLD_ADMIN=$(admin_login Changed2026x | jq -r '.token // empty')
+check "（前提）admin 现在的密码是它自己改的那个" "$([ -n "$OLD_ADMIN" ] && echo yes)" "yes"
+HASH_BEFORE=$(one "SELECT password_hash FROM users WHERE username = 'admin';")
+ADMIN_PASSWORD=short1 bash "$CI/reset-admin-password.sh" --local > "$WORK/reset-weak.log" 2>&1; RC=$?
+check "Secret 里的新密码太弱：拒绝，库里一个字没动" \
+  "$RC/$(one "SELECT password_hash = '$HASH_BEFORE' FROM users WHERE username = 'admin';")" "1/1"
+exec_sql "UPDATE users SET username = 'admin_gone' WHERE username = 'admin';"
+ADMIN_PASSWORD=Reset2026abc bash "$CI/reset-admin-password.sh" --local > "$WORK/reset-noadmin.log" 2>&1; RC=$?
+check "库里没有 admin：拒绝并说清楚（UPDATE 改了 0 行也不报错，不能当成重置成功）" \
+  "$RC/$(grep -c '库里找不到 admin' "$WORK/reset-noadmin.log")" "1/1"
+exec_sql "UPDATE users SET username = 'admin' WHERE username = 'admin_gone';"
+# 顺带：admin 被停用了、又被人试错锁住了（上面那一段锁的 203.0.113.9 还在）
+exec_sql "UPDATE users SET disabled = 1 WHERE username = 'admin';"
+# 带上 GITHUB_ACTIONS=true，走的是流水线里那条路：第一版脚本在流水线里多打一行 ::add-mask::<新密码>，
+# 本地不设这个变量就打不出来、这里照样绿，推上去 CI 才红（2026-10-08 PR #2）
+GITHUB_ACTIONS=true ADMIN_PASSWORD=Reset2026abc bash "$CI/reset-admin-password.sh" --local > "$WORK/reset.log" 2>&1; RC=$?
+check "重置成功，并用新密码真登录了一次" "$RC/$(grep -c '用新密码登录 admin 成功' "$WORK/reset.log")" "0/1"
+# 计数要在下面"旧密码不能登录"之前看：那次试错会再记一笔
+check "  解除了停用、清掉了 admin 的登录失败计数" \
+  "$(one "SELECT disabled FROM users WHERE username = 'admin';")/$(one "SELECT COUNT(*) FROM login_attempts WHERE substr(username, 1, 6) = 'admin|';")" "0/0"
+check "  新密码能登录、旧密码不能" \
+  "$([ -n "$(admin_login Reset2026abc | jq -r '.token // empty')" ] && echo 能)/$(admin_login Changed2026x | jq -r '.error // "登进去了"')" \
+  "能/invalid_credentials"
+check "  重置前的会话全部下线" \
+  "$(curl -s -m 20 -o /dev/null -w '%{http_code}' "$BASE/me" -H "Authorization: Bearer $OLD_ADMIN")" "401"
+check "  日志里没有新密码（仓库公开，运行日志谁都看得见）" "$(grep -c 'Reset2026abc' "$WORK/reset.log")" "0"
+check "  流水线账号不受影响" \
+  "$(curl -s -m 20 -o /dev/null -w '%{http_code}' "$BASE/me" -H "Authorization: Bearer $ADMIN_TOKEN")" "200"
 
 echo
 echo "== 小结: $PASS 通过, $FAIL 失败 =="

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # 生化学员端的浏览器检查（2026-10-04）：练习、模考作答、成绩报告、历史记录，三种宽度。
+# 2026-10-07 加：练习小结页自动生成错因分析、错题本逐题按钮、再错之后标出"还是上一次的分析"（学-1、学-2）。
 #
 # 以前没有任何一套用浏览器打开过生化的名词解释：前端按题型名猜控件，不是作文、不是填空就当
 # 选择题渲染，名词解释没有选项，一打开整页白屏；生化填空也被套上英语的"给定词："。
@@ -162,12 +163,30 @@ STEM6=$(one "SELECT substr(stem, 1, 16) FROM questions WHERE question_id = '$FIL
 echo "  q06 的候选池：$POOL6"
 for v in "${TERMP[@]}" "${FILLP[@]}" "${FILLW[@]}"; do [ -n "$v" ] && [ "$v" != null ] || { echo "开练习失败"; exit 1; }; done
 
+# 错题本里逐题的「生成错因分析」按钮（学-1，2026-10-07）：每种宽度浏览器在一次选择题练习里现答错一道，
+# 不进小结、直接去错题本点按钮（和练习做到一半就离开一样）。
+# 不在这里用接口预先答错：卷子是整章、选择题全答对，前两种宽度交了两张卷，预先答错的题连对两次就自动"已订正"，
+# 第三种宽度的默认列表里根本看不到它（第一版就这么红的）。
+# 浏览器要知道哪个选项是错的：按题干开头（去掉空白的前 12 个字）给出每道选择题的标准答案
+CHOICEW=()
+for i in 1 2 3; do
+  CHOICEW+=("$(post /practice/start '{"courseCode":"biochem-main","sectionTypes":["选择题"]}' | jq -r '.attemptId')")
+done
+for v in "${CHOICEW[@]}"; do [ -n "$v" ] && [ "$v" != null ] || { echo "开选择题练习失败"; exit 1; }; done
+CHOICE_KEYS=$(sql "SELECT stem, answer FROM questions WHERE course_code = 'biochem-main' AND question_type = 'single_choice';" \
+  | jq -c '[.[0].results[] | {key: (.stem | gsub("\\s"; "") | .[0:12]), value: .answer}] | from_entries')
+NCK=$(echo "$CHOICE_KEYS" | jq 'length')
+NCQ=$(one "SELECT COUNT(*) FROM questions WHERE course_code = 'biochem-main' AND question_type = 'single_choice';")
+[ "$NCK" = "$NCQ" ] || { echo "选择题题干的前 12 个字有重复（$NCK 个键、$NCQ 道题），浏览器认不出是哪道"; exit 1; }
+echo "  选择题 $NCQ 道，题干开头互不相同"
+
 echo "== 浏览器检查 =="
 UI_BASE="http://127.0.0.1:$PORT" UI_USER=UIB01 UI_PASS="$UI_PASS" \
   UI_EXAMS="$(printf '%s\n' "${EXAMS[@]}" | jq -R . | jq -sc .)" \
   UI_TERMP="$(printf '%s\n' "${TERMP[@]}" | jq -R . | jq -sc .)" \
   UI_FILLP="$(printf '%s\n' "${FILLP[@]}" | jq -R . | jq -sc .)" \
   UI_FILLW="$(printf '%s\n' "${FILLW[@]}" | jq -R . | jq -sc .)" UI_POOL6="$POOL6" UI_STEM6="$STEM6" \
+  UI_CHOICEW="$(printf '%s\n' "${CHOICEW[@]}" | jq -R . | jq -sc .)" UI_CHOICE_KEYS="$CHOICE_KEYS" \
   UI_FILL_ANS="$FILL_ANS" UI_N_SUBJ="$N_SUBJ" UI_SUBJ_PTS="$SUBJ_PTS" UI_TOTAL="$TOTAL" \
   UI_TERM_SEC="$TERM_SEC" UI_TERM_N="$TERM_N" UI_FILL_SEC="$FILL_SEC" UI_PARTS="$PARTS" \
   node test/ui-bio-exam.mjs

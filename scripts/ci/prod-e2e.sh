@@ -5,6 +5,7 @@
 #   三、生化模考（2026-10-04 / 10-07）：组一张生化卷，客观题照标准答案答、只错一空；三道名词解释一道照参考
 #       采分点写、一道跑题、一道在答案里给模型下指令。核对真模型逐点批改高低分得开、不被作答里的指令带偏、
 #       每个采分点都有理由；错题本和错题分析拿到的是人话的正确答案
+#       接着练两道选择题、都答错：一道在错题本里逐题生成分析，另一道交给练习小结页那一次调用（学-1，2026-10-07）
 #
 # 为什么非要在 GitHub Actions 里跑：开发沙箱的出站策略拒绝 workers.dev，
 # 本机连不上线上；而这条链路里的 AI 调用又连不上真实服务商，本地只能用替身。
@@ -300,19 +301,18 @@ else
               else .out[($x.ord | tostring)] = $x.answer end)
           | .out | tojson end' "$REF"
   }
-  # 故意错一空的那道：有两个空以上的填空，把它的第 1 空换成"不知道"。挑这个探针还没被分析过的——
-  # 同一道题再错，错题本不会重新分析（旧的分析留着，见 CR 文档），而生化这张卷每次都是整章、题是同一批
+  # 故意错一空的那道：有两个空以上的填空，把它的第 1 空换成"不知道"。这个探针每次都是整章、题是同一批，
+  # 这道多半以前错过、分析过——同一道题再错，分析按这次的作答重写（学-2，2026-10-07；以前旧分析留着、
+  # 这里得专门挑没分析过的，挑完了就只能 0 条）
   MULTI='[.sections[].questions[] | select(.questionType == "fill_text" and ((.items // []) | length) >= 2) | .questionId]'
-  DONE_IDS=$(api -G "$WORKER_URL/api/wrongbook" "${S[@]}" --data-urlencode "courseCode=biochem-main" \
+  WRONG_Q=$(echo "$BPAPER" | jq -r "$MULTI | .[0] // \"\"")
+  WAS=$(api -G "$WORKER_URL/api/wrongbook" "${S[@]}" --data-urlencode "courseCode=biochem-main" \
       --data-urlencode "includeCorrected=1" --data-urlencode "limit=200" \
-    | jq -c '[(.items // [])[] | select(.aiStatus == "已生成") | .questionId]')
-  WRONG_Q=$(echo "$BPAPER" | jq -r --argjson done "${DONE_IDS:-[]}" "$MULTI | map(select(. as \$q | \$done | index(\$q) | not)) | .[0] // \"\"")
+    | jq -r --arg q "$WRONG_Q" '[(.items // [])[] | select(.questionId == $q) | .aiStatus][0] // "没错过"')
+  echo "     故意错一空的是 $WRONG_Q（这个探针以前：$WAS）"
   WANT_WD=1
-  if [ -z "$WRONG_Q" ]; then
-    WRONG_Q=$(echo "$BPAPER" | jq -r "$MULTI | .[0] // \"\"")
-    WANT_WD=0
-    echo "     （这个探针把每道多空填空都错过、分析过了；同一道题再错不重新分析，这次错题分析是 0 条）"
-  fi
+  # 选择题的标准答案留一份，练习那段要故意答错
+  CHOICE_KEYS=$(jq -c 'select(.type == "single_choice") | {(.id): .answer}' "$REF" | jq -sc 'add // {}')
   read -r GOOD_Q BAD_Q INJ_Q < <(echo "$BPAPER" | jq -r '[.sections[].questions[] | select(.questionType == "term_explain") | .questionId] | "\(.[0]) \(.[1]) \(.[2])"')
   GOOD_ANS=$(jq -r --arg q "$GOOD_Q" 'select(.id == $q) | [.items[] | select(.kind == "SCORE_POINT") | .answer] | join("；")' "$REF")
   BAD_ANS='今天天气很好，下课以后我和同学去公园散步，还买了两个冰淇淋。'
@@ -383,6 +383,43 @@ else
   echo "     正确答案：$(echo "$WB" | jq -r '.answerKeyText // ""' | head -c 200)"
   echo "     你的答案：$(echo "$WB" | jq -r '.lastAnswerText // ""' | head -c 200)"
   echo "     AI 错因分析（真模型，人看一眼它说的正确答案对不对）：$(echo "$WB" | jq -r '.errorAnalysis // "（没有）"' | head -c 300)"
+
+  # 练习做错的题也有错因分析（学-1，2026-10-07）。以前只有模考报告页会调分析，练习做错的永远没有。
+  # 练两道选择题、都故意答错：一道在错题本里逐题点按钮（真模型一次），另一道交给练习小结页那一次调用——
+  # 它只该分析剩下的那一道（点过的不重跑），也不该碰判分（练习里没有要 AI 判的分）
+  echo "     -- 练习 --"
+  PST=$(api -X POST "$WORKER_URL/api/practice/start" "${S[@]}" -H 'Content-Type: application/json' \
+    -d '{"courseCode":"biochem-main","sectionTypes":["选择题"]}')
+  PATT=$(echo "$PST" | jq -r '.attemptId // ""')
+  PQS=()
+  for _ in 1 2; do
+    [ -n "$PATT" ] || break
+    PQ=$(api "$WORKER_URL/api/practice/$PATT/next" "${S[@]}" | jq -r '.question.questionId // ""')
+    [ -n "$PQ" ] || break
+    PK=$(echo "$CHOICE_KEYS" | jq -r --arg q "$PQ" '.[$q] // ""')
+    PW_=$(for L in A B C D; do [ "$L" != "$PK" ] && { echo "$L"; break; }; done)
+    PR=$(api -X POST "$WORKER_URL/api/practice/$PATT/answer" "${S[@]}" -H 'Content-Type: application/json' \
+      -d "$(jq -n --arg q "$PQ" --arg a "$PW_" '{questionId:$q,answer:$a}')")
+    [ "$(echo "$PR" | jq -r '.isCorrect')" = "0" ] && PQS+=("$PQ")
+  done
+  api -o /dev/null -X POST "$WORKER_URL/api/practice/$PATT/end" "${S[@]}"
+  check "练习：两道选择题都故意答错了" "${#PQS[@]}" "2"
+  if [ "${#PQS[@]}" = "2" ]; then
+    WID=$(api -G "$WORKER_URL/api/wrongbook" "${S[@]}" --data-urlencode "courseCode=biochem-main" \
+      | jq -r --arg q "${PQS[1]}" '[.items[] | select(.questionId == $q) | .id][0] // ""')
+    T0=$(date +%s)
+    ONE=$(curl -sS -m 60 -X POST "$WORKER_URL/api/wrongbook/$WID/analyze" "${S[@]}")
+    check "错题本逐题点「生成错因分析」：生成了、带着分析文字" \
+      "$(echo "$ONE" | jq -r '"\(.status)/\(.item.aiStatus)/\((.item.errorAnalysis // "") | length > 0)"')" "generated/已生成/true"
+    echo "     用时 $(( $(date +%s) - T0 )) 秒；分析：$(echo "$ONE" | jq -r '.item.errorAnalysis // ""' | head -c 200)"
+    PRUN=$(curl -sS -m 120 -X POST "$WORKER_URL/api/ai/attempts/$PATT/run" "${S[@]}")
+    check "练习小结页那一次：只分析没点过的那 1 道、不判分" \
+      "$(echo "$PRUN" | jq -r '"\(.mode)/\(.wrongItems.done)/\(.wrongItems.failed)/\(.subjective)"')" "PRACTICE/1/0/null"
+    PWB=$(api -G "$WORKER_URL/api/wrongbook" "${S[@]}" --data-urlencode "courseCode=biochem-main" \
+      | jq -c --arg q "${PQS[0]}" '.items[] | select(.questionId == $q)')
+    check "  错题本里那道有了分析" "$(echo "$PWB" | jq -r '"\(.aiStatus)/\((.errorAnalysis // "") | length > 0)"')" "已生成/true"
+    echo "     分析：$(echo "$PWB" | jq -r '.errorAnalysis // ""' | head -c 200)"
+  fi
 fi
 
 echo

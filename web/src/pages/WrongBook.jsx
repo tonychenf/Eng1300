@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { get } from '../api.js';
+import { get, post } from '../api.js';
 import { Alert, Empty, Loading, PageHead } from '../components/ui.jsx';
 import { optionLetter, optionText } from '../components/questions.jsx';
 import { useSubject } from '../subject.jsx';
@@ -14,6 +14,25 @@ export default function WrongBook() {
   const [data, setData] = useState(null);
   const [open, setOpen] = useState(null);
   const [error, setError] = useState('');
+  // 逐题生成错因分析（学-1）：正在跑的那一道、跑失败的那一道的提示
+  const [analyzing, setAnalyzing] = useState(null);
+  const [aiError, setAiError] = useState(null);
+
+  async function analyze(it) {
+    setAnalyzing(it.id); setAiError(null);
+    try {
+      const r = await post(`/wrongbook/${it.id}/analyze`);
+      if (r.item) {
+        setData((d) => ({ ...d, items: d.items.map((x) => (x.id === it.id ? { ...x, ...r.item } : x)) }));
+      }
+    } catch (e) {
+      setAiError({ id: it.id, message: e.message });
+      // 失败了状态会变成「待重试」：照服务端的结果更新，按钮文案跟着变
+      if (e.payload?.item) {
+        setData((d) => ({ ...d, items: d.items.map((x) => (x.id === it.id ? { ...x, ...e.payload.item } : x)) }));
+      }
+    } finally { setAnalyzing(null); }
+  }
 
   // 课程码只从本学科的课程里取，取定之前不发请求（CR-H1）。第一版初始是空串、
   // 挂载时就发了一次：不带课程码的 /wrongbook 是跨学科的，会先把别的学科的错题拉回来，
@@ -145,7 +164,15 @@ export default function WrongBook() {
                     )}
 
                     {it.errorAnalysis ? (
-                      <div className="card card-pad" style={{ background: '#fafbfc', marginBottom: 10 }}>
+                      <div className="card card-pad" style={{ background: '#fafbfc', marginBottom: 10 }}
+                        data-testid="wb-analysis">
+                        {/* 再错一次之后状态标回「待生成」（学-2），这时显示的还是上一次的分析，要说出来 */}
+                        {it.aiStatus !== '已生成' ? (
+                          <div className="tiny" style={{ color: 'var(--warn, #b26b00)', marginBottom: 6 }}
+                            data-testid="wb-analysis-stale">
+                            这次又错了，下面还是上一次的分析
+                          </div>
+                        ) : null}
                         <div className="tiny muted">错在哪</div>
                         <div className="small">{it.errorAnalysis}</div>
                         {it.memoryPoint ? (
@@ -157,11 +184,22 @@ export default function WrongBook() {
                       </div>
                     ) : (
                       <p className="tiny muted">
-                        {it.aiStatus === '待重试'
-                          ? 'AI 解析上次失败了，下次跑批改时会重试。'
-                          : 'AI 解析还没生成，去成绩报告页点一次「生成 AI 解析」。'}
+                        {it.aiStatus === '待重试' ? 'AI 错因分析上次没生成出来。' : '还没有 AI 错因分析。'}
                       </p>
                     )}
+                    {/* 以前这里写「去成绩报告页点一次」——练习里做错的题没有报告页，永远等不到（学-1） */}
+                    {it.aiStatus !== '已生成' ? (
+                      <div style={{ marginBottom: 10 }}>
+                        <button type="button" className="btn ghost" data-testid="wb-analyze"
+                          onClick={() => analyze(it)} disabled={analyzing === it.id}>
+                          {analyzing === it.id ? '正在生成……'
+                            : it.errorAnalysis ? '按这次的作答重新分析' : '生成错因分析'}
+                        </button>
+                        {aiError?.id === it.id ? (
+                          <div className="tiny" style={{ color: 'var(--danger)', marginTop: 6 }}>{aiError.message}</div>
+                        ) : null}
+                      </div>
+                    ) : null}
 
                     {it.explanation ? (
                       <details>

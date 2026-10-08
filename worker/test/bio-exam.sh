@@ -529,5 +529,114 @@ check "改好之后单题发布照常" "$(echo "$PQ" | jq -r '.ok // .message')/
 check "看板又是 0" "$(adm "$BASE/admin/bank/stats" | jq -r '.publishedUngradable')" "0"
 
 echo
+echo "== 练习做错的题也有 AI 错因分析；同一道题再错，按这次的作答重写（学-1、学-2，2026-10-07） =="
+# 以前 /ai/attempts/:id/run 只有模考报告页会调：练习做错的题永远没有分析（错题本让人"去成绩报告页点一次"，
+# 练习没有报告页）；而对练习调它，会把练习里写的名词解释当模考送去 AI 批改、往练习记录上写分。
+# 同一道题再错，错题本只累计次数，分析还是第一次那份——第二次错法不一样也看不出来。
+#
+# 1) 对练习调：只做错题分析。用上面那次练习（只写了一道名词解释，没有判得出对错的题）
+curl -s -o /dev/null -X POST "$BASE/practice/$PID/end" -H "Authorization: Bearer $STU"
+curl -s -o /dev/null "$STUB/stats?reset=1"
+REC0=$(one "SELECT COALESCE(ai_judged, 0) || '/' || COALESCE(score, 'null') FROM answer_records WHERE attempt_id = '$PID' AND question_id = '$PQ';")
+ATT0=$(one "SELECT COALESCE(total_score, 'null') || '/' || COALESCE(section_scores, 'null') || '/' || COALESCE(pending_ai, 'null') FROM attempts WHERE attempt_id = '$PID';")
+PRUN=$(curl -s -X POST "$BASE/ai/attempts/$PID/run" -H "Authorization: Bearer $STU")
+check "对练习调 AI：回的是练习的结果" "$(echo "$PRUN" | jq -r '"\(.ok)/\(.mode)"')" "true/PRACTICE"
+check "  练习里写的名词解释不送去批改（以前照模考批一遍、花一次钱）" "$(curl -s "$STUB/stats" | jq -r '.pointsCalls')" "0"
+check "  作答记录没被写上分（练习不判分）" \
+  "$(one "SELECT COALESCE(ai_judged, 0) || '/' || COALESCE(score, 'null') FROM answer_records WHERE attempt_id = '$PID' AND question_id = '$PQ';")" "$REC0"
+check "  练习记录上没被写上模考口径的总分、各部分得分" \
+  "$(one "SELECT COALESCE(total_score, 'null') || '/' || COALESCE(section_scores, 'null') || '/' || COALESCE(pending_ai, 'null') FROM attempts WHERE attempt_id = '$PID';")" "$ATT0"
+
+# 2) 单考点专项练一道选择题、故意答错。挑题：只挂一个考点、那个考点的题最少的选择题——专项把这个考点的题
+#    挨个出一遍，题越少越快轮到它（CLAUDE.md「断言的观测对象」）。从题库文件现算，不写死题号
+SEL=$(jq -r '[.sections[].questions[]] as $all
+  | [$all[] | select(.questionType == "single_choice" and (.knowledgePoints | length) == 1)
+     | .knowledgePoints[0] as $k | {q: .questionId, k: $k, n: ([$all[] | select(.knowledgePoints | index($k))] | length)}]
+  | min_by(.n) | "\(.q)\t\(.k)\t\(.n)"' "$BANK_JSON")
+RQ=$(printf '%s' "$SEL" | cut -f1); RN=$(printf '%s' "$SEL" | cut -f3)
+echo "     挑中 $RQ（考点「$(printf '%s' "$SEL" | cut -f2)」下共 $RN 道）"
+RANS=$(jq -r --arg q "$RQ" '.sections[].questions[] | select(.questionId == $q) | .answer' "$BANK_JSON")
+read -r WRONG1 WRONG2 <<< "$(jq -r --arg q "$RQ" '.sections[].questions[] | select(.questionId == $q)
+  | [.options[] | .[0:1]] - [.answer] | "\(.[0]) \(.[1])"' "$BANK_JSON")"
+check "（前提）挑中的题有标准答案、还有两个错的选项可选" "$( [ -n "$RANS" ] && [ -n "$WRONG2" ] && [ "$WRONG1" != "$WRONG2" ] && echo 有 || echo "没有：$RANS/$WRONG1/$WRONG2")" "有"
+RTAG=$(one "SELECT tag_id FROM question_knowledge_points WHERE question_id = '$RQ';")
+# 专项练一轮：轮到 $RQ 答 $1，别的题按题型随便写（名词解释练习不判分，不会进错题本）
+drill_once() {
+  local wrong="$1" did="" n=0 nx q
+  local start; start=$(curl -s -X POST "$BASE/practice/drill" -H "Authorization: Bearer $STU" \
+    -H 'Content-Type: application/json' -d "$(jq -n --arg t "$RTAG" '{courseCode:"biochem-main",tagId:$t}')")
+  DRILL_ID=$(echo "$start" | jq -r '.attemptId // empty')
+  while [ $n -le $((RN + 1)) ]; do
+    n=$((n + 1))
+    nx=$(au "$BASE/practice/$DRILL_ID/next")
+    [ "$(echo "$nx" | jq -r '.done // false')" = "true" ] && break
+    q=$(echo "$nx" | jq -r '.question.questionId')
+    if [ "$q" = "$RQ" ]; then did=1; a="$wrong"; else a="练习时写的一段话"; fi
+    curl -s -o /dev/null -X POST "$BASE/practice/$DRILL_ID/answer" -H "Authorization: Bearer $STU" \
+      -H 'Content-Type: application/json' -d "$(jq -n --arg q "$q" --arg a "$a" '{questionId:$q,answer:$a}')"
+  done
+  curl -s -o /dev/null -X POST "$BASE/practice/$DRILL_ID/end" -H "Authorization: Bearer $STU"
+  [ -n "$did" ]
+}
+WB_OF() { one "SELECT ai_status || '|' || COALESCE(last_attempt_id, '') || '|' || COALESCE(error_analysis, '') FROM wrong_items w JOIN users u ON u.id = w.user_id WHERE u.username = 'BIO001' AND w.question_id = '$RQ';"; }
+drill_once "$WRONG1"; check "（前提）专项练习轮到了 $RQ" "$?" "0"
+D1=$DRILL_ID
+check "（前提）$RQ 进了错题本、记着这次练习、还没有分析" "$(WB_OF | cut -d'|' -f1,2)" "待生成|$D1"
+DRUN=$(curl -s -X POST "$BASE/ai/attempts/$D1/run" -H "Authorization: Bearer $STU")
+check "练习小结页调一次：这次练习做错的 1 道生成了分析" "$(echo "$DRUN" | jq -r '"\(.mode)/\(.wrongItems.done)/\(.wrongItems.failed)"')" "PRACTICE/1/0"
+check "  错题本里有了分析" "$(WB_OF | cut -d'|' -f1)/$( [ -n "$(WB_OF | cut -d'|' -f3)" ] && echo 有文字 || echo 空)" "已生成/有文字"
+RSTEM=$(one "SELECT stem FROM questions WHERE question_id = '$RQ';")
+last_wrong_prompt() { curl -s "$STUB/last-prompt" | jq -r --arg s "$RSTEM" '[.prompts[] | select(contains("分析学生这道题做错的原因") and contains($s))][-1] // ""'; }
+check "  喂给 AI 的是这次练习的作答（$WRONG1）" "$(last_wrong_prompt | grep '^学生答案：' | head -1 | grep -c "^学生答案：$WRONG1")" "1"
+
+# 3) 错题本里逐题的按钮（POST /wrongbook/:id/analyze）
+WID=$(one "SELECT w.id FROM wrong_items w JOIN users u ON u.id = w.user_id WHERE u.username = 'BIO001' AND w.question_id = '$RQ';")
+UPD0=$(one "SELECT updated_at FROM wrong_items WHERE id = $WID;")
+AL=$(curl -s -X POST "$BASE/wrongbook/$WID/analyze" -H "Authorization: Bearer $STU")
+check "已经分析过的再点：不重跑（不花钱）" "$(echo "$AL" | jq -r '.status')/$(one "SELECT updated_at FROM wrong_items WHERE id = $WID;")" "already/$UPD0"
+PW2=$(curl -s -X POST "$BASE/admin/users" -H "Authorization: Bearer $ADMIN" \
+  -H 'Content-Type: application/json' -d '{"username":"BIO002","subjects":["biochem"]}' | jq -r '.initialPassword')
+STU2=$(curl -s -X POST "$BASE/auth/login" -H 'Content-Type: application/json' \
+  -d "$(jq -n --arg p "$PW2" '{username:"BIO002",password:$p}')" | jq -r '.token')
+check "别人的错题点不了：404（同一学科的另一个学员）" \
+  "$(curl -s -o /dev/null -w '%{http_code}' -X POST "$BASE/wrongbook/$WID/analyze" -H "Authorization: Bearer $STU2")" "404"
+check "编号不是数：400" "$(curl -s -o /dev/null -w '%{http_code}' -X POST "$BASE/wrongbook/abc/analyze" -H "Authorization: Bearer $STU")" "400"
+exec_sql "UPDATE wrong_items SET ai_status = '待生成' WHERE id = $WID; UPDATE questions SET retired_at = datetime('now'), retired_by = 'bio-exam' WHERE question_id = '$RQ';"
+check "停用了的题点不了：404（错题本里本来就不显示它）" \
+  "$(curl -s -o /dev/null -w '%{http_code}' -X POST "$BASE/wrongbook/$WID/analyze" -H "Authorization: Bearer $STU")" "404"
+exec_sql "UPDATE questions SET retired_at = NULL, retired_by = NULL WHERE question_id = '$RQ';"
+# AI 出错：回 502、状态变「待重试」、上一次的分析文字留着；AI 好了再点一次就补上
+exec_sql "UPDATE wrong_items SET error_analysis = '上一次的分析（标记）' WHERE id = $WID;"
+curl -s -o /dev/null -X PUT "$BASE/admin/ai/settings/TUTORING" -H "Authorization: Bearer $ADMIN" \
+  -H 'Content-Type: application/json' \
+  -d "$(jq -n --arg u "$STUB/fail/v1" '{baseUrl:$u,apiKey:"stub-key",model:"stub-model",protocol:"openai"}')"
+AF=$(curl -s -w '\n%{http_code}' -X POST "$BASE/wrongbook/$WID/analyze" -H "Authorization: Bearer $STU")
+check "AI 出错：502，说稍后再点，回来的状态是待重试" \
+  "$(echo "$AF" | tail -1)/$(echo "$AF" | head -1 | jq -r '"\(.error)/\(.item.aiStatus)"')" "502/ai_failed/待重试"
+check "  库里是待重试，上一次的分析还在（不清空）" "$(WB_OF | cut -d'|' -f1,3)" "待重试|上一次的分析（标记）"
+curl -s -o /dev/null -X PUT "$BASE/admin/ai/settings/TUTORING" -H "Authorization: Bearer $ADMIN" \
+  -H 'Content-Type: application/json' \
+  -d "$(jq -n --arg u "$STUB/v1" '{baseUrl:$u,apiKey:"stub-key",model:"stub-model",protocol:"openai"}')"
+AOK=$(curl -s -X POST "$BASE/wrongbook/$WID/analyze" -H "Authorization: Bearer $STU")
+check "AI 好了再点：生成了，回来的就是新分析" \
+  "$(echo "$AOK" | jq -r '.status')/$(echo "$AOK" | jq -r '.item.aiStatus')/$(echo "$AOK" | jq -r '.item.errorAnalysis' | grep -c '标记')" "generated/已生成/0"
+check "  库里也换成了新的" "$(WB_OF | cut -d'|' -f1)/$(WB_OF | cut -d'|' -f3 | grep -c '标记')" "已生成/0"
+
+# 4) 同一道题再错一次（另一个错选项）：状态标回待生成、旧分析留着；小结页一调，按这次的作答重写
+# 状态明确设成「已生成」：不靠上一步的结果（上一步要是没生成出来，状态本来就是待生成，这一段就测不出"标回"）
+exec_sql "UPDATE wrong_items SET ai_status = '已生成', error_analysis = '第一次的分析（标记）' WHERE id = $WID;"
+drill_once "$WRONG2"; check "（前提）第二轮专项又轮到了 $RQ" "$?" "0"
+D2=$DRILL_ID
+check "再错一次：状态标回待生成、记着这次练习、第一次的分析还在（新的出来之前照旧显示）" \
+  "$(WB_OF)" "待生成|$D2|第一次的分析（标记）"
+check "  错题本接口给的状态是待生成（页面据此标出\"下面还是上一次的分析\"）" \
+  "$(au "$BASE/wrongbook?courseCode=biochem-main" | jq -r --arg q "$RQ" '.items[] | select(.questionId == $q) | "\(.aiStatus)/\(.errorAnalysis)"')" "待生成/第一次的分析（标记）"
+DRUN2=$(curl -s -X POST "$BASE/ai/attempts/$D2/run" -H "Authorization: Bearer $STU")
+check "小结页一调：重新分析了这 1 道" "$(echo "$DRUN2" | jq -r '"\(.wrongItems.done)/\(.wrongItems.failed)"')" "1/0"
+check "  分析换成了新的" "$(WB_OF | cut -d'|' -f1)/$(WB_OF | cut -d'|' -f3 | grep -c '标记')" "已生成/0"
+check "  喂给 AI 的是第二次的作答（$WRONG2），不是第一次的（$WRONG1）" \
+  "$(last_wrong_prompt | grep '^学生答案：' | head -1 | grep -c "^学生答案：$WRONG2")" "1"
+
+echo
 echo "== 小结: $PASS 通过, $FAIL 失败 =="
 [ "$FAIL" -eq 0 ]

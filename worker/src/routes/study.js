@@ -154,7 +154,93 @@ studyRouter.get('/wrongbook/filters', async (c) => {
 
 // ---------------- AI 任务 ----------------
 
-// 给一次模考补上 AI 结果：作文评分 + 错题分析。
+// ---------------- 错题分析（共用） ----------------
+//
+// 模考报告页、练习小结页、错题本里单独一道，三处都走这一段（学-1，2026-10-07；以前只在模考的 run 里）。
+// 跑哪几条由调用方给 WHERE（where / binds）；只跑还没分析过的（已生成的跳过，不花钱）。
+// 作答取这道题最后一次做错的那一份（last_attempt_id）——和错题本显示的「你的答案」是同一份；
+// 同一道题再错时 wrongbookWrites 把状态标回「待生成」（学-2），这里就会按新的作答重写。
+async function analyzeWrongRows(c, pack, where, binds) {
+  const out = { done: 0, failed: 0 };
+  const { results: pending } = await c.env.DB.prepare(
+    `SELECT w.id, w.question_id, q.question_type, q.stem, q.options, q.answer, s.passage_text,
+            r.user_answer, r.item_results,
+            (SELECT group_concat(k.name, '||') FROM question_knowledge_points x
+               JOIN knowledge_points k ON k.tag_id = x.tag_id
+              WHERE x.question_id = w.question_id) AS tag_names
+       FROM wrong_items w
+       JOIN questions q ON q.question_id = w.question_id
+       JOIN sections s ON s.section_id = q.section_id
+       LEFT JOIN answer_records r ON r.question_id = w.question_id AND r.attempt_id = w.last_attempt_id
+      WHERE ${where} AND w.ai_status != '已生成'
+        AND ${wrongItemVisibleSql('w')}
+      LIMIT 20`
+  ).bind(...binds).all();
+
+  // 题目资源一次读好：喂 AI 前要把 ![key] 换成 [图：alt]，逐题读库就是 20 次往返。
+  const assetsByQuestion = await loadAssetRows(c.env.DB, pending.map((w) => w.question_id));
+  // 得分单元同理一次读好：多空题的正确答案在这里，questions.answer 是空的。以前喂给模型的
+  // 「正确答案：」是空的、「学生答案：」是 {"1":…}——模型只能自己猜答案再写分析（2026-10-07）。
+  const itemsByQuestion = await loadItemRows(c.env.DB, pending.map((w) => w.question_id));
+
+  // 并发跑，不要串行。真实服务商一次调用 3-4 秒，20 条串下来 80 秒以上，
+  // 客户端早就超时了——线上实测就是这么失败的，而本地替身瞬间返回，看不出来。
+  await mapLimit(pending, WRONG_ANALYZE_CONCURRENCY, async (w) => {
+    try {
+      const res = await analyzeWrong(c.env, pack, {
+        assets: assetsByQuestion.get(w.question_id) || [],
+        stem: w.stem,
+        options: w.options ? JSON.parse(w.options) : null,
+        // 逐空写、标出错的是哪一空（判分结果是现成的，省得模型自己重判——它不认得"C"就是"碳"那条别名）
+        userAnswer: answerText(w.user_answer, itemsByQuestion.get(w.question_id) || [], w.item_results),
+        correctAnswer: answerKey(w, itemsByQuestion.get(w.question_id) || [], {
+          defaultStrategy: (() => { try { return pack.typeOf(w.question_type).gradingStrategy; } catch { return null; } })(),
+        }).text,
+        knowledgePoints: w.tag_names ? w.tag_names.split('||') : [],
+        passage: w.passage_text,
+      });
+      await c.env.DB.prepare(
+        `UPDATE wrong_items SET error_analysis = ?, memory_point = ?, ai_status = '已生成',
+                updated_at = datetime('now') WHERE id = ?`
+      ).bind(res.errorReason, res.memoryPoint, w.id).run();
+      out.done++;
+    } catch {
+      await c.env.DB.prepare(
+        `UPDATE wrong_items SET ai_status = '待重试' WHERE id = ?`
+      ).bind(w.id).run();
+      out.failed++;
+    }
+  });
+
+  return out;
+}
+
+// 错题本里单独一道（学-1）：练习没结束就离开、上次分析失败（待重试）、再错之后旧分析待更新，都从这里补。
+// 学科授权和错题本列表同一个判据（accessibleCourseFilter）：授权撤了、过期了，这道题就"不存在"。
+studyRouter.post('/wrongbook/:id/analyze', async (c) => {
+  const me = c.get('user');
+  const id = Number(c.req.param('id'));
+  if (!Number.isInteger(id) || id <= 0) return c.json({ error: 'invalid_id' }, 400);
+  const acc = accessibleCourseFilter(me, 'w');
+  const row = await c.env.DB.prepare(
+    `SELECT w.id, w.course_code, w.ai_status FROM wrong_items w
+      WHERE w.id = ? AND w.user_id = ? AND ${acc.sql} AND ${wrongItemVisibleSql('w')}`
+  ).bind(id, me.id, ...acc.binds).first();
+  if (!row) return c.json({ error: 'not_found' }, 404);
+  if (row.ai_status === '已生成') return c.json({ ok: true, status: 'already', done: 0, failed: 0 });
+  const pack = await loadPackByCourse(c.env.DB, row.course_code);
+  const r = await analyzeWrongRows(c, pack, 'w.id = ? AND w.user_id = ?', [id, me.id]);
+  const after = await c.env.DB.prepare(
+    'SELECT error_analysis, memory_point, ai_status FROM wrong_items WHERE id = ?'
+  ).bind(id).first();
+  const item = { errorAnalysis: after?.error_analysis ?? null, memoryPoint: after?.memory_point ?? null, aiStatus: after?.ai_status };
+  if (r.failed) {
+    return c.json({ error: 'ai_failed', message: 'AI 这次没生成出来，稍后再点一次', ...r, item }, 502);
+  }
+  return c.json({ ok: true, status: 'generated', ...r, item });
+});
+
+// 给一次模考补上 AI 结果：作文评分 + 错题分析；练习只做错题分析（学-1）。
 // 交卷时不做这件事，是为了让客观题成绩先出来（PRD §5.5.3）。
 studyRouter.post('/ai/attempts/:id/run', async (c) => {
   const me = c.get('user');
@@ -170,6 +256,13 @@ studyRouter.post('/ai/attempts/:id/run', async (c) => {
   // AI 判，而它们不叫 essay——写死的话那些题永远等不到批改，状态一直停在"待判"，
   // 不报错，只是分数少了一块。
   const pack = await loadPackByCourse(c.env.DB, a.course_code);
+  // 练习（学-1，2026-10-07）：只做错题分析。练习里不调 AI 判分（主观题"练习不判分"），也没有总分、
+  // 各部分得分可补——下面那些对练习都不成立，跑了只会往练习记录上写一份模考口径的分数。
+  // 以前这个接口只有模考报告页会调，练习里做错的题永远没有分析，而生化学员主要做的就是练习。
+  if (a.mode === 'PRACTICE') {
+    const wrongItems = await analyzeWrongRows(c, pack, 'w.user_id = ? AND w.last_attempt_id = ?', [me.id, attemptId]);
+    return c.json({ ok: true, mode: 'PRACTICE', essay: null, subjective: null, wrongItems });
+  }
   const aiTypes = typeInClause(aiGradedTypes(pack), 'q');
 
   const { results: aiRows } = await c.env.DB.prepare(
@@ -290,56 +383,8 @@ studyRouter.post('/ai/attempts/:id/run', async (c) => {
     result.subjective = sub;
   }
 
-  // 3) 错题分析
-  const { results: pending } = await c.env.DB.prepare(
-    `SELECT w.id, w.question_id, q.question_type, q.stem, q.options, q.answer, s.passage_text,
-            r.user_answer, r.item_results,
-            (SELECT group_concat(k.name, '||') FROM question_knowledge_points x
-               JOIN knowledge_points k ON k.tag_id = x.tag_id
-              WHERE x.question_id = w.question_id) AS tag_names
-       FROM wrong_items w
-       JOIN questions q ON q.question_id = w.question_id
-       JOIN sections s ON s.section_id = q.section_id
-       LEFT JOIN answer_records r ON r.question_id = w.question_id AND r.attempt_id = ?
-      WHERE w.user_id = ? AND w.last_attempt_id = ? AND w.ai_status != '已生成'
-        AND ${wrongItemVisibleSql('w')}
-      LIMIT 20`
-  ).bind(attemptId, me.id, attemptId).all();
-
-  // 题目资源一次读好：喂 AI 前要把 ![key] 换成 [图：alt]，逐题读库就是 20 次往返。
-  const assetsByQuestion = await loadAssetRows(c.env.DB, pending.map((w) => w.question_id));
-  // 得分单元同理一次读好：多空题的正确答案在这里，questions.answer 是空的。以前喂给模型的
-  // 「正确答案：」是空的、「学生答案：」是 {"1":…}——模型只能自己猜答案再写分析（2026-10-07）。
-  const itemsByQuestion = await loadItemRows(c.env.DB, pending.map((w) => w.question_id));
-
-  // 并发跑，不要串行。真实服务商一次调用 3-4 秒，20 条串下来 80 秒以上，
-  // 客户端早就超时了——线上实测就是这么失败的，而本地替身瞬间返回，看不出来。
-  await mapLimit(pending, WRONG_ANALYZE_CONCURRENCY, async (w) => {
-    try {
-      const out = await analyzeWrong(c.env, pack, {
-        assets: assetsByQuestion.get(w.question_id) || [],
-        stem: w.stem,
-        options: w.options ? JSON.parse(w.options) : null,
-        // 逐空写、标出错的是哪一空（判分结果是现成的，省得模型自己重判——它不认得"C"就是"碳"那条别名）
-        userAnswer: answerText(w.user_answer, itemsByQuestion.get(w.question_id) || [], w.item_results),
-        correctAnswer: answerKey(w, itemsByQuestion.get(w.question_id) || [], {
-          defaultStrategy: (() => { try { return pack.typeOf(w.question_type).gradingStrategy; } catch { return null; } })(),
-        }).text,
-        knowledgePoints: w.tag_names ? w.tag_names.split('||') : [],
-        passage: w.passage_text,
-      });
-      await c.env.DB.prepare(
-        `UPDATE wrong_items SET error_analysis = ?, memory_point = ?, ai_status = '已生成',
-                updated_at = datetime('now') WHERE id = ?`
-      ).bind(out.errorReason, out.memoryPoint, w.id).run();
-      result.wrongItems.done++;
-    } catch {
-      await c.env.DB.prepare(
-        `UPDATE wrong_items SET ai_status = '待重试' WHERE id = ?`
-      ).bind(w.id).run();
-      result.wrongItems.failed++;
-    }
-  });
+  // 3) 错题分析（这张卷里做错、还没分析过的）
+  result.wrongItems = await analyzeWrongRows(c, pack, 'w.user_id = ? AND w.last_attempt_id = ?', [me.id, attemptId]);
 
   // 批改完把总分、待批改数和各部分得分补上。各部分得分以前不重算，批完了报告上还写着"待批改"。
   const sectionScores = await sectionScoresFromDb(c.env.DB, attemptId, pack);
