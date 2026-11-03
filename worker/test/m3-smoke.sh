@@ -226,6 +226,28 @@ check "历史里有 3 次模考" "$(curl -s "$BASE/history" -H "Authorization: B
 check "不串号：另一个学员看不到" \
   "$(curl -s "$BASE/history" -H "Authorization: Bearer $STU2" | jq -r '[.attempts[] | select(.attempt_id=="'"$ATT"'")] | length')" "0"
 
+# 并发交卷、交卷时插进来的保存在 test/submit-race.test.mjs 里测：本地的 wrangler dev 把同时到的
+# 请求排了队（第一个处理完后面的才进 Worker），经本地服务旧代码上也全绿。
+echo "== 作答内容的类型与长度 =="
+STU4=$(mk_student T004)
+A6=$(curl -s -X POST "$BASE/exams/generate" -H "Authorization: Bearer $STU4" \
+  -H 'Content-Type: application/json' -d '{"courseCode":"13000"}' | jq -r '.attemptId')
+Q6=$(sql "SELECT question_id AS q FROM attempt_questions WHERE attempt_id='$A6' ORDER BY ord LIMIT 1;" | jq -r '.[0].results[0].q')
+put6() { curl -s -o /dev/null -w '%{http_code}' -X PUT "$BASE/attempts/$A6/answers" \
+  -H "Authorization: Bearer $STU4" -H 'Content-Type: application/json' -d "$1"; }
+check "答案是对象(400，不是 500)" "$(put6 "{\"questionId\":\"$Q6\",\"answer\":{\"1\":\"A\"}}")" "400"
+check "答案是数字(400)" "$(put6 "{\"questionId\":\"$Q6\",\"answer\":3}")" "400"
+check "答案是数组(400)" "$(put6 "{\"questionId\":\"$Q6\",\"answer\":[\"A\"]}")" "400"
+LONG=$(head -c 20001 /dev/zero | tr '\0' 'a')
+check "答案超过 20000 字(400)" "$(put6 "{\"questionId\":\"$Q6\",\"answer\":\"$LONG\"}")" "400"
+check "被拒的几次一行都没写进去" \
+  "$(sql "SELECT COUNT(*) AS n FROM answer_records WHERE attempt_id='$A6';" | jq -r '.[0].results[0].n')" "0"
+OKLEN=$(head -c 20000 /dev/zero | tr '\0' 'a')
+check "正好 20000 字能存" "$(put6 "{\"questionId\":\"$Q6\",\"answer\":\"$OKLEN\"}")" "200"
+check "存下的是完整的 20000 字" \
+  "$(sql "SELECT length(user_answer) AS n FROM answer_records WHERE attempt_id='$A6' AND question_id='$Q6';" | jq -r '.[0].results[0].n')" "20000"
+check "清空答案（null）能存" "$(put6 "{\"questionId\":\"$Q6\",\"answer\":null}")" "200"
+
 echo "== 题库不足时的报错 =="
 check "不存在的课程(404)" \
   "$(curl -s -o /dev/null -w '%{http_code}' -X POST "$BASE/exams/generate" -H "Authorization: Bearer $STU" \

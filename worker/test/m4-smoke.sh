@@ -267,6 +267,22 @@ echo "== 练习不计入模考历史 =="
 check "历史里练习与模考都在但可区分" \
   "$(au "$BASE/history" | jq -r '[.attempts[] | select(.mode=="PRACTICE")] | length >= 2')" "true"
 
+echo "== 练习作答的类型与长度 =="
+# 同一题同时交两次的并发在 test/submit-race.test.mjs 里测（本地 wrangler dev 把同时到的请求排了队，
+# 经本地服务时能不能撞上看运气）。这里用 T002 新开一次练习。
+P2=$(curl -s -X POST "$BASE/practice/start" -H "Authorization: Bearer $STU2" \
+  -H 'Content-Type: application/json' -d '{"courseCode":"13000"}' | jq -r '.attemptId')
+Q3=$(curl -s "$BASE/practice/$P2/next" -H "Authorization: Bearer $STU2" | jq -r '.question.questionId')
+ans3() { curl -s -o /dev/null -w '%{http_code}' -X POST "$BASE/practice/$P2/answer" \
+  -H "Authorization: Bearer $STU2" -H 'Content-Type: application/json' -d "$1"; }
+check "答案是对象(400)" "$(ans3 "{\"questionId\":\"$Q3\",\"answer\":{\"1\":\"A\"}}")" "400"
+check "答案是数字(400)" "$(ans3 "{\"questionId\":\"$Q3\",\"answer\":3}")" "400"
+LONG=$(head -c 20001 /dev/zero | tr '\0' 'a')
+check "答案超过 20000 字(400)" "$(ans3 "{\"questionId\":\"$Q3\",\"answer\":\"$LONG\"}")" "400"
+check "被拒的几次都没有记成作答" \
+  "$(sql "SELECT COUNT(*) AS n FROM answer_records WHERE attempt_id='$P2' AND question_id='$Q3';" | jq -r '.[0].results[0].n')" "0"
+check "合法的答案照常判" "$(ans3 "{\"questionId\":\"$Q3\",\"answer\":\"$(answer_of "$Q3")\"}")" "200"
+
 echo
 echo "== 小结: $PASS 通过, $FAIL 失败 =="
 [ "$FAIL" -eq 0 ]
