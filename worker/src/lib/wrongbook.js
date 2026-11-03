@@ -1,3 +1,5 @@
+import { requireGuard } from './write-guard.js';
+
 // 错题本的记账逻辑（PRD §5.7）。
 //
 // 关键点：错题在判分时就落库，不等 AI。AI 之后只往 error_analysis 和
@@ -10,9 +12,11 @@ const CORRECT_STREAK_TO_CLEAR = 2;
 
 /**
  * @param entries [{ questionId, isCorrect }]，只传客观题（作文没有对错）
+ * @param guard   { sql, binds }，见 lib/write-guard.js。语句只在它成立时写，调用方必须给。
  * @returns 待执行的语句数组
  */
-export async function wrongbookWrites(db, userId, courseCode, entries, { attemptId, source }) {
+export async function wrongbookWrites(db, userId, courseCode, entries, { attemptId, source, guard }) {
+  requireGuard(guard, 'wrongbookWrites');
   const wrong = entries.filter((e) => e.isCorrect === 0).map((e) => e.questionId);
   const right = entries.filter((e) => e.isCorrect === 1).map((e) => e.questionId);
   if (!wrong.length && !right.length) return [];
@@ -28,7 +32,7 @@ export async function wrongbookWrites(db, userId, courseCode, entries, { attempt
         `INSERT INTO wrong_items
            (user_id, course_code, question_id, last_attempt_id, source, wrong_count,
             streak_correct, corrected, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, 1, 0, 0, datetime('now'), datetime('now'))
+         SELECT ?, ?, ?, ?, ?, 1, 0, 0, datetime('now'), datetime('now') WHERE ${guard.sql}
          ON CONFLICT(user_id, question_id) DO UPDATE SET
            wrong_count = wrong_count + 1,
            streak_correct = 0,
@@ -37,7 +41,7 @@ export async function wrongbookWrites(db, userId, courseCode, entries, { attempt
            source = excluded.source,
            ai_status = '待生成',
            updated_at = datetime('now')`
-      ).bind(userId, courseCode, questionId, attemptId || null, source || 'EXAM')
+      ).bind(userId, courseCode, questionId, attemptId || null, source || 'EXAM', ...guard.binds)
     );
   }
 
@@ -49,8 +53,8 @@ export async function wrongbookWrites(db, userId, courseCode, entries, { attempt
             SET streak_correct = streak_correct + 1,
                 corrected = CASE WHEN streak_correct + 1 >= ? THEN 1 ELSE corrected END,
                 updated_at = datetime('now')
-          WHERE user_id = ? AND question_id = ?`
-      ).bind(CORRECT_STREAK_TO_CLEAR, userId, questionId)
+          WHERE user_id = ? AND question_id = ? AND ${guard.sql}`
+      ).bind(CORRECT_STREAK_TO_CLEAR, userId, questionId, ...guard.binds)
     );
   }
 

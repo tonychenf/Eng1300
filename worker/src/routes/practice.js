@@ -9,6 +9,8 @@ import { masteryTier, masteryWrites, tagsOfQuestion } from '../lib/mastery.js';
 import { nextQuestion, scopeTags, scopeQuestionCount } from '../lib/practice.js';
 import { loadPackByCourse, settingInt as packSettingInt, typeInClause } from '../lib/subject-pack.js';
 import { wrongbookWrites } from '../lib/wrongbook.js';
+import { practiceAnswerGuard, lastWriteLanded } from '../lib/write-guard.js';
+import { answerInputError } from '../lib/answer-input.js';
 import { pickableSql } from '../lib/pickable.js';
 
 export const practiceRouter = new Hono();
@@ -256,6 +258,8 @@ practiceRouter.post('/practice/:id/answer', async (c) => {
   const body = await c.req.json().catch(() => ({}));
   const { questionId } = body;
   if (!questionId) return c.json({ error: 'invalid_request', message: '缺少 questionId' }, 400);
+  const bad = answerInputError(body.answer);
+  if (bad) return c.json(bad, 400);
 
   const belongs = await c.env.DB.prepare(
     'SELECT 1 AS ok FROM attempt_questions WHERE attempt_id = ? AND question_id = ?'
@@ -280,25 +284,35 @@ practiceRouter.post('/practice/:id/answer', async (c) => {
   const isCorrect = g.isCorrect;
 
   const tagIds = await tagsOfQuestion(c.env.DB, questionId);
-  const writes = [
+  // 上面"答过没有"是先读的：连点两下，两个请求都读到"没答过"，错题次数、掌握度各推进两次。
+  // 每条写入带同一个守卫，写作答记录（让守卫失效的那句）排在最后（lib/write-guard.js）。
+  const guard = practiceAnswerGuard(a.attempt_id, questionId);
+  const writes = [];
+  if (isCorrect !== null) {
+    writes.push(...(await masteryWrites(c.env.DB, a.user_id, a.course_code,
+      [{ tagIds, isCorrect }], guard)));
+    writes.push(...(await wrongbookWrites(c.env.DB, a.user_id, a.course_code,
+      [{ questionId, isCorrect }], { attemptId: a.attempt_id, source: 'PRACTICE', guard })));
+  }
+  writes.push(
     c.env.DB.prepare(
       `INSERT INTO answer_records
          (attempt_id, question_id, user_answer, is_correct, score, score_rate, item_results, answered_at)
-       VALUES (?, ?, ?, ?, 0, ?, ?, datetime('now'))
+       SELECT ?, ?, ?, ?, 0, ?, ?, datetime('now') WHERE ${guard.sql}
        ON CONFLICT(attempt_id, question_id) DO UPDATE SET
          user_answer = excluded.user_answer, is_correct = excluded.is_correct,
          score_rate = excluded.score_rate, item_results = excluded.item_results,
          answered_at = excluded.answered_at`
     ).bind(a.attempt_id, questionId, body.answer ?? null, isCorrect,
-           g.scoreRate, g.itemResults ? JSON.stringify(g.itemResults) : null),
-  ];
-  if (isCorrect !== null) {
-    writes.push(...(await masteryWrites(c.env.DB, a.user_id, a.course_code,
-      [{ tagIds, isCorrect }])));
-    writes.push(...(await wrongbookWrites(c.env.DB, a.user_id, a.course_code,
-      [{ questionId, isCorrect }], { attemptId: a.attempt_id, source: 'PRACTICE' })));
+           g.scoreRate, g.itemResults ? JSON.stringify(g.itemResults) : null, ...guard.binds),
+  );
+  if (!lastWriteLanded(await c.env.DB.batch(writes))) {
+    // 同时到的另一个请求先判完了这道题，或者练习刚被结束
+    const now = await c.env.DB.prepare('SELECT status FROM attempts WHERE attempt_id = ?')
+      .bind(a.attempt_id).first();
+    if (now?.status !== '进行中') return c.json({ error: 'already_submitted', message: '本次练习已结束' }, 409);
+    return c.json({ error: 'already_answered', message: '这道题已经作答过了' }, 409);
   }
-  await c.env.DB.batch(writes);
 
   const { results: names } = tagIds.length
     ? await c.env.DB.prepare(

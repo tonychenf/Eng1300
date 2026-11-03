@@ -1,3 +1,5 @@
+import { requireGuard } from './write-guard.js';
+
 // 考点掌握度：连续答对次数与最近结果。
 // 模考交卷和练习答题都走这里，保证两边口径一致。
 //
@@ -53,8 +55,10 @@ export function tagWeight(row, m) {
 /**
  * 按作答顺序推进掌握度，返回待写入的语句。
  * entries: [{ tagIds: string[], isCorrect: 0|1 }]，顺序即作答顺序。
+ * guard:   { sql, binds }，见 lib/write-guard.js。语句只在它成立时写，调用方必须给。
  */
-export async function masteryWrites(db, userId, courseCode, entries) {
+export async function masteryWrites(db, userId, courseCode, entries, guard) {
+  requireGuard(guard, 'masteryWrites');
   const tagIds = [...new Set(entries.flatMap((e) => e.tagIds))];
   if (!tagIds.length) return [];
 
@@ -96,7 +100,7 @@ export async function masteryWrites(db, userId, courseCode, entries) {
       `INSERT INTO user_knowledge_mastery
          (user_id, course_code, tag_id, correct_count, wrong_count,
           consecutive_correct, last_result, last_practiced_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))
+       SELECT ?, ?, ?, ?, ?, ?, ?, datetime('now') WHERE ${guard.sql}
        ON CONFLICT(user_id, course_code, tag_id) DO UPDATE SET
          correct_count = excluded.correct_count,
          wrong_count = excluded.wrong_count,
@@ -104,7 +108,7 @@ export async function masteryWrites(db, userId, courseCode, entries) {
          last_result = excluded.last_result,
          last_practiced_at = excluded.last_practiced_at`
     ).bind(userId, courseCode, s.tag_id, s.correct_count, s.wrong_count,
-           s.consecutive_correct, s.last_result)
+           s.consecutive_correct, s.last_result, ...guard.binds)
   );
 }
 

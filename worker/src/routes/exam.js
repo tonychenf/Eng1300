@@ -10,6 +10,8 @@ import { requireCourseAccess, requireAttemptAccess, accessibleCourseFilter, isAd
 import { examRateLimited } from '../lib/rate-limit.js';
 import { masteryWrites } from '../lib/mastery.js';
 import { wrongbookWrites } from '../lib/wrongbook.js';
+import { attemptOpenGuard, lastWriteLanded } from '../lib/write-guard.js';
+import { answerInputError } from '../lib/answer-input.js';
 
 export const examRouter = new Hono();
 
@@ -140,8 +142,11 @@ async function loadPaper(db, attemptId, { withAnswers = true, withCorrect = fals
   return sections;
 }
 
-// 判分并落库。已交卷的直接返回，不重复判。
+// 判分并落库。
+// 几个交卷请求同时到时只有一个真正落库（守卫见 lib/write-guard.js），其余的返回 { landed: false }，
+// 调用方当"已经交过了"处理。
 async function submitAttempt(db, attempt, { auto = false }) {
+  const guard = attemptOpenGuard(attempt.attempt_id);
   // 能力包一次读好往下传：这一段要对整卷逐题判分，每题读一次库就是 51 次往返。
   const pack = await loadPackByCourse(db, attempt.course_code);
   const { results: rows } = await db.prepare(
@@ -178,16 +183,19 @@ async function submitAttempt(db, attempt, { auto = false }) {
     else if (g.pendingManual) pendingManual++;
     else if (g.needsAiReview) unreviewed++;
 
+    // 答案连同分数一起写回判分时读到的那份：判分和落库之间要是有一次保存插了进来，
+    // 记录里会是新答案、分数却是按旧答案判的——报告上"你的答案"对、分数是错的。
     writes.push(
       db.prepare(
         `INSERT INTO answer_records
            (attempt_id, question_id, user_answer, is_correct, score, score_rate, item_results, answered_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))
+         SELECT ?, ?, ?, ?, ?, ?, ?, datetime('now') WHERE ${guard.sql}
          ON CONFLICT(attempt_id, question_id) DO UPDATE SET
+           user_answer = excluded.user_answer,
            is_correct = excluded.is_correct, score = excluded.score,
            score_rate = excluded.score_rate, item_results = excluded.item_results`
       ).bind(attempt.attempt_id, row.question_id, row.user_answer ?? null, g.isCorrect, g.score,
-             g.scoreRate, g.itemResults ? JSON.stringify(g.itemResults) : null)
+             g.scoreRate, g.itemResults ? JSON.stringify(g.itemResults) : null, ...guard.binds)
     );
 
     let sec = bySection.get(row.section_ord);
@@ -208,7 +216,8 @@ async function submitAttempt(db, attempt, { auto = false }) {
   const sectionScores = [...bySection.values()].sort((a, b) => a.sectionOrd - b.sectionOrd);
   objective = Math.round(objective * 100) / 100;
 
-  writes.push(
+  // 改状态这一句让守卫失效，必须排在 batch 最后（见 lib/write-guard.js），这里先备好
+  const finalize = (
     db.prepare(
       `UPDATE attempts SET status = '已交卷', submitted_at = datetime('now'),
               duration_seconds = CAST(strftime('%s','now') - strftime('%s', started_at) AS INTEGER),
@@ -239,19 +248,20 @@ async function submitAttempt(db, attempt, { auto = false }) {
         isCorrect: graded.get(r.question_id).isCorrect,
       }))
       .filter((e) => e.tagIds.length && e.isCorrect !== null);
-    writes.push(...(await masteryWrites(db, attempt.user_id, attempt.course_code, entries)));
+    writes.push(...(await masteryWrites(db, attempt.user_id, attempt.course_code, entries, guard)));
 
     // 错题本：判分时就落库，不等 AI（PRD §10.3 的主链路不依赖 AI）
     const wbEntries = ruleGraded
       .filter((r) => graded.get(r.question_id).isCorrect !== null)
       .map((r) => ({ questionId: r.question_id, isCorrect: graded.get(r.question_id).isCorrect }));
     writes.push(...(await wrongbookWrites(db, attempt.user_id, attempt.course_code, wbEntries, {
-      attemptId: attempt.attempt_id, source: 'EXAM',
+      attemptId: attempt.attempt_id, source: 'EXAM', guard,
     })));
   }
 
-  await db.batch(writes);
-  return { objectiveScore: objective, sectionScores, pendingAi, unreviewed, auto };
+  writes.push(finalize);
+  const landed = lastWriteLanded(await db.batch(writes));
+  return { landed, objectiveScore: objective, sectionScores, pendingAi, unreviewed, auto };
 }
 
 // ---- 组卷 ----
@@ -400,18 +410,25 @@ examRouter.put('/attempts/:id/answers', async (c) => {
   const body = await c.req.json().catch(() => ({}));
   const { questionId } = body;
   if (!questionId) return c.json({ error: 'invalid_request', message: '缺少 questionId' }, 400);
+  const bad = answerInputError(body.answer);
+  if (bad) return c.json(bad, 400);
 
   const belongs = await c.env.DB.prepare(
     'SELECT 1 AS ok FROM attempt_questions WHERE attempt_id = ? AND question_id = ?'
   ).bind(loaded.attempt.attempt_id, questionId).first();
   if (!belongs) return c.json({ error: 'not_found', message: '这道题不在本卷中' }, 404);
 
-  await c.env.DB.prepare(
+  // 上面读到"进行中"之后可能有人交了卷：写入自己再判一次（lib/write-guard.js），没写进去就是交过了
+  const guard = attemptOpenGuard(loaded.attempt.attempt_id);
+  const res = await c.env.DB.prepare(
     `INSERT INTO answer_records (attempt_id, question_id, user_answer, answered_at)
-     VALUES (?, ?, ?, datetime('now'))
+     SELECT ?, ?, ?, datetime('now') WHERE ${guard.sql}
      ON CONFLICT(attempt_id, question_id) DO UPDATE SET
        user_answer = excluded.user_answer, answered_at = excluded.answered_at`
-  ).bind(loaded.attempt.attempt_id, questionId, body.answer ?? null).run();
+  ).bind(loaded.attempt.attempt_id, questionId, body.answer ?? null, ...guard.binds).run();
+  if (!lastWriteLanded([res])) {
+    return c.json({ error: 'already_submitted', message: '本次作答已结束，不能再修改' }, 409);
+  }
 
   return c.json({ ok: true, remainingSeconds: loaded.remaining });
 });
@@ -424,7 +441,9 @@ examRouter.post('/attempts/:id/submit', async (c) => {
   if (loaded.attempt.status !== '进行中') {
     return c.json({ error: 'already_submitted', message: '本次作答已交卷' }, 409);
   }
-  const result = await submitAttempt(c.env.DB, loaded.attempt, { auto: false });
+  const { landed, ...result } = await submitAttempt(c.env.DB, loaded.attempt, { auto: false });
+  // 同时到的另一个交卷请求先落了库（lib/write-guard.js）：这一次什么也没写
+  if (!landed) return c.json({ error: 'already_submitted', message: '本次作答已交卷' }, 409);
   return c.json({ ok: true, ...result });
 });
 
