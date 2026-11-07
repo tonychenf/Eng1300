@@ -6,8 +6,10 @@
   "orderKey": 40,
   "label": "第四段考试样卷 2",
   "sourceFile": "公共英语课程教学重点与考试样卷（扫描件）第 156–162 页",
-  "answerState": "待核",
+  "answerState": "已确认",
   "answerSource": "AI",
+  "answerReviewedBy": "tonychenf（同意采用 Claude 预填；第二组第 1–75 题对过原书手写答案）",
+  "answerReviewedAt": "2026-11-07",
   "sections": [
     {
       "sectionId": "pubeng-s4-test2-s1",

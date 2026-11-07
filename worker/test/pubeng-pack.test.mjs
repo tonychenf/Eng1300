@@ -11,6 +11,7 @@ import { join } from 'node:path';
 import { makeDb, WORKER_ROOT } from './lib/d1-sqlite.mjs';
 import { loadPackByCourse } from '../src/lib/subject-pack.js';
 import { answerKeyProblems } from '../src/lib/answer-check.js';
+import { planPaper, examReadiness } from '../src/lib/paper.js';
 
 let pass = 0, fail = 0;
 const check = (desc, got, want) => {
@@ -85,6 +86,13 @@ check('改过的题型归一化器没被冲回去', one(`SELECT normalizers FROM
 check('改过的提示词没被冲回去', one(`SELECT user_template FROM subject_ai_prompts WHERE feature = 'wrong_analyze'
   AND subject_id = (SELECT subject_id FROM subjects WHERE code = 'pubeng')`).user_template, '管理员改过的');
 check('学科行没有多出一行', one(`SELECT COUNT(*) AS n FROM subjects WHERE code = 'pubeng'`).n, 1);
+// 门闩测完，把删掉的第 8 项按文件原样放回去：下面组卷要用完整的模板
+{
+  const it8 = tpl.items.find((x) => x.ord === 8);
+  sqlite.prepare(`INSERT INTO exam_template_items (course_code, ord, label, filter, question_count, score_mode,
+                    score_per_question, pick_unit) VALUES ('pubeng-main', ?, ?, ?, ?, ?, ?, ?)`)
+    .run(it8.ord, it8.label, JSON.stringify(it8.filter), it8.questionCount, it8.scoreMode, it8.scorePerQuestion, it8.pickUnit);
+}
 
 console.log('== 题库文件：每道题的标准答案判分器都判得满 ==');
 // 判据就是判分器本身（answer-check.js），确认、发布、看板都用它——这里先替后台判一遍
@@ -109,6 +117,31 @@ check('待核的题数和题库文件一致（Claude 拆的采分点不会被当
   fileQuestions.filter((q) => fileState(q) === '待核').length);
 check('翻译题没有一道是已确认的（采分点都得人看过）', dbQs.filter((q) => ['sentence_translate', 'paragraph_translate']
   .includes(q.question_type) && q.answer_state === '已确认').length, 0);
+
+console.log('== 组卷：发布已确认的题之后，翻译两项因为待核凑不够；翻译也确认了，组得出整卷 ==');
+// 发布用本地测试那份夹具（只放出答案已确认的题），和后台整卷发布的判据一样
+sqlite.exec(readFileSync(join(WORKER_ROOT, 'test/fixtures/publish-all.sql'), 'utf8'));
+const ready1 = (await examReadiness(DB)).find((x) => x.courseCode === 'pubeng-main');
+const notOk = ready1.parts.filter((p) => !p.ok).map((p) => p.label).join('、');
+console.log(`     （${ready1.parts.map((p) => `${p.label} ${p.available}/${p.required}`).join('，')}）`);
+check('凑不够的只有句子翻译、段落翻译（采分点待核，发布时被扣下）', notOk, '句子翻译、段落翻译');
+let err = null;
+try { await planPaper(DB, { courseCode: 'pubeng-main', userId: 910001 }); } catch (e) { err = e; }
+check('  这时组卷报凑不够（不是 500）', err?.code, 'insufficient_questions');
+// 模拟管理员在后台把翻译题逐题确认、发布
+sqlite.exec(`UPDATE questions SET answer_state = '已确认', answer_reviewed_by = 'test', status = '已发布'
+              WHERE course_code = 'pubeng-main' AND question_type IN ('sentence_translate', 'paragraph_translate')`);
+const ready2 = (await examReadiness(DB)).find((x) => x.courseCode === 'pubeng-main');
+check('翻译也确认之后 readiness 报能组卷', ready2.ready, true);
+const { parts } = await planPaper(DB, { courseCode: 'pubeng-main', userId: 910002 });
+const nQ = parts.reduce((n, p) => n + p.questions.length, 0);
+const score = parts.reduce((n, p) => n + p.questions.length * p.scorePerQuestion, 0);
+check('组出来的卷题数 = 模板各项题数之和', nQ, tpl.items.reduce((n, it) => n + it.questionCount, 0));
+check('卷面总分 = 课程满分', score, tpl.totalScore);
+const readingSecs = parts.filter((p) => p.label.startsWith('阅读理解')).map((p) => p.questions[0].sectionId);
+check('两篇阅读是不同的两篇', new Set(readingSecs).size, 2);
+const ids = parts.flatMap((p) => p.questions.map((q) => q.questionId));
+check('没有一道题进卷两次', new Set(ids).size, ids.length);
 
 console.log(`\n== 小结: ${pass} 通过, ${fail} 失败 ==`);
 process.exit(fail ? 1 : 0);

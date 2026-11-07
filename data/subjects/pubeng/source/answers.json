@@ -1,8 +1,8 @@
 {
-  "_note": "资料里没有答案。2026-11-07 用户让 Claude 逐题做一遍、预填答案。answerSource=AI，所以落库是「待核」；用户核对过（看 ANSWER_REVIEW.md）之后，在这里填 confirmedBy / confirmedAt，重新生成题库文件，答案才是「已确认」。notes 是做题时拿不准的题，核对单里单独列出来。",
+  "_note": "资料里没有答案。2026-11-07 用户让 Claude 逐题做一遍、预填答案。answerSource=AI，所以落库是「待核」；用户核对过（看 ANSWER_REVIEW.md）之后，在这里填 confirmedBy / confirmedAt，重新生成题库文件，答案才是「已确认」。notes 是做题时拿不准的题，核对单里单独列出来。 2026-11-07 用户确认：第二组第 1–75 题按原书手写答案（第 6 题改为 C），其余没有原书答案，采用 Claude 预填。",
   "answerSource": "AI",
-  "confirmedBy": null,
-  "confirmedAt": null,
+  "confirmedBy": "tonychenf（同意采用 Claude 预填；第二组第 1–75 题对过原书手写答案）",
+  "confirmedAt": "2026-11-07",
   "mc-set1": {
     "1": "A",
     "2": "D",

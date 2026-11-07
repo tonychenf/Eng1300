@@ -6,8 +6,10 @@
   "orderKey": 50,
   "label": "选择题强化训练（二）",
   "sourceFile": "公共英语课程教学重点与考试样卷（扫描件）第 163–174 页",
-  "answerState": "待核",
+  "answerState": "已确认",
   "answerSource": "AI",
+  "answerReviewedBy": "tonychenf（同意采用 Claude 预填；第二组第 1–75 题对过原书手写答案）",
+  "answerReviewedAt": "2026-11-07",
   "sections": [
     {
       "sectionId": "pubeng-mc2-s1",
