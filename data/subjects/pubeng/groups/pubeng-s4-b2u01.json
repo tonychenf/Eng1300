@@ -1,0 +1,774 @@
+{
+  "groupId": "pubeng-s4-b2u01",
+  "subjectCode": "pubeng",
+  "courseCode": "pubeng-main",
+  "groupKind": "TEXTBOOK_UNIT",
+  "orderKey": 22,
+  "label": "第四段教学重点 第二册第1课 The Dinner Party",
+  "sourceFile": "公共英语课程教学重点与考试样卷（扫描件）第 137–138 页",
+  "answerState": "待核",
+  "answerSource": "AI",
+  "answerNote": "单词、词组的答案是原书单词表、词组表本身（已确认）。句子翻译的参考译文是原书的，拆成采分点是 Claude 做的；段落翻译的采分点是按原书中文译文逐句切的——这两类待人在后台确认。",
+  "sections": [
+    {
+      "sectionId": "pubeng-s4-b2u01-s1",
+      "type": "拼写单词",
+      "order": 1,
+      "questions": [
+        {
+          "questionId": "pubeng-s4-b2u01-q001",
+          "order": 1,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "n. 争论；辩论",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "argument",
+              "weight": 1
+            }
+          ],
+          "answer": "argument",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第二册第1课 The Dinner Party"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u01-q002",
+          "order": 2,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "a. 不铺地毯的；赤裸的；光秃的",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "bare",
+              "weight": 1
+            }
+          ],
+          "answer": "bare",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第二册第1课 The Dinner Party"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u01-q003",
+          "order": 3,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "v. 收缩",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "contract",
+              "weight": 1
+            }
+          ],
+          "answer": "contract",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第二册第1课 The Dinner Party"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u01-q004",
+          "order": 4,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "v. 爬行",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "crawl",
+              "weight": 1
+            }
+          ],
+          "answer": "crawl",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第二册第1课 The Dinner Party"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u01-q005",
+          "order": 5,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "v. 出现",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "emerge",
+              "weight": 1
+            }
+          ],
+          "answer": "emerge",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第二册第1课 The Dinner Party"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u01-q006",
+          "order": 6,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "a. 微弱的；不明显的",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "faint",
+              "weight": 1
+            }
+          ],
+          "answer": "faint",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第二册第1课 The Dinner Party"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u01-q007",
+          "order": 7,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "a. 热烈的；激烈的",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "heated",
+              "weight": 1
+            }
+          ],
+          "answer": "heated",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第二册第1课 The Dinner Party"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u01-q008",
+          "order": 8,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "n. 雕像",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "image",
+              "weight": 1
+            }
+          ],
+          "answer": "image",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第二册第1课 The Dinner Party"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u01-q009",
+          "order": 9,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "n. 冲动",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "impulse",
+              "weight": 1
+            }
+          ],
+          "answer": "impulse",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第二册第1课 The Dinner Party"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u01-q010",
+          "order": 10,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "a. 可能的",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "likely",
+              "weight": 1
+            }
+          ],
+          "answer": "likely",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第二册第1课 The Dinner Party"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u01-q011",
+          "order": 11,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "v. 打手势",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "motion",
+              "weight": 1
+            }
+          ],
+          "answer": "motion",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第二册第1课 The Dinner Party"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u01-q012",
+          "order": 12,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "n. 反应",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "reaction",
+              "weight": 1
+            }
+          ],
+          "answer": "reaction",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第二册第1课 The Dinner Party"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u01-q013",
+          "order": 13,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "ad. 不久；马上",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "shortly",
+              "weight": 1
+            }
+          ],
+          "answer": "shortly",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第二册第1课 The Dinner Party"
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "pubeng-s4-b2u01-s2",
+      "type": "词组翻译",
+      "order": 2,
+      "questions": [
+        {
+          "questionId": "pubeng-s4-b2u01-q014",
+          "order": 14,
+          "status": "草稿",
+          "questionType": "phrase_translate",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "at the sight of",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出词组意思：一看见",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/词组英译汉",
+            "教材课文/第二册第1课 The Dinner Party"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u01-q015",
+          "order": 15,
+          "status": "草稿",
+          "questionType": "phrase_translate",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "be seated",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出词组意思：坐着；坐下",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/词组英译汉",
+            "教材课文/第二册第1课 The Dinner Party"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u01-q016",
+          "order": 16,
+          "status": "草稿",
+          "questionType": "phrase_translate",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "come to",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出词组意思：苏醒",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/词组英译汉",
+            "教材课文/第二册第1课 The Dinner Party"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u01-q017",
+          "order": 17,
+          "status": "草稿",
+          "questionType": "phrase_translate",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "feel like",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出词组意思：想要",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/词组英译汉",
+            "教材课文/第二册第1课 The Dinner Party"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u01-q018",
+          "order": 18,
+          "status": "草稿",
+          "questionType": "phrase_translate",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "make for",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出词组意思：走向",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/词组英译汉",
+            "教材课文/第二册第1课 The Dinner Party"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u01-q019",
+          "order": 19,
+          "status": "草稿",
+          "questionType": "phrase_translate",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "spring up",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出词组意思：突然开始；迅速生长",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/词组英译汉",
+            "教材课文/第二册第1课 The Dinner Party"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u01-q020",
+          "order": 20,
+          "status": "草稿",
+          "questionType": "phrase_translate",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "track down",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出词组意思：追捕到；追查到",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/词组英译汉",
+            "教材课文/第二册第1课 The Dinner Party"
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "pubeng-s4-b2u01-s3",
+      "type": "句子翻译",
+      "order": 3,
+      "questions": [
+        {
+          "questionId": "pubeng-s4-b2u01-q021",
+          "order": 21,
+          "status": "草稿",
+          "questionType": "sentence_translate",
+          "stem": "把下面的句子译成英语：她砰地关上门，一声不吭地走了，他们间那场争执就此结束。",
+          "answerExplanation": "参考译文：Their argument ended when she slammed the door and left without a word.",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“他们间那场争执就此结束”：their argument ended",
+              "weight": 1
+            },
+            {
+              "ord": 2,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“她砰地关上门”：she slammed the door",
+              "weight": 1
+            },
+            {
+              "ord": 3,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“一声不吭地走了”：left without a word",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/句子汉译英",
+            "教材课文/第二册第1课 The Dinner Party"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u01-q022",
+          "order": 22,
+          "status": "草稿",
+          "questionType": "sentence_translate",
+          "stem": "把下面的句子译成英语：出席晚宴的客人对那个美国人威严的语气感到有点意外。",
+          "answerExplanation": "参考译文：The guests at the dinner party were slightly surprised at the commanding tone of the American.",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“出席晚宴的客人”：the guests at the dinner party",
+              "weight": 1
+            },
+            {
+              "ord": 2,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“感到有点意外”：were slightly surprised at",
+              "weight": 1
+            },
+            {
+              "ord": 3,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“那个美国人威严的语气”：the commanding tone of the American",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/句子汉译英",
+            "教材课文/第二册第1课 The Dinner Party"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u01-q023",
+          "order": 23,
+          "status": "草稿",
+          "questionType": "sentence_translate",
+          "stem": "把下面的句子译成英语：约翰尼已长大成熟，不再害怕独自待在家里了。",
+          "answerExplanation": "参考译文：Johnny has outgrown the fear of staying at home alone.",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“约翰尼已长大成熟，不再……”：Johnny has outgrown …",
+              "weight": 1
+            },
+            {
+              "ord": 2,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“害怕独自待在家里”：the fear of staying at home alone",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/句子汉译英",
+            "教材课文/第二册第1课 The Dinner Party"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u01-q024",
+          "order": 24,
+          "status": "草稿",
+          "questionType": "sentence_translate",
+          "stem": "把下面的句子译成英语：南希虽然很想参加辩论，但腼腆得不敢开口。",
+          "answerExplanation": "参考译文：While she felt like joining in the debate, Nancy was too shy to open her mouth.",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“虽然很想参加辩论”：while she felt like joining in the debate",
+              "weight": 1
+            },
+            {
+              "ord": 2,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“腼腆得不敢开口”：was too shy to open her mouth",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/句子汉译英",
+            "教材课文/第二册第1课 The Dinner Party"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u01-q025",
+          "order": 25,
+          "status": "草稿",
+          "questionType": "sentence_translate",
+          "stem": "把下面的句子译成英语：你觉得什么时候最有可能在家里找到他？",
+          "answerExplanation": "参考译文：What do you think is the likeliest time to find him at home?",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "疑问句结构“你觉得……是……”：What do you think is …",
+              "weight": 1
+            },
+            {
+              "ord": 2,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“最有可能……的时候”：the likeliest time",
+              "weight": 1
+            },
+            {
+              "ord": 3,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“在家里找到他”：to find him at home",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/句子汉译英",
+            "教材课文/第二册第1课 The Dinner Party"
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "pubeng-s4-b2u01-s4",
+      "type": "段落翻译",
+      "order": 4,
+      "questions": [
+        {
+          "questionId": "pubeng-s4-b2u01-q026",
+          "order": 26,
+          "status": "草稿",
+          "questionType": "paragraph_translate",
+          "stem": "把下面的段落译成汉语：\n\nThe American does not join in the argument but watches the other guests. As he looks, he sees a strange expression come over the face of the hostess. She is staring straight ahead, her muscles contracting slightly. She motions to the native boy standing behind her chair and whispers something to him. The boy's eyes widen; he quickly leaves the room.\n\nOf the guests, none except the American notices this or sees the boy place a bowl of milk on the veranda just outside the open doors.\n\nThe American comes to with a start. In India, milk in a bowl means only one thing — bait for a snake. He realizes there must be a cobra in the room.",
+          "answerExplanation": "参考译文：\n\n那个美国人没有参加这场争论，他只是注视着在座的其他客人。在他观察时，发现女主人的脸上显出一种奇异的表情。她两眼盯着正前方，脸部肌肉在微微抽搐。她向站在座椅后面的印度男仆做了个手势，对他耳语了几句。男仆两眼睁得大大的，迅速地离开了餐室。\n\n在座的客人中除了那位美国人谁也没有注意到这一幕，也没有看到那个男仆把一碗牛奶放在仅靠门边的走廊上。\n\n那个美国人突然醒悟过来。在印度，碗中的牛奶只有一个意思——引蛇的诱饵。他意识到餐室里一定有条眼镜蛇。",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出：那个美国人没有参加这场争论，他只是注视着在座的其他客人。",
+              "weight": 1
+            },
+            {
+              "ord": 2,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出：在他观察时，发现女主人的脸上显出一种奇异的表情。",
+              "weight": 1
+            },
+            {
+              "ord": 3,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出：她两眼盯着正前方，脸部肌肉在微微抽搐。",
+              "weight": 1
+            },
+            {
+              "ord": 4,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出：她向站在座椅后面的印度男仆做了个手势，对他耳语了几句。",
+              "weight": 1
+            },
+            {
+              "ord": 5,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出：男仆两眼睁得大大的，迅速地离开了餐室。",
+              "weight": 1
+            },
+            {
+              "ord": 6,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出：在座的客人中除了那位美国人谁也没有注意到这一幕，也没有看到那个男仆把一碗牛奶放在仅靠门边的走廊上。",
+              "weight": 1
+            },
+            {
+              "ord": 7,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出：那个美国人突然醒悟过来。",
+              "weight": 1
+            },
+            {
+              "ord": 8,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出：在印度，碗中的牛奶只有一个意思——引蛇的诱饵。",
+              "weight": 1
+            },
+            {
+              "ord": 9,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出：他意识到餐室里一定有条眼镜蛇。",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/段落英译汉",
+            "教材课文/第二册第1课 The Dinner Party"
+          ]
+        }
+      ]
+    }
+  ],
+  "parsingNotes": []
+}

@@ -129,7 +129,12 @@ deploy 0 || exit 1
 echo "     （英语还没人发布，下面「可抽题」两条第一次上线本来就过不了，不算这一套的失败）"; show_verify 0
 # 第一次上线时英语还没人发布，所以线上验证里"英语有可抽题"这类本来就过不了——这一次不要求全过，
 # 只断部署自己该做到的事
-check "新库上建出来的学员有学科授权（M13）" "$(grants_of T001)" "biochem,english"
+# 期望是"建号那一刻全部启用的学科"，从库里现算——以前写死 "biochem,english"，加了公共英语就红
+ENABLED_SUBJ=$(one "SELECT group_concat(code, ',') FROM (SELECT code FROM subjects WHERE status = '启用' ORDER BY code);")
+check "库里至少有英语和生化两个启用的学科（下一条的前提）" \
+  "$(echo "$ENABLED_SUBJ" | tr ',' '\n' | grep -cx 'english\|biochem')" "2"
+check "新库上建出来的学员开通了全部启用的学科（M13）" "$(grants_of T001)" "$ENABLED_SUBJ"
+T001_GRANTS0=$(grants_of T001)
 check "三档 AI 配置都补上了" \
   "$(api "$BASE/admin/ai/settings" | jq -r '[.settings[] | select(. != null and .hasKey)] | length')" "3"
 check "写入哨兵在第一次部署就成立" "$(grep -c '^  OK   写入已恢复' "$WORK/verify-0.log")" "1"
@@ -235,7 +240,7 @@ check "  部署不再替 admin 清登录失败计数" \
 check "  流水线账号是超级管理员、不算学员" \
   "$(one "SELECT role || '/' || disabled FROM users WHERE username = 'ci_deploy';")/$(api "$BASE/admin/stats/overview" | jq -r '.overview.students // "读不到"')" \
   "SUPER_ADMIN/0/10"   # 学员只有部署建的 T001–T010
-check "其他学员的授权没动" "$(grants_of T001)" "biochem,english"
+check "其他学员的授权没动" "$(grants_of T001)" "$T001_GRANTS0"
 
 echo
 echo "== 线上验证能红：写入哨兵 =="

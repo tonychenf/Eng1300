@@ -1,0 +1,35 @@
+{
+  "_note": "教学重点里句子翻译（汉译英）的采分点。参考译文是原书给的；拆成采分点是 Claude 做的（2026-11-07），所以这些题落库时答案状态是「待核」，要人在后台校对页确认。每点权重 1，一道题 3 分按命中比例给分。段落翻译（英译汉）的采分点由生成脚本按原书中文译文逐句切出，不在这里。",
+  "sentences": {
+    "b1u09": [
+      ["主语“一氧化碳这类气体”：gases such as carbon monoxide", "“工厂和汽车发出的”作后置定语：emitted by factories and automobiles", "“严重污染了大气”：have seriously polluted the atmosphere"],
+      ["“那位工业管理工程师的来信”：the industrial engineer's letter", "“说明……”：indicates that …", "“对该项计划是否可行有怀疑”：doubts the feasibility of the plan"],
+      ["“美国许多父母”：many parents in the United States", "“为他们的教育留出一笔专款”：set aside a fund for their children's education", "“在孩子出生之前”：before they are born"],
+      ["“医疗队”作主语：the medical team", "“由 3 位医生和两名护士组成的”：composed of three doctors and two nurses", "“几天前出发到山区去了”：set off for the mountain(ous) area a few days ago"],
+      ["“这个村庄是以……命名的”：the village is named after …", "“矗立在它前面的那座高山”：the high mountain that stands in front of it"],
+      ["“南方和北方之间于 1861 年爆发的那场战争”：the war that broke out between the North and the South in 1861", "“在历史上称为……”：is known in history as …", "“美国内战”：the American Civil War"]
+    ],
+    "b1u10": [
+      ["“正兴致勃勃地讨论”：were caught up in a discussion", "“中东的形势”：the situation in the Middle East", "“教授走进教室时”：when the professor walked into the classroom"],
+      ["“午夜后某个时候”：sometime after midnight", "“敌人被迫撤退了”：the enemy was/were forced to retreat"],
+      ["强调句“就是在那间斗室里”：It was in that small room that …", "“勤奋地工作着”：worked diligently", "“憧憬着美好的未来”：dreamed of better days to come"],
+      ["“老太太听到铃响”：when she heard the bell ringing", "“便从椅子上站起来”：rose from her chair", "“向门口走去”：made her way to the door"],
+      ["“经过一天的战斗”：after a day's fight", "“占领了”：succeeded in taking over", "“敌人的一些重要阵地”：some important enemy positions"],
+      ["“我上汽车不久就注意到”：soon after I boarded the bus, I noticed", "“一个外貌很怪的男人”：a strange-looking man", "“穿着一件不合身的上衣”：wore an ill-fitting coat", "“一动不动地坐在位子上”：sat rooted in his seat"]
+    ],
+    "b2u01": [
+      ["“他们间那场争执就此结束”：their argument ended", "“她砰地关上门”：she slammed the door", "“一声不吭地走了”：left without a word"],
+      ["“出席晚宴的客人”：the guests at the dinner party", "“感到有点意外”：were slightly surprised at", "“那个美国人威严的语气”：the commanding tone of the American"],
+      ["“约翰尼已长大成熟，不再……”：Johnny has outgrown …", "“害怕独自待在家里”：the fear of staying at home alone"],
+      ["“虽然很想参加辩论”：while she felt like joining in the debate", "“腼腆得不敢开口”：was too shy to open her mouth"],
+      ["疑问句结构“你觉得……是……”：What do you think is …", "“最有可能……的时候”：the likeliest time", "“在家里找到他”：to find him at home"]
+    ],
+    "b2u02": [
+      ["“会上有人建议”：It was suggested at the meeting that …", "“任命一个 11 人委员会”用虚拟语气：a committee of eleven be appointed", "“来制定新章程”：to make a new constitution"],
+      ["“通过现场观察”：by making on-the-spot observations", "“这些青年科学家获得了第一手资料”：these young scientists obtained first-hand information", "“研究工作所需的”：they needed in their research work"],
+      ["“亨利创作的艺术品”：Henry's works of art", "“比……要好”：are superior to …", "“在许多方面”：in many respects", "“他兄弟的”：those of his brother's"],
+      ["“我们产品质量的稳步提高”：the steady rise in the quality of our products", "“在很大程度上是由于”：owes much to", "“设备有所改进”：the improvement of our equipment"],
+      ["虚拟条件“如果让我来决定”：Were it left to me to decide …", "“是要一个没有自行车的城市呢，还是要一个没有汽车的城市”：whether we should have a city without bikes or one without cars", "“我会毫不犹豫地选择后者”：I should not hesitate a moment to prefer the latter"]
+    ]
+  }
+}

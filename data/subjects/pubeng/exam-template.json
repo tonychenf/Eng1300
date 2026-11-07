@@ -1,0 +1,27 @@
+{
+  "subjectCode": "pubeng",
+  "courseCode": "pubeng-main",
+  "courseName": "公共英语",
+  "totalScore": 100,
+  "timeLimitMinutes": 120,
+  "passScore": 60,
+  "note": "照第四段试卷说明（原书第 132 页）：7 个部分 81 题 100 分。阅读理解是两篇各 5 题，拆成两个整篇抽的模板项。时长样卷上没写，先按 120 分钟。迁移 0018 把它装进库一次；之后改模板改库里的 exam_template_items，改这个文件不会生效。",
+  "items": [
+    { "ord": 1, "label": "拼写单词", "filter": { "questionTypes": ["spell_word"] },
+      "questionCount": 20, "scoreMode": "FROM_TEMPLATE", "scorePerQuestion": 0.5, "pickUnit": "QUESTION", "subtotal": 10 },
+    { "ord": 2, "label": "词组翻译", "filter": { "questionTypes": ["phrase_translate"] },
+      "questionCount": 10, "scoreMode": "FROM_TEMPLATE", "scorePerQuestion": 1, "pickUnit": "QUESTION", "subtotal": 10 },
+    { "ord": 3, "label": "选择填空", "filter": { "sectionTypes": ["选择填空"] },
+      "questionCount": 25, "scoreMode": "FROM_TEMPLATE", "scorePerQuestion": 1, "pickUnit": "QUESTION", "subtotal": 25 },
+    { "ord": 4, "label": "段落填空", "filter": { "sectionTypes": ["段落填空"] },
+      "questionCount": 10, "scoreMode": "FROM_TEMPLATE", "scorePerQuestion": 1, "pickUnit": "SECTION", "subtotal": 10 },
+    { "ord": 5, "label": "阅读理解（一）", "filter": { "sectionTypes": ["阅读理解"] },
+      "questionCount": 5, "scoreMode": "FROM_TEMPLATE", "scorePerQuestion": 2, "pickUnit": "SECTION", "subtotal": 10 },
+    { "ord": 6, "label": "阅读理解（二）", "filter": { "sectionTypes": ["阅读理解"] },
+      "questionCount": 5, "scoreMode": "FROM_TEMPLATE", "scorePerQuestion": 2, "pickUnit": "SECTION", "subtotal": 10 },
+    { "ord": 7, "label": "句子翻译", "filter": { "questionTypes": ["sentence_translate"] },
+      "questionCount": 5, "scoreMode": "FROM_TEMPLATE", "scorePerQuestion": 3, "pickUnit": "QUESTION", "subtotal": 15 },
+    { "ord": 8, "label": "段落翻译", "filter": { "questionTypes": ["paragraph_translate"] },
+      "questionCount": 1, "scoreMode": "FROM_TEMPLATE", "scorePerQuestion": 10, "pickUnit": "QUESTION", "subtotal": 10 }
+  ]
+}

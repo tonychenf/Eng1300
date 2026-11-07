@@ -10,14 +10,9 @@
 // 先到的那个请求要写库时停下，等另一个请求也读完、走到写库那一步，再按到达顺序一个一个执行
 // （D1 的 batch 是事务，几个 batch 一个接一个执行，和这里一样）。这就稳定造出了
 // "两个请求都读到了'还在作答'"那种交错——每个场景都先断闸真的合上过，再断被测的行为。
-import { DatabaseSync } from 'node:sqlite';
-import { readFileSync, readdirSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
 import app from '../src/index.js';
 import { signToken } from '../src/lib/auth.js';
-
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+import { makeDb } from './lib/d1-sqlite.mjs';
 
 let pass = 0, fail = 0;
 const check = (desc, got, want) => {
@@ -25,70 +20,11 @@ const check = (desc, got, want) => {
   else { fail++; console.log(`  FAIL ${desc} (期望 ${JSON.stringify(want)}, 实际 ${JSON.stringify(got)})`); }
 };
 
-// ── 库 ────────────────────────────────────────────────────────────────
-const sqlite = new DatabaseSync(':memory:');
-sqlite.exec('PRAGMA foreign_keys = ON');
-for (const f of readdirSync(join(ROOT, 'migrations')).filter((x) => x.endsWith('.sql')).sort()) {
-  sqlite.exec(readFileSync(join(ROOT, 'migrations', f), 'utf8'));
-}
-// 和 m3-smoke 同一组卷：每个部分都凑得出篇章，组得出整卷
-const seedFiles = readdirSync(join(ROOT, 'seed'));
-const seed = (pattern) => {
-  const f = seedFiles.find((x) => x.includes(pattern));
-  if (!f) throw new Error(`worker/seed 里没有 ${pattern} 的种子，先跑 node scripts/build-seed-sql.mjs`);
-  sqlite.exec(readFileSync(join(ROOT, 'seed', f), 'utf8'));
-};
-seed('english-000-knowledge-points');
-for (const e of ['00015-2015-04', '00015-2016-04', '00015-2019-10', '13000-2026-04']) seed(e);
-sqlite.exec(readFileSync(join(ROOT, 'test/fixtures/publish-all.sql'), 'utf8'));
-
-// ── D1 替身 ───────────────────────────────────────────────────────────
-const plain = (row) => (row ? { ...row } : null);
-const toParam = (v) => {
-  if (v === undefined) throw new Error('D1_TYPE_ERROR: 绑定了 undefined');   // D1 同样拒
-  if (typeof v === 'boolean') return v ? 1 : 0;
-  return v;
-};
-const isRead = (sql) => /^\s*(SELECT|WITH|PRAGMA)\b/i.test(sql);
-function execOne(sql, params) {
-  const st = sqlite.prepare(sql);
-  if (isRead(sql)) return { results: st.all(...params).map(plain), success: true, meta: { changes: 0 } };
-  const r = st.run(...params);
-  return { results: [], success: true, meta: { changes: Number(r.changes), last_row_id: Number(r.lastInsertRowid) } };
-}
-// 每个方法都先让出一次：真实的 D1 调用是异步的，别的请求在这里插得进来
-const tick = () => new Promise((r) => setImmediate(r));
-const gate = { hook: null };
-function statement(sql, params = []) {
-  return {
-    sql, params,
-    bind: (...vals) => statement(sql, vals.map(toParam)),
-    first: async (col) => {
-      await tick();
-      const row = plain(sqlite.prepare(sql).get(...params));
-      return col ? (row ? row[col] : null) : row;
-    },
-    all: async () => { await tick(); return execOne(sql, params); },
-    run: async () => { await tick(); return execOne(sql, params); },
-  };
-}
-const DB = {
-  prepare: (sql) => statement(sql),
-  batch: async (stmts) => {
-    await tick();
-    // 闸只拦带写入的 batch：读能力包也用 batch（subject-pack.js 一次读三张表），拦它就拦早了
-    if (gate.hook && stmts.some((x) => !isRead(x.sql))) await gate.hook();
-    sqlite.exec('BEGIN');
-    try {
-      const out = stmts.map((s) => execOne(s.sql, s.params));
-      sqlite.exec('COMMIT');
-      return out;
-    } catch (e) {
-      sqlite.exec('ROLLBACK');
-      throw e;
-    }
-  },
-};
+// ── 库：和 m3-smoke 同一组卷，每个部分都凑得出篇章，组得出整卷 ─────────────
+const { sqlite, DB, gate, tick } = makeDb({
+  seeds: ['english-000-knowledge-points', '00015-2015-04', '00015-2016-04', '00015-2019-10', '13000-2026-04'],
+  fixtures: ['test/fixtures/publish-all.sql'],
+});
 const env = { DB, JWT_SECRET: 'race-test-secret' };
 
 // 闸：先到的 batch 停下，等第二个 batch 也到了再放行，两个按到达顺序执行。
@@ -120,7 +56,7 @@ function holdGate() {
 }
 
 // ── 账号与请求 ────────────────────────────────────────────────────────
-const one = (sql, ...p) => plain(sqlite.prepare(sql).get(...p));
+const one = (sql, ...p) => { const r = sqlite.prepare(sql).get(...p); return r ? { ...r } : null; };
 const englishId = one("SELECT subject_id FROM subjects WHERE code = 'english'").subject_id;
 async function student(name) {
   const id = Number(sqlite.prepare("INSERT INTO users (username, password_hash, role) VALUES (?, 'x', 'USER')")

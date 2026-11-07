@@ -1,0 +1,26 @@
+{
+  "subjectCode": "pubeng",
+  "note": "两级考点体系。一级按能力分（词汇、语法、阅读、翻译）再加一个「教材课文」，二级是具体考点或具体一课。选择题的考点由生成脚本按选项形态初挂（四个选项同词根 → 词形与派生；都是词组 → 短语与固定搭配；都是介词 → 介词与副词小品词；语法题按题号点名），其余归词义辨析——是初挂，后台校对页可改。教材课文按课挂：拼写单词、词组翻译、句子翻译、段落翻译出自哪一课就挂哪一课。第二册 3–6 课原件缺页，补资料时在这里加。",
+  "points": [
+    { "tagId": "pe-voc", "name": "词汇", "parentTagId": null, "level": 1 },
+    { "tagId": "pe-voc-01", "name": "词义辨析", "parentTagId": "pe-voc", "level": 2 },
+    { "tagId": "pe-voc-02", "name": "词形与派生", "parentTagId": "pe-voc", "level": 2 },
+    { "tagId": "pe-voc-03", "name": "短语与固定搭配", "parentTagId": "pe-voc", "level": 2 },
+    { "tagId": "pe-voc-04", "name": "介词与副词小品词", "parentTagId": "pe-voc", "level": 2 },
+    { "tagId": "pe-voc-05", "name": "单词拼写", "parentTagId": "pe-voc", "level": 2 },
+    { "tagId": "pe-gra", "name": "语法", "parentTagId": null, "level": 1 },
+    { "tagId": "pe-gra-01", "name": "语法结构", "parentTagId": "pe-gra", "level": 2 },
+    { "tagId": "pe-rd", "name": "阅读", "parentTagId": null, "level": 1 },
+    { "tagId": "pe-rd-01", "name": "阅读理解", "parentTagId": "pe-rd", "level": 2 },
+    { "tagId": "pe-rd-02", "name": "段落填空", "parentTagId": "pe-rd", "level": 2 },
+    { "tagId": "pe-tr", "name": "翻译", "parentTagId": null, "level": 1 },
+    { "tagId": "pe-tr-01", "name": "词组英译汉", "parentTagId": "pe-tr", "level": 2 },
+    { "tagId": "pe-tr-02", "name": "句子汉译英", "parentTagId": "pe-tr", "level": 2 },
+    { "tagId": "pe-tr-03", "name": "段落英译汉", "parentTagId": "pe-tr", "level": 2 },
+    { "tagId": "pe-txt", "name": "教材课文", "parentTagId": null, "level": 1 },
+    { "tagId": "pe-txt-b1u09", "name": "第一册第9课 Is There Life on Earth", "parentTagId": "pe-txt", "level": 2 },
+    { "tagId": "pe-txt-b1u10", "name": "第一册第10课 Going Home", "parentTagId": "pe-txt", "level": 2 },
+    { "tagId": "pe-txt-b2u01", "name": "第二册第1课 The Dinner Party", "parentTagId": "pe-txt", "level": 2 },
+    { "tagId": "pe-txt-b2u02", "name": "第二册第2课 Lessons from Jefferson", "parentTagId": "pe-txt", "level": 2 }
+  ]
+}

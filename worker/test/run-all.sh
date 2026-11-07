@@ -42,7 +42,8 @@ SERVER_SUITES=(n5-items deploy-local n6-content h4-seed-guard bio-exam n6b-uploa
 UI_SUITES=(ui-bio-exam ui-items ui-rich ui-n6 ui-n6b ui-smoke ui-subjects)   # 同上，按实测用时（94 秒 … 49 秒）
 NODE_TESTS=(grade-items.test.mjs rich-text.test.mjs docx-import.test.mjs normalizers.test.mjs
   ai-purposes.test.mjs auth-guard.test.mjs quota-degrade.mjs essay-parse.mjs beijing-time.test.mjs
-  answer-key.test.mjs answer-check.test.mjs upload-size.test.mjs submit-race.test.mjs)
+  answer-key.test.mjs answer-check.test.mjs upload-size.test.mjs submit-race.test.mjs paper-sections.test.mjs
+  pubeng-pack.test.mjs)
 
 JOBS=4; UI=0; ONLY=()
 SUITE_TIMEOUT=${SUITE_TIMEOUT:-1200}

@@ -1,0 +1,727 @@
+{
+  "groupId": "pubeng-s4-b1u10",
+  "subjectCode": "pubeng",
+  "courseCode": "pubeng-main",
+  "groupKind": "TEXTBOOK_UNIT",
+  "orderKey": 21,
+  "label": "第四段教学重点 第一册第10课 Going Home",
+  "sourceFile": "公共英语课程教学重点与考试样卷（扫描件）第 135–136 页",
+  "answerState": "待核",
+  "answerSource": "AI",
+  "answerNote": "单词、词组的答案是原书单词表、词组表本身（已确认）。句子翻译的参考译文是原书的，拆成采分点是 Claude 做的；段落翻译的采分点是按原书中文译文逐句切的——这两类待人在后台确认。",
+  "sections": [
+    {
+      "sectionId": "pubeng-s4-b1u10-s1",
+      "type": "拼写单词",
+      "order": 1,
+      "questions": [
+        {
+          "questionId": "pubeng-s4-b1u10-q001",
+          "order": 1,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "n. 旗，旗帜",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "banner",
+              "weight": 1
+            }
+          ],
+          "answer": "banner",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第一册第10课 Going Home"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u10-q002",
+          "order": 2,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "v. 咀嚼；咬",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "chew",
+              "weight": 1
+            }
+          ],
+          "answer": "chew",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第一册第10课 Going Home"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u10-q003",
+          "order": 3,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "v. 惊叫，叫喊说",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "exclaim",
+              "weight": 1
+            }
+          ],
+          "answer": "exclaim",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第一册第10课 Going Home"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u10-q004",
+          "order": 4,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "v. 遮盖；掩盖",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "mask",
+              "weight": 1
+            }
+          ],
+          "answer": "mask",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第一册第10课 Going Home"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u10-q005",
+          "order": 5,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "a. 神秘的",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "mysterious",
+              "weight": 1
+            }
+          ],
+          "answer": "mysterious",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第一册第10课 Going Home"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u10-q006",
+          "order": 6,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "v. 退缩；退却，撤退",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "retreat",
+              "weight": 1
+            }
+          ],
+          "answer": "retreat",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第一册第10课 Going Home"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u10-q007",
+          "order": 7,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "ad. 某个时候",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "sometime",
+              "weight": 1
+            }
+          ],
+          "answer": "sometime",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第一册第10课 Going Home"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u10-q008",
+          "order": 8,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "v. 使震惊；使目瞪口呆",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "stun",
+              "weight": 1
+            }
+          ],
+          "answer": "stun",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第一册第10课 Going Home"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u10-q009",
+          "order": 9,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "n. 潮汐",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "tide",
+              "weight": 1
+            }
+          ],
+          "answer": "tide",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第一册第10课 Going Home"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u10-q010",
+          "order": 10,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "v. 消失",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "vanish",
+              "weight": 1
+            }
+          ],
+          "answer": "vanish",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第一册第10课 Going Home"
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "pubeng-s4-b1u10-s2",
+      "type": "词组翻译",
+      "order": 2,
+      "questions": [
+        {
+          "questionId": "pubeng-s4-b1u10-q011",
+          "order": 11,
+          "status": "草稿",
+          "questionType": "phrase_translate",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "be caught up in",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出词组意思：对……入迷",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/词组英译汉",
+            "教材课文/第一册第10课 Going Home"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u10-q012",
+          "order": 12,
+          "status": "草稿",
+          "questionType": "phrase_translate",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "come through",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出词组意思：如所预料地到来；胜利",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/词组英译汉",
+            "教材课文/第一册第10课 Going Home"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u10-q013",
+          "order": 13,
+          "status": "草稿",
+          "questionType": "phrase_translate",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "dream of",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出词组意思：向往，渴望",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/词组英译汉",
+            "教材课文/第一册第10课 Going Home"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u10-q014",
+          "order": 14,
+          "status": "草稿",
+          "questionType": "phrase_translate",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "make one's way",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出词组意思：去，前往",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/词组英译汉",
+            "教材课文/第一册第10课 Going Home"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u10-q015",
+          "order": 15,
+          "status": "草稿",
+          "questionType": "phrase_translate",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "pull into",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出词组意思：（车等）驶入；到达",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/词组英译汉",
+            "教材课文/第一册第10课 Going Home"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u10-q016",
+          "order": 16,
+          "status": "草稿",
+          "questionType": "phrase_translate",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "take back",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出词组意思：允许……回来，接受",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/词组英译汉",
+            "教材课文/第一册第10课 Going Home"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u10-q017",
+          "order": 17,
+          "status": "草稿",
+          "questionType": "phrase_translate",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "take over",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出词组意思：占用；接管",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/词组英译汉",
+            "教材课文/第一册第10课 Going Home"
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "pubeng-s4-b1u10-s3",
+      "type": "句子翻译",
+      "order": 3,
+      "questions": [
+        {
+          "questionId": "pubeng-s4-b1u10-q018",
+          "order": 18,
+          "status": "草稿",
+          "questionType": "sentence_translate",
+          "stem": "把下面的句子译成英语：教授走进教室时，我们正兴致勃勃地讨论中东的形势。",
+          "answerExplanation": "参考译文：We were caught up in a discussion about the situation in the Middle East when the professor walked into the classroom.",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“正兴致勃勃地讨论”：were caught up in a discussion",
+              "weight": 1
+            },
+            {
+              "ord": 2,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“中东的形势”：the situation in the Middle East",
+              "weight": 1
+            },
+            {
+              "ord": 3,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“教授走进教室时”：when the professor walked into the classroom",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/句子汉译英",
+            "教材课文/第一册第10课 Going Home"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u10-q019",
+          "order": 19,
+          "status": "草稿",
+          "questionType": "sentence_translate",
+          "stem": "把下面的句子译成英语：午夜后某个时候，敌人被迫撤退了。",
+          "answerExplanation": "参考译文：Sometime after midnight, the enemy was/were forced to retreat.",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“午夜后某个时候”：sometime after midnight",
+              "weight": 1
+            },
+            {
+              "ord": 2,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“敌人被迫撤退了”：the enemy was/were forced to retreat",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/句子汉译英",
+            "教材课文/第一册第10课 Going Home"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u10-q020",
+          "order": 20,
+          "status": "草稿",
+          "questionType": "sentence_translate",
+          "stem": "把下面的句子译成英语：就是在那间斗室里，他们勤奋地工作着，憧憬着美好的未来。",
+          "answerExplanation": "参考译文：It was in that small room that they worked diligently and dreamed of better days to come.",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "强调句“就是在那间斗室里”：It was in that small room that …",
+              "weight": 1
+            },
+            {
+              "ord": 2,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“勤奋地工作着”：worked diligently",
+              "weight": 1
+            },
+            {
+              "ord": 3,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“憧憬着美好的未来”：dreamed of better days to come",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/句子汉译英",
+            "教材课文/第一册第10课 Going Home"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u10-q021",
+          "order": 21,
+          "status": "草稿",
+          "questionType": "sentence_translate",
+          "stem": "把下面的句子译成英语：老太太听到铃响，便从椅子上站起来，向门口走去。",
+          "answerExplanation": "参考译文：When she heard the bell ringing, the old lady rose from her chair and made her way to the door.",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“老太太听到铃响”：when she heard the bell ringing",
+              "weight": 1
+            },
+            {
+              "ord": 2,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“便从椅子上站起来”：rose from her chair",
+              "weight": 1
+            },
+            {
+              "ord": 3,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“向门口走去”：made her way to the door",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/句子汉译英",
+            "教材课文/第一册第10课 Going Home"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u10-q022",
+          "order": 22,
+          "status": "草稿",
+          "questionType": "sentence_translate",
+          "stem": "把下面的句子译成英语：经过一天的战斗，我们的士兵占领了敌人的一些重要阵地。",
+          "answerExplanation": "参考译文：After a day's fight, our soldiers succeeded in taking over some important enemy positions.",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“经过一天的战斗”：after a day's fight",
+              "weight": 1
+            },
+            {
+              "ord": 2,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“占领了”：succeeded in taking over",
+              "weight": 1
+            },
+            {
+              "ord": 3,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“敌人的一些重要阵地”：some important enemy positions",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/句子汉译英",
+            "教材课文/第一册第10课 Going Home"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u10-q023",
+          "order": 23,
+          "status": "草稿",
+          "questionType": "sentence_translate",
+          "stem": "把下面的句子译成英语：我上汽车不久就注意到一个外貌很怪的男人。他穿着一件不合身的上衣，一动不动地坐在位子上。",
+          "answerExplanation": "参考译文：Soon after I boarded the bus, I noticed a strange-looking man. He wore an ill-fitting coat, and sat rooted in his seat.",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“我上汽车不久就注意到”：soon after I boarded the bus, I noticed",
+              "weight": 1
+            },
+            {
+              "ord": 2,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“一个外貌很怪的男人”：a strange-looking man",
+              "weight": 1
+            },
+            {
+              "ord": 3,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“穿着一件不合身的上衣”：wore an ill-fitting coat",
+              "weight": 1
+            },
+            {
+              "ord": 4,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“一动不动地坐在位子上”：sat rooted in his seat",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/句子汉译英",
+            "教材课文/第一册第10课 Going Home"
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "pubeng-s4-b1u10-s4",
+      "type": "段落翻译",
+      "order": 4,
+      "questions": [
+        {
+          "questionId": "pubeng-s4-b1u10-q024",
+          "order": 24,
+          "status": "草稿",
+          "questionType": "paragraph_translate",
+          "stem": "把下面的段落译成汉语：\n\nThen Brunswick was 10 miles, and then five. Then, suddenly, all of the young people were up out of their seats, screaming and shouting and crying, doing small dances of joy. All except Vingo.\n\nVingo sat there stunned, looking at the oak tree. It was covered with yellow handkerchiefs — 20 of them, 30 of them, maybe hundreds, a tree that stood like a banner of welcome billowing in the wind. As the young people shouted, the old con slowly rose from his seat and made his way to the front of the bus to go home.",
+          "answerExplanation": "参考译文：\n\n离布伦斯威克只有 10 英里了，只有五英里了。突然，所有的年轻人都从座位上站了起来，尖叫着，呼喊着，大声嚷嚷着，跳起了欢乐的舞蹈。只有文戈除外。\n\n文戈坐在那儿望着橡树惊呆了。树上挂满了黄手绢——二十条，三十条，或许有几百条，一棵树立在那儿就像欢迎的旗帜在迎风招展。在年轻人的欢呼声中，这位前犯人慢吞吞地从座位上站起来，向车子前面走去，准备回家。",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出：离布伦斯威克只有 10 英里了，只有五英里了。",
+              "weight": 1
+            },
+            {
+              "ord": 2,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出：突然，所有的年轻人都从座位上站了起来，尖叫着，呼喊着，大声嚷嚷着，跳起了欢乐的舞蹈。",
+              "weight": 1
+            },
+            {
+              "ord": 3,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出：只有文戈除外。",
+              "weight": 1
+            },
+            {
+              "ord": 4,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出：文戈坐在那儿望着橡树惊呆了。",
+              "weight": 1
+            },
+            {
+              "ord": 5,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出：树上挂满了黄手绢——二十条，三十条，或许有几百条，一棵树立在那儿就像欢迎的旗帜在迎风招展。",
+              "weight": 1
+            },
+            {
+              "ord": 6,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出：在年轻人的欢呼声中，这位前犯人慢吞吞地从座位上站起来，向车子前面走去，准备回家。",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/段落英译汉",
+            "教材课文/第一册第10课 Going Home"
+          ]
+        }
+      ]
+    }
+  ],
+  "parsingNotes": []
+}

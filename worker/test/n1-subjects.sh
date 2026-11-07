@@ -77,7 +77,12 @@ echo "  服务已就绪"
 
 echo
 echo "== 迁移把学科建起来了吗 =="
-check "subjects 表存在且有两个初始学科" "$(one "SELECT COUNT(*) FROM subjects;")" "2"
+# 期望从仓库现算：data/subjects/ 下每个学科都由某条迁移建出来（以前写死"两个"，加公共英语就红）
+REPO_SUBJ=$(for d in "$ROOT_DIR"/../data/subjects/*/; do basename "$d"; done | LC_ALL=C sort | paste -sd, -)
+check "仓库里至少有英语、生化两个学科（下一条的前提）" \
+  "$(echo "$REPO_SUBJ" | tr ',' '\n' | grep -cx 'english\|biochem')" "2"
+check "迁移建出来的学科正好是仓库里那几个（$REPO_SUBJ）" \
+  "$(one "SELECT group_concat(code, ',') FROM (SELECT code FROM subjects ORDER BY code);")" "$REPO_SUBJ"
 check "english 学科的内容组织维度是试卷" \
   "$(one "SELECT content_group_kind FROM subjects WHERE code='english';")" "EXAM_PAPER"
 check "biochem 学科的内容组织维度是章节" \
