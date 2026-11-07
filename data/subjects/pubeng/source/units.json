@@ -1,0 +1,173 @@
+{
+  "_note": "第四段教学重点——原书第 133–140 页，逐页看扫描件转写。第四段教学内容是《大学英语》精读第一册第 9–10 课、第二册第 1–6 课；第二册第 3–6 课在原书第 141–153 页，这份扫描件里缺了，以后补成新文件。每课四块：单词（英→中释义）、词组（英→中）、句子翻译（中→英，书上给了译文）、精选段落（英文原文 + 书上给的中文译文）。",
+  "units": [
+    {
+      "id": "b1u09",
+      "book": 1, "unit": 9,
+      "title": "Is There Life on Earth",
+      "pages": "133–134",
+      "words": [
+        ["atmosphere", "n. 大气；空气"],
+        ["conclusion", "n. 结论"],
+        ["conference", "n. 会议"],
+        ["deadly", "a. 致命的"],
+        ["emit", "v. 散发，射出"],
+        ["hazard", "n. 危险"],
+        ["humorous", "a. 幽默的"],
+        ["pollute", "v. 污染"],
+        ["proceed", "v. （停顿后）继续前进"],
+        ["signal", "n. 信号；暗号"],
+        ["survive", "v. 活下来；幸存"],
+        ["technology", "n. 技术"]
+      ],
+      "phrases": [
+        ["as far as … be concerned", "就……而言"],
+        ["(be) known as", "以……闻名，通常名叫"],
+        ["base on/upon", "以……为基础，把……基于"],
+        ["name after", "以……名字命名"],
+        ["stick up", "直立；向上突出"],
+        ["set back", "耽搁；阻碍"]
+      ],
+      "sentences": [
+        ["工厂和汽车发出的一氧化碳这类气体严重污染了大气。", "Gases such as carbon monoxide, emitted by factories and automobiles, have seriously polluted the atmosphere."],
+        ["那位工业管理工程师的来信说明他对该项计划是否可行有怀疑。", "The industrial engineer's letter indicates that he doubts the feasibility of the plan."],
+        ["美国许多父母在孩子出生之前就为他们的教育留出一笔专款。", "Many parents in the United States set aside a fund for their children's education before they are born."],
+        ["几天前，有 3 位医生和两名护士组成的医疗队出发到山区去了。", "The medical team, composed of three doctors and two nurses, set off for the mountain(ous) area a few days ago."],
+        ["这个村庄是以矗立在它前面的那座高山命名的。", "The village is named after the high mountain that stands in front of it."],
+        ["南方和北方之间于 1861 年爆发的那场战争在历史上称为“美国内战”。", "The war that broke out between the North and the South in 1861 is known in history as the American Civil War."]
+      ],
+      "paragraphs": [
+        {
+          "en": "There was great excitement on the planet of Venus this week. For the first time Venusian scientists managed to land a satellite on the planet Earth, and it has been sending back signals as well as photographs ever since.\n\nThe satellite was directed into an area known as Manhattan (named after the great Venusian astronomer Prof. Manhattan, who first discovered it with his telescope 20,000 light years ago).\n\nBecause of excellent weather conditions and extremely strong signals, Venusian scientists were able to get valuable information as to the feasibility of a manned flying saucer landing on earth. A press conference was held at the Venus Institute of Technology.",
+          "zh": "本周金星上群情激动异常。金星上的科学家首次把一颗卫星成功地送上了地球，此后卫星便不断地发回信号和照片。\n\n卫星对准发射的地区叫曼哈顿（是以金星上伟大的天文学家曼哈顿教授命名的，在两万光年之前该教授用望远镜首次发现了这个地区）。\n\n由于天气条件极为有利，信号极为清晰，金星科学家们从而获得了有关载人飞碟能否在地球上着陆的宝贵资料。于是，有关方面在金星理工学院举行了一次记者招待会。"
+        }
+      ]
+    },
+    {
+      "id": "b1u10",
+      "book": 1, "unit": 10,
+      "title": "Going Home",
+      "pages": "135–136",
+      "words": [
+        ["banner", "n. 旗，旗帜"],
+        ["chew", "v. 咀嚼；咬"],
+        ["exclaim", "v. 惊叫，叫喊说"],
+        ["mask", "v. 遮盖；掩盖"],
+        ["mysterious", "a. 神秘的"],
+        ["retreat", "v. 退缩；退却，撤退"],
+        ["sometime", "ad. 某个时候"],
+        ["stun", "v. 使震惊；使目瞪口呆"],
+        ["tide", "n. 潮汐"],
+        ["vanish", "v. 消失"]
+      ],
+      "phrases": [
+        ["be caught up in", "对……入迷"],
+        ["come through", "如所预料地到来；胜利"],
+        ["dream of", "向往，渴望"],
+        ["make one's way", "去，前往"],
+        ["pull into", "（车等）驶入；到达"],
+        ["take back", "允许……回来，接受"],
+        ["take over", "占用；接管"]
+      ],
+      "sentences": [
+        ["教授走进教室时，我们正兴致勃勃地讨论中东的形势。", "We were caught up in a discussion about the situation in the Middle East when the professor walked into the classroom."],
+        ["午夜后某个时候，敌人被迫撤退了。", "Sometime after midnight, the enemy was/were forced to retreat."],
+        ["就是在那间斗室里，他们勤奋地工作着，憧憬着美好的未来。", "It was in that small room that they worked diligently and dreamed of better days to come."],
+        ["老太太听到铃响，便从椅子上站起来，向门口走去。", "When she heard the bell ringing, the old lady rose from her chair and made her way to the door."],
+        ["经过一天的战斗，我们的士兵占领了敌人的一些重要阵地。", "After a day's fight, our soldiers succeeded in taking over some important enemy positions."],
+        ["我上汽车不久就注意到一个外貌很怪的男人。他穿着一件不合身的上衣，一动不动地坐在位子上。", "Soon after I boarded the bus, I noticed a strange-looking man. He wore an ill-fitting coat, and sat rooted in his seat."]
+      ],
+      "paragraphs": [
+        {
+          "en": "Then Brunswick was 10 miles, and then five. Then, suddenly, all of the young people were up out of their seats, screaming and shouting and crying, doing small dances of joy. All except Vingo.\n\nVingo sat there stunned, looking at the oak tree. It was covered with yellow handkerchiefs — 20 of them, 30 of them, maybe hundreds, a tree that stood like a banner of welcome billowing in the wind. As the young people shouted, the old con slowly rose from his seat and made his way to the front of the bus to go home.",
+          "zh": "离布伦斯威克只有 10 英里了，只有五英里了。突然，所有的年轻人都从座位上站了起来，尖叫着，呼喊着，大声嚷嚷着，跳起了欢乐的舞蹈。只有文戈除外。\n\n文戈坐在那儿望着橡树惊呆了。树上挂满了黄手绢——二十条，三十条，或许有几百条，一棵树立在那儿就像欢迎的旗帜在迎风招展。在年轻人的欢呼声中，这位前犯人慢吞吞地从座位上站起来，向车子前面走去，准备回家。"
+        }
+      ]
+    },
+    {
+      "id": "b2u01",
+      "book": 2, "unit": 1,
+      "title": "The Dinner Party",
+      "pages": "137–138",
+      "words": [
+        ["argument", "n. 争论；辩论"],
+        ["bare", "a. 不铺地毯的；赤裸的；光秃的"],
+        ["contract", "v. 收缩"],
+        ["crawl", "v. 爬行"],
+        ["emerge", "v. 出现"],
+        ["faint", "a. 微弱的；不明显的"],
+        ["heated", "a. 热烈的；激烈的"],
+        ["image", "n. 雕像"],
+        ["impulse", "n. 冲动"],
+        ["likely", "a. 可能的"],
+        ["motion", "v. 打手势"],
+        ["reaction", "n. 反应"],
+        ["shortly", "ad. 不久；马上"]
+      ],
+      "phrases": [
+        ["at the sight of", "一看见"],
+        ["be seated", "坐着；坐下"],
+        ["come to", "苏醒"],
+        ["feel like", "想要"],
+        ["make for", "走向"],
+        ["spring up", "突然开始；迅速生长"],
+        ["track down", "追捕到；追查到"]
+      ],
+      "sentences": [
+        ["她砰地关上门，一声不吭地走了，他们间那场争执就此结束。", "Their argument ended when she slammed the door and left without a word."],
+        ["出席晚宴的客人对那个美国人威严的语气感到有点意外。", "The guests at the dinner party were slightly surprised at the commanding tone of the American."],
+        ["约翰尼已长大成熟，不再害怕独自待在家里了。", "Johnny has outgrown the fear of staying at home alone."],
+        ["南希虽然很想参加辩论，但腼腆得不敢开口。", "While she felt like joining in the debate, Nancy was too shy to open her mouth."],
+        ["你觉得什么时候最有可能在家里找到他？", "What do you think is the likeliest time to find him at home?"]
+      ],
+      "paragraphs": [
+        {
+          "en": "The American does not join in the argument but watches the other guests. As he looks, he sees a strange expression come over the face of the hostess. She is staring straight ahead, her muscles contracting slightly. She motions to the native boy standing behind her chair and whispers something to him. The boy's eyes widen; he quickly leaves the room.\n\nOf the guests, none except the American notices this or sees the boy place a bowl of milk on the veranda just outside the open doors.\n\nThe American comes to with a start. In India, milk in a bowl means only one thing — bait for a snake. He realizes there must be a cobra in the room.",
+          "zh": "那个美国人没有参加这场争论，他只是注视着在座的其他客人。在他观察时，发现女主人的脸上显出一种奇异的表情。她两眼盯着正前方，脸部肌肉在微微抽搐。她向站在座椅后面的印度男仆做了个手势，对他耳语了几句。男仆两眼睁得大大的，迅速地离开了餐室。\n\n在座的客人中除了那位美国人谁也没有注意到这一幕，也没有看到那个男仆把一碗牛奶放在仅靠门边的走廊上。\n\n那个美国人突然醒悟过来。在印度，碗中的牛奶只有一个意思——引蛇的诱饵。他意识到餐室里一定有条眼镜蛇。"
+        }
+      ]
+    },
+    {
+      "id": "b2u02",
+      "book": 2, "unit": 2,
+      "title": "Lessons from Jefferson",
+      "pages": "139–140",
+      "words": [
+        ["appoint", "v. 任命"],
+        ["conflict", "n. 冲突"],
+        ["conservation", "n. 保护；保存"],
+        ["constitution", "n. 宪法；章程"],
+        ["create", "v. 创造"],
+        ["declaration", "n. 宣言"],
+        ["hesitate", "v. 犹豫，迟疑不决"],
+        ["humble", "a. 地位低下的"],
+        ["independence", "n. 独立"],
+        ["influence", "n. 影响"],
+        ["obtain", "v. 获得"],
+        ["reject", "v. 拒绝"],
+        ["superior", "a. 较好的；优的"],
+        ["threaten", "v. 威胁"]
+      ],
+      "phrases": [
+        ["above all", "首先，尤其是"],
+        ["act on", "按照……行事"],
+        ["go out of one's way (to do sth.)", "特地"],
+        ["in existence", "存在"],
+        ["leave behind", "丢弃；留下，忘带"]
+      ],
+      "sentences": [
+        ["会上有人建议任命一个 11 人委员会来制定新章程。", "It was suggested at the meeting that a committee of eleven be appointed to make a new constitution."],
+        ["这些青年科学家通过现场观察，获得了研究工作所需的第一手资料。", "By making on-the-spot observations, these young scientists obtained first-hand information they needed in their research work."],
+        ["亨利创作的艺术品在许多方面比他兄弟的要好。", "Henry's works of art are superior in many respects to those of his brother's."],
+        ["我们产品质量的稳步提高在很大程度上是由于设备有所改进。", "The steady rise in the quality of our products owes much to the improvement of our equipment."],
+        ["如果让我来决定我们是要一个没有自行车的城市呢，还是要一个没有汽车的城市，我会毫不犹豫地选择后者。", "Were it left to me to decide whether we should have a city without bikes or one without cars, I should not hesitate a moment to prefer the latter."]
+      ],
+      "paragraphs": [
+        {
+          "en": "Jefferson's courage and idealism were based on knowledge. He probably knew more than any other man of his age. He was an expert in agriculture, archeology, and medicine. He practiced crop rotation and soil conservation a century before these became standard practice, and he invented a plow superior to any other in existence. He influenced architecture throughout America, and he was constantly producing devices for making the tasks of ordinary life easier to perform.\n\nOf all Jefferson's many talents, one is central. He was above all a good and tireless writer. His complete works, now being published for the first time, will fill more than fifty volumes. His talent as an author was soon discovered and when the time came to write the Declaration of Independence at Philadelphia in 1776, the task of writing it was his. Millions have thrilled to his words: \"We hold these truths to be self-evident, that all men are created equal …\"",
+          "zh": "杰斐逊的勇气和理想主义是以知识为基础的。他懂得的东西也许比同时代的任何人都要多。在农业、考古学和医学方面他都是专家。在人们普遍采用农作物轮作和土壤保持的做法以前的一个世纪，他就这样做了。他还发明了一种耕犁，比当时任何一种现成的都要好。他影响了整个美国的建筑业，他还不断地制造出各种器械装置，使日常生活中需要做的许多工作变得更加容易。\n\n在杰斐逊的众多才能中，有一项是最主要的。他首先是一位优秀的、不知疲倦的作家。他的全集目前正在第一次出版，将超过 50 卷。他作为一个作家的才能很快便被发现了，所以 1776 年在费城，当要撰写《独立宣言》的时刻来到时，这一任务便落到了他的肩上。数以百万计的人们读到他写的下列词句都激动不已：“我们认为这些真理是不言而喻的：所有人生来就是平等的……”"
+        }
+      ]
+    }
+  ]
+}
