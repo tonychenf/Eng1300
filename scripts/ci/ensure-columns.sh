@@ -133,6 +133,10 @@ SPECS=(
 # 而 0 是个合法的排序键——那一章会静默排到所有内容组的最前面，不报错。
 # 算不出来就留空，让下面的 REQUIRED 检查把它点名、让部署当场失败：
 # 章节号只有导入那份数据的人知道，脚本猜不出来，也不该猜。
+#
+# 两张"题型码 → 作答形态 / 判分策略"的表要列全所有学科的题型码。公共英语（0018，2026-11-07）的四个码
+# 真实部署里用不上（补列排在迁移前，0018 插这几行时两列已经在了），补进来是让表完整：n5-items 的旧库模拟
+# 先跑全部迁移再删列，漏了哪个码，那一行就回填不出来、补列步骤当场红。以后加学科、加题型码同样补在这里。
 backfill_sql() {
   case "$1.$2" in
     subject_question_types.answer_shape) cat <<'SQL'
@@ -142,6 +146,10 @@ UPDATE subject_question_types SET answer_shape = CASE type_code
     WHEN 'essay'         THEN 'TEXT_LONG'
     WHEN 'term_explain'  THEN 'TEXT_LONG'
     WHEN 'short_answer'  THEN 'TEXT_LONG'
+    WHEN 'spell_word'          THEN 'TEXT_SHORT'
+    WHEN 'phrase_translate'    THEN 'TEXT_SHORT'
+    WHEN 'sentence_translate'  THEN 'TEXT_LONG'
+    WHEN 'paragraph_translate' THEN 'TEXT_LONG'
   END WHERE answer_shape IS NULL;
 SQL
       ;;
@@ -152,6 +160,10 @@ UPDATE subject_question_types SET grading_strategy = CASE type_code
     WHEN 'essay'         THEN 'AI_DIMENSION'
     WHEN 'term_explain'  THEN 'AI_SCORE_POINTS'
     WHEN 'short_answer'  THEN 'AI_SCORE_POINTS'
+    WHEN 'spell_word'          THEN 'EXACT'
+    WHEN 'phrase_translate'    THEN 'AI_SCORE_POINTS'
+    WHEN 'sentence_translate'  THEN 'AI_SCORE_POINTS'
+    WHEN 'paragraph_translate' THEN 'AI_SCORE_POINTS'
   END WHERE grading_strategy IS NULL;
 SQL
       ;;

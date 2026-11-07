@@ -197,6 +197,11 @@ export async function planPaper(db, { courseCode, userId, difficulty = '随机',
   const parts = [];
   const warnings = [];
   const usedTags = new Set();
+  // 本卷已经抽过的篇章、题目。两个模板项筛出同一批篇章（公共英语的阅读理解是两篇各 5 题，
+  // 拆成两个整篇抽的模板项）时，第二项不能再抽到第一项那篇：同一题进卷两次，
+  // attempt_questions 撞主键，组卷 500。以前每个学科一类篇章只有一个模板项，碰不上。
+  const usedSections = new Set();
+  const usedQuestions = new Set();
 
   for (const item of template) {
     const part = {
@@ -205,7 +210,7 @@ export async function planPaper(db, { courseCode, userId, difficulty = '随机',
     };
 
     if (item.pickUnit === 'SECTION') {
-      const all = await candidateSections(db, courseCode, item);
+      const all = (await candidateSections(db, courseCode, item)).filter((s) => !usedSections.has(s.section_id));
       if (!all.length) {
         throw fail('insufficient_questions',
           `题库里没有满足「${item.label}」${item.questionCount} 题要求的完整篇章`);
@@ -223,14 +228,16 @@ export async function planPaper(db, { courseCode, userId, difficulty = '随机',
         warnings.push(`「${item.label}」有 ${overlap} 个考点与本卷其它部分重复，该题型的题库考点数偏少`);
       }
       for (const t of tagMap.get(picked.section_id) || []) usedTags.add(t);
+      usedSections.add(picked.section_id);
 
       const { results: qs } = await db.prepare(
         `SELECT question_id FROM questions
           WHERE section_id = ? AND ${pickableSql('')} ORDER BY ord`
       ).bind(picked.section_id).all();
       part.questions = qs.map((q) => ({ questionId: q.question_id, sectionId: picked.section_id }));
+      for (const q of qs) usedQuestions.add(q.question_id);
     } else {
-      const all = await candidateQuestions(db, courseCode, item);
+      const all = (await candidateQuestions(db, courseCode, item)).filter((q) => !usedQuestions.has(q.question_id));
       if (all.length < item.questionCount) {
         throw fail('insufficient_questions',
           `题库里符合「${item.label}」条件的已发布题只有 ${all.length} 道，模板要 ${item.questionCount} 道`);
@@ -248,6 +255,7 @@ export async function planPaper(db, { courseCode, userId, difficulty = '随机',
         const { picked } = pickDiverse(
           [...left.values()], (q) => tagMap.get(q.question_id) || new Set(), usedTags, difficulty, accuracy);
         left.delete(picked.question_id);
+        usedQuestions.add(picked.question_id);
         for (const t of tagMap.get(picked.question_id) || []) usedTags.add(t);
         part.questions.push({ questionId: picked.question_id, sectionId: picked.section_id });
       }
@@ -290,11 +298,25 @@ export async function examReadiness(db) {
       publishedExams: co.published_exams, templateItems: rows.length, parts: [], ready: false, problem: null,
     };
     try {
+      // 和 planPaper 一样：前面的模板项占掉的篇章、题目，后面的不能再算（两个阅读模板项共用一个筛选条件时，
+      // 只有一篇文章就不该报"凑得够"——学员点下去第二项就 422）。按模板顺序先到先占，
+      // 占的是排在最前面的那几个候选；筛选条件互不相交的课程（英语、生化）结果和以前一样。
+      const claimedSections = new Set();
+      const claimedQuestions = new Set();
       for (const row of rows) {
         const item = toTemplateItem(row);
-        const available = item.pickUnit === 'SECTION'
-          ? (await candidateSections(db, co.course_code, item)).length
-          : (await candidateQuestions(db, co.course_code, item)).length;
+        let available;
+        if (item.pickUnit === 'SECTION') {
+          const left = (await candidateSections(db, co.course_code, item))
+            .filter((x) => !claimedSections.has(x.section_id));
+          available = left.length;
+          if (left.length) claimedSections.add(left[0].section_id);
+        } else {
+          const left = (await candidateQuestions(db, co.course_code, item))
+            .filter((x) => !claimedQuestions.has(x.question_id));
+          available = left.length;
+          for (const x of left.slice(0, item.questionCount)) claimedQuestions.add(x.question_id);
+        }
         const ok = item.pickUnit === 'SECTION' ? available >= 1 : available >= item.questionCount;
         entry.parts.push({
           ord: item.ord, label: item.label, pickUnit: item.pickUnit,

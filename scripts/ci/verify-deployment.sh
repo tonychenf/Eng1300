@@ -228,8 +228,16 @@ if [ -n "${ADMIN_TOKEN:-}" ]; then
     # ---- N1 学科骨架 ----
     # 线上没有这几条的话，学科层是不是真的上线了只能靠猜
     SUBJ=$(curl -sS -m 20 "$WORKER_URL/api/me/subjects" -H "Authorization: Bearer $TOKEN" || echo '{}')
-    check "学科接口返回英语与生化两个学科" \
-      "$(echo "$SUBJ" | jq -r '[.subjects[].code] | sort | join(",")')" "biochem,english"
+    # 以前断"正好是英语与生化"——加第三个学科（公共英语，2026-11-07）就红，红了只能改字符串，
+    # 是快照不是不变量。现在断：仓库 data/subjects/ 下每个学科都在库里（后台学科列表，含停用的——
+    # 停用是管理员的正常操作）。期望从目录现算，实际从接口读。
+    REPO_SUBJ=$(for d in "$SUBJ_ROOT"/*/; do basename "$d"; done | LC_ALL=C sort | paste -sd, -)
+    DB_SUBJ=$(curl -sS -m 20 "$WORKER_URL/api/admin/subjects" -H "Authorization: Bearer $TOKEN" \
+      | jq -r '[.subjects[]?.code] | join("\n")' | LC_ALL=C sort)
+    MISSING_SUBJ=$(for c in ${REPO_SUBJ//,/ }; do grep -qx "$c" <<<"$DB_SUBJ" || echo "$c"; done | paste -sd, -)
+    check "仓库里的学科（$REPO_SUBJ）都在库里" "${MISSING_SUBJ:-无缺}" "无缺"
+    check "学科接口至少返回英语与生化" \
+      "$(echo "$SUBJ" | jq -r '[.subjects[].code | select(. == "english" or . == "biochem")] | sort | join(",")')" "biochem,english"
     check "英语学科已有可抽题（ready）" \
       "$(echo "$SUBJ" | jq -r '.subjects[] | select(.code=="english") | .ready')" "true"
     CODE=$(curl -sS -m 20 -o /dev/null -w '%{http_code}' "$WORKER_URL/api/s/nosuchsubject" \

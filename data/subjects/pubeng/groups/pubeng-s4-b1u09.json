@@ -1,0 +1,739 @@
+{
+  "groupId": "pubeng-s4-b1u09",
+  "subjectCode": "pubeng",
+  "courseCode": "pubeng-main",
+  "groupKind": "TEXTBOOK_UNIT",
+  "orderKey": 20,
+  "label": "第四段教学重点 第一册第9课 Is There Life on Earth",
+  "sourceFile": "公共英语课程教学重点与考试样卷（扫描件）第 133–134 页",
+  "answerState": "待核",
+  "answerSource": "AI",
+  "answerNote": "单词、词组的答案是原书单词表、词组表本身（已确认）。句子翻译的参考译文是原书的，拆成采分点是 Claude 做的；段落翻译的采分点是按原书中文译文逐句切的——这两类待人在后台确认。",
+  "sections": [
+    {
+      "sectionId": "pubeng-s4-b1u09-s1",
+      "type": "拼写单词",
+      "order": 1,
+      "questions": [
+        {
+          "questionId": "pubeng-s4-b1u09-q001",
+          "order": 1,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "n. 大气；空气",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "atmosphere",
+              "weight": 1
+            }
+          ],
+          "answer": "atmosphere",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第一册第9课 Is There Life on Earth"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u09-q002",
+          "order": 2,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "n. 结论",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "conclusion",
+              "weight": 1
+            }
+          ],
+          "answer": "conclusion",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第一册第9课 Is There Life on Earth"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u09-q003",
+          "order": 3,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "n. 会议",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "conference",
+              "weight": 1
+            }
+          ],
+          "answer": "conference",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第一册第9课 Is There Life on Earth"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u09-q004",
+          "order": 4,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "a. 致命的",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "deadly",
+              "weight": 1
+            }
+          ],
+          "answer": "deadly",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第一册第9课 Is There Life on Earth"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u09-q005",
+          "order": 5,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "v. 散发，射出",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "emit",
+              "weight": 1
+            }
+          ],
+          "answer": "emit",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第一册第9课 Is There Life on Earth"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u09-q006",
+          "order": 6,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "n. 危险",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "hazard",
+              "weight": 1
+            }
+          ],
+          "answer": "hazard",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第一册第9课 Is There Life on Earth"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u09-q007",
+          "order": 7,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "a. 幽默的",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "humorous",
+              "weight": 1
+            }
+          ],
+          "answer": "humorous",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第一册第9课 Is There Life on Earth"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u09-q008",
+          "order": 8,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "v. 污染",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "pollute",
+              "weight": 1
+            }
+          ],
+          "answer": "pollute",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第一册第9课 Is There Life on Earth"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u09-q009",
+          "order": 9,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "v. （停顿后）继续前进",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "proceed",
+              "weight": 1
+            }
+          ],
+          "answer": "proceed",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第一册第9课 Is There Life on Earth"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u09-q010",
+          "order": 10,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "n. 信号；暗号",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "signal",
+              "weight": 1
+            }
+          ],
+          "answer": "signal",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第一册第9课 Is There Life on Earth"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u09-q011",
+          "order": 11,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "v. 活下来；幸存",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "survive",
+              "weight": 1
+            }
+          ],
+          "answer": "survive",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第一册第9课 Is There Life on Earth"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u09-q012",
+          "order": 12,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "n. 技术",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "technology",
+              "weight": 1
+            }
+          ],
+          "answer": "technology",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第一册第9课 Is There Life on Earth"
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "pubeng-s4-b1u09-s2",
+      "type": "词组翻译",
+      "order": 2,
+      "questions": [
+        {
+          "questionId": "pubeng-s4-b1u09-q013",
+          "order": 13,
+          "status": "草稿",
+          "questionType": "phrase_translate",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "as far as … be concerned",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出词组意思：就……而言",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/词组英译汉",
+            "教材课文/第一册第9课 Is There Life on Earth"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u09-q014",
+          "order": 14,
+          "status": "草稿",
+          "questionType": "phrase_translate",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "(be) known as",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出词组意思：以……闻名，通常名叫",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/词组英译汉",
+            "教材课文/第一册第9课 Is There Life on Earth"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u09-q015",
+          "order": 15,
+          "status": "草稿",
+          "questionType": "phrase_translate",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "base on/upon",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出词组意思：以……为基础，把……基于",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/词组英译汉",
+            "教材课文/第一册第9课 Is There Life on Earth"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u09-q016",
+          "order": 16,
+          "status": "草稿",
+          "questionType": "phrase_translate",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "name after",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出词组意思：以……名字命名",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/词组英译汉",
+            "教材课文/第一册第9课 Is There Life on Earth"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u09-q017",
+          "order": 17,
+          "status": "草稿",
+          "questionType": "phrase_translate",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "stick up",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出词组意思：直立；向上突出",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/词组英译汉",
+            "教材课文/第一册第9课 Is There Life on Earth"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u09-q018",
+          "order": 18,
+          "status": "草稿",
+          "questionType": "phrase_translate",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "set back",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出词组意思：耽搁；阻碍",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/词组英译汉",
+            "教材课文/第一册第9课 Is There Life on Earth"
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "pubeng-s4-b1u09-s3",
+      "type": "句子翻译",
+      "order": 3,
+      "questions": [
+        {
+          "questionId": "pubeng-s4-b1u09-q019",
+          "order": 19,
+          "status": "草稿",
+          "questionType": "sentence_translate",
+          "stem": "把下面的句子译成英语：工厂和汽车发出的一氧化碳这类气体严重污染了大气。",
+          "answerExplanation": "参考译文：Gases such as carbon monoxide, emitted by factories and automobiles, have seriously polluted the atmosphere.",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "主语“一氧化碳这类气体”：gases such as carbon monoxide",
+              "weight": 1
+            },
+            {
+              "ord": 2,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“工厂和汽车发出的”作后置定语：emitted by factories and automobiles",
+              "weight": 1
+            },
+            {
+              "ord": 3,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“严重污染了大气”：have seriously polluted the atmosphere",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/句子汉译英",
+            "教材课文/第一册第9课 Is There Life on Earth"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u09-q020",
+          "order": 20,
+          "status": "草稿",
+          "questionType": "sentence_translate",
+          "stem": "把下面的句子译成英语：那位工业管理工程师的来信说明他对该项计划是否可行有怀疑。",
+          "answerExplanation": "参考译文：The industrial engineer's letter indicates that he doubts the feasibility of the plan.",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“那位工业管理工程师的来信”：the industrial engineer's letter",
+              "weight": 1
+            },
+            {
+              "ord": 2,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“说明……”：indicates that …",
+              "weight": 1
+            },
+            {
+              "ord": 3,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“对该项计划是否可行有怀疑”：doubts the feasibility of the plan",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/句子汉译英",
+            "教材课文/第一册第9课 Is There Life on Earth"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u09-q021",
+          "order": 21,
+          "status": "草稿",
+          "questionType": "sentence_translate",
+          "stem": "把下面的句子译成英语：美国许多父母在孩子出生之前就为他们的教育留出一笔专款。",
+          "answerExplanation": "参考译文：Many parents in the United States set aside a fund for their children's education before they are born.",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“美国许多父母”：many parents in the United States",
+              "weight": 1
+            },
+            {
+              "ord": 2,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“为他们的教育留出一笔专款”：set aside a fund for their children's education",
+              "weight": 1
+            },
+            {
+              "ord": 3,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“在孩子出生之前”：before they are born",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/句子汉译英",
+            "教材课文/第一册第9课 Is There Life on Earth"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u09-q022",
+          "order": 22,
+          "status": "草稿",
+          "questionType": "sentence_translate",
+          "stem": "把下面的句子译成英语：几天前，有 3 位医生和两名护士组成的医疗队出发到山区去了。",
+          "answerExplanation": "参考译文：The medical team, composed of three doctors and two nurses, set off for the mountain(ous) area a few days ago.",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“医疗队”作主语：the medical team",
+              "weight": 1
+            },
+            {
+              "ord": 2,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“由 3 位医生和两名护士组成的”：composed of three doctors and two nurses",
+              "weight": 1
+            },
+            {
+              "ord": 3,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“几天前出发到山区去了”：set off for the mountain(ous) area a few days ago",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/句子汉译英",
+            "教材课文/第一册第9课 Is There Life on Earth"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u09-q023",
+          "order": 23,
+          "status": "草稿",
+          "questionType": "sentence_translate",
+          "stem": "把下面的句子译成英语：这个村庄是以矗立在它前面的那座高山命名的。",
+          "answerExplanation": "参考译文：The village is named after the high mountain that stands in front of it.",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“这个村庄是以……命名的”：the village is named after …",
+              "weight": 1
+            },
+            {
+              "ord": 2,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“矗立在它前面的那座高山”：the high mountain that stands in front of it",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/句子汉译英",
+            "教材课文/第一册第9课 Is There Life on Earth"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b1u09-q024",
+          "order": 24,
+          "status": "草稿",
+          "questionType": "sentence_translate",
+          "stem": "把下面的句子译成英语：南方和北方之间于 1861 年爆发的那场战争在历史上称为“美国内战”。",
+          "answerExplanation": "参考译文：The war that broke out between the North and the South in 1861 is known in history as the American Civil War.",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“南方和北方之间于 1861 年爆发的那场战争”：the war that broke out between the North and the South in 1861",
+              "weight": 1
+            },
+            {
+              "ord": 2,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“在历史上称为……”：is known in history as …",
+              "weight": 1
+            },
+            {
+              "ord": 3,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“美国内战”：the American Civil War",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/句子汉译英",
+            "教材课文/第一册第9课 Is There Life on Earth"
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "pubeng-s4-b1u09-s4",
+      "type": "段落翻译",
+      "order": 4,
+      "questions": [
+        {
+          "questionId": "pubeng-s4-b1u09-q025",
+          "order": 25,
+          "status": "草稿",
+          "questionType": "paragraph_translate",
+          "stem": "把下面的段落译成汉语：\n\nThere was great excitement on the planet of Venus this week. For the first time Venusian scientists managed to land a satellite on the planet Earth, and it has been sending back signals as well as photographs ever since.\n\nThe satellite was directed into an area known as Manhattan (named after the great Venusian astronomer Prof. Manhattan, who first discovered it with his telescope 20,000 light years ago).\n\nBecause of excellent weather conditions and extremely strong signals, Venusian scientists were able to get valuable information as to the feasibility of a manned flying saucer landing on earth. A press conference was held at the Venus Institute of Technology.",
+          "answerExplanation": "参考译文：\n\n本周金星上群情激动异常。金星上的科学家首次把一颗卫星成功地送上了地球，此后卫星便不断地发回信号和照片。\n\n卫星对准发射的地区叫曼哈顿（是以金星上伟大的天文学家曼哈顿教授命名的，在两万光年之前该教授用望远镜首次发现了这个地区）。\n\n由于天气条件极为有利，信号极为清晰，金星科学家们从而获得了有关载人飞碟能否在地球上着陆的宝贵资料。于是，有关方面在金星理工学院举行了一次记者招待会。",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出：本周金星上群情激动异常。",
+              "weight": 1
+            },
+            {
+              "ord": 2,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出：金星上的科学家首次把一颗卫星成功地送上了地球，此后卫星便不断地发回信号和照片。",
+              "weight": 1
+            },
+            {
+              "ord": 3,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出：卫星对准发射的地区叫曼哈顿（是以金星上伟大的天文学家曼哈顿教授命名的，在两万光年之前该教授用望远镜首次发现了这个地区）。",
+              "weight": 1
+            },
+            {
+              "ord": 4,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出：由于天气条件极为有利，信号极为清晰，金星科学家们从而获得了有关载人飞碟能否在地球上着陆的宝贵资料。",
+              "weight": 1
+            },
+            {
+              "ord": 5,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出：于是，有关方面在金星理工学院举行了一次记者招待会。",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/段落英译汉",
+            "教材课文/第一册第9课 Is There Life on Earth"
+          ]
+        }
+      ]
+    }
+  ],
+  "parsingNotes": []
+}

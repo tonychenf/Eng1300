@@ -1,0 +1,786 @@
+{
+  "groupId": "pubeng-s4-b2u02",
+  "subjectCode": "pubeng",
+  "courseCode": "pubeng-main",
+  "groupKind": "TEXTBOOK_UNIT",
+  "orderKey": 23,
+  "label": "第四段教学重点 第二册第2课 Lessons from Jefferson",
+  "sourceFile": "公共英语课程教学重点与考试样卷（扫描件）第 139–140 页",
+  "answerState": "待核",
+  "answerSource": "AI",
+  "answerNote": "单词、词组的答案是原书单词表、词组表本身（已确认）。句子翻译的参考译文是原书的，拆成采分点是 Claude 做的；段落翻译的采分点是按原书中文译文逐句切的——这两类待人在后台确认。",
+  "sections": [
+    {
+      "sectionId": "pubeng-s4-b2u02-s1",
+      "type": "拼写单词",
+      "order": 1,
+      "questions": [
+        {
+          "questionId": "pubeng-s4-b2u02-q001",
+          "order": 1,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "v. 任命",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "appoint",
+              "weight": 1
+            }
+          ],
+          "answer": "appoint",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第二册第2课 Lessons from Jefferson"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u02-q002",
+          "order": 2,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "n. 冲突",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "conflict",
+              "weight": 1
+            }
+          ],
+          "answer": "conflict",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第二册第2课 Lessons from Jefferson"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u02-q003",
+          "order": 3,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "n. 保护；保存",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "conservation",
+              "weight": 1
+            }
+          ],
+          "answer": "conservation",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第二册第2课 Lessons from Jefferson"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u02-q004",
+          "order": 4,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "n. 宪法；章程",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "constitution",
+              "weight": 1
+            }
+          ],
+          "answer": "constitution",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第二册第2课 Lessons from Jefferson"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u02-q005",
+          "order": 5,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "v. 创造",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "create",
+              "weight": 1
+            }
+          ],
+          "answer": "create",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第二册第2课 Lessons from Jefferson"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u02-q006",
+          "order": 6,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "n. 宣言",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "declaration",
+              "weight": 1
+            }
+          ],
+          "answer": "declaration",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第二册第2课 Lessons from Jefferson"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u02-q007",
+          "order": 7,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "v. 犹豫，迟疑不决",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "hesitate",
+              "weight": 1
+            }
+          ],
+          "answer": "hesitate",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第二册第2课 Lessons from Jefferson"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u02-q008",
+          "order": 8,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "a. 地位低下的",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "humble",
+              "weight": 1
+            }
+          ],
+          "answer": "humble",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第二册第2课 Lessons from Jefferson"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u02-q009",
+          "order": 9,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "n. 独立",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "independence",
+              "weight": 1
+            }
+          ],
+          "answer": "independence",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第二册第2课 Lessons from Jefferson"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u02-q010",
+          "order": 10,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "n. 影响",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "influence",
+              "weight": 1
+            }
+          ],
+          "answer": "influence",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第二册第2课 Lessons from Jefferson"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u02-q011",
+          "order": 11,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "v. 获得",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "obtain",
+              "weight": 1
+            }
+          ],
+          "answer": "obtain",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第二册第2课 Lessons from Jefferson"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u02-q012",
+          "order": 12,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "v. 拒绝",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "reject",
+              "weight": 1
+            }
+          ],
+          "answer": "reject",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第二册第2课 Lessons from Jefferson"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u02-q013",
+          "order": 13,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "a. 较好的；优的",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "superior",
+              "weight": 1
+            }
+          ],
+          "answer": "superior",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第二册第2课 Lessons from Jefferson"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u02-q014",
+          "order": 14,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "v. 威胁",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "threaten",
+              "weight": 1
+            }
+          ],
+          "answer": "threaten",
+          "knowledgePoints": [
+            "词汇/单词拼写",
+            "教材课文/第二册第2课 Lessons from Jefferson"
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "pubeng-s4-b2u02-s2",
+      "type": "词组翻译",
+      "order": 2,
+      "questions": [
+        {
+          "questionId": "pubeng-s4-b2u02-q015",
+          "order": 15,
+          "status": "草稿",
+          "questionType": "phrase_translate",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "above all",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出词组意思：首先，尤其是",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/词组英译汉",
+            "教材课文/第二册第2课 Lessons from Jefferson"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u02-q016",
+          "order": 16,
+          "status": "草稿",
+          "questionType": "phrase_translate",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "act on",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出词组意思：按照……行事",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/词组英译汉",
+            "教材课文/第二册第2课 Lessons from Jefferson"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u02-q017",
+          "order": 17,
+          "status": "草稿",
+          "questionType": "phrase_translate",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "go out of one's way (to do sth.)",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出词组意思：特地",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/词组英译汉",
+            "教材课文/第二册第2课 Lessons from Jefferson"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u02-q018",
+          "order": 18,
+          "status": "草稿",
+          "questionType": "phrase_translate",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "in existence",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出词组意思：存在",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/词组英译汉",
+            "教材课文/第二册第2课 Lessons from Jefferson"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u02-q019",
+          "order": 19,
+          "status": "草稿",
+          "questionType": "phrase_translate",
+          "answerState": "已确认",
+          "answerSource": "OFFICIAL",
+          "answerReviewedBy": "原书教学重点（单词表、词组表、译文）",
+          "answerReviewedAt": "2026-11-07",
+          "stem": "leave behind",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出词组意思：丢弃；留下，忘带",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/词组英译汉",
+            "教材课文/第二册第2课 Lessons from Jefferson"
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "pubeng-s4-b2u02-s3",
+      "type": "句子翻译",
+      "order": 3,
+      "questions": [
+        {
+          "questionId": "pubeng-s4-b2u02-q020",
+          "order": 20,
+          "status": "草稿",
+          "questionType": "sentence_translate",
+          "stem": "把下面的句子译成英语：会上有人建议任命一个 11 人委员会来制定新章程。",
+          "answerExplanation": "参考译文：It was suggested at the meeting that a committee of eleven be appointed to make a new constitution.",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“会上有人建议”：It was suggested at the meeting that …",
+              "weight": 1
+            },
+            {
+              "ord": 2,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“任命一个 11 人委员会”用虚拟语气：a committee of eleven be appointed",
+              "weight": 1
+            },
+            {
+              "ord": 3,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“来制定新章程”：to make a new constitution",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/句子汉译英",
+            "教材课文/第二册第2课 Lessons from Jefferson"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u02-q021",
+          "order": 21,
+          "status": "草稿",
+          "questionType": "sentence_translate",
+          "stem": "把下面的句子译成英语：这些青年科学家通过现场观察，获得了研究工作所需的第一手资料。",
+          "answerExplanation": "参考译文：By making on-the-spot observations, these young scientists obtained first-hand information they needed in their research work.",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“通过现场观察”：by making on-the-spot observations",
+              "weight": 1
+            },
+            {
+              "ord": 2,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“这些青年科学家获得了第一手资料”：these young scientists obtained first-hand information",
+              "weight": 1
+            },
+            {
+              "ord": 3,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“研究工作所需的”：they needed in their research work",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/句子汉译英",
+            "教材课文/第二册第2课 Lessons from Jefferson"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u02-q022",
+          "order": 22,
+          "status": "草稿",
+          "questionType": "sentence_translate",
+          "stem": "把下面的句子译成英语：亨利创作的艺术品在许多方面比他兄弟的要好。",
+          "answerExplanation": "参考译文：Henry's works of art are superior in many respects to those of his brother's.",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“亨利创作的艺术品”：Henry's works of art",
+              "weight": 1
+            },
+            {
+              "ord": 2,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“比……要好”：are superior to …",
+              "weight": 1
+            },
+            {
+              "ord": 3,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“在许多方面”：in many respects",
+              "weight": 1
+            },
+            {
+              "ord": 4,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“他兄弟的”：those of his brother's",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/句子汉译英",
+            "教材课文/第二册第2课 Lessons from Jefferson"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u02-q023",
+          "order": 23,
+          "status": "草稿",
+          "questionType": "sentence_translate",
+          "stem": "把下面的句子译成英语：我们产品质量的稳步提高在很大程度上是由于设备有所改进。",
+          "answerExplanation": "参考译文：The steady rise in the quality of our products owes much to the improvement of our equipment.",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“我们产品质量的稳步提高”：the steady rise in the quality of our products",
+              "weight": 1
+            },
+            {
+              "ord": 2,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“在很大程度上是由于”：owes much to",
+              "weight": 1
+            },
+            {
+              "ord": 3,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“设备有所改进”：the improvement of our equipment",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/句子汉译英",
+            "教材课文/第二册第2课 Lessons from Jefferson"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-b2u02-q024",
+          "order": 24,
+          "status": "草稿",
+          "questionType": "sentence_translate",
+          "stem": "把下面的句子译成英语：如果让我来决定我们是要一个没有自行车的城市呢，还是要一个没有汽车的城市，我会毫不犹豫地选择后者。",
+          "answerExplanation": "参考译文：Were it left to me to decide whether we should have a city without bikes or one without cars, I should not hesitate a moment to prefer the latter.",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "虚拟条件“如果让我来决定”：Were it left to me to decide …",
+              "weight": 1
+            },
+            {
+              "ord": 2,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“是要一个没有自行车的城市呢，还是要一个没有汽车的城市”：whether we should have a city without bikes or one without cars",
+              "weight": 1
+            },
+            {
+              "ord": 3,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“我会毫不犹豫地选择后者”：I should not hesitate a moment to prefer the latter",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/句子汉译英",
+            "教材课文/第二册第2课 Lessons from Jefferson"
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "pubeng-s4-b2u02-s4",
+      "type": "段落翻译",
+      "order": 4,
+      "questions": [
+        {
+          "questionId": "pubeng-s4-b2u02-q025",
+          "order": 25,
+          "status": "草稿",
+          "questionType": "paragraph_translate",
+          "stem": "把下面的段落译成汉语：\n\nJefferson's courage and idealism were based on knowledge. He probably knew more than any other man of his age. He was an expert in agriculture, archeology, and medicine. He practiced crop rotation and soil conservation a century before these became standard practice, and he invented a plow superior to any other in existence. He influenced architecture throughout America, and he was constantly producing devices for making the tasks of ordinary life easier to perform.\n\nOf all Jefferson's many talents, one is central. He was above all a good and tireless writer. His complete works, now being published for the first time, will fill more than fifty volumes. His talent as an author was soon discovered and when the time came to write the Declaration of Independence at Philadelphia in 1776, the task of writing it was his. Millions have thrilled to his words: \"We hold these truths to be self-evident, that all men are created equal …\"",
+          "answerExplanation": "参考译文：\n\n杰斐逊的勇气和理想主义是以知识为基础的。他懂得的东西也许比同时代的任何人都要多。在农业、考古学和医学方面他都是专家。在人们普遍采用农作物轮作和土壤保持的做法以前的一个世纪，他就这样做了。他还发明了一种耕犁，比当时任何一种现成的都要好。他影响了整个美国的建筑业，他还不断地制造出各种器械装置，使日常生活中需要做的许多工作变得更加容易。\n\n在杰斐逊的众多才能中，有一项是最主要的。他首先是一位优秀的、不知疲倦的作家。他的全集目前正在第一次出版，将超过 50 卷。他作为一个作家的才能很快便被发现了，所以 1776 年在费城，当要撰写《独立宣言》的时刻来到时，这一任务便落到了他的肩上。数以百万计的人们读到他写的下列词句都激动不已：“我们认为这些真理是不言而喻的：所有人生来就是平等的……”",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出：杰斐逊的勇气和理想主义是以知识为基础的。",
+              "weight": 1
+            },
+            {
+              "ord": 2,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出：他懂得的东西也许比同时代的任何人都要多。",
+              "weight": 1
+            },
+            {
+              "ord": 3,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出：在农业、考古学和医学方面他都是专家。",
+              "weight": 1
+            },
+            {
+              "ord": 4,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出：在人们普遍采用农作物轮作和土壤保持的做法以前的一个世纪，他就这样做了。",
+              "weight": 1
+            },
+            {
+              "ord": 5,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出：他还发明了一种耕犁，比当时任何一种现成的都要好。",
+              "weight": 1
+            },
+            {
+              "ord": 6,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出：他影响了整个美国的建筑业，他还不断地制造出各种器械装置，使日常生活中需要做的许多工作变得更加容易。",
+              "weight": 1
+            },
+            {
+              "ord": 7,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出：在杰斐逊的众多才能中，有一项是最主要的。",
+              "weight": 1
+            },
+            {
+              "ord": 8,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出：他首先是一位优秀的、不知疲倦的作家。",
+              "weight": 1
+            },
+            {
+              "ord": 9,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出：他的全集目前正在第一次出版，将超过 50 卷。",
+              "weight": 1
+            },
+            {
+              "ord": 10,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出：他作为一个作家的才能很快便被发现了，所以 1776 年在费城，当要撰写《独立宣言》的时刻来到时，这一任务便落到了他的肩上。",
+              "weight": 1
+            },
+            {
+              "ord": 11,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出：数以百万计的人们读到他写的下列词句都激动不已：“我们认为这些真理是不言而喻的：所有人生来就是平等的……”",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/段落英译汉",
+            "教材课文/第二册第2课 Lessons from Jefferson"
+          ]
+        }
+      ]
+    }
+  ],
+  "parsingNotes": []
+}

@@ -1,0 +1,3433 @@
+{
+  "groupId": "pubeng-mc1",
+  "subjectCode": "pubeng",
+  "courseCode": "pubeng-main",
+  "groupKind": "EXERCISE_SET",
+  "orderKey": 10,
+  "label": "选择题强化训练（一）",
+  "sourceFile": "公共英语课程教学重点与考试样卷（扫描件）第 121–131 页",
+  "answerState": "已确认",
+  "answerSource": "AI",
+  "answerReviewedBy": "tonychenf（同意采用 Claude 预填；第二组第 1–75 题对过原书手写答案）",
+  "answerReviewedAt": "2026-11-07",
+  "sections": [
+    {
+      "sectionId": "pubeng-mc1-s1",
+      "type": "选择填空",
+      "order": 1,
+      "questions": [
+        {
+          "questionId": "pubeng-mc1-q001",
+          "order": 1,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "It pays to ____ as much as you can from reading and listening.",
+          "options": [
+            "A. absorb",
+            "B. arrange",
+            "C. assign",
+            "D. accomplish"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q002",
+          "order": 2,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "It is said that the female reporter was ____ to cover the war in Iraq.",
+          "options": [
+            "A. complained",
+            "B. applied",
+            "C. handled",
+            "D. assigned"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q003",
+          "order": 3,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "The naughty boy has no ____ over himself.",
+          "options": [
+            "A. opportunity",
+            "B. process",
+            "C. command",
+            "D. strategy"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q004",
+          "order": 4,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Can you ____ to memory all the main points of the lecture?",
+          "options": [
+            "A. concentrate",
+            "B. commit",
+            "C. communicate",
+            "D. compose"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q005",
+          "order": 5,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "The two friends haven't ____ with each other for years.",
+          "options": [
+            "A. operated",
+            "B. graduated",
+            "C. purchased",
+            "D. communicated"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q006",
+          "order": 6,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Many firms are ____ on increasing their markets overseas.",
+          "options": [
+            "A. exposing",
+            "B. illustrating",
+            "C. concentrating",
+            "D. purchasing"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q007",
+          "order": 7,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Her clinic has a ____ stream of patients wanting help.",
+          "options": [
+            "A. instant",
+            "B. positive",
+            "C. social",
+            "D. constant"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q008",
+          "order": 8,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "The new drug is much more ____ in treating headaches.",
+          "options": [
+            "A. effective",
+            "B. absolute",
+            "C. content",
+            "D. evident"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q009",
+          "order": 9,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "What is the best way to ____ our vocabulary?",
+          "options": [
+            "A. publish",
+            "B. enlarge",
+            "C. waken",
+            "D. involve"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q010",
+          "order": 10,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "An unhappy home ____ can affect a child's behavior.",
+          "options": [
+            "A. circumstances",
+            "B. environment",
+            "C. surroundings",
+            "D. situation"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q011",
+          "order": 11,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "You should learn to ____ the situation in the right way.",
+          "options": [
+            "A. handle",
+            "B. promote",
+            "C. shift",
+            "D. invent"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q012",
+          "order": 12,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "We can't act on your advice. ____, thank you for giving it.",
+          "options": [
+            "A. Eventually",
+            "B. Occasionally",
+            "C. Nevertheless",
+            "D. Reluctantly"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q013",
+          "order": 13,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "They have started the ____ for establishing a new office.",
+          "options": [
+            "A. network",
+            "B. package",
+            "C. foundation",
+            "D. process"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q014",
+          "order": 14,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "He gave his son some money for the ____ of his school books.",
+          "options": [
+            "A. benefit",
+            "B. occasion",
+            "C. purchase",
+            "D. intention"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q015",
+          "order": 15,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "It is said that the news comes from ____ sources.",
+          "options": [
+            "A. efficient",
+            "B. reliable",
+            "C. prosperous",
+            "D. worthwhile"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q016",
+          "order": 16,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "To ____, I agree with a large part of his argument.",
+          "options": [
+            "A. qualify",
+            "B. summarize",
+            "C. arrange",
+            "D. expose"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q017",
+          "order": 17,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "____ his earnings as a football coach, he also runs a sports shop.",
+          "options": [
+            "A. In terms of",
+            "B. Far from",
+            "C. Except for",
+            "D. Apart from"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/短语与固定搭配"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q018",
+          "order": 18,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "When you are handling so many affairs at a time, mistakes ____ happen.",
+          "options": [
+            "A. face up to",
+            "B. look up to",
+            "C. are bound to",
+            "D. are able to"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/短语与固定搭配"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q019",
+          "order": 19,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "In the sentence \"Learning English is by no means easy\", \"by no means\" means ____.",
+          "options": [
+            "A. without method",
+            "B. not at all",
+            "C. absolutely",
+            "D. above all"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q020",
+          "order": 20,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "____ his flat in London, he has a villa (别墅) in Scotland.",
+          "options": [
+            "A. In addition to",
+            "B. According to",
+            "C. With respect to",
+            "D. Owing to"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/短语与固定搭配"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q021",
+          "order": 21,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Most of these topics have been discussed ____ at the meeting.",
+          "options": [
+            "A. in practice",
+            "B. at fault",
+            "C. by no means",
+            "D. in detail"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/短语与固定搭配"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q022",
+          "order": 22,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "The milkman delivers us milk ____.",
+          "options": [
+            "A. at a time",
+            "B. on a regular basis",
+            "C. with little effect",
+            "D. for a while"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/短语与固定搭配"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q023",
+          "order": 23,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "They played the same record ____.",
+          "options": [
+            "A. over and over again",
+            "B. a great deal",
+            "C. hand in hand",
+            "D. all of a sudden"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/短语与固定搭配"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q024",
+          "order": 24,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "You can ____ opportunities to practice speaking the language.",
+          "options": [
+            "A. look out",
+            "B. seek out",
+            "C. turn out",
+            "D. carry out"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/短语与固定搭配"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q025",
+          "order": 25,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "____ cars when you are crossing the road.",
+          "options": [
+            "A. Look forward to",
+            "B. Put up with",
+            "C. Go ahead with",
+            "D. Watch out for"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/短语与固定搭配"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q026",
+          "order": 26,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "We tried to dissuade him ____ swimming across the lake, but he didn't listen.",
+          "options": [
+            "A. into",
+            "B. from",
+            "C. without",
+            "D. off"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/介词与副词小品词"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q027",
+          "order": 27,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "The city was extensively ____ during that horrible earthquake.",
+          "options": [
+            "A. hurt",
+            "B. injured",
+            "C. wounded",
+            "D. damaged"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q028",
+          "order": 28,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Though the job was extremely difficult, they were ____ to finish it on time.",
+          "options": [
+            "A. determined",
+            "B. decided",
+            "C. attempted",
+            "D. considered"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q029",
+          "order": 29,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Tom invented a ____ to make the door shut by itself.",
+          "options": [
+            "A. cape",
+            "B. gale",
+            "C. device",
+            "D. sword"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q030",
+          "order": 30,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "He gave up his seat on the bus to an old woman ____ nearby.",
+          "options": [
+            "A. dressing",
+            "B. walking",
+            "C. running",
+            "D. standing"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q031",
+          "order": 31,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Though she is nearly 65, Mary doesn't want to ____.",
+          "options": [
+            "A. work",
+            "B. accomplish",
+            "C. retire",
+            "D. conquer"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q032",
+          "order": 32,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "He flew from Europe to Tokyo by the ____ across the Pole.",
+          "options": [
+            "A. course",
+            "B. route",
+            "C. way",
+            "D. routine"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q033",
+          "order": 33,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "All the crew ____ saved in the end.",
+          "options": [
+            "A. were",
+            "B. was",
+            "C. has been",
+            "D. have"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "语法/语法结构"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q034",
+          "order": 34,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "The football team ____ organized last week.",
+          "options": [
+            "A. were",
+            "B. was",
+            "C. has been",
+            "D. have"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "语法/语法结构"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q035",
+          "order": 35,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "The Red Army ____ 25,000 Li on their long march.",
+          "options": [
+            "A. recovered",
+            "B. discovered",
+            "C. covered",
+            "D. uncovered"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q036",
+          "order": 36,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "____, the fire was discovered soon after it had started.",
+          "options": [
+            "A. Fortunately",
+            "B. Previously",
+            "C. Undoubtedly",
+            "D. Calmly"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q037",
+          "order": 37,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Mary asked her mother to ____ her at 8 next morning.",
+          "options": [
+            "A. wake",
+            "B. awaken",
+            "C. waken",
+            "D. awake"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q038",
+          "order": 38,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "The uninteresting film ____ on for more than two hours.",
+          "options": [
+            "A. pulled",
+            "B. pushed",
+            "C. drew",
+            "D. dragged"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q039",
+          "order": 39,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "It is dangerous for a girl to make a ____ trip.",
+          "options": [
+            "A. single-hand",
+            "B. singly-hand",
+            "C. single-handed",
+            "D. singly-handed"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词形与派生"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q040",
+          "order": 40,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "He says you are ____ the best candidate.",
+          "options": [
+            "A. by far",
+            "B. as far",
+            "C. too far",
+            "D. much far"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "语法/语法结构"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q041",
+          "order": 41,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "The boat ____, throwing the boys into the water.",
+          "options": [
+            "A. turned up",
+            "B. turned over",
+            "C. turned down",
+            "D. turned away"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/短语与固定搭配"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q042",
+          "order": 42,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "The accident was not serious at all — it did ____ to either car.",
+          "options": [
+            "A. a few damages",
+            "B. few damage",
+            "C. a little damage",
+            "D. little damage"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "语法/语法结构"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q043",
+          "order": 43,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "What he has done can be praised as a real ____.",
+          "options": [
+            "A. adventure",
+            "B. venture",
+            "C. risk",
+            "D. torture"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q044",
+          "order": 44,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Poor Susan got a serious seasick during the ____.",
+          "options": [
+            "A. journey",
+            "B. tour",
+            "C. voyage",
+            "D. trip"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q045",
+          "order": 45,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "He has been ill for a week so he has to ____ the test tomorrow.",
+          "options": [
+            "A. give in",
+            "B. give up",
+            "C. give back",
+            "D. give away"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/短语与固定搭配"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q046",
+          "order": 46,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "The pilot tried to ____ the controlling station, but failed.",
+          "options": [
+            "A. contact",
+            "B. connect",
+            "C. contract",
+            "D. contrast"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词形与派生"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q047",
+          "order": 47,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "____ all American cities, San Francisco is considered to be the most beautiful.",
+          "options": [
+            "A. In",
+            "B. For",
+            "C. Of",
+            "D. With"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/介词与副词小品词"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q048",
+          "order": 48,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Bill Clinton ____ George Bush for the presidency in 1992.",
+          "options": [
+            "A. defeated",
+            "B. won",
+            "C. beat",
+            "D. hit"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q049",
+          "order": 49,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "After studying Unit One, we all ____ to improve our study habits.",
+          "options": [
+            "A. set down",
+            "B. set in",
+            "C. set up",
+            "D. set off"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/短语与固定搭配"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q050",
+          "order": 50,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "I can't ____ thinking that it was a mistake to let him go.",
+          "options": [
+            "A. mind",
+            "B. help",
+            "C. care",
+            "D. make"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q051",
+          "order": 51,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "This new expressway ____ the trip from this city to the capital.",
+          "options": [
+            "A. shortens",
+            "B. widens",
+            "C. broadens",
+            "D. quickens"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q052",
+          "order": 52,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Prof. Smith is not a stranger to us. We've met him on several ____.",
+          "options": [
+            "A. situations",
+            "B. cases",
+            "C. places",
+            "D. occasions"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q053",
+          "order": 53,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "I like wearing ____ at home, for they are comfortable.",
+          "options": [
+            "A. boots",
+            "B. slippers",
+            "C. stockings",
+            "D. high heels"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q054",
+          "order": 54,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "That hard-working boy got a gold ____ in the mathematics competition.",
+          "options": [
+            "A. mental",
+            "B. metal",
+            "C. medal",
+            "D. model"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q055",
+          "order": 55,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "It is ____ to find him absent from school.",
+          "options": [
+            "A. rare",
+            "B. seldom",
+            "C. never",
+            "D. few"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "语法/语法结构"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q056",
+          "order": 56,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Jim had a ____ problem with his car, and he fixed it quickly all by himself.",
+          "options": [
+            "A. serious",
+            "B. major",
+            "C. severe",
+            "D. minor"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q057",
+          "order": 57,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "He hasn't got enough clothes on — look, he's ____ with cold.",
+          "options": [
+            "A. trembling",
+            "B. fearing",
+            "C. exciting",
+            "D. joking"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q058",
+          "order": 58,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "After much thought, we ____ agreed to let him go.",
+          "options": [
+            "A. immediately",
+            "B. efficiently",
+            "C. excitedly",
+            "D. reluctantly"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q059",
+          "order": 59,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "The city's transport system is one of the most ____ in Europe.",
+          "options": [
+            "A. enough",
+            "B. sufficient",
+            "C. efficient",
+            "D. effective"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q060",
+          "order": 60,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "He was caught spitting in the public and fined ten yuan on the ____.",
+          "options": [
+            "A. spot",
+            "B. place",
+            "C. ground",
+            "D. occasion"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q061",
+          "order": 61,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "If you have worked hard ____, you won't have to sit up before the exams.",
+          "options": [
+            "A. for the time being",
+            "B. from time to time",
+            "C. once in a while",
+            "D. at other times"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/短语与固定搭配"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q062",
+          "order": 62,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "To my great ____, my mother's post didn't come to me on time.",
+          "options": [
+            "A. happiness",
+            "B. satisfaction",
+            "C. disappointment",
+            "D. pleasure"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q063",
+          "order": 63,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "I was so careless that I threw the ____ letter into the mailbox.",
+          "options": [
+            "A. unprepared",
+            "B. unsealed",
+            "C. unread",
+            "D. unpacked"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q064",
+          "order": 64,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "They were ____ to move house, but they had no choice.",
+          "options": [
+            "A. reluctant",
+            "B. relieved",
+            "C. relaxed",
+            "D. reliable"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q065",
+          "order": 65,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "After having sat down on the chair, he took out a ____ of cigarettes.",
+          "options": [
+            "A. parcel",
+            "B. package",
+            "C. packet",
+            "D. pack"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词形与派生"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q066",
+          "order": 66,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "He is worried a lot now, for he has lost a ____ of keys today.",
+          "options": [
+            "A. mass",
+            "B. pile",
+            "C. piece",
+            "D. bunch"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q067",
+          "order": 67,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "I think you should let Mary go camping. ____, she is a big girl now.",
+          "options": [
+            "A. Moreover",
+            "B. In addition",
+            "C. After all",
+            "D. Nevertheless"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q068",
+          "order": 68,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "As a fireman, you must be ready to ____ hardships and even suffer death.",
+          "options": [
+            "A. endure",
+            "B. escape",
+            "C. arrange",
+            "D. flutter"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q069",
+          "order": 69,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "They did more work than others but refused to take any ____ pay.",
+          "options": [
+            "A. regular",
+            "B. extra",
+            "C. unusual",
+            "D. primary"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q070",
+          "order": 70,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "We should respect the ____ and take good care of the children",
+          "options": [
+            "A. aging",
+            "B. age",
+            "C. ageless",
+            "D. aged"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q071",
+          "order": 71,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "He is perfectly ____ to live alone and paint pictures all day",
+          "options": [
+            "A. content",
+            "B. contract",
+            "C. context",
+            "D. contrast"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词形与派生"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q072",
+          "order": 72,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "The tourist guide has ____ for us to visit the Great Wall tomorrow.",
+          "options": [
+            "A. prepared",
+            "B. arranged",
+            "C. planned",
+            "D. scheduled"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q073",
+          "order": 73,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "The old lady dropped her spoon and bent to ____.",
+          "options": [
+            "A. take it up",
+            "B. put it up",
+            "C. pick it up",
+            "D. give it up"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/短语与固定搭配"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q074",
+          "order": 74,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "We say, even the king will have some poor ____.",
+          "options": [
+            "A. relations",
+            "B. relatives",
+            "C. relationships",
+            "D. relativities"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词形与派生"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q075",
+          "order": 75,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "____ with life in his hometown, the young man moved away to the city.",
+          "options": [
+            "A. Being not content",
+            "B. Not being content",
+            "C. Be not content",
+            "D. Don't content"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "语法/语法结构"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q076",
+          "order": 76,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "The crop failure was due ____ to the drought.",
+          "options": [
+            "A. at most",
+            "B. in part",
+            "C. after all",
+            "D. by far"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/短语与固定搭配"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q077",
+          "order": 77,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Noise is a ____ when you are trying to study.",
+          "options": [
+            "A. disconnection",
+            "B. distraction",
+            "C. distribution",
+            "D. distinction"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/词形与派生"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q078",
+          "order": 78,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "To be quite ____ about it, your plan is utterly impractical.",
+          "options": [
+            "A. honest",
+            "B. honesty",
+            "C. honestly",
+            "D. dishonest"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词形与派生"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q079",
+          "order": 79,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Although she was born in the old society, she managed to become a ____ woman.",
+          "options": [
+            "A. literal",
+            "B. literary",
+            "C. literature",
+            "D. literate"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/词形与派生"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q080",
+          "order": 80,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Some TV ____ will surely do good to children.",
+          "options": [
+            "A. procedures",
+            "B. prospects",
+            "C. programs",
+            "D. projects"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q081",
+          "order": 81,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "By using the instrument, you can produce wonderful ____ music.",
+          "options": [
+            "A. electric",
+            "B. electrical",
+            "C. electronic",
+            "D. elective"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词形与派生"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q082",
+          "order": 82,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "____ the essay looked quite good, but actually it was full of mistakes.",
+          "options": [
+            "A. At a time",
+            "B. At other times",
+            "C. As a result",
+            "D. At first glance"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/短语与固定搭配"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q083",
+          "order": 83,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Mr. Smith kept thinking hard, but failed to ____ a workable plan.",
+          "options": [
+            "A. come up with",
+            "B. bring together",
+            "C. grow up",
+            "D. look after"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/短语与固定搭配"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q084",
+          "order": 84,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "The government is taking ____ measures to overcome current difficulties.",
+          "options": [
+            "A. enough",
+            "B. effective",
+            "C. efficient",
+            "D. determined"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q085",
+          "order": 85,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "We should always remember that truth is the ____ of practice.",
+          "options": [
+            "A. product",
+            "B. production",
+            "C. produce",
+            "D. productivity"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词形与派生"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q086",
+          "order": 86,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "He took a ____ at his watch and saw that it was already lunch time.",
+          "options": [
+            "A. stare",
+            "B. gaze",
+            "C. watch",
+            "D. glance"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q087",
+          "order": 87,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Don't ____ yourself in unnecessary expense.",
+          "options": [
+            "A. include",
+            "B. contain",
+            "C. involve",
+            "D. join"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q088",
+          "order": 88,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "The old lady spoke of her dead daughter with ____.",
+          "options": [
+            "A. emotional",
+            "B. emotion",
+            "C. emotionally",
+            "D. unemotional"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/词形与派生"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q089",
+          "order": 89,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "A person's real age sometimes doesn't correspond to his or her ____ age.",
+          "options": [
+            "A. moral",
+            "B. metal",
+            "C. medal",
+            "D. mental"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q090",
+          "order": 90,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Unfortunately, the survival ____ of this species is still declining.",
+          "options": [
+            "A. rate",
+            "B. speed",
+            "C. percent",
+            "D. ability"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q091",
+          "order": 91,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "I have spent all my pocket money on ____ books this year.",
+          "options": [
+            "A. worth",
+            "B. worthwhile",
+            "C. worthy",
+            "D. worthless"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/词形与派生"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q092",
+          "order": 92,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "The mayor put forward a(n) ____ to improve public transportation.",
+          "options": [
+            "A. activity",
+            "B. distraction",
+            "C. proposal",
+            "D. network"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q093",
+          "order": 93,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Both parents should take responsibility for the ____ needs of their children.",
+          "options": [
+            "A. social",
+            "B. current",
+            "C. emotional",
+            "D. typical"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q094",
+          "order": 94,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "After I had finished eating, he ____ to set off immediately.",
+          "options": [
+            "A. suggested",
+            "B. raised",
+            "C. advised",
+            "D. proposed"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q095",
+          "order": 95,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Students from middle school should be ____ from smoking.",
+          "options": [
+            "A. prohibited",
+            "B. persuaded",
+            "C. permitted",
+            "D. performed"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q096",
+          "order": 96,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Don't be surprised. It was ____ of her to say that.",
+          "options": [
+            "A. usual",
+            "B. typical",
+            "C. common",
+            "D. normal"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q097",
+          "order": 97,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "I am afraid that the ____ between rich and poor is still widening in our country.",
+          "options": [
+            "A. distance",
+            "B. range",
+            "C. crack",
+            "D. gap"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q098",
+          "order": 98,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "I ____ my whole vacation in preparing for the coming Band Four exam.",
+          "options": [
+            "A. spent",
+            "B. paid",
+            "C. cost",
+            "D. took"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q099",
+          "order": 99,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "The main task of the committee was organizing cultural ____.",
+          "options": [
+            "A. acts",
+            "B. actions",
+            "C. activities",
+            "D. activeness"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词形与派生"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q100",
+          "order": 100,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "I don't wish to be ____ in my work, so please come tomorrow.",
+          "options": [
+            "A. bored",
+            "B. disturbed",
+            "C. requested",
+            "D. destroyed"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q101",
+          "order": 101,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Once she's set her ____ on something, there's no stopping her.",
+          "options": [
+            "A. heart",
+            "B. soul",
+            "C. mind",
+            "D. head"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q102",
+          "order": 102,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "To ____ sure of getting a seat you should arrive early at the cinema.",
+          "options": [
+            "A. be",
+            "B. get",
+            "C. make",
+            "D. feel"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q103",
+          "order": 103,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "If you drive a car all your life, the ____ are that you'll have an accident at some point.",
+          "options": [
+            "A. odds",
+            "B. rates",
+            "C. means",
+            "D. tones"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q104",
+          "order": 104,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "If you want to have some improvements in your study, there ____ to be some changes in your studying habits.",
+          "options": [
+            "A. should",
+            "B. must",
+            "C. need",
+            "D. ought"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "语法/语法结构"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q105",
+          "order": 105,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "There was a time, and not so long ago ____, when she walked twenty miles a day.",
+          "options": [
+            "A. too",
+            "B. either",
+            "C. as well",
+            "D. neither"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "语法/语法结构"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q106",
+          "order": 106,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Since I ____ up early yesterday morning, I saw the whole course of the murder.",
+          "options": [
+            "A. woke",
+            "B. wakened",
+            "C. awoke",
+            "D. awakened"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q107",
+          "order": 107,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Every morning he gets up early and goes into the ____ to feed his pony.",
+          "options": [
+            "A. barn",
+            "B. garden",
+            "C. stable",
+            "D. cabin"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q108",
+          "order": 108,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "I think there is a train at 6, but you had better make ____.",
+          "options": [
+            "A. real",
+            "B. true",
+            "C. right",
+            "D. sure"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q109",
+          "order": 109,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "He could not help walking to and fro, for he was ____ at the false accusation.",
+          "options": [
+            "A. indifferent",
+            "B. indignant",
+            "C. inevitable",
+            "D. irrelevant"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q110",
+          "order": 110,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "She was ____ to find that no one admired her performance.",
+          "options": [
+            "A. damaged",
+            "B. wounded",
+            "C. hurt",
+            "D. injured"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q111",
+          "order": 111,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Eggs are ____ and expensive this month.",
+          "options": [
+            "A. scarce",
+            "B. rare",
+            "C. little",
+            "D. short"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q112",
+          "order": 112,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Turn round the corner and you will ____ sight of the railway station.",
+          "options": [
+            "A. lose",
+            "B. keep",
+            "C. get",
+            "D. catch"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q113",
+          "order": 113,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "During the fancy dress ball (化装舞会), John ____ himself up as a pirate.",
+          "options": [
+            "A. wore",
+            "B. dressed",
+            "C. put",
+            "D. covered"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q114",
+          "order": 114,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "We should learn to ____ those who are in trouble.",
+          "options": [
+            "A. relax",
+            "B. persuade",
+            "C. comfort",
+            "D. handle"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q115",
+          "order": 115,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "The mother waited with great ____ for news of her son's safe arrival.",
+          "options": [
+            "A. anger",
+            "B. pleasure",
+            "C. pity",
+            "D. anxiety"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q116",
+          "order": 116,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "The patient's wound began to ____ after the operation.",
+          "options": [
+            "A. ache",
+            "B. pain",
+            "C. reject",
+            "D. relieve"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q117",
+          "order": 117,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "The story is beautifully ____ and is sure to attract children of all ages.",
+          "options": [
+            "A. published",
+            "B. illustrated",
+            "C. enclosed",
+            "D. wrapped"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q118",
+          "order": 118,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "There are plastic and wooden garden chairs but ____ are more expensive.",
+          "options": [
+            "A. the next",
+            "B. the latter",
+            "C. the second",
+            "D. the later"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "语法/语法结构"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q119",
+          "order": 119,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Henry listened and heard nothing but the ____ of his own voice.",
+          "options": [
+            "A. sounds",
+            "B. words",
+            "C. exclamations",
+            "D. echoes"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q120",
+          "order": 120,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Let Susan have the chocolate biscuits because they are her ____.",
+          "options": [
+            "A. favorites",
+            "B. foods",
+            "C. recipes",
+            "D. privileges"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q121",
+          "order": 121,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "I'm improving! I got a B for last week's composition and an A ____ for this.",
+          "options": [
+            "A. under",
+            "B. below",
+            "C. minus",
+            "D. less"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q122",
+          "order": 122,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "The poor girl was so frightened that she could do ____ but stand there weeping.",
+          "options": [
+            "A. nothing",
+            "B. something",
+            "C. anything",
+            "D. everything"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "语法/语法结构"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q123",
+          "order": 123,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Much to my surprise Alan suddenly ____ song.",
+          "options": [
+            "A. focus on",
+            "B. turn out",
+            "C. bring about",
+            "D. burst into"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/短语与固定搭配"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q124",
+          "order": 124,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Twenty students were chosen ____ to take part in the experiment.",
+          "options": [
+            "A. after all",
+            "B. at random",
+            "C. for instance",
+            "D. in a row"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/短语与固定搭配"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q125",
+          "order": 125,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "That big writing desk takes up ____ space in my small office.",
+          "options": [
+            "A. too many",
+            "B. much too",
+            "C. many too",
+            "D. too much"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "语法/语法结构"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q126",
+          "order": 126,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Life was hard then. She had no chance to go to school, even ____ school.",
+          "options": [
+            "A. basic",
+            "B. introductory",
+            "C. elementary",
+            "D. famous"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q127",
+          "order": 127,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Whenever he found himself in difficulty, Joe would ____ his workmates.",
+          "options": [
+            "A. turn over",
+            "B. watch out for",
+            "C. look after",
+            "D. consult with"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/短语与固定搭配"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q128",
+          "order": 128,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Workers' incomes are not ____ up with inflation (通货膨胀).",
+          "options": [
+            "A. putting",
+            "B. keeping",
+            "C. holding",
+            "D. working"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q129",
+          "order": 129,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Let's ____ the arrangement with the others before we make a decision.",
+          "options": [
+            "A. talk over",
+            "B. find out",
+            "C. turn out",
+            "D. burst into"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/短语与固定搭配"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q130",
+          "order": 130,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Though an outstanding scientist, the professor was often ____ in his personal life.",
+          "options": [
+            "A. absent-mind",
+            "B. absent-minding",
+            "C. absent-minded",
+            "D. absent-minds"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词形与派生"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q131",
+          "order": 131,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Jack has flown to New York, but will be back soon, because he went there ____ short-term business.",
+          "options": [
+            "A. in",
+            "B. on",
+            "C. for",
+            "D. with"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/介词与副词小品词"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q132",
+          "order": 132,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "____ nonsense the newspapers print, some people always believe it.",
+          "options": [
+            "A. Whatsoever",
+            "B. Wherever",
+            "C. Whomever",
+            "D. Whichever"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q133",
+          "order": 133,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "She could not help weeping after she had found her favorite watch ____.",
+          "options": [
+            "A. existing",
+            "B. losing",
+            "C. bursting",
+            "D. missing"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q134",
+          "order": 134,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "The ____ audience left the cinema one after another before the ____ film drew to the end.",
+          "options": [
+            "A. boring … bored",
+            "B. boring … boring",
+            "C. bored … boring",
+            "D. bored … bored"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/短语与固定搭配"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q135",
+          "order": 135,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "\"Child\" has an ____ plural form (复数形式) \"children\".",
+          "options": [
+            "A. irregular",
+            "B. unregular",
+            "C. disregular",
+            "D. inregular"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q136",
+          "order": 136,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "His job is rather simple and dull. Every day he stands by the ____ and put products into boxes.",
+          "options": [
+            "A. assembling line",
+            "B. assembly line",
+            "C. assemble line",
+            "D. assembled line"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/短语与固定搭配"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q137",
+          "order": 137,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "She often sleeps during the day time, because her work is on night ____.",
+          "options": [
+            "A. change",
+            "B. turn",
+            "C. shift",
+            "D. move"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q138",
+          "order": 138,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "It is true that these herbs (药草) can be used to ____ pain.",
+          "options": [
+            "A. release",
+            "B. relax",
+            "C. remove",
+            "D. relieve"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q139",
+          "order": 139,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "John is very capable. You see, although the problem was very difficult, he ____ to solve it at last.",
+          "options": [
+            "A. tried",
+            "B. promised",
+            "C. managed",
+            "D. decided"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q140",
+          "order": 140,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "The little fox was not clever enough to miss ____ by the hunter.",
+          "options": [
+            "A. catching",
+            "B. caught",
+            "C. been caught",
+            "D. being caught"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "语法/语法结构"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q141",
+          "order": 141,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "An expert is ____ who has special knowledge, skill or training.",
+          "options": [
+            "A. one",
+            "B. that",
+            "C. such",
+            "D. what"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "语法/语法结构"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q142",
+          "order": 142,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "They are making ____ efforts to decrease the cost of production.",
+          "options": [
+            "A. farther",
+            "B. further",
+            "C. father",
+            "D. furthermore"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q143",
+          "order": 143,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Sam believes that beautification of the dull setting ____ greater productivity.",
+          "options": [
+            "A. results from",
+            "B. hold up",
+            "C. take over",
+            "D. results in"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/短语与固定搭配"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q144",
+          "order": 144,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "I couldn't hear what they were saying on the tape — there was too much ____ noise.",
+          "options": [
+            "A. environment",
+            "B. surrounding",
+            "C. background",
+            "D. setting"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q145",
+          "order": 145,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "I hadn't seen him for 16 years, but I ____ him immediately.",
+          "options": [
+            "A. recognized",
+            "B. recalled",
+            "C. reminded",
+            "D. reflected"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q146",
+          "order": 146,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Being a manager, he has paid a lot of attention to the ____ in his factory.",
+          "options": [
+            "A. sufficiency",
+            "B. efficiency",
+            "C. influence",
+            "D. endurance"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q147",
+          "order": 147,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "In the past twenty years our country has got great achievement in ____ field.",
+          "options": [
+            "A. industrial",
+            "B. industrious",
+            "C. industrialist",
+            "D. industrialism"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词形与派生"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q148",
+          "order": 148,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Noise is unpleasant, ____ when you're trying to sleep.",
+          "options": [
+            "A. specially",
+            "B. physically",
+            "C. especially",
+            "D. naturally"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q149",
+          "order": 149,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "As neither ____ nor labor would give in, the union organized a strike.",
+          "options": [
+            "A. manager",
+            "B. management",
+            "C. managing",
+            "D. manage"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/词形与派生"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q150",
+          "order": 150,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Don't be so serious! This is only a story that has no ____ in fact.",
+          "options": [
+            "A. concentration",
+            "B. illustration",
+            "C. explanation",
+            "D. foundation"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q151",
+          "order": 151,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Standing on the stage, in front of so many people, I felt quite ____.",
+          "options": [
+            "A. out of order",
+            "B. out of place",
+            "C. out of question",
+            "D. out of work"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/短语与固定搭配"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q152",
+          "order": 152,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "People are always mistaking him ____ his twin brother.",
+          "options": [
+            "A. as",
+            "B. from",
+            "C. with",
+            "D. for"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/介词与副词小品词"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q153",
+          "order": 153,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "As a senior executive, you can enjoy certain ____, such as free health insurance and the right to buy shares in the company.",
+          "options": [
+            "A. advantages",
+            "B. privileges",
+            "C. profits",
+            "D. interests"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q154",
+          "order": 154,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Poor old George has ____ down in the world since his business failed.",
+          "options": [
+            "A. come",
+            "B. fallen",
+            "C. broken",
+            "D. gone"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q155",
+          "order": 155,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "We can't ____ a holiday to go away this summer.",
+          "options": [
+            "A. spend",
+            "B. pay",
+            "C. afford",
+            "D. cost"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q156",
+          "order": 156,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "She has tried on one after ____ of the skirts, but still has not decided which one to buy.",
+          "options": [
+            "A. the other",
+            "B. another",
+            "C. other",
+            "D. each other"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "语法/语法结构"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q157",
+          "order": 157,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "The foreigner ____ the moon cake and found it very delicious.",
+          "options": [
+            "A. sampled",
+            "B. stung",
+            "C. scraped",
+            "D. spoiled"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q158",
+          "order": 158,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "How strange it is! He looks as if he ____ all about it.",
+          "options": [
+            "A. knows",
+            "B. know",
+            "C. knew",
+            "D. has known"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "语法/语法结构"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q159",
+          "order": 159,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "He is full of good ____, but can do nothing to help.",
+          "options": [
+            "A. attentions",
+            "B. inventions",
+            "C. attractions",
+            "D. intentions"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q160",
+          "order": 160,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "He must be very poor, for he is wearing old and ____ clothes.",
+          "options": [
+            "A. torn",
+            "B. tore",
+            "C. teared",
+            "D. tearing"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "语法/语法结构"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q161",
+          "order": 161,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "He ____ the old woman out of her money by selling her a house that did not exist.",
+          "options": [
+            "A. tricked",
+            "B. cheated",
+            "C. deceived",
+            "D. persuaded"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q162",
+          "order": 162,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Would you please ____ me a favour by lending me your bicycle for a few days?",
+          "options": [
+            "A. make",
+            "B. give",
+            "C. do",
+            "D. help"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q163",
+          "order": 163,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "The shop assistant ____ out the food on the counter.",
+          "options": [
+            "A. displayed",
+            "B. spread",
+            "C. arranged",
+            "D. laid"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q164",
+          "order": 164,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "They were arguing but ____ off when someone suddenly came into the room.",
+          "options": [
+            "A. took",
+            "B. turned",
+            "C. broke",
+            "D. came"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q165",
+          "order": 165,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "He is ____ of having a hand in the recently happened affair.",
+          "options": [
+            "A. suspected",
+            "B. inspected",
+            "C. doubted",
+            "D. expected"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q166",
+          "order": 166,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Chinese people on both sides of the Taiwan Strait ____ for reunification.",
+          "options": [
+            "A. dream",
+            "B. desire",
+            "C. think",
+            "D. long"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q167",
+          "order": 167,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "After failing four times, I ____ passed my driving test.",
+          "options": [
+            "A. permanently",
+            "B. eventually",
+            "C. occasionally",
+            "D. accidentally"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q168",
+          "order": 168,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "There must have happened something special. They are all ____ in white.",
+          "options": [
+            "A. put",
+            "B. worn",
+            "C. covered",
+            "D. dressed"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q169",
+          "order": 169,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "The soldiers stood ____ for the officer's inspection.",
+          "options": [
+            "A. in a row",
+            "B. out of place",
+            "C. in advance",
+            "D. in vain"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/短语与固定搭配"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q170",
+          "order": 170,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "As soon as the man ____ his gun, I knew he was a robber.",
+          "options": [
+            "A. counted out",
+            "B. broke off",
+            "C. pulled out",
+            "D. held up"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/短语与固定搭配"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q171",
+          "order": 171,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "From the pictures you can select the one which is most to your ____.",
+          "options": [
+            "A. desire",
+            "B. taste",
+            "C. flavor",
+            "D. favor"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q172",
+          "order": 172,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Flowers were slowly ____ out by the old lady before the tomb of her husband.",
+          "options": [
+            "A. laid",
+            "B. lied",
+            "C. layed",
+            "D. lain"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "语法/语法结构"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q173",
+          "order": 173,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "The narrator sincerely wished that he could ____ his tactless words.",
+          "options": [
+            "A. take apart",
+            "B. take out",
+            "C. take back",
+            "D. take off"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/短语与固定搭配"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q174",
+          "order": 174,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "We had fine weather all through July ____ an occasional thunderstorm.",
+          "options": [
+            "A. apart from",
+            "B. except for",
+            "C. in addition to",
+            "D. as well as"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/短语与固定搭配"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q175",
+          "order": 175,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "He always takes full ____ of the mistakes made by his rivals (对手).",
+          "options": [
+            "A. interest",
+            "B. benefit",
+            "C. profit",
+            "D. advantage"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q176",
+          "order": 176,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Mr. Smith was a little nervous this morning. It was natural, for it was the first time for him to ____ a lecture.",
+          "options": [
+            "A. provide",
+            "B. speak",
+            "C. manage",
+            "D. deliver"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q177",
+          "order": 177,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "You'll soon find it isn't an easy job to try and ____ everybody in the office.",
+          "options": [
+            "A. pleasure",
+            "B. please",
+            "C. plead",
+            "D. pledge"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/词形与派生"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q178",
+          "order": 178,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Only yesterday did I see him jogging in the park, so I am ____ at the news of his death.",
+          "options": [
+            "A. shocked",
+            "B. interested",
+            "C. touched",
+            "D. moved"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q179",
+          "order": 179,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "The enemy camps ____ for ten miles.",
+          "options": [
+            "A. spread",
+            "B. extended",
+            "C. stretched",
+            "D. expanded"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q180",
+          "order": 180,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Many immigrants came to the U.S. ____ the American Dream.",
+          "options": [
+            "A. in search of",
+            "B. something like",
+            "C. in spite of",
+            "D. in addition to"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/短语与固定搭配"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q181",
+          "order": 181,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "A doctor should be ____ for the lives of patients.",
+          "options": [
+            "A. suitable",
+            "B. famous",
+            "C. responsible",
+            "D. critical"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q182",
+          "order": 182,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "It was so quiet in this village. We ____ carefully but ____ nothing.",
+          "options": [
+            "A. listened to … heard",
+            "B. listened … heard",
+            "C. heard … listened to",
+            "D. heard … listened"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "语法/语法结构"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q183",
+          "order": 183,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Jack found a piece of paper on the ground and ____ to pick it up.",
+          "options": [
+            "A. stood",
+            "B. stopped",
+            "C. stayed",
+            "D. stooped"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q184",
+          "order": 184,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "In the report, names have been changed to protect the ____ of those involved.",
+          "options": [
+            "A. privacy",
+            "B. private",
+            "C. privilege",
+            "D. priority"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词形与派生"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q185",
+          "order": 185,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Confidence in your own abilities is ____ to your success in the job of a team leader.",
+          "options": [
+            "A. of important first",
+            "B. of first importance",
+            "C. importance of first",
+            "D. first of importance"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "语法/语法结构"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q186",
+          "order": 186,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Susan hoped John would take the ____ and leave her alone.",
+          "options": [
+            "A. words",
+            "B. speech",
+            "C. hint",
+            "D. element"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q187",
+          "order": 187,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "____ one thousand people attended the conference.",
+          "options": [
+            "A. Like something",
+            "B. Anything like",
+            "C. Like anything",
+            "D. Something like"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/短语与固定搭配"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q188",
+          "order": 188,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Mary's mother managed to ____ the money for her tuition and fees.",
+          "options": [
+            "A. hold back",
+            "B. think over",
+            "C. scrape together",
+            "D. count out"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/短语与固定搭配"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q189",
+          "order": 189,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "About three weeks after I started looking, I ____ an advertisement for a math teacher.",
+          "options": [
+            "A. made out",
+            "B. came upon",
+            "C. pulled out",
+            "D. decided on"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/短语与固定搭配"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q190",
+          "order": 190,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "My uncle's generous contributions helped make my wish to visit Europe ____.",
+          "options": [
+            "A. come true",
+            "B. come through",
+            "C. come about",
+            "D. come down"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/短语与固定搭配"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q191",
+          "order": 191,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Don't worry; we'll get the lost money back ____.",
+          "options": [
+            "A. anywhere",
+            "B. anyhow",
+            "C. somewhere",
+            "D. somehow"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q192",
+          "order": 192,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "What he told you the other day is ____ impossible.",
+          "options": [
+            "A. completely",
+            "B. absolutely",
+            "C. fully",
+            "D. wholly"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q193",
+          "order": 193,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Workers ____ to the press that they were going on strike.",
+          "options": [
+            "A. revealed",
+            "B. relieved",
+            "C. reflected",
+            "D. recommended"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q194",
+          "order": 194,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "It is a pity that disease has ____ her of her memory.",
+          "options": [
+            "A. denied",
+            "B. rejected",
+            "C. robbed",
+            "D. declined"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q195",
+          "order": 195,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "There's no ____ that this will be a serious blow to the government.",
+          "options": [
+            "A. rejecting",
+            "B. declining",
+            "C. refusing",
+            "D. denying"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q196",
+          "order": 196,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Several cars have caught fire ____ while parked.",
+          "options": [
+            "A. personally",
+            "B. instinctively",
+            "C. spontaneously",
+            "D. moderately"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q197",
+          "order": 197,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "A look of ____ came into his eyes as he read the telegram.",
+          "options": [
+            "A. surprising",
+            "B. surprisingly",
+            "C. surprised",
+            "D. surprise"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/词形与派生"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q198",
+          "order": 198,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "Professor Johnson has agreed to ____ the time limit for our term paper.",
+          "options": [
+            "A. spread",
+            "B. extend",
+            "C. lengthen",
+            "D. widen"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q199",
+          "order": 199,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "For twenty years, he was the most active and ____ scholar in the world.",
+          "options": [
+            "A. admired",
+            "B. admiring",
+            "C. admiral",
+            "D. admitting"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词形与派生"
+          ]
+        },
+        {
+          "questionId": "pubeng-mc1-q200",
+          "order": 200,
+          "questionType": "single_choice",
+          "status": "草稿",
+          "stem": "The rescuers searched in the rubble (瓦砾) once again but did not expect to find ____.",
+          "options": [
+            "A. anyone alive else",
+            "B. alive anyone else",
+            "C. anyone else alive",
+            "D. else alive anyone"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "语法/语法结构"
+          ]
+        }
+      ]
+    }
+  ],
+  "parsingNotes": [
+    {
+      "kind": "原题有误",
+      "questionOrders": [
+        52
+      ],
+      "note": "第 52 题原件选项标号是 A/B/B/D（第三项也印成了 B），按位置订正为 C，选项文字未改。",
+      "correctedFrom": "A）situations  B）cases  B）places  D）occasions",
+      "correctedTo": "A. situations  B. cases  C. places  D. occasions"
+    }
+  ]
+}
