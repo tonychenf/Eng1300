@@ -5,9 +5,10 @@
 //
 // 用真浏览器而不是断言 JSX：这些是"渲染出来之后长什么样"的判断，读源码断言不出来。
 import { chromium } from 'playwright';
+import { chromePath } from './lib/chrome.mjs';
 
 const BASE = process.env.UI_BASE || 'http://127.0.0.1:8788';
-const CHROME = '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
+const CHROME = chromePath();
 const USER = process.env.UI_USER;
 const PASS = process.env.UI_PASS;
 
