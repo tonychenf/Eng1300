@@ -211,7 +211,7 @@
     "3": "A",
     "4": "C",
     "5": "B",
-    "6": "A",
+    "6": "C",
     "7": "D",
     "8": "A",
     "9": "B",
@@ -419,6 +419,7 @@
       "179": "stretched 与 extended 都能接 for ten miles，选 C。"
     },
     "mc-set2": {
+      "6": "Claude 原先预填 A universe；用户拍来的原书手写答案是 C orbit（轨道），按手写答案改。",
       "14": "Although 引出让步：给了很多信息仍下不了结论，选 C much。",
       "91": "fake names 与 false names 都可以，按固定说法 false name 选 D。",
       "110": "incompetent（不称职的）与 inefficient（效率低的）都说得通，按「信重打三遍」偏能力问题选 D。",
@@ -493,6 +494,16 @@
       "sentences": "第 2、3、4 句与教学重点里的句子相同，参考译文用原书的；第 1、5 句是 Claude 译的。",
       "paragraph": "参考译文是 Claude 译的。",
       "passageFill": "段落填空就是第一册第 10 课精选段落原文，答案按原文。"
+    }
+  },
+  "checkedAgainstKey": {
+    "mc-set2": {
+      "range": "1-75",
+      "source": "用户拍照的原书手写答案（第 163–166 页及第 167 页前半）",
+      "date": "2026-11-07",
+      "mismatches": [
+        6
+      ]
     }
   }
 }

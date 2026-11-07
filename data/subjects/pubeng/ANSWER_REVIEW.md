@@ -7,7 +7,7 @@
 
 核对的办法：对着下面逐题看，要改的告诉 Claude「第几组第几题应该是 X」；都没问题就说「确认」。
 
-## 拿不准的题（17 处）
+## 拿不准的题（18 处）
 
 - **选择题强化训练（一） 第 37 题**：Mary asked her mother to ____ her at 8 next morning.  
   A. wake　B. awaken　C. waken　D. awake  
@@ -33,6 +33,9 @@
 - **选择题强化训练（一） 第 179 题**：The enemy camps ____ for ten miles.  
   A. spread　B. extended　C. stretched　D. expanded  
   预填 **C**。stretched 与 extended 都能接 for ten miles，选 C。
+- **选择题强化训练（二） 第 6 题**：A new telescope that may reveal the new ____ has been set up.  
+  A. universe　B. sky　C. orbit　D. space  
+  预填 **C**。Claude 原先预填 A universe；用户拍来的原书手写答案是 C orbit（轨道），按手写答案改。
 - **选择题强化训练（二） 第 14 题**：Although he has given us ____ information on that matter, we still can't come to a conclusion.  
   A. many　B. an　C. much　D. little  
   预填 **C**。Although 引出让步：给了很多信息仍下不了结论，选 C much。
@@ -263,7 +266,7 @@
 - 3. We are going to be very busy. There is a large ____ of work for us to do. → **A. amount**
 - 4. The insurance company will pay for the furniture ____ by fire. → **C. damaged**
 - 5. The ____ of his laboratory took time and money. → **B. equipment**
-- 6. A new telescope that may reveal the new ____ has been set up. → **A. universe**
+- 6. A new telescope that may reveal the new ____ has been set up. → **C. orbit**
 - 7. — Will you go to the movies with us tonight? — I'm sorry, I have not made up my ____ yet. → **D. mind**
 - 8. I put the medicine bottle on the high shelf in order to ____ children ____ reaching it. → **A. prevent … from**
 - 9. It was his pride that ____ in his failure in the final exam. → **B. resulted**
