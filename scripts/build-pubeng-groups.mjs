@@ -68,13 +68,21 @@ function letters(raw, count, where) {
   arr.forEach((a, i) => { if (!/^[A-D]$/.test(a)) fail(`${where}：第 ${i + 1} 题的答案是 ${JSON.stringify(a)}，只认 A–D`); });
   return arr;
 }
+// 答案状态（§6.4.10）。三种来源：
+//   OFFICIAL / MANUAL：原书或老师给的答案，要写清谁给的（confirmedBy / confirmedAt），落库「已确认」；
+//   AI：Claude 做的题（2026-11-07 用户让预填）。没人核过就是「待核」——发布时会被扣下、抽题抽不到；
+//       用户看过 ANSWER_REVIEW.md 认可之后，填上 confirmedBy / confirmedAt 再生成，才是「已确认」。
+// **不给默认值**：哪个都没写就报错，不回落成"已确认"（那样没人核过的答案会直接可发布）。
 function answerMeta(answers) {
   const source = answers?.answerSource;
-  if (!['OFFICIAL', 'MANUAL'].includes(source)) {
-    fail(`answers.json：answerSource 要写 OFFICIAL（原书 / 出版方答案）或 MANUAL（老师手做的），收到 ${JSON.stringify(source)}`);
+  if (!['OFFICIAL', 'MANUAL', 'AI'].includes(source)) {
+    fail(`answers.json：answerSource 只认 OFFICIAL（原书 / 出版方）、MANUAL（老师手做）、AI（Claude 做的），收到 ${JSON.stringify(source)}`);
   }
-  if (!answers.reviewedBy || !answers.reviewedAt) fail('answers.json：要写 reviewedBy（谁提供的）和 reviewedAt（日期）');
-  return { answerState: '已确认', answerSource: source, answerReviewedBy: answers.reviewedBy, answerReviewedAt: answers.reviewedAt };
+  const confirmed = Boolean(answers.confirmedBy && answers.confirmedAt);
+  if (!confirmed && source !== 'AI') fail('answers.json：OFFICIAL / MANUAL 的答案要写 confirmedBy（谁提供的）和 confirmedAt（日期）');
+  return confirmed
+    ? { answerState: '已确认', answerSource: source, answerReviewedBy: answers.confirmedBy, answerReviewedAt: answers.confirmedAt }
+    : { answerState: '待核', answerSource: 'AI' };
 }
 
 // ---------- 选择题强化训练 ----------
@@ -277,4 +285,61 @@ for (const g of groups) {
   console.log(`  写入  ${g.groupId}（${n} 题）`);
 }
 for (const s of skipped) console.log(`  跳过  ${s}：source/answers.json 还没有，等用户提供答案`);
+
+// ---------- 答案核对单（给人看的，由本脚本生成，不要手改） ----------
+// 和生化的 ANSWER_REVIEW_ch01.md 同一个用途：答案不是原书给的，要人逐题过目。拿不准的题排在最前面。
+if (answers) {
+  const L = [];
+  const pending = answers.confirmedBy ? `已由 ${answers.confirmedBy} 于 ${answers.confirmedAt} 确认` : '**待核**：还没有人确认';
+  L.push('# 公共英语 答案核对单', '',
+    '> 由 `node scripts/build-pubeng-groups.mjs` 从 `source/answers.json` 生成，不要手改。要改答案改 answers.json 再生成。', '',
+    `选择题两组和样卷 2 的答案是 Claude 做的（原书没有答案）。状态：${pending}。`,
+    '教学重点 4 课的单词、词组答案是原书的表，不在这里；翻译题的采分点在题库文件里，后台校对页逐题可看可改。', '',
+    '核对的办法：对着下面逐题看，要改的告诉 Claude「第几组第几题应该是 X」；都没问题就说「确认」。', '');
+  const byId = new Map(groups.map((g) => [g.groupId, g]));
+  const flagged = [];
+  for (const [set, gid, name] of [['mc-set1', 'pubeng-mc1', '选择题强化训练（一）'], ['mc-set2', 'pubeng-mc2', '选择题强化训练（二）']]) {
+    for (const [no, note] of Object.entries(answers.notes?.[set] || {})) {
+      const qq = byId.get(gid).sections[0].questions[Number(no) - 1];
+      flagged.push(`- **${name} 第 ${no} 题**：${qq.stem}  \n  ${qq.options.join('　')}  \n  预填 **${qq.answer}**。${note}`);
+    }
+  }
+  for (const [k, note] of Object.entries(answers.test2?.notes || {})) flagged.push(`- **样卷 2 ${k}**：${note}`);
+  L.push(`## 拿不准的题（${flagged.length} 处）`, '', ...flagged, '');
+  for (const gid of ['pubeng-mc1', 'pubeng-mc2', 'pubeng-s4-test2']) {
+    const g = byId.get(gid);
+    L.push(`## ${g.label}`, '');
+    for (const sec of g.sections) {
+      if (g.sections.length > 1) L.push(`### ${sec.type}`, '');
+      if (sec.passageText && sec.type === '阅读理解') L.push(`> ${sec.passageText.split('\n\n')[0].slice(0, 80)}……`, '');
+      for (const qq of sec.questions) {
+        const no = gid === 'pubeng-s4-test2' ? `${qq.order}` : `${qq.order}.`;
+        if (qq.options) {
+          const pick = qq.options.find((o) => o.startsWith(`${qq.answer}. `)) || qq.answer;
+          L.push(sec.type === '段落填空'
+            ? `- ${no} 第 ${qq.order - sec.questions[0].order + 1} 空 → **${pick}**`
+            : `- ${no} ${qq.stem} → **${pick}**`);
+        } else if (qq.questionType === 'spell_word') {
+          const it = qq.items[0];
+          L.push(`- ${no} ${qq.stem} → **${it.answer}**${it.altAnswers ? `（也判对：${it.altAnswers.join('、')}）` : ''}`);
+        } else {
+          L.push(`- ${no} ${qq.stem.replace(/\n+/g, ' ')}`,
+            ...(qq.answerExplanation ? [`  - ${qq.answerExplanation.replace(/\n+/g, ' ')}`] : []),
+            ...qq.items.map((it) => `  - 采分点 ${it.ord}：${it.answer}`));
+        }
+      }
+      L.push('');
+    }
+  }
+  const reviewFile = path.join(SUBJ, 'ANSWER_REVIEW.md');
+  const text = `${L.join('\n')}\n`;
+  if (CHECK) {
+    if (!fs.existsSync(reviewFile) || fs.readFileSync(reviewFile, 'utf8') !== text) {
+      bad++; console.log('  !!    ANSWER_REVIEW.md 和 answers.json 对不上，重新生成一次');
+    }
+  } else {
+    fs.writeFileSync(reviewFile, text);
+    console.log(`  写入  ANSWER_REVIEW.md（拿不准的 ${flagged.length} 处）`);
+  }
+}
 process.exit(bad ? 1 : 0);

@@ -9,7 +9,8 @@
 | `source/sample-test2.json` | 第四段考试样卷 2 的转写稿（原书 156–162 页，7 个部分） |
 | `source/units.json` | 第四段教学重点：第一册 9–10 课、第二册 1–2 课（原书 133–140 页） |
 | `source/translation-points.json` | 句子翻译的采分点（Claude 拆的，待核） |
-| `source/answers.json` | **用户提供的答案**（选择题两组、样卷 2）。没有它，这三个内容组不生成 |
+| `source/answers.json` | 选择题两组、样卷 2 的答案。原书没有，**Claude 做的**（2026-11-07 用户让预填），拿不准的写在 notes 里 |
+| `ANSWER_REVIEW.md` | 答案核对单，生成器从 answers.json 生成，**不要手改**。拿不准的题排在最前面 |
 | `groups/*.json` | 题库文件，由 `node scripts/build-pubeng-groups.mjs` 从上面这些生成。**导入线上之后不许改**（CR-H4） |
 | `knowledge-points.json` | 两级考点：词汇、语法、阅读、翻译、教材课文（按课） |
 | `exam-template.json` | 组卷模板（第四段试卷说明，7 个部分 100 分）。迁移 0018 装进库一次，之后改库 |
@@ -31,8 +32,8 @@
 | 内容组 | 题数 | 答案 | 状态 |
 |---|---|---|---|
 | `pubeng-s4-b1u09` 等 4 课教学重点 | 100 | 单词、词组：原书的单词表、词组表；句子、段落翻译：原书译文，**采分点 Claude 拆的** | 单词、词组已确认；翻译待核 |
-| `pubeng-mc1` / `pubeng-mc2` 选择题 | 各 200 | 用户提供 | 等答案 |
-| `pubeng-s4-test2` 样卷 2 | 81 | 用户提供；翻译题的采分点 Claude 拆 | 等答案 |
+| `pubeng-mc1` / `pubeng-mc2` 选择题 | 各 200 | Claude 做的 | 待核，用户确认后在 answers.json 填 confirmedBy / confirmedAt 再生成 |
+| `pubeng-s4-test2` 样卷 2 | 81 | Claude 做的；段落填空按第一册第 10 课原文，句子翻译第 2–4 句用原书译文 | 同上；翻译题的采分点 Claude 拆的，确认后也是待核，在后台逐题确认 |
 
 选择题的考点是生成脚本按选项形态初挂的（见 `knowledge-points.json` 的 note），后台校对页可改。
 

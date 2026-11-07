@@ -1,0 +1,1779 @@
+{
+  "groupId": "pubeng-s4-test2",
+  "subjectCode": "pubeng",
+  "courseCode": "pubeng-main",
+  "groupKind": "EXAM_PAPER",
+  "orderKey": 40,
+  "label": "第四段考试样卷 2",
+  "sourceFile": "公共英语课程教学重点与考试样卷（扫描件）第 156–162 页",
+  "answerState": "待核",
+  "answerSource": "AI",
+  "sections": [
+    {
+      "sectionId": "pubeng-s4-test2-s1",
+      "type": "拼写单词",
+      "order": 1,
+      "questions": [
+        {
+          "questionId": "pubeng-s4-test2-q001",
+          "order": 1,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "stem": "宪法；章程",
+          "answer": "constitution",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "constitution",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "词汇/单词拼写"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q002",
+          "order": 2,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "stem": "某个时候",
+          "answer": "sometime",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "sometime",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "词汇/单词拼写"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q003",
+          "order": 3,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "stem": "大气；空气",
+          "answer": "atmosphere",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "atmosphere",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "词汇/单词拼写"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q004",
+          "order": 4,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "stem": "冲动",
+          "answer": "impulse",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "impulse",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "词汇/单词拼写"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q005",
+          "order": 5,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "stem": "犹豫，迟疑不决",
+          "answer": "hesitate",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "hesitate",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "词汇/单词拼写"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q006",
+          "order": 6,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "stem": "个性",
+          "answer": "personality",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "personality",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "词汇/单词拼写"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q007",
+          "order": 7,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "stem": "原理；原则",
+          "answer": "principle",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "principle",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "词汇/单词拼写"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q008",
+          "order": 8,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "stem": "透明的",
+          "answer": "transparent",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "transparent",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "词汇/单词拼写"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q009",
+          "order": 9,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "stem": "竞争，对抗",
+          "answer": "competition",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "competition",
+              "altAnswers": [
+                "rivalry"
+              ],
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "词汇/单词拼写"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q010",
+          "order": 10,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "stem": "自信的",
+          "answer": "confident",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "confident",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "词汇/单词拼写"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q011",
+          "order": 11,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "stem": "消失",
+          "answer": "vanish",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "vanish",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "词汇/单词拼写"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q012",
+          "order": 12,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "stem": "有免疫力的；不受影响的",
+          "answer": "immune",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "immune",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "词汇/单词拼写"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q013",
+          "order": 13,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "stem": "郊区",
+          "answer": "suburb",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "suburb",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "词汇/单词拼写"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q014",
+          "order": 14,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "stem": "期望中的事；展望；前景",
+          "answer": "prospect",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "prospect",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "词汇/单词拼写"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q015",
+          "order": 15,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "stem": "放松",
+          "answer": "relax",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "relax",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "词汇/单词拼写"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q016",
+          "order": 16,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "stem": "使震惊；使目瞪口呆",
+          "answer": "stun",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "stun",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "词汇/单词拼写"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q017",
+          "order": 17,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "stem": "退缩；退却，撤退",
+          "answer": "retreat",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "retreat",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "词汇/单词拼写"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q018",
+          "order": 18,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "stem": "复合的",
+          "answer": "compound",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "compound",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "词汇/单词拼写"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q019",
+          "order": 19,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "stem": "遮盖；掩盖",
+          "answer": "mask",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "mask",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "词汇/单词拼写"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q020",
+          "order": 20,
+          "status": "草稿",
+          "questionType": "spell_word",
+          "stem": "责任，责任心",
+          "answer": "responsibility",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "BLANK",
+              "strategy": "EXACT",
+              "answer": "responsibility",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "词汇/单词拼写"
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "pubeng-s4-test2-s2",
+      "type": "词组翻译",
+      "order": 2,
+      "questions": [
+        {
+          "questionId": "pubeng-s4-test2-q021",
+          "order": 21,
+          "status": "草稿",
+          "questionType": "phrase_translate",
+          "stem": "in all likelihood",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出词组意思：很可能；十有八九",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/词组英译汉"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q022",
+          "order": 22,
+          "status": "草稿",
+          "questionType": "phrase_translate",
+          "stem": "make one's way",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出词组意思：去，前往",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/词组英译汉"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q023",
+          "order": 23,
+          "status": "草稿",
+          "questionType": "phrase_translate",
+          "stem": "as far as … be concerned",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出词组意思：就……而言",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/词组英译汉"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q024",
+          "order": 24,
+          "status": "草稿",
+          "questionType": "phrase_translate",
+          "stem": "spring up",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出词组意思：突然开始；迅速生长",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/词组英译汉"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q025",
+          "order": 25,
+          "status": "草稿",
+          "questionType": "phrase_translate",
+          "stem": "leave behind",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出词组意思：丢弃；留下，忘带",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/词组英译汉"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q026",
+          "order": 26,
+          "status": "草稿",
+          "questionType": "phrase_translate",
+          "stem": "attach importance to",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出词组意思：重视",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/词组英译汉"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q027",
+          "order": 27,
+          "status": "草稿",
+          "questionType": "phrase_translate",
+          "stem": "in common",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出词组意思：共同，共有",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/词组英译汉"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q028",
+          "order": 28,
+          "status": "草稿",
+          "questionType": "phrase_translate",
+          "stem": "work out",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出词组意思：制定出；解决；计算出",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/词组英译汉"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q029",
+          "order": 29,
+          "status": "草稿",
+          "questionType": "phrase_translate",
+          "stem": "single out",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出词组意思：挑选出",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/词组英译汉"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q030",
+          "order": 30,
+          "status": "草稿",
+          "questionType": "phrase_translate",
+          "stem": "butterflies in the stomach",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出词组意思：心里发慌，紧张不安",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/词组英译汉"
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "pubeng-s4-test2-s3",
+      "type": "选择填空",
+      "order": 3,
+      "questions": [
+        {
+          "questionId": "pubeng-s4-test2-q031",
+          "order": 31,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "The English test last week ____ very difficult since most of the students failed.",
+          "options": [
+            "A. would",
+            "B. should",
+            "C. would have been",
+            "D. must have been"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "语法/语法结构"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q032",
+          "order": 32,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "John has great acting ____, but he needs training to be a real actor.",
+          "options": [
+            "A. potential",
+            "B. possibility",
+            "C. promotion",
+            "D. privilege"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q033",
+          "order": 33,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "Mr. Thomas's funny story brought about ____ laughter from the audience which could be heard miles away.",
+          "options": [
+            "A. a set of",
+            "B. a bunch of",
+            "C. a flood of",
+            "D. a burst of"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/短语与固定搭配"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q034",
+          "order": 34,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "Moon cakes are still the food for the Mid-Autumn Festival in China, ____ they were decades ago.",
+          "options": [
+            "A. that",
+            "B. since",
+            "C. as",
+            "D. which"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "语法/语法结构"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q035",
+          "order": 35,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "Reading detective stories is one of his favorite ____.",
+          "options": [
+            "A. occupations",
+            "B. pastimes",
+            "C. engagements",
+            "D. habits"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q036",
+          "order": 36,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "Overwork often ____ illness.",
+          "options": [
+            "A. results from",
+            "B. depends on",
+            "C. leads to",
+            "D. breaks into"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/短语与固定搭配"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q037",
+          "order": 37,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "____ that we use only 1% of our brain's full potential.",
+          "options": [
+            "A. It generally believed",
+            "B. It is generally believed",
+            "C. Generally believed",
+            "D. It has generally believed"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "语法/语法结构"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q038",
+          "order": 38,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "My brother ____ work in the same office with John. They are very good friends.",
+          "options": [
+            "A. was used to",
+            "B. use to",
+            "C. was using to",
+            "D. used to"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "语法/语法结构"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q039",
+          "order": 39,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "There was more than ____ rain and snow last year, so some parts of the country have been flooded this spring.",
+          "options": [
+            "A. extra",
+            "B. efficient",
+            "C. generous",
+            "D. adequate"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q040",
+          "order": 40,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "It was not a serious accident; the car needs only some ____ repairs.",
+          "options": [
+            "A. major",
+            "B. overall",
+            "C. minor",
+            "D. primary"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q041",
+          "order": 41,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "With the population explosion, scientists will have to ____ new methods of increasing the world's food supply.",
+          "options": [
+            "A. come across",
+            "B. come after",
+            "C. come up with",
+            "D. come down with"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/短语与固定搭配"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q042",
+          "order": 42,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "I couldn't understand why he pretended ____ in the bookstore.",
+          "options": [
+            "A. to see me not",
+            "B. not see me",
+            "C. not to see me",
+            "D. did not see me"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "语法/语法结构"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q043",
+          "order": 43,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "If he had worked hard, ____.",
+          "options": [
+            "A. he might have passed the final exam",
+            "B. he might pass the final exam",
+            "C. he has passed the final exam",
+            "D. he passed the final exam"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "语法/语法结构"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q044",
+          "order": 44,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "When he was very young Joe often wondered why his mother wouldn't ____ a penny on herself.",
+          "options": [
+            "A. earn",
+            "B. spend",
+            "C. pay for",
+            "D. cost"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q045",
+          "order": 45,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "The ____ of the dinner party was disappointed at the small number of guests who attended.",
+          "options": [
+            "A. host",
+            "B. owner",
+            "C. boss",
+            "D. member"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q046",
+          "order": 46,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "Johnny's mouth watered ____ the big pudding.",
+          "options": [
+            "A. in short of",
+            "B. in terms of",
+            "C. with regard to",
+            "D. at the sight of"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "词汇/短语与固定搭配"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q047",
+          "order": 47,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "His parents ____ him after his great grandfather, who was a Supreme Court Justice.",
+          "options": [
+            "A. called",
+            "B. named",
+            "C. greeted",
+            "D. regarded"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q048",
+          "order": 48,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "Mrs Stone was really quite ____ in the world except for an aged aunt in Philadelphia.",
+          "options": [
+            "A. alone",
+            "B. astir",
+            "C. alive",
+            "D. alike"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q049",
+          "order": 49,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "After graduating from a medical school, she decided to ____ employment in the suburbs.",
+          "options": [
+            "A. look after",
+            "B. seek for",
+            "C. take in",
+            "D. make for"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/短语与固定搭配"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q050",
+          "order": 50,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "They discussed the problem three or four times, but could come to no ____.",
+          "options": [
+            "A. end",
+            "B. conclusion",
+            "C. result",
+            "D. judgment"
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q051",
+          "order": 51,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "Unfortunately, very few sheep ____ the severe winter last year.",
+          "options": [
+            "A. survived",
+            "B. endured",
+            "C. stayed in",
+            "D. remained alive"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q052",
+          "order": 52,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "Let's hang up some paintings on these ____ walls.",
+          "options": [
+            "A. bare",
+            "B. blank",
+            "C. empty",
+            "D. vacant"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q053",
+          "order": 53,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "Bob tried in vain to trick his little brother ____ some money from their mother's purse.",
+          "options": [
+            "A. to steal",
+            "B. to stealing",
+            "C. into steal",
+            "D. into stealing"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "语法/语法结构"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q054",
+          "order": 54,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "The self-important manager didn't seem to ____ much importance to my advice.",
+          "options": [
+            "A. take",
+            "B. make",
+            "C. attach",
+            "D. consider"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q055",
+          "order": 55,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "I received a ____ parcel yesterday and I am still wondering who may have sent it.",
+          "options": [
+            "A. sincere",
+            "B. dull",
+            "C. mysterious",
+            "D. complicated"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "词汇/词义辨析"
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "pubeng-s4-test2-s4",
+      "type": "段落填空",
+      "order": 4,
+      "passageTitle": "Going Home",
+      "passageText": "Then Brunswick was 10 miles, ___(1)___ then five. Then, suddenly, all of the young people were up ___(2)___ of their seats, screaming and shouting and crying, doing small dances of ___(3)___. All ___(4)___ Vingo.\n\nVingo sat there stunned, ___(5)___ at the oak tree. It was ___(6)___ with yellow handkerchiefs — 20 of them, 30 of them, maybe hundreds, a tree that stood ___(7)___ a banner of welcome billowing in the ___(8)___. As the young people shouted, the old con slowly rose from his ___(9)___ and made his ___(10)___ to the front of the bus to go home.\n\n词库：A. except  B. surprise  C. out  D. way  E. looking  F. seat  G. from  H. besides  I. covered  J. tree  K. joy  L. like  M. and  N. wind  O. feet",
+      "questions": [
+        {
+          "questionId": "pubeng-s4-test2-q056",
+          "order": 56,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "根据短文内容，从词库里为第 1 空选择最恰当的词。",
+          "options": [
+            "A. except",
+            "B. surprise",
+            "C. out",
+            "D. way",
+            "E. looking",
+            "F. seat",
+            "G. from",
+            "H. besides",
+            "I. covered",
+            "J. tree",
+            "K. joy",
+            "L. like",
+            "M. and",
+            "N. wind",
+            "O. feet"
+          ],
+          "answer": "M",
+          "knowledgePoints": [
+            "阅读/段落填空"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q057",
+          "order": 57,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "根据短文内容，从词库里为第 2 空选择最恰当的词。",
+          "options": [
+            "A. except",
+            "B. surprise",
+            "C. out",
+            "D. way",
+            "E. looking",
+            "F. seat",
+            "G. from",
+            "H. besides",
+            "I. covered",
+            "J. tree",
+            "K. joy",
+            "L. like",
+            "M. and",
+            "N. wind",
+            "O. feet"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "阅读/段落填空"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q058",
+          "order": 58,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "根据短文内容，从词库里为第 3 空选择最恰当的词。",
+          "options": [
+            "A. except",
+            "B. surprise",
+            "C. out",
+            "D. way",
+            "E. looking",
+            "F. seat",
+            "G. from",
+            "H. besides",
+            "I. covered",
+            "J. tree",
+            "K. joy",
+            "L. like",
+            "M. and",
+            "N. wind",
+            "O. feet"
+          ],
+          "answer": "K",
+          "knowledgePoints": [
+            "阅读/段落填空"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q059",
+          "order": 59,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "根据短文内容，从词库里为第 4 空选择最恰当的词。",
+          "options": [
+            "A. except",
+            "B. surprise",
+            "C. out",
+            "D. way",
+            "E. looking",
+            "F. seat",
+            "G. from",
+            "H. besides",
+            "I. covered",
+            "J. tree",
+            "K. joy",
+            "L. like",
+            "M. and",
+            "N. wind",
+            "O. feet"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "阅读/段落填空"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q060",
+          "order": 60,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "根据短文内容，从词库里为第 5 空选择最恰当的词。",
+          "options": [
+            "A. except",
+            "B. surprise",
+            "C. out",
+            "D. way",
+            "E. looking",
+            "F. seat",
+            "G. from",
+            "H. besides",
+            "I. covered",
+            "J. tree",
+            "K. joy",
+            "L. like",
+            "M. and",
+            "N. wind",
+            "O. feet"
+          ],
+          "answer": "E",
+          "knowledgePoints": [
+            "阅读/段落填空"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q061",
+          "order": 61,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "根据短文内容，从词库里为第 6 空选择最恰当的词。",
+          "options": [
+            "A. except",
+            "B. surprise",
+            "C. out",
+            "D. way",
+            "E. looking",
+            "F. seat",
+            "G. from",
+            "H. besides",
+            "I. covered",
+            "J. tree",
+            "K. joy",
+            "L. like",
+            "M. and",
+            "N. wind",
+            "O. feet"
+          ],
+          "answer": "I",
+          "knowledgePoints": [
+            "阅读/段落填空"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q062",
+          "order": 62,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "根据短文内容，从词库里为第 7 空选择最恰当的词。",
+          "options": [
+            "A. except",
+            "B. surprise",
+            "C. out",
+            "D. way",
+            "E. looking",
+            "F. seat",
+            "G. from",
+            "H. besides",
+            "I. covered",
+            "J. tree",
+            "K. joy",
+            "L. like",
+            "M. and",
+            "N. wind",
+            "O. feet"
+          ],
+          "answer": "L",
+          "knowledgePoints": [
+            "阅读/段落填空"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q063",
+          "order": 63,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "根据短文内容，从词库里为第 8 空选择最恰当的词。",
+          "options": [
+            "A. except",
+            "B. surprise",
+            "C. out",
+            "D. way",
+            "E. looking",
+            "F. seat",
+            "G. from",
+            "H. besides",
+            "I. covered",
+            "J. tree",
+            "K. joy",
+            "L. like",
+            "M. and",
+            "N. wind",
+            "O. feet"
+          ],
+          "answer": "N",
+          "knowledgePoints": [
+            "阅读/段落填空"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q064",
+          "order": 64,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "根据短文内容，从词库里为第 9 空选择最恰当的词。",
+          "options": [
+            "A. except",
+            "B. surprise",
+            "C. out",
+            "D. way",
+            "E. looking",
+            "F. seat",
+            "G. from",
+            "H. besides",
+            "I. covered",
+            "J. tree",
+            "K. joy",
+            "L. like",
+            "M. and",
+            "N. wind",
+            "O. feet"
+          ],
+          "answer": "F",
+          "knowledgePoints": [
+            "阅读/段落填空"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q065",
+          "order": 65,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "根据短文内容，从词库里为第 10 空选择最恰当的词。",
+          "options": [
+            "A. except",
+            "B. surprise",
+            "C. out",
+            "D. way",
+            "E. looking",
+            "F. seat",
+            "G. from",
+            "H. besides",
+            "I. covered",
+            "J. tree",
+            "K. joy",
+            "L. like",
+            "M. and",
+            "N. wind",
+            "O. feet"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "阅读/段落填空"
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "pubeng-s4-test2-s5",
+      "type": "阅读理解",
+      "order": 5,
+      "passageText": "Look up into the sky. What can you see? During the day, you can see the sun. On a clear night, you can see the moon and many, many stars. The moon is nearer than the sun. It is about 240,000 miles away. The sun is much farther. It is about 93 million miles from us. The moon looks almost as large as the sun, but the sun is really much larger. It is the largest object in the solar system (太阳系).\n\nThe sun is a star. It is a big ball of fire. It sends out light. The moon is satellite (卫星). It doesn't send out light. It only reflects light. The sun sends out light to the moon. Then the moon reflects the sun's light to the earth.\n\nIn the 1960s, spaceships went around the moon. They took the first pictures of the back side of the moon. Some astronauts (宇航员) have already been on the moon. Now we know a lot about it. The moon is very different from the earth. There isn't any air on the moon. There aren't any trees, grass, or water on the moon either. You can only see rocks and deserts. It is both very hot and very cold there. During the day it is very hot in the sunshine, but at night it can be −129℃ (129 degrees centigrade below zero).",
+      "questions": [
+        {
+          "questionId": "pubeng-s4-test2-q066",
+          "order": 66,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "The moon is about ____ away from us.",
+          "options": [
+            "A. 93 thousand miles",
+            "B. 93 million miles",
+            "C. 240 thousand miles",
+            "D. 240 million miles"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "阅读/阅读理解"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q067",
+          "order": 67,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "Which of the following is true?",
+          "options": [
+            "A. The sun is a star and so is the moon.",
+            "B. The moon is a satellite and sends out light to the earth.",
+            "C. The moon only reflects the sun's light to the earth.",
+            "D. The sun reflects light to the moon."
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "阅读/阅读理解"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q068",
+          "order": 68,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "In the 1960s, spaceships went around the moon and ____.",
+          "options": [
+            "A. took pictures of its back side",
+            "B. found water, grass and rocks",
+            "C. studied the temperature on the moon",
+            "D. made a comparison with the earth"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "阅读/阅读理解"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q069",
+          "order": 69,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "The ____ is the largest object in the solar system.",
+          "options": [
+            "A. sun",
+            "B. earth",
+            "C. moon",
+            "D. star"
+          ],
+          "answer": "A",
+          "knowledgePoints": [
+            "阅读/阅读理解"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q070",
+          "order": 70,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "On the moon you can find ____.",
+          "options": [
+            "A. air",
+            "B. water",
+            "C. grass",
+            "D. deserts"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "阅读/阅读理解"
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "pubeng-s4-test2-s6",
+      "type": "阅读理解",
+      "order": 6,
+      "passageText": "One-room schools are part of the heritage (遗产) of the United States, and the mention of them makes people feel a vague longing for \"the way things were\". One-room schools are an endangered species, however. For more than a hundred years, one-room schools have been systematically shut down and students sent away to centralized schools. As recently as 1930 there were 1,800. Today, of the nearly 800 remaining one-room schools, more than 350 are in Nebraska. The rest are scattered through a few other states that have on their road maps wide-open spaces between towns.\n\nNow that there are hardly any left, educators are beginning to think that maybe there is something yet to be learned from one-room schools, something that served the pioneers that might serve as well today. Progressive educators have come up with progressive-sounding names like \"peer-group teaching\" and \"multi-age grouping\" for educational procedures that occur naturally in the one-room school. In one-room school the children teach each other because the teacher is busy part of the time teaching someone else. A fourth grader can work at a fifth-grade level in math and a third-grade level in English without the stigma (耻辱) associated with being left back or the pressures of being skipped ahead. A youngster with a learning disability can find his or her own level without being separated from the other pupils. In larger urban and suburban schools today, this is called \"mainstreaming\". A few hours in a small school that has only one classroom and it becomes clear why so many parents feel that one of the advantages of living in Nebraska is that their children have to go to a one-room school.",
+      "questions": [
+        {
+          "questionId": "pubeng-s4-test2-q071",
+          "order": 71,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "What is the author's main purpose in the passage?",
+          "options": [
+            "A. To discuss present-day education in the United States.",
+            "B. To mention some advantages of one-room schools.",
+            "C. To persuade states to close down one-room schools.",
+            "D. To summarize the history of education in the United States."
+          ],
+          "answer": "B",
+          "knowledgePoints": [
+            "阅读/阅读理解"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q072",
+          "order": 72,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "The author implies that many educators and parents today feel that one-room schools ____.",
+          "options": [
+            "A. are too small",
+            "B. put pressure on teachers",
+            "C. are too far apart",
+            "D. provide a good education"
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "阅读/阅读理解"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q073",
+          "order": 73,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "According to the passage, why are one-room schools in danger of disappearing?",
+          "options": [
+            "A. They skip too many children ahead.",
+            "B. There are no fourth-grade levels in any of them.",
+            "C. There is a trend toward centralization.",
+            "D. They all exist in one state."
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "阅读/阅读理解"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q074",
+          "order": 74,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "In the paragraph 2, what is mentioned as a major characteristic of one-room school system?",
+          "options": [
+            "A. It causes many children to be left back.",
+            "B. It must work in conjunction with an urban school.",
+            "C. It does not allow teachers to do any individual teaching.",
+            "D. It does not limit learning to one grade level at a time."
+          ],
+          "answer": "D",
+          "knowledgePoints": [
+            "阅读/阅读理解"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q075",
+          "order": 75,
+          "status": "草稿",
+          "questionType": "single_choice",
+          "stem": "The attitude of the author toward one-room school is one of ____.",
+          "options": [
+            "A. humor",
+            "B. indifference",
+            "C. commendation",
+            "D. anger"
+          ],
+          "answer": "C",
+          "knowledgePoints": [
+            "阅读/阅读理解"
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "pubeng-s4-test2-s7",
+      "type": "句子翻译",
+      "order": 7,
+      "questions": [
+        {
+          "questionId": "pubeng-s4-test2-q076",
+          "order": 76,
+          "status": "草稿",
+          "questionType": "sentence_translate",
+          "answerState": "待核",
+          "answerSource": "AI",
+          "stem": "把下面的句子译成英语：显然，找到替代能源对我们经济的稳定发展是至关重要的。",
+          "answerExplanation": "参考译文：Obviously, finding alternative energy sources is of vital importance to the steady development of our economy.",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“显然”：obviously / it is obvious that …",
+              "weight": 1
+            },
+            {
+              "ord": 2,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“找到替代能源”：finding alternative energy (sources)",
+              "weight": 1
+            },
+            {
+              "ord": 3,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“对……是至关重要的”：is of vital importance to / is vital to …",
+              "weight": 1
+            },
+            {
+              "ord": 4,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“我们经济的稳定发展”：the steady development of our economy",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/句子汉译英"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q077",
+          "order": 77,
+          "status": "草稿",
+          "questionType": "sentence_translate",
+          "answerState": "待核",
+          "answerSource": "AI",
+          "stem": "把下面的句子译成英语：工厂和汽车发出的一氧化碳这类气体严重污染了大气。",
+          "answerExplanation": "参考译文：Gases such as carbon monoxide, emitted by factories and automobiles, have seriously polluted the atmosphere.",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "主语“一氧化碳这类气体”：gases such as carbon monoxide",
+              "weight": 1
+            },
+            {
+              "ord": 2,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“工厂和汽车发出的”作后置定语：emitted by factories and automobiles",
+              "weight": 1
+            },
+            {
+              "ord": 3,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“严重污染了大气”：have seriously polluted the atmosphere",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/句子汉译英"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q078",
+          "order": 78,
+          "status": "草稿",
+          "questionType": "sentence_translate",
+          "answerState": "待核",
+          "answerSource": "AI",
+          "stem": "把下面的句子译成英语：她砰地关上门，一声不吭地走了，他们间那场争执就此结束。",
+          "answerExplanation": "参考译文：Their argument ended when she slammed the door and left without a word.",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“他们间那场争执就此结束”：their argument ended",
+              "weight": 1
+            },
+            {
+              "ord": 2,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“她砰地关上门”：she slammed the door",
+              "weight": 1
+            },
+            {
+              "ord": 3,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“一声不吭地走了”：left without a word",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/句子汉译英"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q079",
+          "order": 79,
+          "status": "草稿",
+          "questionType": "sentence_translate",
+          "answerState": "待核",
+          "answerSource": "AI",
+          "stem": "把下面的句子译成英语：我们产品质量的稳步提高在很大程度上是由于设备有所改进。",
+          "answerExplanation": "参考译文：The steady rise in the quality of our products owes much to the improvement of our equipment.",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“我们产品质量的稳步提高”：the steady rise in the quality of our products",
+              "weight": 1
+            },
+            {
+              "ord": 2,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“在很大程度上是由于”：owes much to",
+              "weight": 1
+            },
+            {
+              "ord": 3,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“设备有所改进”：the improvement of our equipment",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/句子汉译英"
+          ]
+        },
+        {
+          "questionId": "pubeng-s4-test2-q080",
+          "order": 80,
+          "status": "草稿",
+          "questionType": "sentence_translate",
+          "answerState": "待核",
+          "answerSource": "AI",
+          "stem": "把下面的句子译成英语：不言而喻，对青年人的教育对于一个国家的未来是至关重要的。",
+          "answerExplanation": "参考译文：It goes without saying that the education of young people is of vital importance to the future of a country.",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“不言而喻”：it goes without saying that … / it is self-evident that …",
+              "weight": 1
+            },
+            {
+              "ord": 2,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“对青年人的教育”：the education of young people",
+              "weight": 1
+            },
+            {
+              "ord": 3,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "“对于一个国家的未来是至关重要的”：is of vital importance to the future of a country",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/句子汉译英"
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "pubeng-s4-test2-s8",
+      "type": "段落翻译",
+      "order": 8,
+      "questions": [
+        {
+          "questionId": "pubeng-s4-test2-q081",
+          "order": 81,
+          "status": "草稿",
+          "questionType": "paragraph_translate",
+          "answerState": "待核",
+          "answerSource": "AI",
+          "stem": "把下面的段落译成汉语：\n\nNow in the last month of my residency, sleeping was no longer a problem. There were still situations in which I couldn't be certain my decision had been the right one; but I had learned to accept this as a constant problem for a surgeon, one that could never be completely resolved — and I could live with it. So, once I had made a considered decision, I no longer dwelt on it. Reviewing it wasn't going to help and I knew that with my knowledge and experience, any decision I'd made was bound to be a sound one. It was a nice feeling.",
+          "answerExplanation": "参考译文：\n\n如今是我当住院医生的最后一个月，睡觉已不再是问题。仍然会有一些情况让我拿不准自己的决定是否正确；但我已经学会把这当作外科医生始终会面对的问题来接受，一个永远不可能彻底解决的问题——而我能够与之共处。所以，一旦我经过深思熟虑做出决定，就不再总想着它了。反复回顾于事无补，而且我知道，凭我的知识和经验，我做出的任何决定都一定是可靠的。那是一种很好的感觉。",
+          "items": [
+            {
+              "ord": 1,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出：如今是我当住院医生的最后一个月，睡觉已不再是问题。",
+              "weight": 1
+            },
+            {
+              "ord": 2,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出：仍然会有一些情况让我拿不准自己的决定是否正确；但我已经学会把这当作外科医生始终会面对的问题来接受，一个永远不可能彻底解决的问题——而我能够与之共处。",
+              "weight": 1
+            },
+            {
+              "ord": 3,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出：所以，一旦我经过深思熟虑做出决定，就不再总想着它了。",
+              "weight": 1
+            },
+            {
+              "ord": 4,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出：反复回顾于事无补，而且我知道，凭我的知识和经验，我做出的任何决定都一定是可靠的。",
+              "weight": 1
+            },
+            {
+              "ord": 5,
+              "kind": "SCORE_POINT",
+              "strategy": "AI_SCORE_POINTS",
+              "answer": "译出：那是一种很好的感觉。",
+              "weight": 1
+            }
+          ],
+          "knowledgePoints": [
+            "翻译/段落英译汉"
+          ]
+        }
+      ]
+    }
+  ],
+  "parsingNotes": []
+}
