@@ -5,11 +5,12 @@
 // 只断"页面渲染出来了"的话，按钮禁用逻辑写错、上传发出去是个空 body、
 // AI 那步的结果没显示，全都测不到。
 import { chromium } from 'playwright';
+import { chromePath } from './lib/chrome.mjs';
 import { readFileSync } from 'node:fs';
 import { basename } from 'node:path';
 
 const BASE = process.env.UI_BASE;
-const CHROME = '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
+const CHROME = chromePath();
 const USER = process.env.UI_USER;
 const PASS = process.env.UI_PASS;
 const DOCX = process.env.UI_DOCX;

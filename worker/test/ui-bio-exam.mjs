@@ -3,9 +3,10 @@
 // 断"看得见、点得动"（CLAUDE.md 四之二）：以前的检查断"元素在页面代码里"，datalist 的备选
 // 永远在代码里、又永远看不见。等不到的元素只让那几条红，不抛错——抛错会把后面的检查全吞掉。
 import { chromium } from 'playwright';
+import { chromePath } from './lib/chrome.mjs';
 
 const BASE = process.env.UI_BASE;
-const CHROME = '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
+const CHROME = chromePath();
 const USER = process.env.UI_USER;
 const PASS = process.env.UI_PASS;
 const EXAMS = JSON.parse(process.env.UI_EXAMS);

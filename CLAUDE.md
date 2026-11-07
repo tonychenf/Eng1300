@@ -24,6 +24,9 @@ N7（报告分层）起未开工。
 见四开头与四之二"练习的错因分析"。
 **2026-11-07 第三个学科「公共英语」**（`pubeng`，迁移 0018）：资料是扫描件、没有答案，题面逐页转写、答案 Claude 预填
 （第二组选择题前 75 题对过原书手写答案），用户同意采用。见四之二"公共英语"与 `data/subjects/pubeng/README.md`。
+**下一阶段（改进阶段 2，用户 2026-11-07 排定，A/B/C 三项都做）**：后台自助开学科——新建学科开箱可用（课程 + 能力包）、
+后台编辑组卷模板、AI 拆题导入（Word / PDF / 图片不挑版式）。需求见 `docs/改进阶段2-后台自助开学科.md`；
+**用户要先审阅需求文档（BRD）和 PRD（`docs/改进阶段2-PRD.md`），审阅通过之前不动代码**。
 
 文档分三层，不要在一层里写另一层的内容：
 
@@ -104,6 +107,7 @@ in use，同时提示一个已删除的构建临时路径，很容易把注意�
 | d1-ops-guard | 不起服务 | 8890（假 Cloudflare 接口） |
 | bio-exam | 8774 | 8889 |
 | ui-bio-exam | 8773 | 8888 |
+| ui-pubeng | 8772 | 8887 |
 
 端口表没有东西强制，所以 `test/run-all.sh` 开跑前会查一遍：各套 `PORT=` / `STUB_PORT=` 有没有重号、
 有没有上一轮残留的进程还占着（读 `/proc/net/tcp`——**本机没有 `ss`**，各套开头"等端口释放"那句
@@ -128,6 +132,10 @@ dev 日志只有一行空的 ERROR）。测"超过上限读之前就拒"这类�
 **等"某段字出现"别等自己刚敲进去的字。** React 受控的 textarea 会把值同步成 defaultValue（就是它的文本内容），
 `waitForSelector('text=刚填的字')` 当场就返回、匹配到的是输入框本身（2026-10-07，`ui-n6b` 三种宽度全红）。
 等状态变化（编辑区消失、按钮变回来）再断。
+
+**浏览器测试的 Chromium 路径不要写死**（2026-11-07）。以前 8 个浏览器用例各写一份 `/opt/pw-browsers/chromium-1194/...`，
+开发容器换了自带浏览器的版本（这台是 1243）之后，每一套都死在 `browserType.launch`、一条断言没跑到。现在统一用
+`test/lib/chrome.mjs` 的 `chromePath()`：`UI_CHROME` → 固定链接 `/opt/pw-browsers/chromium` → 带版本号的目录，都没有就报错说清找过哪。
 
 **浏览器实测要求 TMPDIR 不超过 61 个字符。** Chromium 在 TMPDIR 下建进程单例的 socket，
 Unix socket 路径最多 107 字节；超了每套都死在 `browserType.launch`，报的是
@@ -166,6 +174,7 @@ cd worker && bash test/ui-rich.sh       # 富媒体题干（图 + KaTeX 公式�
 cd worker && bash test/ui-n6.sh         # 后台：内容组显示名、缺答案/待核、发布门
 cd worker && bash test/ui-n6b.sh        # 后台上传：选学科 → 试解析 → 入库 → 自动跑 AI
 cd worker && bash test/ui-bio-exam.sh   # 生化学员端：练习（名词解释不判分、多空逐空）、模考作答、报告批改、历史
+cd worker && bash test/ui-pubeng.sh     # 公共英语学员端：每种题型练习一遍、模考作答交卷、报告批改（UI_SHOTS=目录 可在手机宽度截图）
 
 # 注意：各套脚本直接跑时共用 worker/.wrangler，每个都会 rm -rf 它，所以不能自己开几个
 # 并行——会把另一套正在用的本地库和打包产物删掉。要并行只用 run-all.sh。

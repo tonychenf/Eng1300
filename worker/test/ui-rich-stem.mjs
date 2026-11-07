@@ -5,9 +5,10 @@
 // 这几件事读源码断言不出来——尤其是"图加载出来了没有"，
 // 静态资源配了 SPA 回落，路径错了会返回一张 HTML 页面而且也是 200。
 import { chromium } from 'playwright';
+import { chromePath } from './lib/chrome.mjs';
 
 const BASE = process.env.UI_BASE;
-const CHROME = '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
+const CHROME = chromePath();
 const USER = process.env.UI_USER;
 const PASS = process.env.UI_PASS;
 const ATTEMPT = process.env.UI_ATTEMPT;

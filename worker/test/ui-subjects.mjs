@@ -3,9 +3,10 @@
 // 后端断言证明不了这些：选择页渲染成什么样、切换器在不在、导航链接带没带学科码。
 // 这些都是"渲染出来之后"的性质，读 JSX 断言不出来。
 import { chromium } from 'playwright';
+import { chromePath } from './lib/chrome.mjs';
 
 const BASE = process.env.UI_BASE || 'http://127.0.0.1:8797';
-const CHROME = '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
+const CHROME = chromePath();
 const USER = process.env.UI_USER;
 const PASS = process.env.UI_PASS;
 
