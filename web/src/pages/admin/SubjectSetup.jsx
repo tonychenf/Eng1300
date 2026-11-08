@@ -127,10 +127,12 @@ export function SubjectSetup() {
       }
       const n = published.reduce((a, p) => a + (p.count || 0), 0);
       const kept = published.reduce((a, p) => a + (p.heldNoAnswer || 0), 0);
+      // 先把清单读回来再报结果：不然提示说"发布了"，上面的状态徽章还写着"还不能用"
+      await load();
       setMsg(`发布了 ${published.length} 组、${n} 道题${kept ? `；${kept} 道答案未确认被扣下` : ''}` +
         `${held.length ? `；${held.length} 组没发出去：${held.map((h) => `${h.label}（${h.message}）`).join('；')}` : ''}`);
-    } catch (e) { setError(e.message); }
-    setBusy(''); load();
+    } catch (e) { setError(e.message); await load(); }
+    setBusy('');
   }
 
   async function togglePracticeAi() {

@@ -25,7 +25,27 @@ async function sha8(text) {
 }
 
 /** 读文件、校验，算出要写的语句。dryRun 时调用方只看 summary。出错抛带 code 的错误（调用方回 422）。 */
+// 常见的"传错了"：手机上选文件时 accept=".json" 拦不住相册，照片、PDF、Word 都会被传上来。
+// 按文件开头几个字节认出来，用人话说清楚，不把 JSON 解析器的报错（一串乱码）甩给管理员。
+const MAGIC = [
+  { kind: '照片（JPEG）', test: (b) => b[0] === 0xff && b[1] === 0xd8 },
+  { kind: '图片（PNG）', test: (b) => b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47 },
+  { kind: '照片（HEIC）', test: (b) => String.fromCharCode(...b.slice(4, 12)).startsWith('ftyphei') },
+  { kind: 'PDF', test: (b) => String.fromCharCode(...b.slice(0, 4)) === '%PDF' },
+  { kind: 'Word 文档或压缩包', test: (b) => b[0] === 0x50 && b[1] === 0x4b },
+];
+export function wrongFileKind(bytes) {
+  const b = new Uint8Array(bytes.slice ? bytes.slice(0, 16) : bytes);
+  return MAGIC.find((m) => m.test(b))?.kind || null;
+}
+
 export async function planGroupImport(db, { subject, courseCode, bytes, groupId, label, orderKey, filename, uploadedBy }) {
+  const kind = wrongFileKind(bytes);
+  if (kind) {
+    throw bad('wrong_file_type',
+      `传上来的是${kind}，这门课现在只收题库文件（.json）。照片、PDF 直接识别成题目要等第三期；` +
+      '在那之前，把资料发给 Claude，生成题库文件后再传。');
+  }
   let d;
   try {
     d = JSON.parse(new TextDecoder().decode(bytes));
