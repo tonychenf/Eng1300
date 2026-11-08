@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { planPaper } from '../lib/paper.js';
 import { gradeQuestion } from '../lib/grade.js';
+import { sectionMetaMap } from '../lib/section-scores.js';
 import { loadItemRows } from '../lib/question-items.js';
 import { answerKey } from '../lib/answer-key.js';
 import { loadAssetRows } from '../lib/stem-assets.js';
@@ -79,13 +80,18 @@ async function loadPaper(db, attemptId, { withAnswers = true, withCorrect = fals
   // 题干里的图（§6.4.6）。path 自带学科码，前端直接拼 /bank/<path> 取静态资源。
   const assetRows = await loadAssetRows(db, results.map((r) => r.question_id));
 
+  // 部分名称用组卷时存下的模板标签（"阅读理解（一）""阅读理解（二）"），旧卷没有就用大题类别名
+  const att = await db.prepare('SELECT section_meta FROM attempts WHERE attempt_id = ?').bind(attemptId).first();
+  const meta = sectionMetaMap(att?.section_meta);
+
   const sections = [];
   for (const row of results) {
     let sec = sections.find((s) => s.sectionOrd === row.section_ord);
     if (!sec) {
       sec = {
         sectionOrd: row.section_ord,
-        sectionType: row.section_type,
+        sectionType: meta.get(row.section_ord)?.label || row.section_type,
+        sectionNote: meta.get(row.section_ord)?.note || null,
         passageTitle: row.passage_title,
         passageText: row.passage_text,
         writingPrompt: row.writing_prompt,
@@ -129,6 +135,8 @@ async function loadPaper(db, attemptId, { withAnswers = true, withCorrect = fals
       for (const it of q.items) {
         const src = (itemRows.get(row.question_id) || []).find((x) => x.item_ord === it.ord);
         it.answer = src ? src.answer : null;
+        // "本题也接受：……"（P1-X3）
+        try { it.altAnswers = src?.alt_answers ? JSON.parse(src.alt_answers) : []; } catch { it.altAnswers = []; }
       }
       // 按组的标准答案：候选池（"从这几个里任填 N 个"）、无序并列的空，各空没有自己的答案，
       // 只看 it.answer 的话答错了什么都不给（2026-10-07）。分组和判分是同一套（answer-key.js）。
@@ -162,6 +170,7 @@ async function submitAttempt(db, attempt, { auto = false }) {
   // 得分单元一次读好：一题多空、采分点都在这张表里，逐题读就是 51 次往返。
   const itemRows = await loadItemRows(db, rows.map((r) => r.question_id));
 
+  const meta = sectionMetaMap(attempt.section_meta);
   const bySection = new Map();
   const writes = [];
   const graded = new Map();
@@ -201,7 +210,7 @@ async function submitAttempt(db, attempt, { auto = false }) {
     let sec = bySection.get(row.section_ord);
     if (!sec) {
       sec = {
-        sectionOrd: row.section_ord, sectionType: row.section_type,
+        sectionOrd: row.section_ord, sectionType: meta.get(row.section_ord)?.label || row.section_type,
         score: 0, maxScore: 0, correct: 0, total: 0, pendingAi: 0,
       };
       bySection.set(row.section_ord, sec);
@@ -304,9 +313,12 @@ examRouter.post('/exams/generate', async (c) => {
   const attemptId = newId('att');
   const writes = [
     c.env.DB.prepare(
-      `INSERT INTO attempts (attempt_id, user_id, course_code, mode, status, difficulty, time_limit_minutes)
-       VALUES (?, ?, ?, 'EXAM', '进行中', ?, ?)`
-    ).bind(attemptId, me.id, courseCode, difficulty, course.time_limit_minutes),
+      `INSERT INTO attempts (attempt_id, user_id, course_code, mode, status, difficulty, time_limit_minutes, section_meta)
+       VALUES (?, ?, ?, 'EXAM', '进行中', ?, ?, ?)`
+    ).bind(attemptId, me.id, courseCode, difficulty, course.time_limit_minutes,
+      // 每个部分的名称和提示组卷时就存下来（P1-X5、G2）：报告读这一份，不现读模板——
+      // 作答记录只存了 section_ord，模板改名、调顺序之后现读会把旧报告的部分名改错
+      JSON.stringify(plan.parts.map((p) => ({ ord: p.ord, label: p.label, note: p.note || null })))),
   ];
 
   // 题号按模板顺序重排为 1..N。
@@ -334,6 +346,7 @@ examRouter.post('/exams/generate', async (c) => {
       questionCount: mine.length,
       scorePerQuestion: part.scorePerQuestion,
       totalScore: mine.reduce((n, r) => n + r.score, 0),
+      note: part.note || null,
     });
   }
   for (const r of rows) {

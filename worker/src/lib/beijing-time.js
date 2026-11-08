@@ -34,3 +34,13 @@ export function utcToBeijing(ts) {
   if (Number.isNaN(ms)) return String(ts);
   return new Date(ms + 8 * 3600 * 1000).toISOString().slice(0, 16).replace('T', ' ');
 }
+
+/**
+ * 北京时间"今天"零点对应的世界时 "YYYY-MM-DD HH:MM:SS"，拿去和库里的 created_at 比大小。
+ * 每人每天的次数上限按北京日切（学员以为的"今天"），不按世界时零点（北京早八点）。
+ */
+export function beijingDayStartUtc(now = Date.now()) {
+  const bj = new Date(now + 8 * 3600 * 1000);
+  const midnightBjAsUtc = Date.UTC(bj.getUTCFullYear(), bj.getUTCMonth(), bj.getUTCDate()) - 8 * 3600 * 1000;
+  return new Date(midnightBjAsUtc).toISOString().slice(0, 19).replace('T', ' ');
+}

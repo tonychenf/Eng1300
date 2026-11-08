@@ -182,6 +182,7 @@ export default function ExamReport() {
             >
               <span>
                 <strong className="small">第 {s.sectionOrd} 部分 · {s.sectionType}</strong>
+                {s.sectionNote ? <span className="tiny muted section-note" style={{ marginLeft: 8 }}>{s.sectionNote}</span> : null}
                 {wrong > 0 ? <span className="badge danger" style={{ marginLeft: 8 }}>错 {wrong}</span> : null}
               </span>
               <span className="tiny muted">{open ? '收起' : '展开'}</span>

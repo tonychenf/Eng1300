@@ -73,15 +73,19 @@ try {
         const want = key ? KEYS[key].answer : '（没认出题）';
         check(`${label}｜拼写写错：看得见标准答案 ${want}`,
           await shows(page.locator(`text=${want}`).first(), 3000), true);
+        // P1-X3：以前同一屏出现三次、单空题还标着"第 1 空"
+        const bodyText = await page.locator('body').innerText();
+        check(`${label}｜拼写写错：标准答案只出现一次`, bodyText.split(want).length - 1, 1);
+        check(`${label}｜拼写：单空题不标"第 1 空"`, bodyText.includes('第 1 空'), false);
         await shot(page, width, '1-spell-wrong');
       }
     }
 
-    // ── 三种翻译：交上去是"练习不判分"，看得见参考答案 / 采分点 ──
-    for (const [type, text, wantRef] of [
-      ['词组翻译', '就……而言', false],
-      ['句子翻译', 'This is my translation of the sentence.', true],
-      ['段落翻译', '这是我的译文。', true],
+    // ── 三种翻译：交上去当场 AI 批（改进阶段 2 P1-G1），看得见得分、逐点理由、参考译文 ──
+    for (const [type, text, wantRef, wantTag] of [
+      ['词组翻译', '【全对】就……而言', false, 'input'],
+      ['句子翻译', '【全对】This is my translation of the sentence.', true, 'textarea'],
+      ['段落翻译', '【全对】这是我的译文。', true, 'textarea'],
     ]) {
       const card = await openPractice(type);
       if (!card) continue;
@@ -89,6 +93,8 @@ try {
       const boxShown = await shows(box);
       check(`${label}｜${type}：有一个看得见的作答框`, boxShown, true);
       if (!boxShown) continue;
+      // P1-X6：控件照题型声明——词组翻译单行，句子、段落多行
+      check(`${label}｜${type}：作答框是 ${wantTag}`, await box.evaluate((el) => el.tagName.toLowerCase()), wantTag);
       check(`${label}｜${type}：作答框字号不小于 16px`, (await fontPx(box)) >= 16, true);
       if (type === '段落翻译') {
         const stem = await card.locator('.q-stem').innerText();
@@ -96,14 +102,29 @@ try {
       }
       await box.fill(text);
       await page.click('button:has-text("提交答案")');
-      const sc = page.locator('.self-check');
-      check(`${label}｜${type}：交上去显示"练习不判分"，不是"答错了"`,
-        `${await shows(sc) && await sc.locator('.badge', { hasText: '练习不判分' }).isVisible()}/${await page.locator('text=答错了').count()}`, 'true/0');
-      const pts = sc.locator('.score-points li');
-      check(`${label}｜${type}：采分点列出来了、看得见`, (await pts.count()) > 0 && await pts.first().isVisible(), true);
+      const graded = page.locator('.ai-graded');
+      check(`${label}｜${type}：交上去当场批了（看得见得分卡）`, await shows(graded, 20000), true);
+      check(`${label}｜${type}：答对了、不再是"练习不判分"`,
+        `${await graded.locator('.badge.ok', { hasText: '答对了' }).isVisible().catch(() => false)}/${await page.locator('text=练习不判分').count()}`, 'true/0');
+      check(`${label}｜${type}：写着答到几个采分点`, /采分点答到 \d+ 个，共 \d+ 个/.test(await page.locator('[data-testid="practice-ai-score"]').innerText().catch(() => '')), true);
+      check(`${label}｜${type}：逐点理由看得见`, await shows(page.locator('.point-reason').first(), 3000), true);
       if (wantRef) check(`${label}｜${type}：看得见参考译文`, await shows(page.locator('text=参考译文').first(), 3000), true);
       if (width === 390) check(`手机｜${type}练习页没有横向滚动`, await noOverflow(page), true);
       await shot(page, width, `2-${type}`);
+    }
+
+    // ── AI 没批出来：不显示 0 分，给采分点自评、能再试一次（替身【照抄】= 模型抄回示例） ──
+    {
+      const card = await openPractice('词组翻译');
+      if (card) {
+        await card.locator('input.input').first().fill('【照抄】随便写');
+        await page.click('button:has-text("提交答案")');
+        const sc = page.locator('.self-check');
+        check(`${label}｜没批出来：显示"这次没批出来"和采分点`,
+          `${await shows(sc, 20000) && await sc.locator('.badge', { hasText: '这次没批出来' }).isVisible()}/${await sc.locator('.score-points li').count() > 0}`, 'true/true');
+        check(`${label}｜没批出来：有"再让 AI 批一次"`, await shows(sc.locator('button', { hasText: '再让 AI 批一次' }), 3000), true);
+        check(`${label}｜没批出来：没有显示 0 分或"答错了"`, await page.locator('text=答错了').count(), 0);
+      }
     }
 
     // ── 段落填空、阅读理解：原文看得见，选对答案 ──
@@ -113,9 +134,8 @@ try {
       if (type !== '选择填空') {
         const passage = page.locator('.exam-passage').first();
         check(`${label}｜${type}：原文那一块看得见`, await shows(passage), true);
-        // 手机、平板上原文默认收起（和英语阅读一样，省地方），点"展开"才看得到正文
-        const toggle = passage.locator('.passage-toggle');
-        if ((await toggle.innerText()).includes('展开')) await toggle.click();
+        // P1-X1：这类题离开原文做不了，手机、平板上也默认展开——不点任何按钮就看得见正文
+        check(`${label}｜${type}：不点"展开"原文正文就看得见`, await shows(passage.locator('.passage-body'), 3000), true);
         if (type === '段落填空') {
           check(`${label}｜段落填空：原文里带着词库`, (await passage.innerText()).includes('词库'), true);
         }
@@ -124,10 +144,27 @@ try {
       const letter = key ? KEYS[key].answer : null;
       const opts = card.locator('label.choice');
       check(`${label}｜${type}：选项看得见（${await opts.count()} 个），认出了题`, `${await shows(opts.first())}/${Boolean(letter)}`, 'true/true');
+      if (type === '段落填空') {
+        // P1-X2：15 个短选项排成网格，每一个都点得到（中心点没被底部按钮栏盖住）
+        check(`${label}｜段落填空：选项排成网格`, await card.locator('.choice-grid').count(), 1);
+        const n = await opts.count();
+        let reachable = 0;
+        for (let k = 0; k < n; k++) {
+          const o = opts.nth(k);
+          await o.scrollIntoViewIfNeeded();
+          if (await o.evaluate((el) => {
+            const r = el.getBoundingClientRect();
+            const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+            return Boolean(hit && el.contains(hit));
+          })) reachable++;
+        }
+        check(`${label}｜段落填空：${n} 个选项都点得到`, reachable, n);
+      }
       if (letter) {
         await card.locator('label.choice', { has: page.locator('.key', { hasText: `${letter}.` }) }).click();
         await page.click('button:has-text("提交答案")');
         check(`${label}｜${type}：选对了反馈"答对了"`, await shows(page.locator('.badge.ok', { hasText: '答对了' })), true);
+        check(`${label}｜${type}：没有过时的"下一阶段"字样`, (await page.locator('body').innerText()).includes('下一阶段'), false);
       }
       if (width === 390) check(`手机｜${type}练习页没有横向滚动`, await noOverflow(page), true);
       await shot(page, width, `3-${type}`);
@@ -166,6 +203,13 @@ try {
         }
       }
       check(`${label}｜模考：拼写单词 ${N_SPELL} 道各一个看得见的输入框`, spellInputs, N_SPELL);
+      // P1-G2：题库还不够的部分如实提示（段落填空、阅读理解现在各只有一份）
+      let notes = 0;
+      for (let s = 0; s < nSec; s++) {
+        await secs.nth(s).click();
+        if (await page.locator('.exam-bar .section-note').isVisible().catch(() => false)) notes++;
+      }
+      check(`${label}｜模考：有部分标着"可能与上次相同"`, notes > 0, true);
       check(`${label}｜模考：翻译题 ${N_LONG} 道各一个看得见的作答框`, longBoxes, N_LONG);
       check(`${label}｜模考：浏览器补填了留空的 4 道（拼写、词组、句子、段落各一道）`, filled, 4);
       if (width === 390) check('手机｜模考作答页没有横向滚动', await noOverflow(page), true);
@@ -190,6 +234,9 @@ try {
       check(`${label}｜报告：看得见"AI 批改主观题"的按钮`, false, true);
     }
     check(`${label}｜公共英语的报告里没有"作文"两个字`, (await page.locator('body').innerText()).includes('作文'), false);
+    // P1-X5：两篇阅读用模板的名字分开
+    const rep = await page.locator('body').innerText();
+    check(`${label}｜报告：两篇阅读分别叫"阅读理解（一）""阅读理解（二）"`, rep.includes('阅读理解（一）') && rep.includes('阅读理解（二）'), true);
     if (width === 390) check('手机｜报告页没有横向滚动', await noOverflow(page), true);
     await shot(page, width, '5-report');
 

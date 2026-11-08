@@ -30,7 +30,7 @@ function makePack() {
   const rubric = {
     grading: { partialCredit: true, caseSensitive: false },
     essay: { type: 'POINT_HIT', totalScore: 100, openWeightCap: 0.4 },
-    mastery: { correctThreshold: 1.0 },
+    mastery: { correctThreshold: 1.0, pointCorrectThreshold: 1.0 },
   };
   return {
     subjectId: 1, code: 'biochem', name: '生化', rubricVersion: 1, rubric, grading: rubric.grading, types,

@@ -28,6 +28,9 @@ aiRouter.get('/settings', async (c) => {
       apiKeyMasked: maskSecret(key),
       hasKey: Boolean(key),
       updatedAt: row.updated_at,
+      // 改进阶段 2：单价（元 / 百万 tokens），空 = 没填，花费页按"缺单价"提示
+      priceInPerM: row.price_in_per_m ?? null,
+      priceOutPerM: row.price_out_per_m ?? null,
     };
   }
   return c.json({ settings: out });
@@ -55,14 +58,28 @@ aiRouter.put('/settings/:purpose', async (c) => {
     ? (body.visionCapable ? 1 : 0)
     : (existing?.vision_capable ?? 0);
 
+  // 单价：传 null 清空，不传保持原样，传了要是 ≥ 0 的数（免费模型填 0）
+  const price = (k, col) => {
+    if (body[k] === undefined) return { v: existing?.[col] ?? null };
+    if (body[k] === null || body[k] === '') return { v: null };
+    const x = Number(body[k]);
+    if (!Number.isFinite(x) || x < 0) return { err: `${k} 要是不小于 0 的数（元 / 百万 tokens），收到 ${JSON.stringify(body[k])}` };
+    return { v: x };
+  };
+  const pin = price('priceInPerM', 'price_in_per_m');
+  const pout = price('priceOutPerM', 'price_out_per_m');
+  if (pin.err || pout.err) return c.json({ error: 'invalid_price', message: pin.err || pout.err }, 400);
+
   await c.env.DB.prepare(
-    `INSERT INTO ai_settings (purpose, subject_id, base_url, api_key_encrypted, model, protocol, vision_capable, updated_at)
-     VALUES (?, 0, ?, ?, ?, ?, ?, datetime('now'))
+    `INSERT INTO ai_settings (purpose, subject_id, base_url, api_key_encrypted, model, protocol, vision_capable, updated_at,
+                              price_in_per_m, price_out_per_m)
+     VALUES (?, 0, ?, ?, ?, ?, ?, datetime('now'), ?, ?)
      ON CONFLICT(purpose, subject_id) DO UPDATE SET
        base_url = excluded.base_url, api_key_encrypted = excluded.api_key_encrypted,
        model = excluded.model, protocol = excluded.protocol,
-       vision_capable = excluded.vision_capable, updated_at = excluded.updated_at`
-  ).bind(purpose, baseUrl, encrypted, model, protocol, vision).run();
+       vision_capable = excluded.vision_capable, updated_at = excluded.updated_at,
+       price_in_per_m = excluded.price_in_per_m, price_out_per_m = excluded.price_out_per_m`
+  ).bind(purpose, baseUrl, encrypted, model, protocol, vision, pin.v, pout.v).run();
 
   return c.json({ ok: true });
 });

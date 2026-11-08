@@ -2,6 +2,7 @@
 import { Hono } from 'hono';
 import { SUBJECT_CODE_RE } from '../lib/subject.js';
 import { PIPELINES } from '../import/index.js';
+import { createSubjectWithCourse, suggestSubjectCode } from '../lib/subject-setup.js';
 
 export const adminSubjectsRouter = new Hono();
 
@@ -37,35 +38,30 @@ adminSubjectsRouter.get('/', async (c) => {
   });
 });
 
+// 开一门新课（改进阶段 2 P1-A1）：一次建学科 + 课程 + 能力包。细节和"先验后写"的理由见 lib/subject-setup.js。
+// 入参：name、code、copyFrom（学科 id 或学科码，空 = 不参照、用通用题型）、totalScore、timeLimitMinutes。
 adminSubjectsRouter.post('/', async (c) => {
+  const me = c.get('user');
   const body = await c.req.json().catch(() => ({}));
-  const code = String(body.code || '').trim();
-  const name = String(body.name || '').trim();
-
-  if (!SUBJECT_CODE_RE.test(code)) {
-    return c.json({
-      error: 'invalid_subject_code',
-      message: '学科码需为 2-20 位小写字母开头，可含小写字母、数字、连字符',
-    }, 400);
-  }
-  if (!name) return c.json({ error: 'name_required', message: '学科名称不能为空' }, 400);
-
-  const kind = body.contentGroupKind || 'EXAM_PAPER';
-  const pipeline = body.ingestPipeline || 'json-direct';
-
   try {
-    const r = await c.env.DB.prepare(
-      `INSERT INTO subjects (code, name, description, sort_order, content_group_kind, ingest_pipeline)
-       VALUES (?, ?, ?, ?, ?, ?)`
-    ).bind(code, name, body.description ?? null, Number(body.sortOrder) || 0, kind, pipeline).run();
-    return c.json({ subject: { subjectId: r.meta.last_row_id, code, name } }, 201);
-  } catch (err) {
-    if (String(err.message).includes('UNIQUE')) {
-      return c.json({ error: 'subject_code_taken', message: `学科码「${code}」已被占用` }, 409);
-    }
-    throw err;
+    const r = await createSubjectWithCourse(c.env.DB, {
+      name: body.name, code: body.code, copyFrom: body.copyFrom,
+      totalScore: body.totalScore ?? 100, timeLimitMinutes: body.timeLimitMinutes ?? 120, actorId: me?.id,
+    });
+    return c.json({
+      subject: { subjectId: r.subjectId, code: r.code, name: r.name },
+      course: { courseCode: r.courseCode },
+      copiedFrom: r.copiedFrom,
+      copiedPrompts: r.copiedPrompts,
+    }, 201);
+  } catch (e) {
+    if (e.status) return c.json({ error: e.code, message: e.message }, e.status);
+    throw e;
   }
 });
+
+// 建课表单的默认学科码（s + 两位序号）
+adminSubjectsRouter.get('/suggest-code', async (c) => c.json({ code: await suggestSubjectCode(c.env.DB) }));
 
 adminSubjectsRouter.patch('/:id', async (c) => {
   const id = Number(c.req.param('id'));

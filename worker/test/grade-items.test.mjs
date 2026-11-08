@@ -45,7 +45,7 @@ function makePack(typeSpec = {}, rubricPatch = {}) {
   const rubric = {
     grading: { partialCredit: true, caseSensitive: false, ...(rubricPatch.grading || {}) },
     essay: rubricPatch.essay || { type: 'POINT_HIT', totalScore: 100, openWeightCap: 0.3 },
-    mastery: { correctThreshold: 1.0, ...(rubricPatch.mastery || {}) },
+    mastery: { correctThreshold: 1.0, pointCorrectThreshold: 1.0, ...(rubricPatch.mastery || {}) },
   };
   const types = new Map([[t.code, t]]);
   return {
@@ -290,6 +290,26 @@ console.log('== B13 掌握度归属 ==');
   throws('评价标准里没有 correctThreshold 时抛错',
     () => gradeQuestion(makePack({}, { mastery: { correctThreshold: null } }), Q, answers(given), 5, { items }),
     'bad_rubric');
+}
+
+console.log('== 改进阶段 2：按采分点判的题用 pointCorrectThreshold ==');
+{
+  const items = [1, 2, 3, 4, 5].map((i) => item(i, { item_kind: 'SCORE_POINT', answer: `要点${i}`, group_key: 'p' }));
+  const fourOfFive = { points: { 1: { hit: true }, 2: { hit: true }, 3: { hit: true }, 4: { hit: true }, 5: { hit: false } } };
+  const sp = (mastery) => makePack({ needsAi: true, gradingStrategy: 'AI_SCORE_POINTS', isObjective: false }, { mastery });
+  const run = (mastery) => gradeQuestion(sp(mastery), Q, '学生的译文', 3, { items, aiResult: fourOfFive });
+  check('答到 4/5、门槛 0.6 → 算答对', run({ pointCorrectThreshold: 0.6 }).isCorrect, 1);
+  check('同一份作答、门槛 1.0 → 算答错', run({ pointCorrectThreshold: 1.0 }).isCorrect, 0);
+  // 看的是 pointCorrectThreshold，不是 correctThreshold：把后者放宽、前者收紧，结果跟着前者走
+  check('correctThreshold 放宽不影响采分点题', run({ correctThreshold: 0.6, pointCorrectThreshold: 1.0 }).isCorrect, 0);
+  check('门槛只决定对错，分数照给', run({ pointCorrectThreshold: 1.0 }).score, 2.4);
+  throws('评价标准里没有 pointCorrectThreshold 时抛错，不回落 correctThreshold',
+    () => run({ pointCorrectThreshold: undefined }), 'bad_rubric');
+  // 规则判分的题不受它影响：没配 pointCorrectThreshold 照样能判
+  const blanks = [1, 2].map((i) => item(i, { answer: `答案${i}` }));
+  check('填空题不读 pointCorrectThreshold',
+    gradeQuestion(makePack({}, { mastery: { pointCorrectThreshold: undefined } }), Q, answers({ 1: '答案1', 2: '答案2' }), 2,
+      { items: blanks }).isCorrect, 1);
 }
 
 console.log('== B16 填空的空与采分点走同一段代码 ==');

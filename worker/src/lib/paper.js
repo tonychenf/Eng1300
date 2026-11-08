@@ -202,15 +202,22 @@ export async function planPaper(db, { courseCode, userId, difficulty = '随机',
   // attempt_questions 撞主键，组卷 500。以前每个学科一类篇章只有一个模板项，碰不上。
   const usedSections = new Set();
   const usedQuestions = new Set();
+  const supplies = [];
 
   for (const item of template) {
     const part = {
       ord: item.ord, label: item.label, pickUnit: item.pickUnit,
       scorePerQuestion: item.scorePerQuestion, questions: [],
     };
+    // 给"题量不够"提示用（P1-G2）：这一项的候选总数、要用掉几份、和谁共用同一批候选
+    const supply = { key: `${item.pickUnit}|${JSON.stringify(item.filter)}`, available: 0,
+      need: item.pickUnit === 'SECTION' ? 1 : item.questionCount };
+    supplies.push(supply);
 
     if (item.pickUnit === 'SECTION') {
-      const all = (await candidateSections(db, courseCode, item)).filter((s) => !usedSections.has(s.section_id));
+      const raw = await candidateSections(db, courseCode, item);
+      supply.available = raw.length;
+      const all = raw.filter((s) => !usedSections.has(s.section_id));
       if (!all.length) {
         throw fail('insufficient_questions',
           `题库里没有满足「${item.label}」${item.questionCount} 题要求的完整篇章`);
@@ -237,7 +244,9 @@ export async function planPaper(db, { courseCode, userId, difficulty = '随机',
       part.questions = qs.map((q) => ({ questionId: q.question_id, sectionId: picked.section_id }));
       for (const q of qs) usedQuestions.add(q.question_id);
     } else {
-      const all = (await candidateQuestions(db, courseCode, item)).filter((q) => !usedQuestions.has(q.question_id));
+      const raw = await candidateQuestions(db, courseCode, item);
+      supply.available = raw.length;
+      const all = raw.filter((q) => !usedQuestions.has(q.question_id));
       if (all.length < item.questionCount) {
         throw fail('insufficient_questions',
           `题库里符合「${item.label}」条件的已发布题只有 ${all.length} 道，模板要 ${item.questionCount} 道`);
@@ -267,6 +276,16 @@ export async function planPaper(db, { courseCode, userId, difficulty = '随机',
     parts.push(part);
   }
 
+  // 题量不够时如实提示（P1-G2，拍板 10）：筛选条件相同的几项，要用掉的份数加起来 ≥ 候选总数，
+  // 说明每张卷这几项都是同一批题。判的是候选数，不是 warnings 里的"最近考过"——公共英语的
+  // 阅读理解（一）有 2 篇候选，单看它够，可（一）（二）合起来正好要 2 篇。
+  const needBy = new Map();
+  for (const sp of supplies) needBy.set(sp.key, (needBy.get(sp.key) || 0) + sp.need);
+  parts.forEach((p, i) => {
+    const sp = supplies[i];
+    p.note = needBy.get(sp.key) >= sp.available ? '本部分题库还在建设中，可能与上次相同' : null;
+  });
+
   return { parts, warnings, knowledgePointCount: usedTags.size };
 }
 
@@ -279,14 +298,15 @@ export async function planPaper(db, { courseCode, userId, difficulty = '随机',
  *         parts: [{ ord, label, pickUnit, required, available, ok }], ready, problem }]。
  * 模板配错（认不出的筛选条件等）不抛错，记在 problem 里——这是体检，不是组卷。
  */
-export async function examReadiness(db) {
+export async function examReadiness(db, { courseCode = null } = {}) {
   const { results: courses } = await db.prepare(
-    `SELECT co.course_code, co.course_name, s.code AS subject_code,
+    `SELECT co.course_code, co.course_name, co.total_score, s.code AS subject_code,
             (SELECT COUNT(*) FROM exams e WHERE e.course_code = co.course_code AND e.status = '已发布')
               AS published_exams
        FROM courses co LEFT JOIN subjects s ON s.subject_id = co.subject_id
+      WHERE ? IS NULL OR co.course_code = ?
       ORDER BY s.sort_order, co.course_code`
-  ).all();
+  ).bind(courseCode, courseCode).all();
   const out = [];
   for (const co of courses) {
     const { results: rows } = await db.prepare(
@@ -296,6 +316,9 @@ export async function examReadiness(db) {
     const entry = {
       courseCode: co.course_code, courseName: co.course_name, subjectCode: co.subject_code,
       publishedExams: co.published_exams, templateItems: rows.length, parts: [], ready: false, problem: null,
+      // 改进阶段 2：模板各部分合计和课程满分，线上验证断两者相等（P1-A4 的"模板总分对不上就不组卷"要先看它绿）
+      totalScore: co.total_score,
+      templateTotal: Math.round(rows.reduce((n, r) => n + Number(r.question_count) * Number(r.score_per_question), 0) * 100) / 100,
     };
     try {
       // 和 planPaper 一样：前面的模板项占掉的篇章、题目，后面的不能再算（两个阅读模板项共用一个筛选条件时，

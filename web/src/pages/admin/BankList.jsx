@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { get } from '../../api.js';
 import { Alert, Empty, Loading, PageHead, StatusBadge } from '../../components/ui.jsx';
 
@@ -11,7 +11,9 @@ export default function BankList() {
   const notice = useLocation().state?.notice;
   const [exams, setExams] = useState(null);
   const [courses, setCourses] = useState([]);
-  const [courseCode, setCourseCode] = useState('');
+  // 开新课引导"核答案"那一步点过来时带着课程码
+  const [params] = useSearchParams();
+  const [courseCode, setCourseCode] = useState(params.get('course') || '');
   const [status, setStatus] = useState('');
   const [error, setError] = useState('');
 

@@ -69,10 +69,23 @@ const judgeItemsOf = (q) => (q.items || []).filter((it) => JUDGE_KINDS.includes(
 function widgetOf(q) {
   if (inputItemsOf(q).length) return 'blanks';
   if (q.questionType === 'essay') return 'essay';   // 英语作文：按词数统计、写作提示
-  if (q.inputWidget === 'textarea' || judgeItemsOf(q).length) return 'long';
+  // 题型声明了控件就照声明（改进阶段 2 P1-X6）。以前"有采分点就走大框"排在看声明之前，
+  // 公共英语的词组翻译声明的是单行（0018），照样给了一个 160px 高的大文本框。
+  // 声明单行、但按采分点判的题（词组翻译）：单行输入、判完像整段作答那样显示逐点结果。
+  if (q.inputWidget === 'textarea') return 'long';
+  if (q.inputWidget === 'text' && judgeItemsOf(q).length) return 'line';
   if (q.inputWidget === 'text' || q.questionType === 'fill_text') return 'text';
+  if (judgeItemsOf(q).length) return 'long';
   if (q.options?.length) return 'choice';
   return 'long';
+}
+
+// 选项多而短（段落填空的 15 个词库选项）时排成网格：竖排一长串，手机上要划好几屏（P1-X2）
+const GRID_MIN_OPTIONS = 8;
+const GRID_MAX_CHARS = 20;
+function gridOptions(q) {
+  const opts = q.options || [];
+  return opts.length >= GRID_MIN_OPTIONS && opts.every((o) => optionText(o).length <= GRID_MAX_CHARS);
 }
 
 /**
@@ -126,12 +139,16 @@ export function Question({ q, compact, value, onChange, review, pendingLabel }) 
           <MultiBlank q={q} items={blanks} value={answered} onChange={onChange} review={review} />
         ) : widget === 'essay' ? (
           <Essay q={q} value={answered} onChange={onChange} review={review} />
-        ) : widget === 'long' ? (
-          <LongAnswer q={q} value={answered} onChange={onChange} review={review} />
+        ) : widget === 'long' || widget === 'line' ? (
+          <LongAnswer q={q} value={answered} onChange={onChange} review={review} single={widget === 'line'} />
         ) : widget === 'text' ? (
           <FillBlank q={q} value={answered} onChange={onChange} review={review} />
         ) : compact ? (
           <LetterRow q={q} value={answered} onChange={onChange} review={review} />
+        ) : gridOptions(q) ? (
+          <div className="choice-grid">
+            <ChoiceList q={q} value={answered} onChange={onChange} review={review} />
+          </div>
         ) : (
           <ChoiceList q={q} value={answered} onChange={onChange} review={review} />
         )}
@@ -169,10 +186,11 @@ function Verdict({ q, pendingLabel = '待批改' }) {
       </span>
     );
   }
+  // 一空一框的题，每个空下面已经写着标准答案；这里再写一遍，单空题（拼写单词）一屏就出现两三次（P1-X3）
   return (
     <span className="row" style={{ marginTop: 6, gap: 6 }}>
       <span className="badge danger">答错</span>
-      {q.correctAnswer ? <span className="tiny muted">正确答案 {q.correctAnswer}</span> : null}
+      {q.correctAnswer && !inputItemsOf(q).length ? <span className="tiny muted">正确答案 {q.correctAnswer}</span> : null}
     </span>
   );
 }
@@ -184,6 +202,8 @@ const GROUP_KEY_KINDS = ['POOL', 'UNORDERED'];
 
 function MultiBlank({ q, items, value, onChange, review }) {
   const current = parseItemAnswer(review ? q.userAnswer : value);
+  // 只有一个空的题（拼写单词）不标"第 1 空"：本来就只有一个框，标出来像是还有第 2 空（P1-X3）
+  const single = items.length === 1;
   const resultOf = (ord) => {
     for (const g of q.itemResults || []) {
       const hit = (g.items || []).find((x) => x.ord === ord);
@@ -202,7 +222,7 @@ function MultiBlank({ q, items, value, onChange, review }) {
         return (
           <div key={it.ord} className="stack" style={{ gap: 4 }}>
           <div className="row" style={{ gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-            <span className="tiny muted" style={{ minWidth: 40 }}>第 {it.ord} 空</span>
+            {single ? null : <span className="tiny muted" style={{ minWidth: 40 }}>第 {it.ord} 空</span>}
             {review ? (
               <span className="small" style={{ flex: '1 1 200px' }}>
                 <strong className="mono">{current[it.ord] || '（未作答）'}</strong>
@@ -214,6 +234,7 @@ function MultiBlank({ q, items, value, onChange, review }) {
                     {it.answer && !g ? (
                       <span className="tiny muted" style={{ marginLeft: 8 }}>
                         正确答案 <strong className="mono">{it.answer}</strong>
+                        {it.altAnswers?.length ? <>（本题也接受：{it.altAnswers.join('、')}）</> : null}
                       </span>
                     ) : null}
                   </>
@@ -225,7 +246,7 @@ function MultiBlank({ q, items, value, onChange, review }) {
                 className="input" style={{ flex: '1 1 160px' }}
                 value={current[it.ord] || ''}
                 autoCapitalize="none" autoCorrect="off" spellCheck="false"
-                placeholder={`第 ${it.ord} 空`}
+                placeholder={single ? '在此作答' : `第 ${it.ord} 空`}
                 onChange={(e) => onChange(JSON.stringify({ ...current, [it.ord]: e.target.value }))}
               />
             )}
@@ -266,7 +287,7 @@ function ItemBreakdown({ q }) {
 
 // 整段作答（名词解释、问答、解答题）：一个大文本框，按字数统计（中文不按空格分词）。
 // 判分时才按采分点拆，所以这里只存一整段原文，不是 {"序号":"答案"}。
-function LongAnswer({ q, value, onChange, review }) {
+function LongAnswer({ q, value, onChange, review, single }) {
   if (review) {
     return (
       <div className="passage long-answer" style={{ background: '#fafbfc', padding: 12, borderRadius: 8 }}>
@@ -275,6 +296,11 @@ function LongAnswer({ q, value, onChange, review }) {
     );
   }
   const chars = String(value || '').replace(/\s/g, '').length;
+  if (single) {
+    return (
+      <input className="input" value={value || ''} placeholder="在此作答" onChange={(e) => onChange(e.target.value)} />
+    );
+  }
   return (
     <>
       <textarea className="textarea long-answer-input" style={{ minHeight: 160 }} value={value || ''}

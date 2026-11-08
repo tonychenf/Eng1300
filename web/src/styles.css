@@ -417,6 +417,16 @@ h1, h2, h3 { margin: 0; line-height: 1.35; }
 .choice.right { border-color: var(--ok); background: var(--ok-tint); }
 .choice.wrong { border-color: var(--danger); background: var(--danger-tint); }
 
+/* 选项多而短（段落填空的词库）时排成网格：手机 2 列、平板 3 列、PC 4 列（P1-X2） */
+.choice-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 8px; }
+@media (min-width: 640px) { .choice-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { .choice-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.choice-grid .choice { min-width: 0; overflow-wrap: anywhere; }
+/* 手机、平板上顶部有标题栏、底部有固定按钮栏：滚动定位到某个选项（键盘切换、"滚到可见"）时
+   给两条栏让出位置，不让选项停在栏下面点不到（P1-X2，ui-pubeng 逐个点 15 个选项照出来的） */
+.choice { scroll-margin-top: 80px; scroll-margin-bottom: 96px; }
+@media (min-width: 1024px) { .choice { scroll-margin-top: 80px; scroll-margin-bottom: 16px; } }
+
 .wordbank { display: flex; flex-wrap: wrap; gap: 8px; }
 .wordbank button {
   min-height: 36px; padding: 0 12px;
@@ -503,3 +513,23 @@ h1, h2, h3 { margin: 0; line-height: 1.35; }
   flex: 1; font-size: 20px; letter-spacing: .5px; word-break: break-all;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
+
+/* 改进阶段 2：开新课引导的六步、组卷模板的行 */
+.setup-steps { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+.setup-step { border-left: 4px solid var(--line); }
+.setup-step.done { border-left-color: var(--ok); }
+.setup-step.current { border-left-color: var(--primary); }
+.step-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 24px; height: 24px; margin-right: 8px; border-radius: 50%;
+  background: var(--primary-tint); color: var(--primary); font-size: 12px; font-weight: 700;
+}
+.setup-step.done .step-num { background: var(--ok-tint); color: var(--ok); }
+.template-fields { display: grid; gap: 8px; grid-template-columns: 1fr; }
+@media (min-width: 640px) { .template-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { .template-fields { grid-template-columns: 1.2fr 1.4fr 1.4fr .8fr .8fr; align-items: start; } }
+.template-fields .field { margin-bottom: 0; min-width: 0; }
+.template-total.bad { border-color: var(--danger); }
+.input.need { border-color: var(--danger); }
+.danger-text { color: var(--danger); }
+.section-note { color: var(--warn); }

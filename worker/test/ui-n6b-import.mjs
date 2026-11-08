@@ -64,12 +64,14 @@ try {
     const en = page.locator('#imp-subject option[value="english"]');
     check(`${label}｜英语那一项在、是灰的（选不了）`, `${await en.count()}/${await en.isDisabled()}`, '1/true');
     check(`${label}｜英语那一项写明了不支持在这里上传`, (await en.innerText()).includes('不支持在这里上传'), true);
-    check(`${label}｜唯一能传的生化替人选上了`, await page.locator('#imp-subject').inputValue(), 'biochem');
-    const hint = page.locator('[data-testid="subject-hint"]');
-    check(`${label}｜学科下面的提示看得见、说的是只支持 Word 章节习题集`,
-      (await hint.isVisible()) && (await hint.innerText()).includes('只支持 Word'), true);
-
+    // 改进阶段 2 起公共英语这类新课也能传（题库文件 .json），能传的不止生化一门，就不替人选了
+    check(`${label}｜公共英语那一项能选（传题库文件）`,
+      await page.locator('#imp-subject option[value="pubeng"]').isDisabled(), false);
     await page.selectOption('#imp-subject', 'biochem');
+    const hint = page.locator('[data-testid="subject-hint"]');
+    check(`${label}｜选了生化，提示看得见、说的是 Word 章节习题集`,
+      (await hint.isVisible()) && (await hint.innerText()).includes('Word'), true);
+    check(`${label}｜选了生化，文件框只收 .docx`, await page.locator('#imp-file').getAttribute('accept'), '.docx');
     await page.fill('#imp-gid', gid);
     await page.fill('#imp-label', `浏览器实测 ${label}`);
     await page.fill('#imp-order', String(width));
