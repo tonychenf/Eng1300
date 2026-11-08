@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { get, post, postRaw } from '../../api.js';
 import { Alert, Loading, PageHead } from '../../components/ui.jsx';
 
@@ -17,6 +17,7 @@ const GROUP_ID_RE = /^[a-z][a-z0-9-]{1,63}$/;
 
 export default function BankImport() {
   const navigate = useNavigate();
+  const [params] = useSearchParams();
   const [subjects, setSubjects] = useState(null);
   const [form, setForm] = useState({ subjectCode: '', groupId: '', label: '', orderKey: '' });
   const [file, setFile] = useState(null);
@@ -34,7 +35,10 @@ export default function BankImport() {
         setSubjects(list);
         // 只有一个传得了的学科时替人选上（英语传不了，选它没有意义）
         const can = list.filter((s) => s.uploadable);
-        if (can.length === 1) set('subjectCode', can[0].code);
+        // 从开新课引导点过来时带着学科码
+        const want = params.get('subject');
+        if (want && can.some((s) => s.code === want)) set('subjectCode', want);
+        else if (can.length === 1) set('subjectCode', can[0].code);
       })
       .catch((e) => setError(e.message));
   }, []);
@@ -48,12 +52,17 @@ export default function BankImport() {
     filename: file?.name || '',
   }).toString(), [form, file]);
 
+  // 题库文件（.json，改进阶段 2 P1-I1）：编号、显示名、排序都自动生成，不必填（P1-A5）；Word 那条照旧要填
+  const sel = (subjects || []).find((x) => x.code === form.subjectCode);
+  const direct = sel?.uploadAccepts === '.json';
   // 三个字段各自的问题分开说。合成一句"请填写完整"的话，人得挨个试才知道是哪个。
   const problems = [];
   if (!form.subjectCode) problems.push('选一个学科');
-  if (!GROUP_ID_RE.test(form.groupId.trim())) problems.push('内容组 id 需为小写字母开头、2-64 位的小写字母/数字/连字符');
-  if (!form.label.trim()) problems.push('填一个显示名');
-  if (!/^-?\d+$/.test(String(form.orderKey).trim())) problems.push('排序依据要是整数（生化按章节号）');
+  const gid = form.groupId.trim();
+  if ((!direct || gid) && !GROUP_ID_RE.test(gid)) problems.push('内容组 id 需为小写字母开头、2-64 位的小写字母/数字/连字符');
+  if (!direct && !form.label.trim()) problems.push('填一个显示名');
+  const ok = String(form.orderKey).trim();
+  if ((!direct || ok) && !/^-?\d+$/.test(ok)) problems.push('排序依据要是整数（生化按章节号）');
   if (!file) problems.push('选一个文件');
 
   async function run(kind) {
@@ -64,6 +73,8 @@ export default function BankImport() {
       } else {
         const r = await postRaw(`/admin/bank/import?${qs}`, file);
         setResult(r);
+        // 题库文件里答案、采分点都写好了，不用 AI 生成候选答案
+        if (direct) return;
         // 接着自动生成候选答案。**这一步失败不算整件事失败**：题面已经入库了。
         setBusy('ai');
         try {
@@ -107,15 +118,16 @@ export default function BankImport() {
             ))}
           </select>
           <p className="tiny faint" style={{ marginTop: 4 }} data-testid="subject-hint">
-            目前只支持 Word（.docx）格式的章节习题集，例如生物化学。
-            英语题来自扫描的历年试卷，已经整理好随系统导入，不在这里上传。
+            {direct
+              ? '这门课传题库文件（.json，格式同仓库里的题库文件）：题面、答案、采分点都在文件里，编号和排序自动生成。'
+              : '生物化学传 Word（.docx）格式的章节习题集；新开的课传题库文件（.json）。英语题来自扫描的历年试卷，已经整理好随系统导入，不在这里上传。'}
           </p>
         </div>
 
         <div className="field">
           <label htmlFor="imp-gid">内容组 id</label>
           <input id="imp-gid" className="input" value={form.groupId} disabled={Boolean(busy)}
-            placeholder="biochem-ch02" onChange={(e) => set('groupId', e.target.value)} />
+            placeholder={direct ? '不填就自动生成' : 'biochem-ch02'} onChange={(e) => set('groupId', e.target.value)} />
           <p className="tiny faint" style={{ marginTop: 4 }}>
             进 URL、进主键，建好之后改不了。同一个 id 只能传一次。
           </p>
@@ -124,13 +136,13 @@ export default function BankImport() {
         <div className="field">
           <label htmlFor="imp-label">显示名</label>
           <input id="imp-label" className="input" value={form.label} disabled={Boolean(busy)}
-            placeholder="第02章 核酸的化学" onChange={(e) => set('label', e.target.value)} />
+            placeholder={direct ? '不填就用文件里的名字' : '第02章 核酸的化学'} onChange={(e) => set('label', e.target.value)} />
         </div>
 
         <div className="field">
           <label htmlFor="imp-order">排序依据</label>
           <input id="imp-order" className="input" inputMode="numeric" value={form.orderKey}
-            disabled={Boolean(busy)} placeholder="2"
+            disabled={Boolean(busy)} placeholder={direct ? '不填就排在最后' : '2'}
             onChange={(e) => set('orderKey', e.target.value)} />
           <p className="tiny faint" style={{ marginTop: 4 }}>
             列表按它排序。按教材章节组织的学科填章节号。
@@ -139,7 +151,7 @@ export default function BankImport() {
 
         <div className="field">
           <label htmlFor="imp-file">原始资料</label>
-          <input id="imp-file" ref={fileRef} type="file" className="input" accept=".docx"
+          <input id="imp-file" ref={fileRef} type="file" className="input" accept={sel?.uploadAccepts || '.docx'}
             disabled={Boolean(busy)}
             onChange={(e) => { setFile(e.target.files?.[0] || null); setPreview(null); }} />
           <p className="tiny faint" style={{ marginTop: 4 }}>
@@ -170,6 +182,13 @@ export default function BankImport() {
 
       {result ? (
         <>
+          {direct ? (
+            <Alert kind="success">
+              已入库 {result.questions} 道题：{result.confirmed} 道答案已确认，{result.unconfirmed} 道待核。
+              {result.flagged ? ` ${result.flagged} 道被解析记录点名，标成存疑。` : ''}
+              <strong>待核的确认之后才会随整组发布。</strong>
+            </Alert>
+          ) : (
           <Alert kind="success">
             已入库 {result.questions} 道题。答案一律「缺答案」，
             {aiResult?.ok
@@ -177,6 +196,7 @@ export default function BankImport() {
               : ' 还没有答案。'}
             <strong>逐题人工确认之后才能发布。</strong>
           </Alert>
+          )}
           <ParseReport title="入库结果" data={result} />
           {aiResult ? <AiReport data={aiResult} /> : null}
           <div className="sticky-actions">
@@ -219,7 +239,7 @@ function ParseReport({ title, data }) {
             {(data.perSection || []).map((s) => (
               <tr key={s.type}>
                 <td data-label="题型分组">{s.type}</td>
-                <td data-label="题数">{s.count}</td>
+                <td data-label="题数">{s.count ?? s.questions}</td>
               </tr>
             ))}
           </tbody>

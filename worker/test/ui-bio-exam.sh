@@ -67,6 +67,10 @@ curl -s -o /dev/null -X POST "$BASE/setup" -H 'X-Setup-Token: test-setup-uibio' 
   -H 'Content-Type: application/json' -d '{"username":"admin","password":"adminpass123"}'
 ADMIN=$(curl -s -X POST "$BASE/auth/login" -H 'Content-Type: application/json' \
   -d '{"username":"admin","password":"adminpass123"}' | jq -r '.token')
+# 改进阶段 2 起练习里也当场 AI 批（默认开，浏览器那条路由 ui-pubeng 测）。这一套测的是关掉之后
+# "练习不判分、列出采分点自己对照"那条路，所以把生化的开关关掉
+curl -s -o /dev/null -X PUT "$BASE/admin/subjects/$(one "SELECT subject_id FROM subjects WHERE code = 'biochem';")/settings/practice-ai" \
+  -H "Authorization: Bearer $ADMIN" -H 'Content-Type: application/json' -d '{"enabled":false}'
 curl -s -o /dev/null -X PUT "$BASE/admin/ai/settings/TUTORING" -H "Authorization: Bearer $ADMIN" \
   -H 'Content-Type: application/json' \
   -d "$(jq -n --arg u "http://127.0.0.1:$STUB_PORT/v1" '{baseUrl:$u,apiKey:"stub-key",model:"stub-model",protocol:"openai"}')"

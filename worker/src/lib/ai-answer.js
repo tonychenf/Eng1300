@@ -196,6 +196,7 @@ export async function generateAnswers(env, { questions, subjectId, prompt, purpo
     try {
       const { data } = await chatJSON(env, {
         purpose,
+        subjectId,
         feature: 'answer_generate',
         messages: [
           { role: 'system', content: prompt?.system_prompt || DEFAULT_SYSTEM },

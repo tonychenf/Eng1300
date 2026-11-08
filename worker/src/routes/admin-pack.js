@@ -157,6 +157,14 @@ adminPackRouter.put('/subjects/:id/pack/rubric', async (c) => {
     return c.json({ error: 'invalid_request', message: '缺少 payload' }, 400);
   }
   const problems = validateRubricPayload(payload);
+  // 有按采分点判的题型时，"算答对"的门槛 pointCorrectThreshold 必须配（改进阶段 2）：判分时读不到会抛错，
+  // 在这里拦住比学员交卷时才炸好
+  const pointTypes = await c.env.DB.prepare(
+    "SELECT COUNT(*) AS n FROM subject_question_types WHERE subject_id = ? AND grading_strategy = 'AI_SCORE_POINTS'"
+  ).bind(id).first();
+  if (pointTypes?.n && payload?.mastery?.pointCorrectThreshold === undefined) {
+    problems.push('本学科有按采分点判的题型，mastery.pointCorrectThreshold（得分率到多少算答对）不能省');
+  }
   if (problems.length) return c.json({ error: 'invalid_rubric', problems }, 400);
 
   const top = await c.env.DB.prepare('SELECT MAX(version) AS v FROM subject_rubrics WHERE subject_id = ?')

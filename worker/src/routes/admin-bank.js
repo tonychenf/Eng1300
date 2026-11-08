@@ -588,8 +588,9 @@ bankRouter.patch('/notes/:noteId', async (c) => {
 });
 
 // 发布整卷：所有存疑记录处理完才允许（PRD §5.3.2）
-bankRouter.post('/exams/:examId/publish', async (c) => {
-  const examId = c.req.param('examId');
+// 整卷发布。抽成函数是为了让一键发布（改进阶段 2 P1-E1，routes/admin-setup.js）逐组调**同一段逻辑**，
+// 不另写一套发布门：存疑、题型、资源契约、标准答案自检、扣下待核，一道都不能少。返回的是 Response。
+export async function publishExam(c, examId) {
   const exam = await c.env.DB.prepare('SELECT * FROM exams WHERE exam_id = ?').bind(examId).first();
   if (!exam) return c.json({ error: 'not_found' }, 404);
 
@@ -759,7 +760,8 @@ bankRouter.post('/exams/:examId/publish', async (c) => {
         `${noAnswer.slice(0, 10).map((q) => q.ord).join('、')}${noAnswer.length > 10 ? '…' : ''}题）`
       : undefined,
   });
-});
+}
+bankRouter.post('/exams/:examId/publish', (c) => publishExam(c, c.req.param('examId')));
 
 // 单题停用（CR-H4）。导入过的题库文件不许改（用户 2026-10-01 定的规矩）：题的内容错了，
 // 在这里把旧题停用，再用新的内容组编号加一个新文件。停用之后抽题抽不到（pickableSql）、

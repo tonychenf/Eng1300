@@ -14,6 +14,9 @@
 //    不打这个标记的话，下一次部署会把这一章连同已录的答案一起清掉。
 import { Hono } from 'hono';
 import { resolvePipeline } from '../import/index.js';
+import { planGroupImport } from '../import/group-import.js';
+import { budgetStatus } from '../lib/ai-budget.js';
+import { audit } from '../lib/audit.js';
 import { ITEM_KINDS } from '../lib/question-items.js';
 import { resolveSettings } from '../lib/ai.js';
 import { purposeForMedia, purposeMeta } from '../lib/ai-purposes.js';
@@ -33,6 +36,18 @@ const BATCH = 40;
 const bad = (c, status, error, message, extra = {}) =>
   c.json({ error, message, ...extra }, status);
 
+/** 题库文件导入的默认内容组编号：学科码-北京日期-当天序号（P1-A5）。不从文件名转写：中文文件名转出来是空的。 */
+async function autoGroupId(db, subjectCode) {
+  const day = new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10).replace(/-/g, '');
+  const prefix = `${subjectCode}-${day}-`;
+  const { results } = await db.prepare('SELECT exam_id FROM exams WHERE substr(exam_id, 1, ?) = ?')
+    .bind(prefix.length, prefix).all();
+  const taken = new Set(results.map((r) => r.exam_id));
+  let i = 1;
+  while (taken.has(`${prefix}${i}`)) i++;
+  return `${prefix}${i}`;
+}
+
 importRouter.post('/import', async (c) => {
   // 先看请求头里声明的长度，超了直接 413，不把整个文件读进内存再判（CR L8）。排在最前面：
   // 后面那些查库、校验参数都用不着它，为一个注定被拒的请求先读十几兆没有意义。
@@ -45,24 +60,13 @@ importRouter.post('/import', async (c) => {
   const me = c.get('user');
   const db = c.env.DB;
   const subjectCode = (c.req.query('subjectCode') || '').trim();
-  const groupId = (c.req.query('groupId') || '').trim();
+  let groupId = (c.req.query('groupId') || '').trim();
   const label = (c.req.query('label') || '').trim();
   const filename = (c.req.query('filename') || '').trim() || null;
   const dryRun = c.req.query('dryRun') === '1';
-  const orderKey = Number(c.req.query('orderKey'));
+  let orderKey = c.req.query('orderKey') == null || c.req.query('orderKey') === '' ? NaN : Number(c.req.query('orderKey'));
 
   if (!subjectCode) return bad(c, 400, 'invalid_request', '缺少 subjectCode');
-  if (!GROUP_ID_RE.test(groupId)) {
-    return bad(c, 400, 'invalid_group_id',
-      `内容组 id 需为小写字母开头、2-64 位的小写字母/数字/连字符，收到 ${JSON.stringify(groupId)}`);
-  }
-  if (!label) return bad(c, 400, 'invalid_request', '缺少 label（内容组的显示名）');
-  // order_key 是内容组之间唯一的结构性字段（§6.4.2）。**不给默认值**：
-  // 回落成 0 的话这一组会静默排到所有内容组的最前面，而排序错了不报错。
-  if (!Number.isInteger(orderKey)) {
-    return bad(c, 400, 'invalid_order_key',
-      `缺少 orderKey（排序依据，生化按章节号），收到 ${JSON.stringify(c.req.query('orderKey'))}`);
-  }
 
   const subject = await db.prepare('SELECT * FROM subjects WHERE code = ?').bind(subjectCode).first();
   if (!subject) return bad(c, 404, 'subject_not_found', `没有学科 ${subjectCode}`);
@@ -98,6 +102,30 @@ importRouter.post('/import', async (c) => {
     courseCode = hit.course_code;
   }
 
+  // 改进阶段 2 P1-A5：题库文件导入不要求手填编号——内容组编号 = 学科码-北京日期-当天序号，
+  // 排序键 = 本学科现有最大值 + 10，显示名取文件里的。都可以显式传进来覆盖。
+  // 生化的 Word 上传不动：它把排序键当章号用（传进管线做 chapterNo），默认成"最大值 + 10"会改掉生化的语义。
+  if (pipeline.direct) {
+    if (!groupId) groupId = await autoGroupId(db, subjectCode);
+    if (!Number.isInteger(orderKey)) {
+      const top = await db.prepare(
+        'SELECT MAX(e.order_key) AS m FROM exams e JOIN courses co ON co.course_code = e.course_code WHERE co.subject_id = ?'
+      ).bind(subject.subject_id).first();
+      orderKey = Number(top?.m || 0) + 10;
+    }
+  }
+  if (!GROUP_ID_RE.test(groupId)) {
+    return bad(c, 400, 'invalid_group_id',
+      `内容组 id 需为小写字母开头、2-64 位的小写字母/数字/连字符，收到 ${JSON.stringify(groupId)}`);
+  }
+  if (!label && !pipeline.direct) return bad(c, 400, 'invalid_request', '缺少 label（内容组的显示名）');
+  // order_key 是内容组之间唯一的结构性字段（§6.4.2）。**不给默认值**（docx 那条）：
+  // 回落成 0 的话这一组会静默排到所有内容组的最前面，而排序错了不报错。
+  if (!Number.isInteger(orderKey)) {
+    return bad(c, 400, 'invalid_order_key',
+      `缺少 orderKey（排序依据，生化按章节号），收到 ${JSON.stringify(c.req.query('orderKey'))}`);
+  }
+
   const existing = await db.prepare('SELECT exam_id, origin, label FROM exams WHERE exam_id = ?')
     .bind(groupId).first();
   if (existing) {
@@ -117,6 +145,24 @@ importRouter.post('/import', async (c) => {
   if (body.byteLength > MAX_BYTES) {
     return bad(c, 413, 'file_too_large',
       `文件 ${(body.byteLength / 1048576).toFixed(1)}MB，超过上限 ${MAX_BYTES / 1048576}MB`);
+  }
+
+  if (pipeline.direct) {
+    let plan;
+    try {
+      plan = await planGroupImport(db, {
+        subject, courseCode, bytes: body, groupId, label, orderKey, filename,
+        uploadedBy: me?.username || `user:${me?.id ?? '?'}`,
+      });
+    } catch (e) {
+      return bad(c, 422, e.code || 'parse_failed', e.message || String(e));
+    }
+    const summary = { subjectCode, ...plan.summary };
+    if (dryRun) return c.json({ ok: true, dryRun: true, ...summary });
+    for (let i = 0; i < plan.statements.length; i += BATCH) {
+      await db.batch(plan.statements.slice(i, i + BATCH));
+    }
+    return c.json({ ok: true, dryRun: false, ...summary, statements: plan.statements.length });
   }
 
   let parsed;
@@ -247,6 +293,18 @@ importRouter.post('/exams/:examId/ai-answers', async (c) => {
       'SELECT s.* FROM subjects s JOIN courses co ON co.subject_id = s.subject_id WHERE co.course_code = ?'
     ).bind(exam.course_code).first();
   if (!subject) return bad(c, 422, 'subject_not_found', '这个内容组挂不到任何学科上');
+
+  // 每月 AI 花费到上限：管理员触发的出答案要明确说"继续"才跑（P1-C3），并记一笔审计
+  const budget = await budgetStatus(db);
+  if (budget.over) {
+    const goOn = await c.req.json().then((b) => b?.confirmOverBudget === true).catch(() => false);
+    if (!goOn) {
+      return bad(c, 409, 'over_budget',
+        `本月 AI 花费已到上限（已花 ${budget.spent} 元 / 上限 ${budget.budget} 元），确认继续才会接着花`, { budget });
+    }
+    await audit(db, { actorId: c.get('user')?.id, action: 'ai.over_budget_continue', subjectId: subject.subject_id,
+      target: examId, after: { spent: budget.spent, budget: budget.budget } });
+  }
 
   // 原始资料是图片还是文字，决定用哪一档 AI 配置（§6.4.3、N7d）。
   // 管线自己声明 mediaKind，这里不按学科硬判——同一个学科将来既有扫描件又有 docx 时，

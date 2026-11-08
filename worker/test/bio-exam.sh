@@ -284,7 +284,10 @@ check "没作答的那道直接 0 分、标已批改" \
 
 # 每道批改了的题：期望分从库里的采分点权重现算（得分率 = 命中权重 / 总权重 × 本卷分值，B11），
 # 命中规则是替身的：【全对】全中、【全错】全不中、【单号】单号中双号不中
-node - "$WORK/answers.tsv" "$WORK/items.json" > "$WORK/expect.tsv" <<'NODE'
+# "算答对"按采分点题专用的门槛（改进阶段 2，迁移 0019 补的 mastery.pointCorrectThreshold），从库里现读
+PT=$(one "SELECT json_extract(payload, '\$.mastery.pointCorrectThreshold') FROM subject_rubrics WHERE subject_id = $BIO_SID AND is_current = 1;")
+echo "  （按采分点判的题，得分率 ≥ $PT 算答对）"
+PT="$PT" node - "$WORK/answers.tsv" "$WORK/items.json" > "$WORK/expect.tsv" <<'NODE'
 const fs = require('fs');
 const rows = fs.readFileSync(process.argv[2], 'utf8').trim().split('\n').map((l) => l.split('\t'));
 const items = JSON.parse(fs.readFileSync(process.argv[3], 'utf8'));
@@ -296,7 +299,7 @@ for (const [qid, , pts, plan] of rows) {
   const total = its.reduce((n, it) => n + it.weight, 0);
   const rate = round6(its.filter(hit).reduce((n, it) => n + it.weight, 0) / total);
   const score = Math.round(rate * Number(pts) * 100) / 100;
-  console.log([qid, plan, score, rate >= 1 ? 1 : 0, its.length].join('\t'));
+  console.log([qid, plan, score, rate >= Number(process.env.PT) ? 1 : 0, its.length].join('\t'));
 }
 NODE
 while IFS=$'\t' read -r qid plan want correct npts; do
@@ -460,7 +463,11 @@ check "报告里 q06 带着候选池：可填哪几个、要填几个（以前�
   "$(echo "$REP2" | jq -r --arg q "$WQ" '.sections[].questions[] | select(.questionId == $q) | .answerKey // [] | .[] | select(.kind == "POOL") | "\(.values | join("、"))/\(.required)"')" "$POOL6/$REQ6"
 
 echo
-echo "== 练习：要 AI 判的题，练习里如实说不判分 =="
+echo "== 练习：学科关掉了练习 AI 批改时，要 AI 判的题如实说不判分 =="
+# 改进阶段 2 起练习里也当场 AI 批（默认开，ph2-practice-ai 测开着的那条路）；这里测关掉之后的样子。
+# 之后一直关着：下面几段按"练习里名词解释不进错题本"设计
+check "关掉生化的练习 AI 批改" "$(curl -s -o /dev/null -w '%{http_code}' -X PUT "$BASE/admin/subjects/$BIO_SID/settings/practice-ai" \
+  -H "Authorization: Bearer $ADMIN" -H 'Content-Type: application/json' -d '{"enabled":false}')" "200"
 PST=$(curl -s -X POST "$BASE/practice/start" -H "Authorization: Bearer $STU" \
   -H 'Content-Type: application/json' -d '{"courseCode":"biochem-main","sectionTypes":["名词解释"]}')
 PID=$(echo "$PST" | jq -r '.attemptId')

@@ -54,9 +54,17 @@ export async function loadPack(db, subjectId) {
   ]);
   const subj = subjRes.results[0];
   if (!subj) throw fail('subject_not_found', `学科#${subjectId} 不存在`);
+  return buildPack({ subjectId, subj, typeRows: typesRes.results, rubricRow: rubricRes.results[0] });
+}
 
+/**
+ * 由库里的几行拼出能力包，并做读包时的全部校验。和 loadPack 分开导出，是为了让建学科（改进阶段 2 P1-A1）
+ * **写库之前**就能用同一套校验在内存里先验一遍：D1 的 batch 提交即生效，写完再读出错已经撤不回了。
+ * 两处各写一套校验的话，迟早一边放行、一边抛错。
+ */
+export function buildPack({ subjectId, subj, typeRows, rubricRow }) {
   const types = new Map();
-  for (const r of typesRes.results) {
+  for (const r of typeRows) {
     let names;
     try {
       names = JSON.parse(r.normalizers || '[]');
@@ -103,7 +111,6 @@ export async function loadPack(db, subjectId) {
     throw fail('subject_pack_missing', `学科#${subjectId} 还没有声明任何题型，能力包没配`);
   }
 
-  const rubricRow = rubricRes.results[0];
   if (!rubricRow) {
     throw fail('subject_rubric_missing', `学科#${subjectId} 没有生效中的评价标准（is_current = 1）`);
   }
@@ -322,6 +329,14 @@ export function validateRubricPayload(payload) {
   const th = Number(m.correctThreshold);
   if (!(th > 0) || th > 1) {
     problems.push(`mastery.correctThreshold 是 ${JSON.stringify(m.correctThreshold)}，要在 0～1 之间（1 表示必须全对）`);
+  }
+  // 按采分点判的题单独的门槛（改进阶段 2）。有这类题型的学科必须配（读的时候缺了抛错，见 grade.js）；
+  // 这里只管写进来的值合不合法。
+  if (m.pointCorrectThreshold !== undefined) {
+    const pt = Number(m.pointCorrectThreshold);
+    if (!(pt > 0) || pt > 1) {
+      problems.push(`mastery.pointCorrectThreshold 是 ${JSON.stringify(m.pointCorrectThreshold)}，要在 0～1 之间`);
+    }
   }
   const w = m.weights || {};
   for (const k of ['untested', 'lastWrong']) {

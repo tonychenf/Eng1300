@@ -9,6 +9,7 @@ import { practiceRouter } from './routes/practice.js';
 import { studyRouter } from './routes/study.js';
 import { adminStatsRouter } from './routes/admin-stats.js';
 import { adminSubjectsRouter } from './routes/admin-subjects.js';
+import { adminSetupRouter } from './routes/admin-setup.js';
 import { adminGrantsRouter } from './routes/admin-grants.js';
 import { adminPackRouter } from './routes/admin-pack.js';
 import { subjectRouter } from './routes/subject.js';
@@ -268,7 +269,15 @@ admin.post('/users', async (c) => {
   // 一句"管理员尚未为你开通任何学科"，然后来问。所以这里给一步到位的路。
   // 学科码打错就整个建号失败，不静默跳过：跳过的话账号建出来了、学科没开，
   // 正是上面那种"忘了第二步"的情形。
-  const codes = Array.isArray(body.subjects) ? [...new Set(body.subjects.map(String))] : [];
+  let codes = Array.isArray(body.subjects) ? [...new Set(body.subjects.map(String))] : [];
+  // 改进阶段 2 P1-E2：请求体里**没有** subjects 这个键时，按"以后新建的学员也自动开通"的学科开通
+  // （启用的才开、不设到期日）；subjects: [] 是明确一个都不开，两者要分开。
+  if (!Object.hasOwn(body, 'subjects')) {
+    const { results } = await c.env.DB.prepare(
+      "SELECT code FROM subjects WHERE auto_grant_new_users = 1 AND status = '启用' ORDER BY sort_order"
+    ).all();
+    codes = results.map((r) => r.code);
+  }
   let subjectIds = [];
   if (codes.length) {
     const holes = codes.map(() => '?').join(',');
@@ -369,6 +378,7 @@ admin.put('/settings/:key', async (c) => {
 // 会先吃掉 /subjects/:id/members 与 /subjects/:id/pack。
 admin.route('/', adminGrantsRouter);
 admin.route('/', adminPackRouter);
+admin.route('/', adminSetupRouter);   // 改进阶段 2：课程、组卷模板、上线清单、一键发布开通、花费
 admin.route('/subjects', adminSubjectsRouter);
 admin.route('/bank', bankRouter);
 admin.route('/bank', importRouter);   // POST /bank/import、GET /bank/import/:examId/source

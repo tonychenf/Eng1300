@@ -114,6 +114,16 @@ SPECS=(
   # CR-H4：单题停用。空就是没停用——旧行本来就没停用，不用回填，也不进 REQUIRED
   "questions|retired_at|TEXT"
   "questions|retired_by|TEXT"
+  # 改进阶段 2（迁移 0019）。带默认值的不用回填；记账、单价、section_meta 空就是"没有"，也不回填
+  "subjects|auto_grant_new_users|INTEGER NOT NULL DEFAULT 0"
+  "subjects|practice_ai_grading|INTEGER NOT NULL DEFAULT 1"
+  "courses|template_version|INTEGER NOT NULL DEFAULT 0"
+  "ai_settings|price_in_per_m|REAL"
+  "ai_settings|price_out_per_m|REAL"
+  "ai_usage_logs|subject_id|INTEGER"
+  "ai_usage_logs|user_id|INTEGER"
+  "ai_usage_logs|cost_yuan|REAL"
+  "attempts|section_meta|TEXT"
 )
 
 # 补完列还要**回填**：新库从建表语句和种子里就带着值，旧库补出来的列全是 NULL，

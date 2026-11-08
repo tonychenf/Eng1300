@@ -14,7 +14,11 @@ CREATE TABLE IF NOT EXISTS subjects (
   -- 不允许任何逻辑分支依赖它们。
   content_group_kind TEXT NOT NULL DEFAULT 'EXAM_PAPER',
   ingest_pipeline TEXT NOT NULL DEFAULT 'json-direct',
-  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  -- 改进阶段 2（迁移 0019 起用；线上旧表由 ensure-columns.sh 补）。学科级开关放这里不放 subject_settings：
+  -- 能力包页保存参数时先删掉这个学科的全部覆盖、并拒收全局没有的键（admin-pack.js）。
+  auto_grant_new_users INTEGER NOT NULL DEFAULT 0,   -- 新建学员时自动开通
+  practice_ai_grading INTEGER NOT NULL DEFAULT 1     -- 练习里按采分点判的题当场 AI 批
 );
 CREATE INDEX IF NOT EXISTS idx_subjects_status ON subjects(status, sort_order);
 
@@ -25,7 +29,9 @@ CREATE TABLE IF NOT EXISTS courses (
   -- 真正的强制在题目契约校验里（§6.4.9），不靠这一层。
   subject_id INTEGER REFERENCES subjects(subject_id),
   time_limit_minutes INTEGER NOT NULL DEFAULT 150,
-  total_score REAL NOT NULL DEFAULT 100
+  total_score REAL NOT NULL DEFAULT 100,
+  -- 改进阶段 2：组卷模板的版本号。后台保存模板时用它做写入守卫（两人同时改，后到的 409）
+  template_version INTEGER NOT NULL DEFAULT 0
 );
 CREATE INDEX IF NOT EXISTS idx_courses_subject ON courses(subject_id);
 
@@ -197,6 +203,9 @@ CREATE TABLE IF NOT EXISTS ai_settings (
   protocol TEXT NOT NULL DEFAULT 'openai',
   vision_capable INTEGER NOT NULL DEFAULT 0,
   updated_at TEXT,
+  -- 改进阶段 2：单价（元 / 百万 tokens）。空 = 没填，花费记 NULL，不当 0 算
+  price_in_per_m REAL,
+  price_out_per_m REAL,
   PRIMARY KEY (purpose, subject_id)
 );
 
@@ -215,7 +224,11 @@ CREATE TABLE IF NOT EXISTS ai_usage_logs (
   latency_ms INTEGER,
   success INTEGER NOT NULL DEFAULT 1,
   error_message TEXT,
-  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  -- 改进阶段 2：花费记账。cost_yuan 按调用时的单价算好存下；单价没填时 NULL
+  subject_id INTEGER,
+  user_id INTEGER,
+  cost_yuan REAL
 );
 CREATE INDEX IF NOT EXISTS idx_usage_created ON ai_usage_logs(created_at);
 

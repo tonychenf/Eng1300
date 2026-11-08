@@ -86,6 +86,7 @@ export async function gradeEssay(env, pack, { prompt, essay }) {
 
   const { data } = await chatJSON(env, {
     purpose: 'TUTORING',
+    subjectId: pack.subjectId,
     feature: 'essay_grade',
     messages: [
       { role: 'system', content: systemPrompt },
@@ -278,7 +279,7 @@ export function readScorePointsReply(data) {
  * 采分点式主观题批改：调模型逐点判命中，返回判分器要的 aiResult。
  * **分不在这里算**——命中率怎么折成分、给不给部分分，走 lib/grade.js 那唯一的判分循环。
  */
-export async function gradeScorePoints(env, pack, { stem, assets, answer, items, where }) {
+export async function gradeScorePoints(env, pack, { stem, assets, answer, items, where, feature = 'essay_grade', userId, timeoutMs }) {
   const r = pack.rubric.essay;
   if (r?.type !== 'POINT_HIT') {
     // 反过来同 essayRubric：维度加权的学科走不到这里，走到了就是题型和评价标准配岔了
@@ -291,7 +292,11 @@ export async function gradeScorePoints(env, pack, { stem, assets, answer, items,
   const { systemPrompt, userTemplate } = await prompts(env, pack, 'essay_grade');
   const { data } = await chatJSON(env, {
     purpose: 'TUTORING',
-    feature: 'essay_grade',
+    subjectId: pack.subjectId,
+    // 练习里批改记成 practice_point_grade（花费页分得出练习和模考；每日次数也按它数）
+    feature,
+    userId,
+    timeoutMs,
     maxTokens: 1200,
     messages: [
       { role: 'system', content: systemPrompt },
@@ -332,6 +337,7 @@ export async function analyzeWrong(env, pack, { stem, options, userAnswer, corre
   const { systemPrompt, userTemplate } = await prompts(env, pack, 'wrong_analyze');
   const { data } = await chatJSON(env, {
     purpose: 'TUTORING',
+    subjectId: pack.subjectId,
     feature: 'wrong_analyze',
     maxTokens: 800,
     messages: [
@@ -364,6 +370,7 @@ export async function explainAnswer(env, pack, { stem, options, userAnswer, corr
   const { systemPrompt, userTemplate } = await prompts(env, pack, 'answer_explain');
   const { data } = await chatJSON(env, {
     purpose: 'TUTORING',
+    subjectId: pack.subjectId,
     feature: 'answer_explain',
     maxTokens: 800,
     messages: [
@@ -397,6 +404,7 @@ export async function assessAbility(env, pack, { mastery, recentWrongTags, score
   }
   const { data } = await chatJSON(env, {
     purpose: 'TUTORING',
+    subjectId: pack.subjectId,
     feature: 'assessment',
     messages: [
       { role: 'system', content: systemPrompt },

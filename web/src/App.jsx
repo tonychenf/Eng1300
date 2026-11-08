@@ -32,6 +32,10 @@ const AISettings = lazy(() => import('./pages/admin/AISettings.jsx'));
 const SystemSettings = lazy(() => import('./pages/admin/SystemSettings.jsx'));
 const Students = lazy(() => import('./pages/admin/Students.jsx'));
 const Export = lazy(() => import('./pages/admin/Export.jsx'));
+// 改进阶段 2：开新课引导、组卷模板
+const SubjectNew = lazy(() => import('./pages/admin/SubjectSetup.jsx').then((m) => ({ default: m.SubjectNew })));
+const SubjectSetup = lazy(() => import('./pages/admin/SubjectSetup.jsx').then((m) => ({ default: m.SubjectSetup })));
+const TemplateEdit = lazy(() => import('./pages/admin/TemplateEdit.jsx'));
 
 const ADMIN_NAV = [
   { to: '/admin', label: '题库总览', end: true },
@@ -146,6 +150,10 @@ export default function App() {
             <Routes>
               <Route index element={<Dashboard />} />
               <Route path="subjects" element={<Subjects />} />
+              {/* 排在 subjects/:id/... 前面：new 不是一个学科 id */}
+              <Route path="subjects/new" element={<SubjectNew />} />
+              <Route path="subjects/:id/setup" element={<SubjectSetup />} />
+              <Route path="subjects/:id/template" element={<TemplateEdit />} />
               <Route path="subjects/:id/members" element={<SubjectMembers />} />
               <Route path="subjects/:id/pack" element={<SubjectPack />} />
               <Route path="users/:id/subjects" element={<UserSubjects />} />

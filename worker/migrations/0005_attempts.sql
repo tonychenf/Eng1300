@@ -21,7 +21,10 @@ CREATE TABLE IF NOT EXISTS attempts (
   pending_ai INTEGER NOT NULL DEFAULT 0,  -- 还有多少题等着 AI 批改
   -- N5：MANUAL 判分策略的出口（§6.4.4）。本期没有阅卷界面，但主链路要认得它——
   -- 不认的话人工判分的题会被当成"已判完的 0 分"，成绩单上看不出少了一块。
-  pending_manual INTEGER NOT NULL DEFAULT 0
+  pending_manual INTEGER NOT NULL DEFAULT 0,
+  -- 改进阶段 2：组卷时存下每个部分的名称和提示 [{ord,label,note}]。报告读它，不现读模板——
+  -- 模板改名、调顺序之后现读会把旧报告的部分名改错。空 = 旧卷
+  section_meta TEXT
 );
 CREATE INDEX IF NOT EXISTS idx_attempts_user ON attempts(user_id, course_code, started_at DESC);
 

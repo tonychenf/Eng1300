@@ -218,6 +218,11 @@ if [ -n "${ADMIN_TOKEN:-}" ]; then
       else
         echo "  FAIL 有已发布章节的课程都配了组卷模板（没有模板：$NO_TPL）"; FAIL=1
       fi
+      # 改进阶段 2（2026-11-08）：模板各部分合计等于课程满分。后台能改模板、改满分了，两边对不上时
+      # 学员拿到的是一张总分不对的卷。先在这里断它，线上绿了再打开组卷时的 422 拦截（PRD P1-A4）
+      BAD_TOTAL=$(jq -r '[.courses[] | select(.templateItems > 0 and ((.templateTotal * 100 | round) != (.totalScore * 100 | round)))
+                          | "\(.courseCode)：模板 \(.templateTotal) / 满分 \(.totalScore)"] | join("、")' "$T/readiness.json")
+      check "配了组卷模板的课程，模板合计等于满分" "${BAD_TOTAL:-全部相等}" "全部相等"
       jq -r '.courses[] | select(.publishedExams > 0) | "     （" + .courseCode + " 组卷："
         + (if .problem then "模板有问题：" + .problem elif .ready then "凑得够" else "凑不够" end)
         + (if (.parts | length) > 0 then "，" + ([.parts[] | .label + " " + (.available | tostring)

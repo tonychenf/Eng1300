@@ -18,7 +18,7 @@
 // 好让一张卷里几道题各走一条路，而不是整次运行只能走一条：
 //   【全对】全部答到   【全错】全部没答到（带理由）   【坏键】少一个采分点、多一个不存在的
 //   【照抄】把提示里的 JSON 示例原样抄回来           【非对象】points 回成一句话
-//   【单号】单号采分点答到、双号没答到
+//   【单号】单号采分点答到、双号没答到   【超时】5 秒才回（测练习批改的时限）
 //   没有记号：答案里原样出现了哪个采分点的话，哪个就算答到（照采分点写的全中、跑题的一个不中）
 // 每次故意慢 300 毫秒，好让并发上限测得出来（瞬间返回的话永远只有一个在飞）。
 //
@@ -187,6 +187,8 @@ const server = http.createServer((req, res) => {
       pointsCalls++;
       pointsInflight++;
       pointsMaxInflight = Math.max(pointsMaxInflight, pointsInflight);
+      // 【超时】：故意 5 秒才回，练习批改的时限（测试里由 PRACTICE_AI_TIMEOUT_MS 调短）到了就该中止
+      const delay = promptText.includes('【超时】') ? 5000 : 300;
       setTimeout(() => {
         pointsInflight--;
         res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -194,7 +196,7 @@ const server = http.createServer((req, res) => {
           choices: [{ message: { role: 'assistant', content: replyPoints(promptText) } }],
           usage: { prompt_tokens: 100, completion_tokens: 50 },
         }));
-      }, 300);
+      }, delay);
       return;
     }
 

@@ -7,6 +7,7 @@ import { gradeQuestion } from '../lib/grade.js';
 import { loadItemRows } from '../lib/question-items.js';
 import { answerKey, answerText } from '../lib/answer-key.js';
 import { sectionScoresFromDb } from '../lib/section-scores.js';
+import { budgetStatus } from '../lib/ai-budget.js';
 import { loadAssetRows } from '../lib/stem-assets.js';
 import { mapLimit } from '../lib/ai.js';
 import { wrongItemVisibleSql } from '../lib/pickable.js';
@@ -162,6 +163,11 @@ studyRouter.get('/wrongbook/filters', async (c) => {
 // 同一道题再错时 wrongbookWrites 把状态标回「待生成」（学-2），这里就会按新的作答重写。
 async function analyzeWrongRows(c, pack, where, binds) {
   const out = { done: 0, failed: 0 };
+  // 每月 AI 花费到上限只暂停错题分析，批改不停（用户 2026-11-07 定，lib/ai-budget.js）
+  const budget = await budgetStatus(c.env.DB);
+  if (budget.over) {
+    return { ...out, paused: true, message: `本月 AI 花费已到上限（${budget.budget} 元），错题分析暂停，等管理员提高上限后再生成` };
+  }
   const { results: pending } = await c.env.DB.prepare(
     `SELECT w.id, w.question_id, q.question_type, q.stem, q.options, q.answer, s.passage_text,
             r.user_answer, r.item_results,
@@ -230,6 +236,7 @@ studyRouter.post('/wrongbook/:id/analyze', async (c) => {
   if (row.ai_status === '已生成') return c.json({ ok: true, status: 'already', done: 0, failed: 0 });
   const pack = await loadPackByCourse(c.env.DB, row.course_code);
   const r = await analyzeWrongRows(c, pack, 'w.id = ? AND w.user_id = ?', [id, me.id]);
+  if (r.paused) return c.json({ error: 'budget_paused', message: r.message }, 409);
   const after = await c.env.DB.prepare(
     'SELECT error_analysis, memory_point, ai_status FROM wrong_items WHERE id = ?'
   ).bind(id).first();

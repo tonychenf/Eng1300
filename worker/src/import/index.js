@@ -20,6 +20,15 @@ export const PIPELINES = {
     mediaKind: 'text',
     run: importDocx,
   },
+  // 改进阶段 2 P1-I1：题库文件（data/subjects/*/groups/*.json 那种格式）直接导入。新建的学科默认用它，
+  // 第三期 AI 拆题上线前，题库文件由 Claude 照资料生成、管理员在后台传。落库和 docx 那条不一样
+  // （答案、得分单元、篇章原文、考点都在文件里），所以不走 run，由上传接口按 direct 分流到 import/group-import.js。
+  'json-direct': {
+    name: '题库文件（JSON）',
+    accepts: '.json',
+    mediaKind: 'text',
+    direct: true,
+  },
   // 'pdf-ocr-llm'：蓝本时代跑完的链路（扫描 PDF → OCR → LLM 结构化），
   // 产物已在 data/subjects/english/groups/，本仓库不重跑它，所以这里没有实现。
   // 真要实现，它的 mediaKind 是 'image'，答案生成会自动走「图片解析 AI」那一档。

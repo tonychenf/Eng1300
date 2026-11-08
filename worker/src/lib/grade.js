@@ -44,6 +44,26 @@ function correctThresholdOf(pack) {
 }
 
 /**
+ * 按采分点判的题（翻译、名词解释、问答）"算答对"的门槛：mastery.pointCorrectThreshold（改进阶段 2，迁移 0019 补成 0.6）。
+ * 和 correctThreshold 分开，是因为这类题很少每个采分点都对上——沿用 1.0 几乎每道都进错题本、再触发一次错因分析。
+ * 只决定掌握度和错题本，不影响得分。读不到就抛错，**不回落到 correctThreshold**：回落会把"漏配"伪装成"配的就是 1.0"。
+ */
+function pointCorrectThresholdOf(pack) {
+  const t = Number(pack.rubric?.mastery?.pointCorrectThreshold);
+  if (!Number.isFinite(t) || t <= 0 || t > 1) {
+    throw fail('bad_rubric',
+      `学科 ${pack.code} 的 mastery.pointCorrectThreshold 取不到可用的值（读到 ` +
+      `${JSON.stringify(pack.rubric?.mastery?.pointCorrectThreshold)}），按采分点判的题得分率到多少算答对没人说了算`);
+  }
+  return t;
+}
+
+/** 这道题用哪个"算答对"门槛：按采分点判的用 pointCorrectThreshold，其余用 correctThreshold。 */
+export function correctThresholdFor(pack, strategy) {
+  return strategy === 'AI_SCORE_POINTS' ? pointCorrectThresholdOf(pack) : correctThresholdOf(pack);
+}
+
+/**
  * 判一道题。
  *
  * @param pack            能力包，调用方一次读好传进来（见 subject-pack.js loadPack 的注释）
@@ -163,7 +183,7 @@ export function gradeQuestion(pack, question, userAnswer, absoluteScore, opts = 
 
   return {
     // B13：得分率 0.7 的题按默认阈值 1.0 记为"答错"，该考点继续被抽到
-    isCorrect: scoreRate >= correctThresholdOf(pack) ? 1 : 0,
+    isCorrect: scoreRate >= correctThresholdFor(pack, type.gradingStrategy) ? 1 : 0,
     score,
     scoreRate,
     // 规则判错的可以交给 AI 复核。选择题的答案是闭集，复核没有意义，

@@ -6,9 +6,14 @@ import { Alert, Loading, PageHead } from '../../components/ui.jsx';
 export default function Dashboard() {
   const [stats, setStats] = useState(null);
   const [error, setError] = useState('');
+  const [lists, setLists] = useState([]);     // 改进阶段 2：上线清单
+  const [budget, setBudget] = useState(null); // 本月 AI 花费
 
   useEffect(() => {
     get('/admin/bank/stats').then(setStats).catch((e) => setError(e.message));
+    // 这两块是附加信息：读不到不拦住整个看板
+    get('/admin/checklists').then((r) => setLists(r.checklists || [])).catch(() => {});
+    get('/admin/ai/budget').then(setBudget).catch(() => {});
   }, []);
 
   if (error) return <Alert>{error}</Alert>;
@@ -37,6 +42,35 @@ export default function Dashboard() {
   return (
     <>
       <PageHead title="题库总览" desc="预解析材料的入库与校对进度" />
+
+      {budget?.over ? (
+        <div style={{ marginBottom: 16 }} data-testid="budget-alert">
+          <Alert>
+            本月 AI 花费已到上限 {budget.budget} 元（已花 {budget.spent} 元）：批改照常，错题分析已暂停。
+            <Link to="/admin/ai" style={{ marginLeft: 6 }}>提高上限</Link>
+          </Alert>
+        </div>
+      ) : null}
+
+      {/* 改进阶段 2 P1-L1：有课还没准备好，直接列出还差什么，点进去就是处理它的页面 */}
+      {lists.filter((c) => c.state !== 'ready').length ? (
+        <div className="card card-pad" style={{ marginBottom: 16 }} data-testid="not-ready">
+          <h2 style={{ fontSize: 15, marginTop: 0 }}>有课还没准备好</h2>
+          <div className="stack">
+            {lists.filter((c) => c.state !== 'ready').map((c) => (
+              <Link key={c.subject.code} className="small" to={`/admin/subjects/${c.subject.subjectId}/setup`}>{c.summary}</Link>
+            ))}
+          </div>
+        </div>
+      ) : null}
+
+      {budget ? (
+        <p className="small muted" data-testid="spend-line">
+          本月 AI 花费 {budget.spent} 元{budget.budget != null ? ` / 上限 ${budget.budget} 元` : '（没设上限）'}
+          {budget.callsWithoutPrice ? `；有 ${budget.callsWithoutPrice} 次调用没有单价，花费不全` : ''}
+          <Link to="/admin/ai" style={{ marginLeft: 6 }}>明细</Link>
+        </p>
+      ) : null}
 
       {/* 已发布的题里，按标准答案作答都拿不到满分的（2026-10-07，后端 answer-check.js 用判分器判一遍）。
           学员碰上这种题，怎么答都是错的，或者一交答案就报错。正常情况下永远是 0，所以平时不显示。 */}

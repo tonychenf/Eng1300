@@ -12,6 +12,10 @@ import { wrongbookWrites } from '../lib/wrongbook.js';
 import { practiceAnswerGuard, lastWriteLanded } from '../lib/write-guard.js';
 import { answerInputError } from '../lib/answer-input.js';
 import { pickableSql } from '../lib/pickable.js';
+import { withPointReasons } from '../lib/tutor.js';
+import {
+  practiceAiEnabled, gradingKey, answerHash, cachedResult, cacheWrite, usedToday, dailyLimit, gradeNow, aiErrorMessage,
+} from '../lib/practice-ai.js';
 
 export const practiceRouter = new Hono();
 practiceRouter.use('/practice/*', requireAuth);
@@ -28,6 +32,12 @@ for (const path of ['/practice/scope', '/practice/section-types', '/practice/sta
 }
 practiceRouter.use('/practice/:id', requireAttemptAccess);
 practiceRouter.use('/practice/:id/*', requireAttemptAccess);
+
+// 得分单元上的显式别名（"本题也接受：……"，P1-X3）。读不懂当没有：只是显示用的
+function parseAlt(raw) {
+  if (!raw) return [];
+  try { const v = JSON.parse(raw); return Array.isArray(v) ? v.map(String) : []; } catch { return []; }
+}
 
 function newId() {
   return `prc-${crypto.randomUUID()}`;
@@ -280,7 +290,44 @@ practiceRouter.post('/practice/:id/answer', async (c) => {
   const gradePack = await loadPackByCourse(c.env.DB, a.course_code);
   // 得分单元（一题多空、采分点）与判分走同一段代码，练习这条路只是不计分。
   const items = (await loadItemRows(c.env.DB, [questionId])).get(questionId) || [];
-  const g = gradeQuestion(gradePack, q, body.answer, 0, { items });
+  let g = gradeQuestion(gradePack, q, body.answer, 0, { items });
+
+  // 改进阶段 2（P1-G1）：按采分点判的题（翻译、名词解释、问答）当场 AI 批。有标准答案的题上面已经判完了，
+  // 不调 AI。AI 没批出来（超时、读不懂、今天次数用完）时作答照存、is_correct 留空，页面让学员对照采分点自评，
+  // 不显示 0 分；留空的记录"答过没有"那道检查会放行，带同一份作答再交一次就是重试。
+  let aiGraded = false;
+  let aiError = null;
+  let cacheStmt = null;
+  if (g.pendingAi && await practiceAiEnabled(c.env.DB, gradePack, q)) {
+    let aiResult = null;
+    if (!String(body.answer ?? '').trim()) {
+      // 没写就是 0 分，不花 AI 的钱（同模考）
+      aiResult = { points: Object.fromEntries(items.map((r) => [String(r.item_ord), { hit: false, reason: '未作答' }])) };
+    } else {
+      const answerSha = await answerHash(body.answer);
+      const keySha = await gradingKey(c.env.DB, gradePack, items);
+      aiResult = await cachedResult(c.env.DB, { userId: a.user_id, questionId, answerSha, keySha });
+      if (!aiResult) {
+        const limit = await dailyLimit(c.env.DB, gradePack.subjectId);
+        if (await usedToday(c.env.DB, a.user_id) >= limit) {
+          aiError = { code: 'daily_limit', message: aiErrorMessage('daily_limit'), limit };
+        } else {
+          try {
+            const assets = (await loadAssetRows(c.env.DB, [questionId])).get(questionId) || [];
+            aiResult = await gradeNow(c.env, gradePack, { question: q, items, assets, answer: body.answer, userId: a.user_id });
+            cacheStmt = cacheWrite(c.env.DB, { userId: a.user_id, questionId, answerSha, keySha, aiResult });
+          } catch (e) {
+            aiError = { code: e.code || 'ai_failed', message: aiErrorMessage(e.code) };
+          }
+        }
+      }
+    }
+    if (aiResult) {
+      g = gradeQuestion(gradePack, q, body.answer, 0, { items, aiResult });
+      g = { ...g, itemResults: withPointReasons(g.itemResults, aiResult.points) };
+      aiGraded = true;
+    }
+  }
   const isCorrect = g.isCorrect;
 
   const tagIds = await tagsOfQuestion(c.env.DB, questionId);
@@ -288,6 +335,8 @@ practiceRouter.post('/practice/:id/answer', async (c) => {
   // 每条写入带同一个守卫，写作答记录（让守卫失效的那句）排在最后（lib/write-guard.js）。
   const guard = practiceAnswerGuard(a.attempt_id, questionId);
   const writes = [];
+  // 缓存和守卫无关：批出来了就值得留着，哪怕这次作答记录被同时到的另一个请求抢先写了
+  if (cacheStmt) writes.push(cacheStmt);
   if (isCorrect !== null) {
     writes.push(...(await masteryWrites(c.env.DB, a.user_id, a.course_code,
       [{ tagIds, isCorrect }], guard)));
@@ -297,14 +346,14 @@ practiceRouter.post('/practice/:id/answer', async (c) => {
   writes.push(
     c.env.DB.prepare(
       `INSERT INTO answer_records
-         (attempt_id, question_id, user_answer, is_correct, score, score_rate, item_results, answered_at)
-       SELECT ?, ?, ?, ?, 0, ?, ?, datetime('now') WHERE ${guard.sql}
+         (attempt_id, question_id, user_answer, is_correct, score, score_rate, item_results, ai_judged, answered_at)
+       SELECT ?, ?, ?, ?, 0, ?, ?, ?, datetime('now') WHERE ${guard.sql}
        ON CONFLICT(attempt_id, question_id) DO UPDATE SET
          user_answer = excluded.user_answer, is_correct = excluded.is_correct,
          score_rate = excluded.score_rate, item_results = excluded.item_results,
-         answered_at = excluded.answered_at`
+         ai_judged = excluded.ai_judged, answered_at = excluded.answered_at`
     ).bind(a.attempt_id, questionId, body.answer ?? null, isCorrect,
-           g.scoreRate, g.itemResults ? JSON.stringify(g.itemResults) : null, ...guard.binds),
+           g.scoreRate, g.itemResults ? JSON.stringify(g.itemResults) : null, aiGraded ? 1 : 0, ...guard.binds),
   );
   if (!lastWriteLanded(await c.env.DB.batch(writes))) {
     // 同时到的另一个请求先判完了这道题，或者练习刚被结束
@@ -326,11 +375,14 @@ practiceRouter.post('/practice/:id/answer', async (c) => {
     // 以前前端把 isCorrect=null 当成"答错了"，写得再对也是一个红叉——现在明说"自己对照"，
     // 参考答案就是下面 items 里的采分点。
     selfCheck: Boolean(g.pendingAi),
+    // 改进阶段 2：按采分点当场批了（含命中缓存）。没批出来时 aiError 说明为什么，页面不显示 0 分
+    aiGraded,
+    aiError,
     // 多单元题要能逐项标红，所以把得分率与逐项结果一起给前端。
     // 没有得分单元的题这两个字段是 0/1 和 null，前端走原来那条"整题对错"的显示路径。
     scoreRate: g.scoreRate,
     itemResults: g.itemResults,
-    items: items.map((r) => ({ ord: r.item_ord, kind: r.item_kind, answer: r.answer })),
+    items: items.map((r) => ({ ord: r.item_ord, kind: r.item_kind, answer: r.answer, altAnswers: parseAlt(r.alt_answers) })),
     // 按组的标准答案（候选池、无序并列的空各空没有自己的答案），同 exam.js 报告那里
     answerKey: answerKey(q, items, { defaultStrategy: gradePack.typeOf(q.question_type).gradingStrategy }).groups,
     correctAnswer: q.answer,

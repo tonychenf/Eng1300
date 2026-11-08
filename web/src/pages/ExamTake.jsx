@@ -16,6 +16,11 @@ function mmss(total) {
   return h > 0 ? `${h}:${pad(m)}:${pad(sec)}` : `${pad(m)}:${pad(sec)}`;
 }
 
+// 带原文的选择题（段落填空、阅读）离开原文做不了，手机、平板上也默认展开原文（P1-X1）
+function passageNeeded(section) {
+  return Boolean(section?.passageText && section.questions?.some((q) => q.options?.length));
+}
+
 export default function ExamTake() {
   const { subjectCode, attemptId } = useParams();
   const navigate = useNavigate();
@@ -39,6 +44,7 @@ export default function ExamTake() {
     const r = await get(`/attempts/${attemptId}`);
     setData(r);
     setRemaining(r.attempt.remainingSeconds);
+    if (r.sections?.[0]) setOpenPassage(passageNeeded(r.sections[0]));
     const init = {};
     for (const s of r.sections) for (const q of s.questions) init[q.questionId] = q.userAnswer ?? '';
     setAnswers(init);
@@ -179,6 +185,8 @@ export default function ExamTake() {
       <header className="exam-bar">
         <div className="grow">
           <div className="exam-title">第 {section.sectionOrd} 部分 · {section.sectionType}</div>
+          {/* 题库还不够、每张卷这一部分都一样时如实说（P1-G2，拍板 10） */}
+          {section.sectionNote ? <div className="exam-sub section-note">{section.sectionNote}</div> : null}
           <div className="exam-sub">
             已答 {answeredCount}/{all.length}
             {saving ? ' · 保存中…' : ''}
@@ -205,7 +213,7 @@ export default function ExamTake() {
             const done = s.questions.filter((q) => hasAnswer(q, answers[q.questionId])).length;
             return (
               <button key={s.sectionOrd} className={i === secIndex ? 'active' : undefined}
-                onClick={() => { setSecIndex(i); setOpenPassage(false); window.scrollTo(0, 0); }}>
+                onClick={() => { setSecIndex(i); setOpenPassage(passageNeeded(s)); window.scrollTo(0, 0); }}>
                 {s.sectionOrd}
                 {done === s.questions.length ? <span className="done">✓</span> : null}
               </button>

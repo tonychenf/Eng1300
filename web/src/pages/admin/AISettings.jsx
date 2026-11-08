@@ -42,6 +42,7 @@ export default function AISettings() {
   return (
     <>
       <PageHead title="AI 配置" desc="接口地址、模型与密钥。密钥加密存储，保存后只回显尾号。" />
+      <SpendCard />
       <div className="stack">
         {PURPOSES.map((p) => (
           <PurposeCard key={p.key} meta={p} value={settings[p.key]} onSaved={load} />
@@ -76,12 +77,82 @@ export default function AISettings() {
   );
 }
 
+const FEATURE_TEXT = {
+  practice_point_grade: '练习批改', essay_grade: '模考批改', wrong_analyze: '错题分析',
+  answer_generate: '出答案', answer_explain: '答案讲解', assessment: '能力评估', ocr: '识别',
+};
+
+// 本月花费与每月上限（改进阶段 2 P1-C2、C3）。到上限只暂停错题分析，批改不停（用户 2026-11-07 定）
+function SpendCard() {
+  const [data, setData] = useState(null);
+  const [yuan, setYuan] = useState('');
+  const [msg, setMsg] = useState(null);
+  const load = () => get('/admin/ai/spend').then((d) => {
+    setData(d);
+    setYuan(d.status?.budget == null ? '' : String(d.status.budget));
+  });
+  useEffect(() => { load().catch((e) => setMsg({ kind: 'error', text: e.message })); }, []);
+
+  async function saveBudget() {
+    setMsg(null);
+    try {
+      await put('/admin/ai/budget', { yuan: yuan.trim() === '' ? null : Number(yuan) });
+      setMsg({ kind: 'success', text: '已保存' });
+      await load();
+    } catch (e) { setMsg({ kind: 'error', text: e.message }); }
+  }
+
+  if (!data) return null;
+  const st = data.status;
+  return (
+    <div className="card card-pad" style={{ marginBottom: 16 }} data-testid="spend-card">
+      <h2 style={{ fontSize: 16, marginTop: 0 }}>本月 AI 花费（{data.month}）</h2>
+      {msg ? <div style={{ marginBottom: 8 }}><Alert kind={msg.kind}>{msg.text}</Alert></div> : null}
+      <p className="small">
+        已花 <strong>{st?.spent ?? 0}</strong> 元
+        {st?.budget != null ? ` / 上限 ${st.budget} 元` : '（没设上限）'}
+        {st?.over ? <span className="badge danger" style={{ marginLeft: 8 }}>已到上限：错题分析暂停，批改照常</span> : null}
+      </p>
+      {st?.callsWithoutPrice ? (
+        <p className="tiny" style={{ color: 'var(--warn)' }}>有 {st.callsWithoutPrice} 次调用的模型没填单价，花费不全。在下面每一档填上单价。</p>
+      ) : null}
+      {data.byFeature?.length ? (
+        <div style={{ overflowX: 'auto' }}>
+          <table className="table responsive">
+            <thead><tr><th>功能</th><th>调用</th><th>失败</th><th>花费（元）</th></tr></thead>
+            <tbody>
+              {data.byFeature.map((r) => (
+                <tr key={`${r.purpose}-${r.feature}`}>
+                  <td data-label="功能">{FEATURE_TEXT[r.feature] || r.feature || r.purpose}</td>
+                  <td data-label="调用">{r.calls}</td>
+                  <td data-label="失败">{r.failed || 0}</td>
+                  <td data-label="花费（元）">{r.cost == null ? '缺单价' : r.cost}{r.without_price && r.cost != null ? '（部分缺单价）' : ''}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : <p className="tiny muted">这个月还没有调用。</p>}
+      <div className="row" style={{ gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
+        <div className="field" style={{ flex: '1 1 160px', marginBottom: 0 }}>
+          <label htmlFor="budget-yuan">每月上限（元，空 = 不设）</label>
+          <input id="budget-yuan" className="input" inputMode="decimal" value={yuan} onChange={(e) => setYuan(e.target.value)} />
+        </div>
+        <button className="btn sm" style={{ alignSelf: 'flex-end' }} onClick={saveBudget} data-testid="budget-save">保存上限</button>
+      </div>
+      <p className="tiny faint" style={{ marginBottom: 0 }}>到了上限：练习和模考的批改照常；错题分析暂停；后台出答案要你确认才继续。</p>
+    </div>
+  );
+}
+
 function PurposeCard({ meta, value, onSaved }) {
   const [form, setForm] = useState({
     baseUrl: value?.baseUrl || '',
     model: value?.model || '',
     apiKey: '',
     visionCapable: value?.visionCapable ?? (meta.key === 'PARSING'),
+    priceInPerM: value?.priceInPerM ?? '',
+    priceOutPerM: value?.priceOutPerM ?? '',
   });
   const [busy, setBusy] = useState('');
   const [msg, setMsg] = useState(null);
@@ -91,7 +162,12 @@ function PurposeCard({ meta, value, onSaved }) {
   async function save() {
     setBusy('save'); setMsg(null);
     try {
-      await put(`/admin/ai/settings/${meta.key}`, form);
+      await put(`/admin/ai/settings/${meta.key}`, {
+        ...form,
+        // 空着 = 没填单价（花费页按"缺单价"提示），不当 0
+        priceInPerM: form.priceInPerM === '' ? null : Number(form.priceInPerM),
+        priceOutPerM: form.priceOutPerM === '' ? null : Number(form.priceOutPerM),
+      });
       set('apiKey', '');
       setMsg({ kind: 'success', text: '已保存' });
       await onSaved();
@@ -151,6 +227,18 @@ function PurposeCard({ meta, value, onSaved }) {
           autoComplete="new-password"
           placeholder={value?.hasKey ? `留空则保持不变（当前 ${value.apiKeyMasked}）` : 'sk-…'}
           onChange={(e) => set('apiKey', e.target.value)} />
+      </div>
+      <div className="row" style={{ gap: 12, flexWrap: 'wrap' }}>
+        <div className="field" style={{ flex: '1 1 140px' }}>
+          <label htmlFor={`${meta.key}-pin`}>输入单价（元 / 百万 tokens）</label>
+          <input id={`${meta.key}-pin`} className="input" inputMode="decimal" value={form.priceInPerM}
+            placeholder="按服务商价目表填，免费填 0" onChange={(e) => set('priceInPerM', e.target.value)} />
+        </div>
+        <div className="field" style={{ flex: '1 1 140px' }}>
+          <label htmlFor={`${meta.key}-pout`}>输出单价（元 / 百万 tokens）</label>
+          <input id={`${meta.key}-pout`} className="input" inputMode="decimal" value={form.priceOutPerM}
+            placeholder="按服务商价目表填，免费填 0" onChange={(e) => set('priceOutPerM', e.target.value)} />
+        </div>
       </div>
       <label className="row" style={{ flexWrap: 'nowrap', minHeight: 44 }}>
         <input type="checkbox" checked={form.visionCapable} style={{ width: 18, height: 18 }}
