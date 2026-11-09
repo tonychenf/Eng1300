@@ -64,6 +64,12 @@ export default function BankImport() {
   const ok = String(form.orderKey).trim();
   if ((!direct || ok) && !/^-?\d+$/.test(ok)) problems.push('排序依据要是整数（生化按章节号）');
   if (!file) problems.push('选一个文件');
+  // 手机上 accept 拦不住相册：选了照片之类的文件，当场说，不等传上去再报错
+  else if (sel?.uploadAccepts && !file.name.toLowerCase().endsWith(sel.uploadAccepts)) {
+    problems.push(direct
+      ? `这门课只收题库文件（${sel.uploadAccepts}），你选的是「${file.name}」。照片、PDF 识别要等第三期，先把资料发给 Claude 生成题库文件`
+      : `这门课只收 ${sel.uploadAccepts} 文件，你选的是「${file.name}」`);
+  }
 
   async function run(kind) {
     setError(''); setBusy(kind);

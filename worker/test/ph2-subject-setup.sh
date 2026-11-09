@@ -201,6 +201,12 @@ G2=$(jq -r '.groupId' "$WORK/up.json")
 check "传进没声明这些题型的学科（通用课）→ 422 question_type_not_declared" "$(up gen01 "$TEST2" '')/$(jq -r '.error' "$WORK/up.json")" "422/question_type_not_declared"
 echo '{不是 json' > "$WORK/bad.json"
 check "不是 JSON → 422 bad_json" "$(up pecopy "$WORK/bad.json" '')/$(jq -r '.error' "$WORK/up.json")" "422/bad_json"
+# 手机上从相册选了照片（2026-11-08 用户真的这样传过，报了一串乱码）：认出来、说人话
+printf '\xff\xd8\xff\xe1\x00\x18Exif\x00\x00fake-jpeg' > "$WORK/photo.json"
+check "传上来的其实是照片 → 422 wrong_file_type，说清是照片" \
+  "$(up pecopy "$WORK/photo.json" '')/$(jq -r '.error' "$WORK/up.json")/$(jq -r '.message | test("照片")' "$WORK/up.json")" "422/wrong_file_type/true"
+printf '%%PDF-1.7 fake' > "$WORK/doc.json"
+check "传上来的其实是 PDF → 422 wrong_file_type" "$(up pecopy "$WORK/doc.json" '')/$(jq -r '.error' "$WORK/up.json")" "422/wrong_file_type"
 jq '.sections[0].questions[0].assets = [{"key":"fig1","kind":"IMAGE","path":"x.png","alt":"图"}]' "$TEST2" > "$WORK/assets.json"
 check "题干带图 → 422 assets_not_supported" "$(up pecopy "$WORK/assets.json" '')/$(jq -r '.error' "$WORK/up.json")" "422/assets_not_supported"
 check "被拒的几次一行都没写（pecopy 仍是两组）" "$(one "SELECT COUNT(*) FROM exams WHERE course_code = 'pecopy-main';")" "2"
