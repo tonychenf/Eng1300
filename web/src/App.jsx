@@ -36,6 +36,7 @@ const Export = lazy(() => import('./pages/admin/Export.jsx'));
 const SubjectNew = lazy(() => import('./pages/admin/SubjectSetup.jsx').then((m) => ({ default: m.SubjectNew })));
 const SubjectSetup = lazy(() => import('./pages/admin/SubjectSetup.jsx').then((m) => ({ default: m.SubjectSetup })));
 const TemplateEdit = lazy(() => import('./pages/admin/TemplateEdit.jsx'));
+const OcrBench = lazy(() => import('./pages/admin/OcrBench.jsx'));   // 第二期：识别实测
 
 const ADMIN_NAV = [
   { to: '/admin', label: '题库总览', end: true },
@@ -166,6 +167,7 @@ export default function App() {
               <Route path="export" element={<Export />} />
               <Route path="users" element={<Users />} />
               <Route path="ai" element={<AISettings />} />
+              <Route path="ai/ocr-bench" element={<OcrBench />} />
               <Route path="settings" element={<SystemSettings />} />
               <Route path="password" element={<ChangePassword />} />
               <Route path="*" element={<Navigate to="/admin" replace />} />

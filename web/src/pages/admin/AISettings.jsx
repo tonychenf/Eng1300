@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { get, post, put } from '../../api.js';
 import { Alert, Loading, PageHead } from '../../components/ui.jsx';
 import { formatBeijing } from '../../lib/time.js';
@@ -42,6 +43,9 @@ export default function AISettings() {
   return (
     <>
       <PageHead title="AI 配置" desc="接口地址、模型与密钥。密钥加密存储，保存后只回显尾号。" />
+      <p className="small" style={{ marginBottom: 12 }}>
+        要比几个读图模型谁识别得准？<Link to="/admin/ai/ocr-bench" data-testid="ocr-bench-link">去做识别实测</Link>
+      </p>
       <SpendCard />
       <div className="stack">
         {PURPOSES.map((p) => (
@@ -79,7 +83,7 @@ export default function AISettings() {
 
 const FEATURE_TEXT = {
   practice_point_grade: '练习批改', essay_grade: '模考批改', wrong_analyze: '错题分析',
-  answer_generate: '出答案', answer_explain: '答案讲解', assessment: '能力评估', ocr: '识别',
+  answer_generate: '出答案', answer_explain: '答案讲解', assessment: '能力评估', ocr: '识别', ocr_bench: '识别实测',
 };
 
 // 本月花费与每月上限（改进阶段 2 P1-C2、C3）。到上限只暂停错题分析，批改不停（用户 2026-11-07 定）

@@ -13,6 +13,11 @@
 //   /echo/v1/chat/completions  作文批改把提示里的 JSON 示例原样抄回来（CR-M11），别的照常回
 //   /kpbad/v1/chat/completions 给上传的题出答案时，答案照常、考点给得不像样（照抄示例、占位名、不是数组）
 //   /stats                     采分点批改调用的次数与最大并发（?reset=1 清零）
+//   /v1/models                 模型清单（识别实测页取候选模型）
+//
+// 识别实测（改进阶段 2 第二期）：读图请求按**模型名**回，替身看不懂图：
+//   stub-ocr:<页码>:<k>  回原书这一页的转写稿，前 k 个小写字母换成 #（编辑距离正好是 k）
+//   stub-ocr-fail        回 400（服务商说不支持这个模型）
 //
 // 采分点式主观题批改（生化名词解释、问答，2026-10-04）按**学生答案里的记号**决定怎么回，
 // 好让一张卷里几道题各走一条路，而不是整次运行只能走一条：
@@ -27,6 +32,7 @@
 // 前者会被 JSON.parse 挡住，后者只有形状校验挡得住——而形状校验没写对时，
 // 表现是半个答案被写进库，看起来像"已经录过了"。
 import http from 'node:http';
+import { truthFor } from '../src/ocr-bench/evaluate.js';
 
 const PORT = Number(process.argv[2] || 8899);
 
@@ -159,9 +165,35 @@ const server = http.createServer((req, res) => {
     res.end(JSON.stringify({ pointsCalls, pointsMaxInflight, pointsInflight }));
     return;
   }
+  if (req.url.startsWith('/v1/models')) {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ data: [{ id: 'Qwen/Qwen2.5-VL-72B-Instruct' }, { id: 'deepseek-ai/DeepSeek-OCR' }, { id: 'Qwen/Qwen3-8B' }] }));
+    return;
+  }
   let body = '';
   req.on('data', (c) => { body += c; });
   req.on('end', () => {
+    let ocr = null;
+    try {
+      const b = JSON.parse(body);
+      const hasImage = (b.messages || []).some((m) => Array.isArray(m.content) && m.content.some((x) => x.type === 'image_url'));
+      if (hasImage && String(b.model || '').startsWith('stub-ocr')) ocr = String(b.model);
+    } catch { /* 不是识别请求 */ }
+    if (ocr) {
+      if (ocr === 'stub-ocr-fail') {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: { message: 'Model does not support image input' } }));
+        return;
+      }
+      const [, page, k] = ocr.split(':');
+      let text = truthFor(Number(page)).text || '（这一页没有转写稿）';
+      let left = Number(k) || 0;
+      text = text.replace(/[a-z]/g, (ch) => (left-- > 0 ? '#' : ch));
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ choices: [{ message: { role: 'assistant', content: `· ${page} ·\n${text}` } }],
+        usage: { prompt_tokens: 100, completion_tokens: 50 } }));
+      return;
+    }
     if (req.url.startsWith('/fail/')) {
       res.writeHead(500, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: { message: 'stub failure' } }));
