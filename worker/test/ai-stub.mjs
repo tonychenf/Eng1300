@@ -39,6 +39,7 @@ import { truthFor } from '../src/ocr-bench/evaluate.js';
 import { FREE_PAGE } from './fixtures/ocr-free-page.mjs';   // stub-ocr-free 回的"别的学科的一页"
 
 const PORT = Number(process.argv[2] || 8899);
+const bodyHas = (raw, key) => { try { return Object.prototype.hasOwnProperty.call(JSON.parse(raw), key); } catch { return false; } };
 
 // 采分点批改：从提示里读出采分点序号（JSON 示例的键）和学生答案，按记号回
 const POINTS_MARK = '逐个判断学生答案有没有答到';
@@ -156,6 +157,8 @@ let lastPrompt = '';
 // 一次 /ai/.../run 会并发发好几条（错题分析每题一条、作文批改一条），
 // 只留最后一条的话，断言要看的那条很可能被别的盖掉。
 const allPrompts = [];
+// 读图模型因为带了 enable_thinking 被拒的次数（同一个模型拒过一次后，Worker 应该记住、不再带）
+let thinkingRejects = 0;
 
 const server = http.createServer((req, res) => {
   if (req.url === '/last-prompt') {
@@ -164,9 +167,9 @@ const server = http.createServer((req, res) => {
     return;
   }
   if (req.url.startsWith('/stats')) {
-    if (req.url.includes('reset=1')) { pointsMaxInflight = 0; pointsCalls = 0; }
+    if (req.url.includes('reset=1')) { pointsMaxInflight = 0; pointsCalls = 0; thinkingRejects = 0; }
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ pointsCalls, pointsMaxInflight, pointsInflight }));
+    res.end(JSON.stringify({ pointsCalls, pointsMaxInflight, pointsInflight, thinkingRejects }));
     return;
   }
   if (req.url.startsWith('/v1/models')) {
@@ -184,6 +187,14 @@ const server = http.createServer((req, res) => {
       if (hasImage && String(b.model || '').startsWith('stub-ocr')) ocr = String(b.model);
     } catch { /* 不是识别请求 */ }
     if (ocr) {
+      // 真实的读图模型（Qwen2.5-VL、DeepSeek-OCR 这类）不认 enable_thinking，带了就 400——
+      // 2026-11-10 线上实测报的就是这个；以前替身不管这个参数，所以一直测不出来
+      if (bodyHas(body, 'enable_thinking')) {
+        thinkingRejects++;
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ code: 20015, message: 'current model does not support enable_thinking', data: null }));
+        return;
+      }
       if (ocr === 'stub-ocr-fail') {
         res.writeHead(400, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: { message: 'Model does not support image input' } }));
