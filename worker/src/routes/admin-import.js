@@ -379,6 +379,13 @@ importRouter.post('/exams/:examId/ai-answers', async (c) => {
   // 落库：一律 待核 + 来源 AI。**绝不自动发布**（§6.4.10 的硬约束）。
   const byId = new Map(questions.map((q) => [q.questionId, q]));
   const st = [];
+  // 第三期 D：AI 自己说拿不准的、做题反查说题面有问题的，记下来排到核答案队列前面（重跑就覆盖成这一次的）
+  for (const g of generated) {
+    st.push(db.prepare(
+      `INSERT INTO answer_review_flags (question_id, confidence, stem_problem) VALUES (?, ?, ?)
+       ON CONFLICT(question_id) DO UPDATE SET confidence = excluded.confidence, stem_problem = excluded.stem_problem, updated_at = datetime('now')`
+    ).bind(g.questionId, g.flags?.confidence ?? null, g.flags?.stemProblem ?? null));
+  }
   const pointBatches = [];
   for (const g of generated) {
     // 解析为空时**不要覆盖**已有的 answer_explanation：校对时人工写过一段，
@@ -534,6 +541,9 @@ importRouter.delete('/exams/:examId', async (c) => {
 
   const res = await db.batch([
     db.prepare(`DELETE FROM question_items WHERE question_id IN (${ofGroup})`).bind(examId),
+    // 第三期 D：核答案的疑点（排在删题目之前：它引用题目）。加在这里会让后面各句的下标往后挪一位，
+    // 回给页面的删除条数按下标取，所以下面那张表一并改了
+    db.prepare(`DELETE FROM answer_review_flags WHERE question_id IN (${ofGroup})`).bind(examId),
     db.prepare(`DELETE FROM question_assets WHERE question_id IN (${ofGroup})`).bind(examId),
     db.prepare(`DELETE FROM question_knowledge_points WHERE question_id IN (${ofGroup})`).bind(examId),
     db.prepare('DELETE FROM questions WHERE exam_id = ?').bind(examId),
@@ -560,8 +570,8 @@ importRouter.delete('/exams/:examId', async (c) => {
     examId,
     label: exam.label,
     deleted: {
-      items: n(0), assets: n(1), knowledgePointLinks: n(2), questions: n(3),
-      sections: n(4), parsingNotes: n(5), sources: n(6), aiKnowledgePoints: n(8),
+      items: n(0), reviewFlags: n(1), assets: n(2), knowledgePointLinks: n(3), questions: n(4),
+      sections: n(5), parsingNotes: n(6), sources: n(7), aiKnowledgePoints: n(9),
     },
   });
 });

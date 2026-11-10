@@ -110,10 +110,17 @@ function reply(promptText) {
   const wantsKp = promptText.includes('knowledgePoints');
   const firstKnown = promptText.match(/本学科已有的考点[^：]*：([^、。]+)/)?.[1];
   const KPS = [...(firstKnown ? [firstKnown] : []), '替身新考点'];
+  // 第三期 D：出答案时顺带回"把握"和"题面有问题"。题干里写【低把握】【题面坏】就照回，其余把握"高"、题面没问题
+  const wantsFlags = promptText.includes('stemProblem');
+  const flags = !wantsFlags ? {} : {
+    confidence: promptText.includes('【低把握】') ? '低' : '高',
+    stemProblem: promptText.includes('【题面坏】') ? '选项 C 和 D 一样，没有唯一正确答案' : null,
+  };
   const withExpl = (o) => JSON.stringify({
     ...o,
     ...(wantsExpl ? { explanation: EXPL } : {}),
     ...(wantsKp ? { knowledgePoints: KPS } : {}),
+    ...flags,
   });
 
   if (promptText.includes('请给出正确选项')) {
@@ -169,6 +176,8 @@ function stubSplit(prompt) {
   const questions = [];
   for (const [, pageNo, text] of blocks) {
     for (const ln of text.split('\n')) {
+      const hw = ln.match(/^【手写】(\d+)=(\S+)$/);
+      if (hw) { const t = questions.find((x) => x.no === Number(hw[1])); if (t) t.handwrittenAnswer = hw[2]; continue; }
       const m = ln.match(/^(\d+)\.\s+(.*)$/);
       if (m) { questions.push({ no: Number(m[1]), questionType: 'single_choice', stem: m[2], options: [], handwrittenAnswer: null, pageNo: Number(pageNo), doubt: null }); continue; }
       const q = questions[questions.length - 1];
@@ -207,13 +216,14 @@ const server = http.createServer((req, res) => {
       //   STUBPAGE:<转写稿页码>:<改掉的小写字母数>[:garble][:bad]
       //     garble → 第一遍在第 2 行插一个 □（体检命中、会再识别一遍；第二遍不插，两次不一致）
       //     bad    → 识别出的文字里带 STUBSPLITBAD，拆题那一步回一个形状不对的结果
+      //     hand<题号><答案> → 页末加一行"【手写】题号=答案"，拆题时记成那道题的 handwrittenAnswer
       //   STUBFAIL → 这一页识别失败（500）
       const img = (b.messages || []).flatMap((m) => (Array.isArray(m.content) ? m.content : []))
         .find((x) => x.type === 'image_url')?.image_url?.url;
       if (img && String(b.model || '').startsWith('stub-import')) {
         const raw = Buffer.from(String(img).split(',')[1] || '', 'base64').toString('latin1');
         const prompt = (b.messages || []).flatMap((m) => (Array.isArray(m.content) ? m.content : [])).find((x) => x.type === 'text')?.text || '';
-        importImg = { tag: raw.match(/STUB(?:PAGE:[\w:]+|FAIL)/)?.[0] || '', alt: prompt.includes('一行一行地抄') };
+        importImg = { tag: raw.match(/STUB(?:PAGE:[\w:]+|ANS:[\w:@,-]+|FAIL)/)?.[0] || '', alt: prompt.includes('一行一行地抄') };
       }
       const hasImage = (b.messages || []).some((m) => Array.isArray(m.content) && m.content.some((x) => x.type === 'image_url'));
       if (hasImage && String(b.model || '').startsWith('stub-ocr')) ocr = String(b.model);
@@ -230,6 +240,18 @@ const server = http.createServer((req, res) => {
         res.end(JSON.stringify({ error: { message: 'stub import ocr failure' } }));
         return;
       }
+      // 原书答案页（第三期 D）：STUBANS:<起>-<止>:<答案>[:<另一个答案>@<题号>,<题号>]
+      if (importImg.tag.startsWith('STUBANS')) {
+        const [, range, base, odd] = importImg.tag.split(':');
+        const [from, to] = range.split('-').map(Number);
+        const [oddAns, oddNos] = odd ? odd.split('@') : [null, ''];
+        const oddSet = new Set(String(oddNos || '').split(',').filter(Boolean).map(Number));
+        const answers = [];
+        for (let n = from; n <= to; n++) answers.push({ no: n, answer: oddSet.has(n) ? oddAns : base });
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ choices: [{ message: { role: 'assistant', content: JSON.stringify({ answers }) } }], usage: { prompt_tokens: 800, completion_tokens: 100 } }));
+        return;
+      }
       const [, page, k, ...flags] = importImg.tag.split(':');
       let text = truthFor(Number(page)).text || '（这一页没有转写稿）';
       let left = Number(k) || 0;
@@ -237,6 +259,8 @@ const server = http.createServer((req, res) => {
       const lines = text.split('\n');
       if (flags.includes('garble') && !importImg.alt) lines[1] = `□${lines[1]}`;
       if (flags.includes('bad')) lines.push('STUBSPLITBAD');
+      // hand<题号><答案>：书上这道题旁边有手写答案（第三期 D：拆题时读出来，出完 AI 答案后拿去比）
+      for (const f of flags) { const h = f.match(/^hand(\d+)([A-Z]+)$/); if (h) lines.push(`【手写】${h[1]}=${h[2]}`); }
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ choices: [{ message: { role: 'assistant', content: `【页码】${page}\n${lines.join('\n')}` } }],
         usage: { prompt_tokens: 1000, completion_tokens: 500 } }));
