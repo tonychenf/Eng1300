@@ -64,9 +64,45 @@ try {
     await link.click();
     check(`${label}｜识别实测页打开了`, await shows(page.locator('[data-testid="bench-setup"]')), true);
 
+    // 〇、选照片：一次多选、分几次加、拖进来，都是往后加；超过 10 张、不是图片的说清楚
+    const items = page.locator('[data-testid="bench-item"]');
+    const count = () => page.locator('[data-testid="bench-count"]').innerText();
+    // 照片是读完尺寸才列出来的（异步）：等到正好 n 张。不用 waitForFunction——页面的 CSP 不许 eval，它在这里不可靠
+    const waitItems = async (n) => {
+      for (let t = 0; t < 100; t++) { if ((await items.count()) === n) return true; await page.waitForTimeout(100); }
+      return false;
+    };
+    const pngs = (n, tag) => Array.from({ length: n }, (_, i) => ({ name: `${tag}-${i + 1}.png`, mimeType: 'image/png', buffer: IMG }));
+    check(`${label}｜选照片的按钮看得见，写着可以多选`, await shows(page.locator('[data-testid="bench-pick"]')) && (await page.locator('[data-testid="bench-pick"]').innerText()).includes('一次选多张'), true);
+    await page.setInputFiles('[data-testid="bench-files"]', pngs(3, '一次三张'));
+    check(`${label}｜一次选 3 张：3 张都进来了`, await waitItems(3), true);
+    if (process.env.UI_SHOTS && width === 390) await page.locator('[data-testid="bench-drop"]').screenshot({ path: `${process.env.UI_SHOTS}/ocr-pick-手机.png` });
+    check(`${label}｜按钮变成"继续添加照片"，写着已选 3 / 10`, (await page.locator('[data-testid="bench-pick"]').innerText()).includes('继续添加') && (await count()).includes('已选 3 / 10'), true);
+    await page.setInputFiles('[data-testid="bench-files"]', pngs(1, '再加一张'));
+    check(`${label}｜再选 1 张：接着往后加（4 张），不是替换`, await waitItems(4) && (await items.nth(3).innerText()).includes('再加一张-1.png') && (await items.nth(0).innerText()).includes('一次三张-1.png'), true);
+    // 电脑上把照片拖进框里
+    const dt = await page.evaluateHandle(async (b64) => {
+      const d = new DataTransfer();
+      const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+      for (const n of ['拖进来-1.png', '拖进来-2.png']) d.items.add(new File([bytes], n, { type: 'image/png' }));
+      return d;
+    }, IMG.toString('base64'));
+    await page.locator('[data-testid="bench-drop"]').dispatchEvent('drop', { dataTransfer: dt });
+    check(`${label}｜拖进来 2 张：6 张`, await waitItems(6), true);
+    // 超过 10 张：只加到 10，说清多出来几张；不是图片的不加、说清楚
+    await page.setInputFiles('[data-testid="bench-files"]', [...pngs(6, '凑满'), { name: '说明.txt', mimeType: 'text/plain', buffer: Buffer.from('x') }]);
+    check(`${label}｜再选 6 张 + 1 个文本：加到 10 张为止`, await waitItems(10), true);
+    const alert = await page.locator('[data-testid="bench-setup"]').evaluate(() => document.body.innerText);
+    check(`${label}｜说清多出来的 2 张没加、说明.txt 不是图片`, alert.includes('多出来的 2 张没加') && alert.includes('说明.txt」不是图片'), true);
+    check(`${label}｜满 10 张：不能再选了`, await page.locator('[data-testid="bench-files"]').isDisabled(), true);
+    // 全去掉，下面按一张一张的流程走
+    while (await items.count()) await items.first().locator('button:has-text("去掉")').click();
+    check(`${label}｜去掉后回到 0 张，又能选了`, (await count()).includes('已选 0 / 10') && await page.locator('[data-testid="bench-files"]').isEnabled(), true);
+
     // 一、公共英语的一页：不用标页码，识别出来的字自己对上第 121 页
     await page.setInputFiles('[data-testid="bench-files"]', { name: 'IMG_0001.png', mimeType: 'image/png', buffer: IMG });
-    const item = page.locator('[data-testid="bench-item"]');
+    const item = items;
+    await waitItems(1);
     check(`${label}｜选的照片列出来了（读出了尺寸、有缩略图）`, await shows(item.first()) && (await item.first().innerText()).includes('40×60') && await decoded(item.first().locator('img')), true);
     check(`${label}｜不用标页码：没有页码下拉框`, await page.locator('[data-testid="bench-setup"] select').count(), 0);
     check(`${label}｜选了照片就能开始`, await page.locator('[data-testid="bench-start"]').isEnabled(), true);

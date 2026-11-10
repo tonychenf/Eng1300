@@ -18,6 +18,7 @@ import { agreement, normalizeText } from '../../../../worker/src/lib/ocr-metrics
 const THRESHOLD = { accuracy: 0.995, completeness: 1 };   // BRD 第 0 节的上线门槛
 const LIKELY_VISION = /(vl|ocr|vision|omni|qvq|internvl|janus|glm-4(\.\d)?v|pixtral|llava|gemma-3)/i;
 const CONCURRENCY = 2;
+const MAX_PHOTOS = 10;   // 服务端一次实测也是最多 10 张
 const pct = (x) => (x == null ? '—' : `${(x * 100).toFixed(2)}%`);
 const yuan = (x) => (x == null ? '—' : `${Number(x).toFixed(4)} 元`);
 const sec = (ms) => (ms ? `${(ms / 1000).toFixed(1)} 秒` : '—');
@@ -64,6 +65,8 @@ export default function OcrBench() {
   const [run, setRun] = useState(null);         // { id, config, results, images }
   const [progress, setProgress] = useState(null);
   const [past, setPast] = useState([]);
+  const [dragging, setDragging] = useState(false);
+  const itemsRef = useRef([]);
   const fileRef = useRef(null);
 
   const loadPast = () => get('/admin/ai/ocr-bench').then((r) => setPast(r.runs || [])).catch(() => {});
@@ -83,23 +86,41 @@ export default function OcrBench() {
     : [...ms, { id, priceInPerM: id === cfg?.provider?.model ? (cfg.provider.priceInPerM ?? '') : '', priceOutPerM: id === cfg?.provider?.model ? (cfg.provider.priceOutPerM ?? '') : '' }]));
   const setPrice = (id, k, v) => setModels((ms) => ms.map((m) => (m.id === id ? { ...m, [k]: v } : m)));
 
+  // 一次选多张、分几次加、拖进来的都走这里；每次都是往后加，不替换已经选的
   async function addFiles(list) {
+    const files = [...list];
+    if (!files.length) return;
+    const notImage = files.filter((f) => !(f.type || '').startsWith('image/') && !/\.(jpe?g|png|webp|heic|heif|bmp|gif)$/i.test(f.name));
     const next = [];
-    for (const f of list) {
+    const unreadable = [];
+    for (const f of files.filter((x) => !notImage.includes(x))) {
       try {
         const d = await dims(f);
         // 预览用的本地地址：只在这个页面里、这一次打开时有，不上传、不保存
         next.push({ key: `${f.name}-${f.size}-${Math.random()}`, file: f, name: f.name, url: URL.createObjectURL(f), ...d });
       } catch {
-        setError(`「${f.name}」读不出来（手机上的 HEIC 照片请在相册里存成 JPEG 再选）`);
+        unreadable.push(f.name);
       }
     }
-    setItems((xs) => [...xs, ...next].slice(0, 10));
+    // 已经选了几张按 ref 算（连着加几次时，状态还没来得及更新）
+    const room = Math.max(0, MAX_PHOTOS - itemsRef.current.length);
+    const kept = next.slice(0, room);
+    next.slice(room).forEach((x) => URL.revokeObjectURL(x.url));
+    itemsRef.current = [...itemsRef.current, ...kept];
+    setItems(itemsRef.current);
+    const msgs = [];
+    if (notImage.length) msgs.push(`「${notImage.map((f) => f.name).join('」「')}」不是图片，没加`);
+    if (unreadable.length) msgs.push(`「${unreadable.join('」「')}」读不出来（HEIC 照片请在相册里存成 JPEG 再选）`);
+    if (next.length > room) msgs.push(`一次实测最多 ${MAX_PHOTOS} 张，多出来的 ${next.length - room} 张没加`);
+    setError(msgs.join('；'));
   }
-  const removeItem = (key) => setItems((xs) => xs.filter((x) => {
-    if (x.key === key) URL.revokeObjectURL(x.url);
-    return x.key !== key;
-  }));
+  const removeItem = (key) => {
+    itemsRef.current = itemsRef.current.filter((x) => {
+      if (x.key === key) URL.revokeObjectURL(x.url);
+      return x.key !== key;
+    });
+    setItems(itemsRef.current);
+  };
 
   const calls = items.length * models.length * sizes.length;
   const est = useMemo(() => {
@@ -209,8 +230,21 @@ export default function OcrBench() {
             最多 10 张，任何学科、任何资料都行。识别完会自动去仓库的人工转写稿里找这一页：找到了（现在有公共英语的 38 页）就逐字算准确率；
             找不到就把原图和各模型认出来的字并排放，几个模型说法不一样的行标出来，你对着原图看。
           </p>
-          <input ref={fileRef} type="file" accept="image/*" multiple className="input" data-testid="bench-files"
-            disabled={Boolean(progress)} onChange={(e) => { addFiles([...(e.target.files || [])]); e.target.value = ''; }} />
+          {/* 一次可以多选；有的手机浏览器（比如微信里打开）一次只让选一张，就再点一次接着加。电脑上可以直接拖进来 */}
+          <div className={`bench-drop${dragging ? ' over' : ''}`} data-testid="bench-drop"
+            onDragOver={(e) => { e.preventDefault(); if (!progress) setDragging(true); }}
+            onDragLeave={() => setDragging(false)}
+            onDrop={(e) => { e.preventDefault(); setDragging(false); if (!progress) addFiles(e.dataTransfer?.files || []); }}>
+            <label className={`btn${items.length ? ' ghost' : ''}${progress || items.length >= MAX_PHOTOS ? ' disabled' : ''}`} data-testid="bench-pick">
+              {items.length ? '继续添加照片' : '选照片（可以一次选多张）'}
+              <input ref={fileRef} type="file" accept="image/*" multiple className="visually-hidden" data-testid="bench-files"
+                disabled={Boolean(progress) || items.length >= MAX_PHOTOS}
+                onChange={(e) => { const fs = [...(e.target.files || [])]; e.target.value = ''; addFiles(fs); }} />
+            </label>
+            <span className="tiny muted" data-testid="bench-count">
+              已选 {items.length} / {MAX_PHOTOS} 张。手机相册一次只让选一张的（比如在微信里打开），选完再点一次接着加；电脑上也可以把照片直接拖进这个框。
+            </span>
+          </div>
           {items.length ? (
             <div className="bench-thumbs">
               {items.map((it, i) => (
@@ -283,7 +317,7 @@ export default function OcrBench() {
         </div>
       ) : null}
 
-      {run && !progress ? <Report run={run} onNew={() => { setRun(null); items.forEach((it) => URL.revokeObjectURL(it.url)); setItems([]); }} /> : null}
+      {run && !progress ? <Report run={run} onNew={() => { setRun(null); items.forEach((it) => URL.revokeObjectURL(it.url)); itemsRef.current = []; setItems([]); }} /> : null}
 
       {past.length ? (
         <div className="card card-pad" style={{ marginTop: 16 }}>

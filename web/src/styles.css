@@ -552,3 +552,8 @@ h1, h2, h3 { margin: 0; line-height: 1.35; }
   .bench-side { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); }
   .bench-img img { position: sticky; top: 8px; }
 }
+.bench-drop { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; border: 2px dashed var(--line); border-radius: 10px; padding: 12px; }
+.bench-drop.over { border-color: var(--primary); background: var(--primary-tint); }
+.bench-drop .btn { cursor: pointer; position: relative; }
+.btn.disabled { opacity: .5; pointer-events: none; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
