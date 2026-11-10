@@ -10,6 +10,7 @@ import { studyRouter } from './routes/study.js';
 import { adminStatsRouter } from './routes/admin-stats.js';
 import { adminSubjectsRouter } from './routes/admin-subjects.js';
 import { adminSetupRouter } from './routes/admin-setup.js';
+import { ocrBenchRouter } from './routes/admin-ocr-bench.js';
 import { adminGrantsRouter } from './routes/admin-grants.js';
 import { adminPackRouter } from './routes/admin-pack.js';
 import { subjectRouter } from './routes/subject.js';
@@ -382,6 +383,7 @@ admin.route('/', adminSetupRouter);   // 改进阶段 2：课程、组卷模板�
 admin.route('/subjects', adminSubjectsRouter);
 admin.route('/bank', bankRouter);
 admin.route('/bank', importRouter);   // POST /bank/import、GET /bank/import/:examId/source
+admin.route('/ai/ocr-bench', ocrBenchRouter);   // 改进阶段 2 第二期：识别实测
 admin.route('/ai', aiRouter);
 admin.route('/stats', adminStatsRouter);
 app.route('/api/admin', admin);
