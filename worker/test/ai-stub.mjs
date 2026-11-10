@@ -18,6 +18,8 @@
 // 识别实测（改进阶段 2 第二期）：读图请求按**模型名**回，替身看不懂图：
 //   stub-ocr:<页码>:<k>  回原书这一页的转写稿，前 k 个小写字母换成 #（编辑距离正好是 k）
 //   stub-ocr-fail        回 400（服务商说不支持这个模型）
+//   stub-ocr-free:<k>    回一段转写稿里没有的文字（别的学科的一页），第 2 行前 k 个字换成 #——测"对不上转写稿、
+//                        只能对着图看、几个模型说法不一样的行标出来"那条路
 //
 // 采分点式主观题批改（生化名词解释、问答，2026-10-04）按**学生答案里的记号**决定怎么回，
 // 好让一张卷里几道题各走一条路，而不是整次运行只能走一条：
@@ -33,6 +35,8 @@
 // 表现是半个答案被写进库，看起来像"已经录过了"。
 import http from 'node:http';
 import { truthFor } from '../src/ocr-bench/evaluate.js';
+
+import { FREE_PAGE } from './fixtures/ocr-free-page.mjs';   // stub-ocr-free 回的"别的学科的一页"
 
 const PORT = Number(process.argv[2] || 8899);
 
@@ -183,6 +187,15 @@ const server = http.createServer((req, res) => {
       if (ocr === 'stub-ocr-fail') {
         res.writeHead(400, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: { message: 'Model does not support image input' } }));
+        return;
+      }
+      if (ocr.startsWith('stub-ocr-free')) {
+        const lines = [...FREE_PAGE];
+        let left = Number(ocr.split(':')[1]) || 0;
+        lines[1] = [...lines[1]].map((ch) => (left-- > 0 ? '#' : ch)).join('');
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ choices: [{ message: { role: 'assistant', content: lines.join('\n') } }],
+          usage: { prompt_tokens: 100, completion_tokens: 50 } }));
         return;
       }
       const [, page, k] = ocr.split(':');

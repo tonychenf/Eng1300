@@ -13,11 +13,12 @@ export function runChecks(text, { expectedPage = null, expectOptions = false, mi
   const flags = [];
   const flag = (line, rule, message) => flags.push({ line, rule, message });
 
-  // 页码：识别出了书上印的页码、又和你标的不一样
+  // 页码：识别出了书上印的页码、又和对上的那一页（或那一篇跨的几页）不一样
   if (expectedPage != null) {
+    const want = (Array.isArray(expectedPage) ? expectedPage : [expectedPage]).map(Number);
     lines.forEach((ln, i) => {
       for (const m of String(ln).matchAll(/·\s*(\d{2,3})\s*·/g)) {
-        if (Number(m[1]) !== Number(expectedPage)) flag(i, 'page', `识别出的页码是 ${m[1]}，你标的是第 ${expectedPage} 页`);
+        if (!want.includes(Number(m[1]))) flag(i, 'page', `识别出的页码是 ${m[1]}，内容对上的是第 ${want.join('、')} 页`);
       }
     });
   }

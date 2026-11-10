@@ -533,3 +533,22 @@ h1, h2, h3 { margin: 0; line-height: 1.35; }
 .input.need { border-color: var(--danger); }
 .danger-text { color: var(--danger); }
 .section-note { color: var(--warn); }
+
+/* 识别实测：选的照片、原图和各模型认出的字并排（手机上下叠，平板起左右并排） */
+.bench-thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+.bench-thumb { display: flex; flex-direction: column; gap: 4px; min-width: 0; border: 1px solid var(--line); border-radius: 8px; padding: 6px; }
+.bench-thumb img { width: 100%; height: 120px; object-fit: contain; background: #f6f7f9; border-radius: 4px; }
+.bench-photo { border: 1px solid var(--line); border-radius: 10px; padding: 10px; min-width: 0; }
+.bench-side { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+.bench-img img { width: 100%; max-height: 70vh; object-fit: contain; background: #f6f7f9; border-radius: 6px; display: block; }
+.bench-texts { min-width: 0; }
+.bench-text { border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; max-height: 70vh; overflow: auto;
+  font-size: 14px; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.bench-line.err, .bench-mark.err { background: var(--danger-tint); }
+.bench-line.dis, .bench-mark.dis { background: var(--warn-tint); }
+.bench-mark { padding: 0 4px; border-radius: 3px; }
+.bench-flag { color: var(--danger); margin-right: 4px; }
+@media (min-width: 640px) {
+  .bench-side { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); }
+  .bench-img img { position: sticky; top: 8px; }
+}
