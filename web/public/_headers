@@ -6,9 +6,11 @@
 # img-src 带 data:：将来题干里用 data: 写的小图标不至于裂。font-src 也要带 data:：vite 把 4 KB 以下的
 # KaTeX 字体直接写成 data: 塞进样式表（assetsInlineLimit），不放行的话公式里的大括号、根号就换成了别的字体
 #（浏览器实测 ui-rich 照出来的：控制台 Refused to load the font 'data:font/woff2…'）。
+# img-src 还要带 blob:：识别实测页把你选的照片在本页面里预览（URL.createObjectURL，只在这个标签页里有、不上传），
+# 不放行就是一张裂图（2026-11-10 截图时照出来的，测试只断了"元素看得见"——裂图的 alt 文字也看得见）。
 # frame-ancestors 'none' 与 X-Frame-Options 是同一件事的新旧两种写法：不许别的网站把本站嵌进框里。
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin

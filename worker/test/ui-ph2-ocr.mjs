@@ -14,6 +14,8 @@ const check = (desc, got, want) => {
   else { console.log(`  FAIL ${desc}（期望 ${want}, 实际 ${got}）`); fail++; }
 };
 const shows = (loc, timeout = 10000) => loc.waitFor({ state: 'visible', timeout }).then(() => true).catch(() => false);
+// 图真的解出来了（裂图的 alt 文字也"看得见"，只断 visible 测不出来）
+const decoded = (loc) => loc.evaluate((img) => img.complete && img.naturalWidth > 0).catch(() => false);
 const noOverflow = (page) => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1);
 
 // 一张能解码的小 PNG（40×60 灰色），当"照片"传；替身看不懂图，按模型名回第 121 页
@@ -47,6 +49,7 @@ try {
     const page = await ctx.newPage();
     const errors = [];
     page.on('pageerror', (e) => errors.push(String(e.message || e)));
+    page.on('console', (m) => { if (m.type() === 'error' && /Content Security Policy|Refused to/.test(m.text())) errors.push(m.text().slice(0, 160)); });
     page.on('dialog', (d) => d.accept());
 
     await page.goto(`${BASE}/admin/login`, { waitUntil: 'networkidle' });
@@ -64,7 +67,7 @@ try {
     // 一、公共英语的一页：不用标页码，识别出来的字自己对上第 121 页
     await page.setInputFiles('[data-testid="bench-files"]', { name: 'IMG_0001.png', mimeType: 'image/png', buffer: IMG });
     const item = page.locator('[data-testid="bench-item"]');
-    check(`${label}｜选的照片列出来了（读出了尺寸、有缩略图）`, await shows(item.first()) && (await item.first().innerText()).includes('40×60') && await item.first().locator('img').isVisible(), true);
+    check(`${label}｜选的照片列出来了（读出了尺寸、有缩略图）`, await shows(item.first()) && (await item.first().innerText()).includes('40×60') && await decoded(item.first().locator('img')), true);
     check(`${label}｜不用标页码：没有页码下拉框`, await page.locator('[data-testid="bench-setup"] select').count(), 0);
     check(`${label}｜选了照片就能开始`, await page.locator('[data-testid="bench-start"]').isEnabled(), true);
 
@@ -89,7 +92,7 @@ try {
     check(`${label}｜原样回转写稿的模型：准确率 100.00%`, accs.includes('100.00%'), true);
     check(`${label}｜改了 ${K} 个字的模型：准确率 = 1 − ${K}/${N} = ${WANT_ACC}`, accs.includes(WANT_ACC), true);
     check(`${label}｜100% 那一行达到门槛`, (await rows.first().innerText()).includes('达到门槛'), true);
-    check(`${label}｜原图和识别结果并排摆着（原图看得见）`, await shows(report.locator('[data-testid="bench-photo-img"]').first()), true);
+    check(`${label}｜原图和识别结果并排摆着（原图看得见、真的解出来了）`, await shows(report.locator('[data-testid="bench-photo-img"]').first()) && await decoded(report.locator('[data-testid="bench-photo-img"]').first()), true);
     // 切到改了字的那个模型：错的那几行标红
     await report.locator('[data-testid="bench-tab"]', { hasText: `stub-ocr:121:${K}` }).click();
     check(`${label}｜切到改了字的模型：有标红的行`, await report.locator('[data-testid="bench-text"] [data-mark="err"]').count() > 0, true);
@@ -119,7 +122,7 @@ try {
     check(`${label}｜转写稿里没有：说清要对着原图看`, (await report.locator('[data-testid="bench-match"]').first().innerText()).includes('对着原图看'), true);
     check(`${label}｜没有准确率（不拿一份对不上的标准答案硬算）`, (await report.locator('[data-testid="bench-acc"]').allInnerTexts()).join(','), '—,—');
     check(`${label}｜两个模型的一致率 = 1 − ${KF}/${NF} = ${WANT_AGREE}`, (await report.locator('[data-testid="bench-agree"]').allInnerTexts()).join(','), `${WANT_AGREE},${WANT_AGREE}`);
-    check(`${label}｜原图看得见`, await shows(report.locator('[data-testid="bench-photo-img"]').first()), true);
+    check(`${label}｜原图看得见、真的解出来了`, await shows(report.locator('[data-testid="bench-photo-img"]').first()) && await decoded(report.locator('[data-testid="bench-photo-img"]').first()), true);
     const marks = await report.locator('[data-testid="bench-text"] .bench-line').evaluateAll((els) => els.map((e) => e.dataset.mark || '-').join(','));
     check(`${label}｜说法不一样的只有第 2 行，标黄`, marks, '-,dis,-,-,-');
     if (width === 390) check('手机｜第二轮报告页没有横向滚动', await noOverflow(page), true);
