@@ -45,7 +45,7 @@ const browser = await chromium.launch({ executablePath: chromePath() });
 const WIDTHS = [[390, 844, '手机'], [768, 1024, '平板'], [1280, 900, 'PC']];
 try {
   for (const [width, height, label] of WIDTHS) {
-    const ctx = await browser.newContext({ viewport: { width, height }, acceptDownloads: true, deviceScaleFactor: process.env.UI_SHOTS ? 2 : 1 });
+    const ctx = await browser.newContext({ viewport: { width, height }, acceptDownloads: true, deviceScaleFactor: process.env.UI_SHOTS ? 2 : 1, permissions: ['clipboard-read', 'clipboard-write'] });
     const page = await ctx.newPage();
     const errors = [];
     page.on('pageerror', (e) => errors.push(String(e.message || e)));
@@ -136,7 +136,17 @@ try {
     await page.click('[data-testid="bench-export"]');
     const file = await dl;
     const md = file ? fs.readFileSync(await file.path(), 'utf8') : '';
+    // 识别出来的全文：页面上看得见、能复制，导出的报告里每一份都附上
+    // 替身只把前 6 个小写字母换掉：第一行两个模型不一样，最后一行一样。看全文先切回原样回转写稿的那个模型
+    const want121 = truthFor(121).text.split('\n')[0];
+    const last121 = truthFor(121).text.split('\n').at(-1);
+    await report.locator('[data-testid="bench-tab"]', { hasText: 'stub-ocr:121:0' }).click();
+    check(`${label}｜页面上看得见识别出来的全文（第 121 页第一行）`, (await report.locator('[data-testid="bench-text"]').first().innerText()).includes(want121.slice(0, 20)), true);
+    await report.locator('[data-testid="bench-copy"]').first().click();
+    const clip = await page.evaluate(() => navigator.clipboard.readText()).catch((e) => `读不到：${e.message}`);
+    check(`${label}｜「复制文字」复制的就是识别出来的全文`, clip.includes(want121) && (await report.locator('[data-testid="bench-copied"]').first().innerText()) === '已复制', true);
     check(`${label}｜导出的报告有表格、有两个模型、写了对上哪一页`, md.includes('识别实测报告') && md.includes('stub-ocr:121:0') && md.includes(`stub-ocr:121:${K}`) && md.includes('对上转写稿：第 121 页'), true);
+    check(`${label}｜导出的报告里附上了两个模型认出的全文（对上转写稿的也附）`, (md.split(last121).length - 1) >= 2 && md.includes(want121), true);
     if (width === 390) check('手机｜报告页没有横向滚动', await noOverflow(page), true);
 
     // 二、别的学科的一页（转写稿里没有）：不给准确率，原图旁边两个模型说法不一样的行标黄

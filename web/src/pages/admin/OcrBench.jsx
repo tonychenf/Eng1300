@@ -443,7 +443,8 @@ function toMarkdown(run, rows) {
         `${m?.accuracy != null ? `准确率 ${pct(m.accuracy)}，` : ''}${m?.completeness ? `完整 ${m.completeness.ok}/${m.completeness.total}${m.completeness.missing.length ? `（缺第 ${m.completeness.missing.join('、')} 题）` : ''}，` : ''}` +
         `${m?.agree ? `和别的模型一致 ${pct(m.agree.rate)}，` : ''}体检标了 ${m?.flags?.length ?? 0} 处，耗时 ${sec(r.latencyMs)}`));
       for (const e of m?.errorSamples || []) L.push(`  - 第 ${e.line} 行${e.flagged ? '（体检标出）' : '（体检漏了）'}：${e.text}`);
-      if (r.text && m?.accuracy == null) L.push('', '```text', r.text, '```', '');
+      // 认出来的全文每一份都附上（用户 2026-11-10：识别完要把文字给我看）
+      if (r.text) L.push('', '```text', r.text, '```', '');
     }
     L.push('');
   }
@@ -531,7 +532,7 @@ function PhotoPanel({ photo, url, results }) {
               </button>
             ))}
           </div>
-          {cur ? <ResultText r={cur} /> : null}
+          {cur ? <ResultText key={`${cur.model}|${cur.size}`} r={cur} /> : null}
         </div>
       </div>
     </div>
@@ -539,7 +540,12 @@ function PhotoPanel({ photo, url, results }) {
 }
 
 function ResultText({ r }) {
+  const [copied, setCopied] = useState('');
   if (r.error) return <p className="small" style={{ color: 'var(--danger)', overflowWrap: 'anywhere' }}>识别失败：{r.error}</p>;
+  const copy = async () => {
+    try { await navigator.clipboard.writeText(r.text || ''); setCopied('已复制'); }
+    catch { setCopied('复制不了：请长按下面的文字手动选'); }
+  };
   const m = r.metrics || {};
   const err = new Set(m.errLines || []);
   const dis = new Set(m.agree?.lines || []);
@@ -552,6 +558,11 @@ function ResultText({ r }) {
         {m.completeness ? ` · 完整 ${m.completeness.ok}/${m.completeness.total}${m.completeness.missing.length ? `（缺第 ${m.completeness.missing.join('、')} 题）` : ''}` : ''}
         {m.agree ? ` · 和别的模型一致 ${pct(m.agree.rate)}` : ''} · 体检 {m.flags?.length ?? 0} 处 · 耗时 {sec(r.latencyMs)}
       </p>
+      <div className="row" style={{ gap: 8, alignItems: 'center', margin: '0 0 4px' }}>
+        <strong className="small">识别出来的文字</strong>
+        <button className="btn ghost sm" onClick={copy} data-testid="bench-copy">复制文字</button>
+        {copied ? <span className="tiny muted" data-testid="bench-copied">{copied}</span> : null}
+      </div>
       <div className="bench-text" data-testid="bench-text">
         {linesOf(r.text).map((ln, i) => (
           <div key={i} className={`bench-line${err.has(i) ? ' err' : dis.has(i) ? ' dis' : ''}`}
