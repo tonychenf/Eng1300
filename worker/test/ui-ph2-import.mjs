@@ -97,7 +97,7 @@ try {
     // 选三张：第 121 页、第 122 页（第 2 行会出乱码）、一张太小的
     const items = page.locator('[data-testid="import-item"]');
     const files = [
-      { name: 'p121.jpg', mimeType: 'image/jpeg', buffer: await bookPage(page, 'STUBPAGE:121:0') },
+      { name: 'p121.jpg', mimeType: 'image/jpeg', buffer: await bookPage(page, 'STUBPAGE:121:0:hand2B') },
       { name: 'p122.jpg', mimeType: 'image/jpeg', buffer: await bookPage(page, 'STUBPAGE:122:0:garble') },
       { name: 'small.jpg', mimeType: 'image/jpeg', buffer: await bookPage(page, 'STUBPAGE:123:0', { w: 600, h: 800 }) },
     ];
@@ -154,6 +154,41 @@ try {
     check(`${label}｜入库 ${N} 道题、AI 接着出了答案`, await shows(page.locator(`text=/已入库 ${N} 道题；AI 生成了 ${N} \\/ ${N} 道/`), 20000), true);
     await done.locator('a').click();
     check(`${label}｜点过去是这一章的校对页`, await page.waitForURL(/\/admin\/bank\/pubeng-imp/, { timeout: 10000 }).then(() => true).catch(() => false), true);
+
+    // ---- 第三期 D：核答案。第 121 页第 2 题书上手写 B，替身出的答案一律是 A → 只有这一道有疑点 ----
+    await page.locator('[data-testid="bank-answers-link"]').click();
+    const card = page.locator('[data-testid="answers-card"]');
+    check(`${label}｜核答案：一题一屏，有疑点的只有 1 题`, (await shows(card)) && /有疑点 1 题/.test(await page.locator('[data-testid="answers-head"]').innerText()), true);
+    check(`${label}｜疑点说清书上手写 B、AI 答 A`, /「B」.*「A」/.test(await page.locator('[data-testid="answers-reason"]').first().innerText()), true);
+    check(`${label}｜AI 的答案大字显示`, (await page.locator('[data-testid="answers-ai"]').innerText()).trim(), 'A');
+    const okBtn = page.locator('[data-testid="answers-ok"]');
+    const box = await okBtn.boundingBox();
+    check(`${label}｜「对」按钮看得见、够大（高 ≥ 44）`, Boolean(box) && box.height >= 44 && await okBtn.isVisible(), true);
+    if (width === 390) check('手机｜核答案页没有横向滚动', await noOverflow(page), true);
+    await page.locator('[data-testid="answers-fix"]').click();
+    await page.locator('[data-testid="answers-fix-choices"] button', { hasText: 'B' }).click();
+    check(`${label}｜「改」成 B → 这题已改并确认、没有有疑点的了`, (await shows(page.locator('text=第 2 题已改并确认'))) && await shows(page.locator('[data-testid="answers-no-flagged"]')), true);
+
+    // 传一张原书答案页：第 3–7 题，第 3 题书上是 C（第 2 题刚改成 B，不放进去）
+    await page.locator('[data-testid="answers-page-file"]').setInputFiles({ name: '答案页.jpg', mimeType: 'image/jpeg', buffer: await bookPage(page, 'STUBANS:3-7:A:C@3') });
+    check(`${label}｜答案页比上 5 题、不一致 1 题`, await shows(page.locator('text=/比上 5 题：一致 4 题，不一致 1 题/'), 20000), true);
+    check(`${label}｜第 3 题排到前面、疑点是和原书不一致`, (await shows(card)) && /原书答案页是「C」/.test(await page.locator('[data-testid="answers-reason"]').first().innerText()), true);
+    check(`${label}｜与原书一致率显示出来`, /一致 80\.0%/.test(await page.locator('[data-testid="answers-book-rate"]').innerText()), true);
+    await okBtn.click();
+    check(`${label}｜点「对」→ 第 3 题确认了`, await shows(page.locator('text=第 3 题已确认')), true);
+
+    const rest = page.locator('[data-testid="answers-rest"]');
+    const restN = Number((await rest.innerText()).match(/其余 (\d+) 题/)?.[1]);
+    check(`${label}｜其余没有疑点的折成一行（${N} 题减去确认过的 6 道）`, restN, N - 6);
+    await page.locator('[data-testid="answers-confirm-rest"]').click();
+    // 提示先出来、数据随后重读：等"其余"那一行没了再看顶上的计数
+    const restGone = await rest.waitFor({ state: 'detached', timeout: 15000 }).then(() => true).catch(() => false);
+    check(`${label}｜整组确认 → 全部确认`, (await shows(page.locator(`text=整组确认了 ${N - 6} 题`))) && restGone && /已确认 (\d+) \/ 共 \1 题/.test(await page.locator('[data-testid="answers-head"]').innerText()), true);
+
+    const [dl] = await Promise.all([page.waitForEvent('download', { timeout: 10000 }), page.locator('[data-testid="answers-checklist"]').click()]);
+    const md = await dl.createReadStream().then(async (st) => { let t = ''; for await (const c of st) t += c; return t; });
+    if (!/\.md$/.test(dl.suggestedFilename())) console.log(`    （下载的文件名：${dl.suggestedFilename()}）`);
+    check(`${label}｜下载核对单：Markdown、每题一行`, `${/\.md$/.test(dl.suggestedFilename())}/${md.startsWith('# 答案核对单')}/${md.split('\n').filter((l) => /^\| (?!题 |---)/.test(l)).length}`, `true/true/${N}`);
 
     check(`${label}｜整个过程没有页面报错`, errors.join(' | ') || '无', '无');
     await ctx.close();

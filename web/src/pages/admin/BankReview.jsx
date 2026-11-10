@@ -97,7 +97,10 @@ export default function BankReview() {
               已校对 {reviewedCount} 题{retiredCount ? ` · 已停用 ${retiredCount} 题` : ''}
             </p>
           </div>
-          <StatusBadge status={exam.status} />
+          <span className="row" style={{ gap: 8 }}>
+            <Link className="btn sm" to={`/admin/bank/${examId}/answers`} data-testid="bank-answers-link">核答案</Link>
+            <StatusBadge status={exam.status} />
+          </span>
         </div>
       </div>
 
