@@ -96,6 +96,25 @@ set_state '{"databases":[],"failList":true}'
 check "库列表读不了：退出码 1、不建库" "$(fc true)/$(n_req POST)" "1/0"
 
 echo
+echo "== find-or-create-kv.sh（第三期：照片排队用的 KV，找到 / 找不到就建 / 没权限停下） =="
+cp "$ROOT_DIR/wrangler.toml" "$T/wrangler.toml"
+# 和原来那一行比，不写死成空的：run-all 的沙箱把副本里的 database_id 换成了全 0 的假 id
+DBID_LINE=$(grep '^database_id' "$T/wrangler.toml")
+kv() { : > "$T/genv"; GITHUB_ENV="$T/genv" bash "$CI/find-or-create-kv.sh" "$T/wrangler.toml" > "$T/kv.log" 2>&1; echo $?; }
+kvid() { python3 -c "import re,sys; s=open(sys.argv[1]).read(); b=[x for x in re.split(r'(?m)^(?=\[)', s) if 'IMPORT_IMAGES' in x][0]; m=re.search(r'(?m)^id = \"([^\"]+)\"', b); print(m.group(1) if m else '无')" "$T/wrangler.toml"; }
+set_state '{"databases":[],"kv":[{"title":"别的","id":"kv-x"},{"title":"xlearn-import-images","id":"kv-prod"}]}'
+check "有：退出码 0、取的是同名那个、不建、id 填进了 toml" "$(kv)/$(n_req POST)/$(kvid)/$(grep -c '^KV_IMPORT_IMAGES_ID=kv-prod' "$T/genv")" "0/0/kv-prod/1"
+check "  再跑一次：id 换掉、不重复加一行" "$(kv)/$(grep -c '^id = ' "$T/wrangler.toml")" "0/1"
+check "  database_id 那一行没被碰" "$(grep '^database_id' "$T/wrangler.toml")" "$DBID_LINE"
+cp "$ROOT_DIR/wrangler.toml" "$T/wrangler.toml"
+set_state '{"databases":[],"kv":[{"title":"别的","id":"kv-x"}]}'
+check "没有：建一个、id 填进去" "$(kv)/$(n_req POST)/$(kvid)" "0/1/kv-2"
+cp "$ROOT_DIR/wrangler.toml" "$T/wrangler.toml"
+set_state '{"databases":[],"failKv":true}'
+check "Token 没 KV 权限：退出码 1、不建、toml 不动、说清楚缺哪一项" \
+  "$(kv)/$(n_req POST)/$(kvid)/$(grep -c 'Workers KV Storage｜Edit' "$T/kv.log")" "1/0/无/1"
+
+echo
 echo "== d1-delete-db.sh（自动化里唯一的删库出口） =="
 set_state '{"databases":[{"name":"xlearn","uuid":"u-prod"},{"name":"xlearn-restored-20261001","uuid":"u-r"},{"name":"xlearn-drill-123-a","uuid":"u-d"}],"failList":false}'
 del() { bash "$CI/d1-delete-db.sh" "$1" "$2" > "$T/del.log" 2>&1; echo $?; }

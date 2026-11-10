@@ -149,7 +149,7 @@ export function SubjectSetup() {
 
   const action = (key) => {
     switch (key) {
-      case 'upload': return <Link className="btn sm" to={`/admin/bank/import?subject=${s.code}`}>传题库文件</Link>;
+      case 'upload': return (<span className="row" style={{ gap: 6 }}><Link className="btn sm" to={`/admin/import/new?subject=${s.code}`}>拍照导入</Link><Link className="btn ghost sm" to={`/admin/bank/import?subject=${s.code}`}>传题库文件</Link></span>);
       case 'answers': return <Link className="btn sm" to={`/admin/bank?course=${cl.course?.courseCode || ''}`}>去核答案</Link>;
       case 'template': return <Link className="btn sm" to={`/admin/subjects/${id}/template`}>配组卷模板</Link>;
       case 'publish': return (
@@ -165,7 +165,7 @@ export function SubjectSetup() {
     const it = cl.items;
     switch (key) {
       case 'create': return `满分 ${cl.course?.totalScore} 分 · ${cl.course?.timeLimitMinutes} 分钟`;
-      case 'upload': return it.groups ? `已传 ${it.groups} 组` : '还没有传题（扫描件、照片、Word 导入在第三期）';
+      case 'upload': return it.groups ? `已传 ${it.groups} 组` : '还没有传题：拍书页照片导入，或传题库文件';
       case 'answers': return it.pendingAnswers ? `还差 ${it.pendingAnswers} 道题待确认` : (it.groups ? '答案都确认了' : '');
       case 'template': return it.templateItems
         ? (it.templateOk ? (it.examReady ? '模板配好了，能组出卷' : `模板配好了，题还不够：${it.examShortages.join('、')}`)
