@@ -138,3 +138,36 @@ export function detection(errLines, flagLines) {
     falsePosRate: flag.size ? falsePos / flag.size : null,
   };
 }
+
+/**
+ * 几个模型认同一张图，彼此对不对得上（没有标准答案时的参考：几个模型说法不一样的地方，最值得对着原图看）。
+ * 规整后的文字里，第 k 个字只要被某个"在另一份里也出现过"的连续 n 个字的片段盖住，就算和那一份一致；
+ * 盖不住就是对不上——换掉一个字时正好只有那一个字盖不住，和换行、分栏的先后无关。
+ * 编辑距离两两算太慢（5 个模型 × 2 种尺寸 × 10 张图），这个是线性的。
+ * @param texts 同一张图的几份识别结果
+ * @returns 每份一项 { rate: 和每一份都对得上的字占比（只有一份时为 null）, lines: 对不上的行号（从 0 起）, chars }
+ */
+export function agreement(texts, { n = 8 } = {}) {
+  const N = texts.map((t) => normalizeText(t));
+  const grams = N.map(({ s }) => {
+    const set = new Set();
+    for (let k = 0; k + n <= s.length; k++) set.add(s.slice(k, k + n));
+    if (s.length && s.length < n) set.add(s);
+    return set;
+  });
+  return N.map(({ s, lineOf }, i) => {
+    if (N.length < 2) return { rate: null, lines: [], chars: s.length };
+    const bad = new Uint8Array(s.length);
+    for (let j = 0; j < N.length; j++) {
+      if (j === i) continue;
+      const cover = new Uint8Array(s.length);
+      if (s.length < n) { if (grams[j].has(s)) cover.fill(1); }
+      for (let k = 0; k + n <= s.length; k++) if (grams[j].has(s.slice(k, k + n))) cover.fill(1, k, k + n);
+      for (let k = 0; k < s.length; k++) if (!cover[k]) bad[k] = 1;
+    }
+    const lines = new Set();
+    let badCount = 0;
+    for (let k = 0; k < s.length; k++) if (bad[k]) { badCount++; lines.add(lineOf[k]); }
+    return { rate: s.length ? 1 - badCount / s.length : null, lines: [...lines].sort((a, b) => a - b), chars: s.length };
+  });
+}

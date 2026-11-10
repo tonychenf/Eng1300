@@ -1,5 +1,7 @@
-// 后台「识别实测」（改进阶段 2 第二期，PRD 第 6 节）：管理员在页面上传几页真实照片、选几个读图模型和压缩尺寸，
-// 逐张识别，和仓库里的人工转写稿逐字比，出一份准确率 / 完整率 / 体检检出率 / 耗时 / 花费的报告，用来挑模型。
+// 后台「识别实测」（改进阶段 2 第二期，PRD 第 6 节）：管理员在页面上传几张真实照片（任何学科、任何资料）、
+// 选几个读图模型和压缩尺寸，逐张识别。页面拿识别结果自己去仓库的人工转写稿里找对得上的那一页，对上了逐字算准确率；
+// 对不上的把原图和各模型的结果并排给人看。出一份准确率 / 完整率 / 模型间一致 / 体检 / 耗时 / 花费的报告，用来挑模型。
+// 照片不用标页码（用户 2026-11-10）：库里 ocr_bench_results.page 存的是"第几张照片"（从 1 起）。
 //
 // 三条规矩：
 //   ① **图片不留**（用户 2026-11-07 定）：每张图只在 recognize 这一次请求里用，识别完就丢，库里只存识别出的文字；
@@ -20,8 +22,9 @@ const OCR_TIMEOUT_MS = 90000;                 // 读图模型一页十几秒到�
 
 export const OCR_PROMPT = [
   '请把这张图片里的文字完整、逐字识别出来，按原来的换行输出纯文本。',
-  '- 题号、选项字母（A) B) C) D)）照原样写出；',
-  '- 页眉页脚的页码也写出来（形如 · 121 ·）；',
+  '- 题号、选项字母照原样写出；',
+  '- 页眉页脚的页码也写出来；',
+  '- 表格按行写，同一行的格子之间用空格隔开；公式照原样写（可以用 LaTeX）；',
   '- 看不清的字写 □，不要猜，不要补全，也不要改正原文里的错；',
   '- 不要加任何解释，不要用 Markdown。',
 ].join('\n');
@@ -53,12 +56,13 @@ ocrBenchRouter.get('/config', async (c) => {
   });
 });
 
+// 新的在前；created_at 只到秒，同一秒建的几次按插入先后（rowid）排，后建的在前
 ocrBenchRouter.get('/', async (c) => {
   const { results } = await c.env.DB.prepare(
     `SELECT r.id, r.config_json, r.created_at,
             (SELECT COUNT(*) FROM ocr_bench_results x WHERE x.bench_id = r.id) AS results,
             (SELECT SUM(cost_yuan) FROM ocr_bench_results x WHERE x.bench_id = r.id) AS cost
-       FROM ocr_bench_runs r ORDER BY r.created_at DESC LIMIT 50`
+       FROM ocr_bench_runs r ORDER BY r.created_at DESC, r.rowid DESC LIMIT 50`
   ).all();
   return c.json({ runs: results.map((r) => ({ id: r.id, createdAt: r.created_at, results: r.results, cost: r.cost, config: JSON.parse(r.config_json) })) });
 });
@@ -67,10 +71,10 @@ ocrBenchRouter.get('/', async (c) => {
 ocrBenchRouter.post('/', async (c) => {
   const me = c.get('user');
   const body = await c.req.json().catch(() => ({}));
-  const pages = Array.isArray(body.pages) ? body.pages.map(Number) : [];
-  if (!pages.length || pages.length > 10 || pages.some((p) => !Number.isInteger(p) || p < 1 || p > 999)) {
-    return bad(c, 400, 'invalid_pages', '要测 1–10 页，每页标上原书页码');
-  }
+  // 照片只记文件名（报告里认得出是哪张），不用标页码
+  const raw = Array.isArray(body.photos) ? body.photos : [];
+  if (!raw.length || raw.length > 10) return bad(c, 400, 'invalid_photos', '要测 1–10 张照片');
+  const photos = raw.map((p, i) => ({ no: i + 1, name: String(p?.name ?? '').trim().slice(0, 120) || `照片 ${i + 1}` }));
   const models = Array.isArray(body.models) ? body.models : [];
   if (!models.length || models.length > 5) return bad(c, 400, 'invalid_models', '选 1–5 个模型');
   const clean = [];
@@ -92,7 +96,7 @@ ocrBenchRouter.post('/', async (c) => {
     return bad(c, 409, 'over_budget', `本月 AI 花费已到上限（已花 ${budget.spent} 元 / 上限 ${budget.budget} 元），确认继续才会接着花`, { budget });
   }
   const id = `ocr-${crypto.randomUUID()}`;
-  const config = { pages, models: clean, sizes, estimateYuan: Number.isFinite(Number(body.estimateYuan)) ? Number(body.estimateYuan) : null };
+  const config = { photos, models: clean, sizes, estimateYuan: Number.isFinite(Number(body.estimateYuan)) ? Number(body.estimateYuan) : null };
   await c.env.DB.batch([
     c.env.DB.prepare('INSERT INTO ocr_bench_runs (id, created_by, config_json) VALUES (?, ?, ?)').bind(id, me.id, JSON.stringify(config)),
     auditStmt(c.env.DB, { actorId: me.id, action: budget.over ? 'ocr_bench.create_over_budget' : 'ocr_bench.create', target: id, after: config }),
@@ -110,10 +114,10 @@ ocrBenchRouter.post('/:id/recognize', async (c) => {
   const run = await loadRun(c.env.DB, c.req.param('id'));
   if (!run) return bad(c, 404, 'not_found', '没有这次实测');
   const body = await c.req.json().catch(() => ({}));
-  const page = Number(body.page);
+  const photo = Number(body.photo);
   const size = Number(body.size);
   const model = run.config.models.find((m) => m.id === String(body.model ?? ''));
-  if (!run.config.pages.includes(page)) return bad(c, 400, 'invalid_page', `这次实测没有第 ${body.page} 页`);
+  if (!(run.config.photos || []).some((p) => p.no === photo)) return bad(c, 400, 'invalid_photo', `这次实测没有第 ${body.photo} 张照片`);
   if (!run.config.sizes.includes(size)) return bad(c, 400, 'invalid_size', `这次实测没有选 ${body.size} 这个尺寸`);
   if (!model) return bad(c, 400, 'invalid_model', `这次实测没有选模型 ${body.model}`);
   const image = String(body.image ?? '');
@@ -153,9 +157,9 @@ ocrBenchRouter.post('/:id/recognize', async (c) => {
   const res = await c.env.DB.prepare(
     `INSERT INTO ocr_bench_results (bench_id, page, model, size, text, latency_ms, tokens_in, tokens_out, cost_yuan, error)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-  ).bind(run.id, page, model.id, size, text, latencyMs, usage?.prompt_tokens ?? null, usage?.completion_tokens ?? null, cost, error).run();
+  ).bind(run.id, photo, model.id, size, text, latencyMs, usage?.prompt_tokens ?? null, usage?.completion_tokens ?? null, cost, error).run();
   return c.json({
-    resultId: res.meta.last_row_id, page, model: model.id, size, text, latencyMs,
+    resultId: res.meta.last_row_id, photo, model: model.id, size, text, latencyMs,
     tokensIn: usage?.prompt_tokens ?? null, tokensOut: usage?.completion_tokens ?? null, cost, error,
   });
 });
@@ -181,7 +185,8 @@ ocrBenchRouter.get('/:id', async (c) => {
   return c.json({
     id: run.id, createdAt: run.created_at, config: run.config,
     results: results.map((r) => ({
-      id: r.id, page: r.page, model: r.model, size: r.size, text: r.text, latencyMs: r.latency_ms,
+      // 以前（2026-11-09 那一版）标页码的实测，page 是原书页码；之后的是第几张照片
+      id: r.id, ...(run.config.photos ? { photo: r.page } : { page: r.page }), model: r.model, size: r.size, text: r.text, latencyMs: r.latency_ms,
       tokensIn: r.tokens_in, tokensOut: r.tokens_out, cost: r.cost_yuan, error: r.error,
       metrics: r.metrics_json ? JSON.parse(r.metrics_json) : null,
     })),

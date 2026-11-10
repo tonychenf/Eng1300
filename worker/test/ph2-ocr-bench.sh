@@ -63,7 +63,7 @@ echo
 echo "== 没配「图片解析 AI」时 =="
 check "配置接口说清楚先去配" "$(A "$BASE/admin/ai/ocr-bench/config" | jq -r '"\(.provider)/\(.modelsError | test("图片解析 AI"))"')" "null/true"
 check "建实测 → 422 ai_not_configured" \
-  "$(code -X POST "$BASE/admin/ai/ocr-bench" -H "Authorization: Bearer $ADMIN" -d '{"pages":[121],"models":[{"id":"m"}],"sizes":[1600]}')/$(jq -r '.error' "$WORK/last.json")" "422/ai_not_configured"
+  "$(code -X POST "$BASE/admin/ai/ocr-bench" -H "Authorization: Bearer $ADMIN" -d '{"photos":[{"name":"a.jpg"}],"models":[{"id":"m"}],"sizes":[1600]}')/$(jq -r '.error' "$WORK/last.json")" "422/ai_not_configured"
 A -X PUT "$BASE/admin/ai/settings/PARSING" \
   -d "$(jq -n --arg u "http://127.0.0.1:$STUB_PORT/v1" --argjson pi $PRICE_IN --argjson po $PRICE_OUT '{baseUrl:$u,apiKey:"stub-key",model:"stub-ocr:121:0",visionCapable:true,priceInPerM:$pi,priceOutPerM:$po}')" >/dev/null
 
@@ -84,31 +84,34 @@ check "服务商的模型清单取回来了（替身列了 3 个）" "$(jq -r '.
 echo
 echo "== 建实测：校验 =="
 mk() { code -X POST "$BASE/admin/ai/ocr-bench" -H "Authorization: Bearer $ADMIN" -d "$1"; }
-check "没有页 → 400" "$(mk '{"pages":[],"models":[{"id":"m"}],"sizes":[1600]}')" "400"
-check "尺寸不是 1600/2400 → 400" "$(mk '{"pages":[121],"models":[{"id":"m"}],"sizes":[999]}')" "400"
-check "单价是负数 → 400" "$(mk '{"pages":[121],"models":[{"id":"m","priceInPerM":-1}],"sizes":[1600]}')" "400"
+check "没有照片 → 400" "$(mk '{"photos":[],"models":[{"id":"m"}],"sizes":[1600]}')" "400"
+check "超过 10 张 → 400" "$(mk "$(jq -nc '{photos:[range(11)|{name:"x.jpg"}],models:[{id:"m"}],sizes:[1600]}')")" "400"
+check "尺寸不是 1600/2400 → 400" "$(mk '{"photos":[{"name":"a.jpg"}],"models":[{"id":"m"}],"sizes":[999]}')" "400"
+check "单价是负数 → 400" "$(mk '{"photos":[{"name":"a.jpg"}],"models":[{"id":"m","priceInPerM":-1}],"sizes":[1600]}')" "400"
 check "建实测 → 201" \
-  "$(mk '{"pages":[121,163],"models":[{"id":"stub-ocr:121:0"},{"id":"stub-ocr:121:7","priceInPerM":3,"priceOutPerM":4},{"id":"stub-ocr-fail"}],"sizes":[1600,2400],"estimateYuan":0.01}')" "201"
+  "$(mk '{"photos":[{"name":"第121页.jpg"},{"name":""}],"models":[{"id":"stub-ocr:121:0"},{"id":"stub-ocr:121:7","priceInPerM":3,"priceOutPerM":4},{"id":"stub-ocr-fail"}],"sizes":[1600,2400],"estimateYuan":0.01}')" "201"
 BID=$(jq -r '.id' "$WORK/last.json")
+check "不用标页码：照片按第几张编号，没名字的给个名字" "$(jq -c '[.config.photos[] | [.no, .name]]' "$WORK/last.json")" '[[1,"第121页.jpg"],[2,"照片 2"]]'
 check "建实测写了审计" "$(one "SELECT COUNT(*) FROM admin_audit WHERE action = 'ocr_bench.create' AND target = '$BID';")" "1"
 
 echo
 echo "== 逐张识别：图不留 =="
 # 一张真的小 JPEG（1×1），以 data URL 发
 IMG="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAAMCAgICAgMCAgIDAwMDBAYEBAQEBAgGBgUGCQgKCgkICQkKDA8MCgsOCwkJDRENDg8QEBEQCgwSExIQEw8QEBD/yQALCAABAAEBAREA/8wABgAQEAX/2gAIAQEAAD8A0s8g/9k="
-rec() { code -X POST "$BASE/admin/ai/ocr-bench/$BID/recognize" -H "Authorization: Bearer $ADMIN" -d "$(jq -nc --argjson p "$1" --arg m "$2" --argjson s "$3" --arg i "$4" '{page:$p,model:$m,size:$s,image:$i}')"; }
-check "识别第 121 页（替身原样回转写稿）→ 200" "$(rec 121 'stub-ocr:121:0' 1600 "$IMG")" "200"
+rec() { code -X POST "$BASE/admin/ai/ocr-bench/$BID/recognize" -H "Authorization: Bearer $ADMIN" -d "$(jq -nc --argjson p "$1" --arg m "$2" --argjson s "$3" --arg i "$4" '{photo:$p,model:$m,size:$s,image:$i}')"; }
+check "识别第 1 张（替身原样回第 121 页的转写稿）→ 200，回的是第几张照片" "$(rec 1 'stub-ocr:121:0' 1600 "$IMG")/$(jq -r '.photo' "$WORK/last.json")" "200/1"
 R1=$(cat "$WORK/last.json")
 check "回来的文字就是第 121 页（第 1 题到第 17 题）" "$(echo "$R1" | jq -r '.text | (test("1\\. It pays") and test("17\\. "))')" "true"
 WANT=$(awk -v i=$PRICE_IN -v o=$PRICE_OUT 'BEGIN { printf "%.6f", (100*i + 50*o) / 1e6 }')
 check "没在实测里填单价、模型又正好是现配的那个：用配置的单价 → $WANT 元" "$(echo "$R1" | jq -r '.cost * 1e6 | round / 1e6' | xargs printf '%.6f')" "$WANT"
-check "实测里填了单价的模型按填的算" "$(rec 121 'stub-ocr:121:7' 1600 "$IMG")/$(jq -r '.cost * 1e6 | round' "$WORK/last.json")" "200/$(( 100*3 + 50*4 ))"
+check "实测里填了单价的模型按填的算" "$(rec 1 'stub-ocr:121:7' 1600 "$IMG")/$(jq -r '.cost * 1e6 | round' "$WORK/last.json")" "200/$(( 100*3 + 50*4 ))"
 check "服务商报错（不支持图片）：200、结果里记下错误和原因" \
-  "$(rec 121 'stub-ocr-fail' 1600 "$IMG")/$(jq -r '.error | test("ai_error") and test("image")' "$WORK/last.json")" "200/true"
-check "不在这次实测里的模型 → 400" "$(rec 121 'other-model' 1600 "$IMG")" "400"
-check "不在这次实测里的页 → 400" "$(rec 130 'stub-ocr:121:0' 1600 "$IMG")" "400"
-check "不在这次实测里的尺寸 → 400" "$(rec 121 'stub-ocr:121:0' 1200 "$IMG")" "400"
-check "不是图片 → 400" "$(rec 121 'stub-ocr:121:0' 1600 'data:text/plain;base64,aGk=')" "400"
+  "$(rec 1 'stub-ocr-fail' 1600 "$IMG")/$(jq -r '.error | test("ai_error") and test("image")' "$WORK/last.json")" "200/true"
+check "不在这次实测里的模型 → 400" "$(rec 1 'other-model' 1600 "$IMG")" "400"
+check "没有第 3 张照片 → 400" "$(rec 3 'stub-ocr:121:0' 1600 "$IMG")" "400"
+check "第 0 张 → 400" "$(rec 0 'stub-ocr:121:0' 1600 "$IMG")" "400"
+check "不在这次实测里的尺寸 → 400" "$(rec 1 'stub-ocr:121:0' 1200 "$IMG")" "400"
+check "不是图片 → 400" "$(rec 1 'stub-ocr:121:0' 1600 'data:text/plain;base64,aGk=')" "400"
 check "库里存了 3 条结果" "$(one "SELECT COUNT(*) FROM ocr_bench_results WHERE bench_id = '$BID';")" "3"
 check "图片没进库：结果表里没有任何 base64 图片" "$(one "SELECT COUNT(*) FROM ocr_bench_results WHERE text LIKE '%data:image%' OR error LIKE '%data:image%' OR metrics_json LIKE '%data:image%';")" "0"
 check "图片也没进用量日志、审计" \
@@ -121,15 +124,21 @@ RID=$(echo "$R1" | jq -r '.resultId')
 check "存指标 → 200" "$(code -X PUT "$BASE/admin/ai/ocr-bench/$BID/results/$RID/metrics" -H "Authorization: Bearer $ADMIN" -d '{"metrics":{"accuracy":1,"page":121}}')" "200"
 check "存到别的实测名下 → 404" "$(code -X PUT "$BASE/admin/ai/ocr-bench/ocr-x/results/$RID/metrics" -H "Authorization: Bearer $ADMIN" -d '{"metrics":{"accuracy":1}}')" "404"
 A "$BASE/admin/ai/ocr-bench/$BID" > "$WORK/run.json"
-check "读回实测：3 条结果，存过的指标带着" "$(jq -r '"\(.results | length)/\([.results[] | select(.metrics.accuracy == 1)] | length)"' "$WORK/run.json")" "3/1"
+check "读回实测：3 条结果都是第 1 张照片，存过的指标带着" "$(jq -r '"\(.results | length)/\([.results[] | select(.photo == 1)] | length)/\([.results[] | select(.metrics.accuracy == 1)] | length)"' "$WORK/run.json")" "3/3/1"
 check "列表里有这次实测" "$(A "$BASE/admin/ai/ocr-bench" | jq -r --arg b "$BID" '[.runs[] | select(.id == $b)] | length')" "1"
+
+echo
+echo "== 以前标页码的实测（2026-11-09 那一版）照样读得出 =="
+exec_sql "INSERT INTO ocr_bench_runs (id, created_by, config_json) VALUES ('ocr-old', 1, '{\"pages\":[121],\"models\":[{\"id\":\"m\"}],\"sizes\":[1600]}');
+INSERT INTO ocr_bench_results (bench_id, page, model, size, text) VALUES ('ocr-old', 121, 'm', 1600, 'x');" >/dev/null
+check "旧实测的结果带原书页码、不带第几张" "$(A "$BASE/admin/ai/ocr-bench/ocr-old" | jq -r '.results[0] | "\(.page)/\(has("photo"))"')" "121/false"
 
 echo
 echo "== 每月上限：建实测要明说继续 =="
 A -X PUT "$BASE/admin/ai/budget" -d '{"yuan":0.0001}' >/dev/null
-check "到了上限，不说继续 → 409 over_budget" "$(mk '{"pages":[121],"models":[{"id":"stub-ocr:121:0"}],"sizes":[1600]}')/$(jq -r '.error' "$WORK/last.json")" "409/over_budget"
+check "到了上限，不说继续 → 409 over_budget" "$(mk '{"photos":[{"name":"a.jpg"}],"models":[{"id":"stub-ocr:121:0"}],"sizes":[1600]}')/$(jq -r '.error' "$WORK/last.json")" "409/over_budget"
 check "说继续 → 201，审计记下是超额继续的" \
-  "$(mk '{"pages":[121],"models":[{"id":"stub-ocr:121:0"}],"sizes":[1600],"confirmOverBudget":true}')/$(one "SELECT COUNT(*) FROM admin_audit WHERE action = 'ocr_bench.create_over_budget';")" "201/1"
+  "$(mk '{"photos":[{"name":"a.jpg"}],"models":[{"id":"stub-ocr:121:0"}],"sizes":[1600],"confirmOverBudget":true}')/$(one "SELECT COUNT(*) FROM admin_audit WHERE action = 'ocr_bench.create_over_budget';")" "201/1"
 A -X PUT "$BASE/admin/ai/budget" -d '{"yuan":null}' >/dev/null
 
 echo
