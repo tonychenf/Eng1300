@@ -43,7 +43,7 @@ const browser = await chromium.launch({ executablePath: chromePath() });
 const WIDTHS = [[390, 844, '手机'], [768, 1024, '平板'], [1280, 900, 'PC']];
 try {
   for (const [width, height, label] of WIDTHS) {
-    const ctx = await browser.newContext({ viewport: { width, height }, acceptDownloads: true });
+    const ctx = await browser.newContext({ viewport: { width, height }, acceptDownloads: true, deviceScaleFactor: process.env.UI_SHOTS ? 2 : 1 });
     const page = await ctx.newPage();
     const errors = [];
     page.on('pageerror', (e) => errors.push(String(e.message || e)));
@@ -123,6 +123,10 @@ try {
     const marks = await report.locator('[data-testid="bench-text"] .bench-line').evaluateAll((els) => els.map((e) => e.dataset.mark || '-').join(','));
     check(`${label}｜说法不一样的只有第 2 行，标黄`, marks, '-,dis,-,-,-');
     if (width === 390) check('手机｜第二轮报告页没有横向滚动', await noOverflow(page), true);
+    // UI_SHOTS=目录：把第二轮的报告截下来给人看（手机、PC）
+    if (process.env.UI_SHOTS && width !== 768) {
+      await report.locator('[data-testid="bench-photo"]').first().screenshot({ path: `${process.env.UI_SHOTS}/ocr-bench-${label}.png` });
+    }
 
     await page.reload({ waitUntil: 'networkidle' });
     const pastBtn = page.locator('button', { hasText: '1 张 × 2 个模型' });
