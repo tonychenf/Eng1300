@@ -203,6 +203,13 @@ jobs:
       - name: Re-check isolation after the database id is filled in
         run: bash scripts/ci/check-db-isolation.sh
 
+      # 改进阶段 2 第三期：AI 拆题导入暂存照片的 KV 命名空间。找不到就建（只放排队等识别的照片，识别完就删），
+      # id 填进 wrangler.toml。排在动库之前：API Token 没有 KV 权限时停在这里，数据库还一行都没动。
+      - name: Find or create the KV namespace for import photos
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: bash scripts/ci/find-or-create-kv.sh worker/wrangler.toml
+
       # ---- 动库之前（CR-M6）：下面的重建、补列、迁移、导题库都会写库 ----
       # 恢复点：这一刻的时间旅行书签打进日志和摘要。这次部署弄坏了数据，d1-restore 填它就回到部署前。
       # 只读；读不到只告警（按北京时间填时间点照样能恢复）。

@@ -11,6 +11,8 @@ import { adminStatsRouter } from './routes/admin-stats.js';
 import { adminSubjectsRouter } from './routes/admin-subjects.js';
 import { adminSetupRouter } from './routes/admin-setup.js';
 import { ocrBenchRouter } from './routes/admin-ocr-bench.js';
+import { importJobsRouter } from './routes/admin-import-jobs.js';
+import { processImportTick } from './lib/import-queue.js';
 import { adminGrantsRouter } from './routes/admin-grants.js';
 import { adminPackRouter } from './routes/admin-pack.js';
 import { subjectRouter } from './routes/subject.js';
@@ -384,6 +386,7 @@ admin.route('/subjects', adminSubjectsRouter);
 admin.route('/bank', bankRouter);
 admin.route('/bank', importRouter);   // POST /bank/import、GET /bank/import/:examId/source
 admin.route('/ai/ocr-bench', ocrBenchRouter);   // 改进阶段 2 第二期：识别实测
+admin.route('/import', importJobsRouter);       // 改进阶段 2 第三期：AI 拆题导入（/api/admin/import/jobs…）
 admin.route('/ai', aiRouter);
 admin.route('/stats', adminStatsRouter);
 app.route('/api/admin', admin);
@@ -404,5 +407,12 @@ app.onError((err, c) => {
   }
   return c.json({ error: 'internal_error' }, 500);
 });
+
+// 改进阶段 2 第三期：cron 每分钟一次（wrangler.toml 的 [triggers]），处理导入任务里排队的页、拆题。
+// 挂在 Hono 实例上：Workers 认 default 导出上的 scheduled；测试里 import app 拿 app.request() 的照旧能用。
+// 直接 await（不交给 waitUntil）：本地测试用 /__scheduled 触发时，处理完才返回，测试好断状态。
+app.scheduled = async (event, env) => {
+  try { await processImportTick(env); } catch (e) { console.error('导入排队处理失败：', e); }
+};
 
 export default app;

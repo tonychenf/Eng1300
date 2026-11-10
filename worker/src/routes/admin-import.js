@@ -549,6 +549,8 @@ importRouter.delete('/exams/:examId', async (c) => {
         AND tag_id NOT IN (SELECT tag_id FROM question_knowledge_points)
         AND tag_id NOT IN (SELECT tag_id FROM user_knowledge_mastery)
         AND tag_id NOT IN (SELECT parent_tag_id FROM knowledge_points WHERE parent_tag_id IS NOT NULL)`),
+    // 第三期：AI 拆题导入的任务记录留着，只是不再指向这个内容组（排在最后，前面各句的下标不变）
+    db.prepare('UPDATE import_jobs SET exam_id = NULL WHERE exam_id = ?').bind(examId),
   ]);
   // 读不到行数就报 null，不报 0：0 是合法结果（这一章本来就没有图），
   // 回落成 0 等于把"不知道"说成"一行都没有"

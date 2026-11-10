@@ -159,6 +159,25 @@ let lastPrompt = '';
 const allPrompts = [];
 // 读图模型因为带了 enable_thinking 被拒的次数（同一个模型拒过一次后，Worker 应该记住、不再带）
 let thinkingRejects = 0;
+// AI 拆题导入：每次识别调用按顺序记下标记（#alt 是第二遍），拆题调用次数
+const importOcrCalls = [];
+let splitCalls = 0;
+// 照转写稿的格式拆：每个【第 N 张照片】块里，"数字. 题干"起一道题，下面的 A) B) C) D) 是选项。
+// 后一段标 continues: true（转写稿的选择题一组一直往下编号），由 Worker 并回去。
+function stubSplit(prompt) {
+  const blocks = [...prompt.matchAll(/【第 (\d+) 张照片[^】]*】\n([\s\S]*?)(?=\n\n【第 |$)/g)];
+  const questions = [];
+  for (const [, pageNo, text] of blocks) {
+    for (const ln of text.split('\n')) {
+      const m = ln.match(/^(\d+)\.\s+(.*)$/);
+      if (m) { questions.push({ no: Number(m[1]), questionType: 'single_choice', stem: m[2], options: [], handwrittenAnswer: null, pageNo: Number(pageNo), doubt: null }); continue; }
+      const q = questions[questions.length - 1];
+      if (!q) continue;
+      for (const o of ln.matchAll(/([A-D])\)\s*(.+?)(?=\s{2,}[A-D]\)|$)/g)) q.options.push(`${o[1]}. ${o[2].trim()}`);
+    }
+  }
+  return { sections: [{ type: '选择填空', title: '选择题', passage: null, printedCount: null, continues: prompt.includes('上一段最后一部分'), questions }] };
+}
 
 const server = http.createServer((req, res) => {
   if (req.url === '/last-prompt') {
@@ -167,9 +186,9 @@ const server = http.createServer((req, res) => {
     return;
   }
   if (req.url.startsWith('/stats')) {
-    if (req.url.includes('reset=1')) { pointsMaxInflight = 0; pointsCalls = 0; thinkingRejects = 0; }
+    if (req.url.includes('reset=1')) { pointsMaxInflight = 0; pointsCalls = 0; thinkingRejects = 0; importOcrCalls.length = 0; splitCalls = 0; }
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ pointsCalls, pointsMaxInflight, pointsInflight, thinkingRejects }));
+    res.end(JSON.stringify({ pointsCalls, pointsMaxInflight, pointsInflight, thinkingRejects, importOcrCalls, splitCalls }));
     return;
   }
   if (req.url.startsWith('/v1/models')) {
@@ -181,11 +200,48 @@ const server = http.createServer((req, res) => {
   req.on('data', (c) => { body += c; });
   req.on('end', () => {
     let ocr = null;
+    let importImg = null;
     try {
       const b = JSON.parse(body);
+      // AI 拆题导入（第三期）：模型名 stub-import*。替身看不懂图，测试把要回什么埋在"照片"的字节里：
+      //   STUBPAGE:<转写稿页码>:<改掉的小写字母数>[:garble][:bad]
+      //     garble → 第一遍在第 2 行插一个 □（体检命中、会再识别一遍；第二遍不插，两次不一致）
+      //     bad    → 识别出的文字里带 STUBSPLITBAD，拆题那一步回一个形状不对的结果
+      //   STUBFAIL → 这一页识别失败（500）
+      const img = (b.messages || []).flatMap((m) => (Array.isArray(m.content) ? m.content : []))
+        .find((x) => x.type === 'image_url')?.image_url?.url;
+      if (img && String(b.model || '').startsWith('stub-import')) {
+        const raw = Buffer.from(String(img).split(',')[1] || '', 'base64').toString('latin1');
+        const prompt = (b.messages || []).flatMap((m) => (Array.isArray(m.content) ? m.content : [])).find((x) => x.type === 'text')?.text || '';
+        importImg = { tag: raw.match(/STUB(?:PAGE:[\w:]+|FAIL)/)?.[0] || '', alt: prompt.includes('一行一行地抄') };
+      }
       const hasImage = (b.messages || []).some((m) => Array.isArray(m.content) && m.content.some((x) => x.type === 'image_url'));
       if (hasImage && String(b.model || '').startsWith('stub-ocr')) ocr = String(b.model);
     } catch { /* 不是识别请求 */ }
+    if (importImg) {
+      if (bodyHas(body, 'enable_thinking')) {   // 读图模型不认这个参数（同 stub-ocr）
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ code: 20015, message: 'current model does not support enable_thinking', data: null }));
+        return;
+      }
+      importOcrCalls.push(importImg.tag + (importImg.alt ? '#alt' : ''));
+      if (!importImg.tag || importImg.tag === 'STUBFAIL') {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: { message: 'stub import ocr failure' } }));
+        return;
+      }
+      const [, page, k, ...flags] = importImg.tag.split(':');
+      let text = truthFor(Number(page)).text || '（这一页没有转写稿）';
+      let left = Number(k) || 0;
+      text = text.replace(/[a-z]/g, (ch) => (left-- > 0 ? '#' : ch));
+      const lines = text.split('\n');
+      if (flags.includes('garble') && !importImg.alt) lines[1] = `□${lines[1]}`;
+      if (flags.includes('bad')) lines.push('STUBSPLITBAD');
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ choices: [{ message: { role: 'assistant', content: `【页码】${page}\n${lines.join('\n')}` } }],
+        usage: { prompt_tokens: 1000, completion_tokens: 500 } }));
+      return;
+    }
     if (ocr) {
       // 真实的读图模型（Qwen2.5-VL、DeepSeek-OCR 这类）不认 enable_thinking，带了就 400——
       // 2026-11-10 线上实测报的就是这个；以前替身不管这个参数，所以一直测不出来
@@ -239,6 +295,13 @@ const server = http.createServer((req, res) => {
     allPrompts.push(promptText);
     if (allPrompts.length > 50) allPrompts.shift();
 
+    if (promptText.includes('拆成大题和题目')) {
+      splitCalls++;
+      const content = promptText.includes('STUBSPLITBAD') ? JSON.stringify({ foo: 1 }) : JSON.stringify(stubSplit(promptText));
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ choices: [{ message: { role: 'assistant', content } }], usage: { prompt_tokens: 2000, completion_tokens: 1000 } }));
+      return;
+    }
     if (promptText.includes(POINTS_MARK) && !req.url.startsWith('/bad/')) {
       pointsCalls++;
       pointsInflight++;

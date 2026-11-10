@@ -19,3 +19,13 @@ database_id = ""
 directory = "./public"
 not_found_handling = "single-page-application"
 run_worker_first = ["/api/*"]
+
+# 改进阶段 2 第三期（AI 拆题导入）：照片排队等识别的那几分钟放在这里，识别完立刻删、每个键带 1 天过期兜底。
+# id 不写：本地开发由 wrangler 在本地模拟；线上由部署流水线按名字找到或新建命名空间，再把 id 填进来
+# （scripts/ci/find-or-create-kv.sh）。图片不进 D1 的理由见 migrations/0021_import_jobs.sql。
+[[kv_namespaces]]
+binding = "IMPORT_IMAGES"
+
+# 每分钟叫醒一次，处理导入任务里排队的页（PRD P3-C2；免费计划可用）。本地测试用 /__scheduled 手动触发。
+[triggers]
+crons = ["* * * * *"]

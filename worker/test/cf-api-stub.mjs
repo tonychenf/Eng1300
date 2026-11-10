@@ -24,6 +24,20 @@ http.createServer((req, res) => {
   let body = '';
   req.on('data', (c) => { body += c; });
   req.on('end', () => {
+    // KV 命名空间（第三期：find-or-create-kv.sh）。状态里 kv: [{title,id}]、failKv: true 时一律没权限
+    if (/^\/client\/v4\/accounts\/[^/]+\/storage\/kv\/namespaces$/.test(url.pathname)) {
+      const state = read();
+      if (state.failKv) return send(res, 403, { success: false, errors: [{ code: 10000, message: 'Authentication error' }] });
+      state.kv = state.kv || [];
+      if (req.method === 'GET') return send(res, 200, { success: true, result: state.kv });
+      if (req.method === 'POST') {
+        const { title } = JSON.parse(body || '{}');
+        const id = `kv-${state.kv.length + 1}`;
+        state.kv.push({ title, id });
+        write(state);
+        return send(res, 200, { success: true, result: { id, title } });
+      }
+    }
     const m = url.pathname.match(/^\/client\/v4\/accounts\/[^/]+\/d1\/database(?:\/([^/]+))?$/);
     if (!m) return send(res, 404, { success: false, errors: [{ message: `stub: 不认识 ${url.pathname}` }] });
     const state = read();

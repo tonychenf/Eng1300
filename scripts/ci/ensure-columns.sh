@@ -124,6 +124,9 @@ SPECS=(
   "ai_usage_logs|user_id|INTEGER"
   "ai_usage_logs|cost_yuan|REAL"
   "attempts|section_meta|TEXT"
+  # 改进阶段 2 第三期（AI 拆题导入）：出自第几页、核对时改过哪些字段。别的来源的题空着，不回填
+  "questions|source_page|INTEGER"
+  "questions|edited_fields|TEXT"
 )
 
 # 补完列还要**回填**：新库从建表语句和种子里就带着值，旧库补出来的列全是 NULL，

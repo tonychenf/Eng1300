@@ -130,7 +130,11 @@ CREATE TABLE IF NOT EXISTS questions (
   -- 作答记录和成绩报告照旧引用它。可以恢复，恢复后是草稿，要重新发布。
   -- 线上那张表是早先建的，这两列由 scripts/ci/ensure-columns.sh 补上（排在迁移之前）。
   retired_at TEXT,
-  retired_by TEXT
+  retired_by TEXT,
+  -- 改进阶段 2 第三期（AI 拆题导入）：这道题出自原书第几页（印刷页码），管理员核对时改过哪些字段（JSON 数组）。
+  -- 别的来源的题两列都空。线上老表由 ensure-columns.sh 补。
+  source_page INTEGER,
+  edited_fields TEXT
 );
 CREATE INDEX IF NOT EXISTS idx_questions_subject ON questions(subject_id, status);
 -- 组卷与练习抽题的主查询路径：按课程+题型+状态筛选
