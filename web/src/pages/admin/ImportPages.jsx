@@ -53,10 +53,27 @@ export function ImportNew() {
 
   const commit = (next) => { itemsRef.current = next; setItems(next); };
   async function addFiles(list) {
-    const files = [...list].filter((f) => (f.type || '').startsWith('image/') || /\.(jpe?g|png|webp|heic|heif)$/i.test(f.name));
-    const room = Math.max(0, MAX_PAGES - itemsRef.current.length);
+    const all = [...list];
+    const isPdf = (f) => f.type === 'application/pdf' || /\.pdf$/i.test(f.name);
     const msgs = [];
-    if (files.length < list.length) msgs.push('不是图片的文件没加（PDF 请先在手机上存成图片再选）');
+    // PDF 在浏览器里拆成每页一张图（拍板 6），之后和照片一样质检、上传
+    const files = [];
+    for (const f of all) {
+      if (isPdf(f)) {
+        setBusy(`正在拆 PDF「${f.name}」…`);
+        try {
+          const { pdfToImages } = await import('../../lib/pdf-pages.js');
+          const r = await pdfToImages(f, { maxLong: UPLOAD_LONG, maxPages: MAX_PAGES });
+          files.push(...r.files);
+          msgs.push(`PDF「${f.name}」共 ${r.total} 页${r.total > r.files.length ? `，只取了前 ${r.files.length} 页` : ''}`);
+        } catch (e) {
+          msgs.push(`PDF「${f.name}」打不开（${String(e.message || e).slice(0, 60)}）`);
+        }
+        setBusy('');
+      } else if ((f.type || '').startsWith('image/') || /\.(jpe?g|png|webp|heic|heif)$/i.test(f.name)) files.push(f);
+    }
+    const room = Math.max(0, MAX_PAGES - itemsRef.current.length);
+    if (files.length + all.filter(isPdf).length < all.length) msgs.push('不是图片、也不是 PDF 的文件没加');
     if (files.length > room) msgs.push(`一次最多 ${MAX_PAGES} 页，多出来的 ${files.length - room} 张没加`);
     const added = files.slice(0, room).map((f) => ({ key: `${f.name}-${f.size}-${Math.random()}`, file: f, name: f.name, url: URL.createObjectURL(f), qc: null }));
     commit([...itemsRef.current, ...added]);
@@ -144,8 +161,8 @@ export function ImportNew() {
         <div className="bench-drop" data-testid="import-drop"
           onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); if (!busy) addFiles(e.dataTransfer?.files || []); }}>
           <label className={`btn${items.length ? ' ghost' : ''}${busy || items.length >= MAX_PAGES ? ' disabled' : ''}`}>
-            {items.length ? '继续添加照片' : '拍照或选照片（可以一次选多张）'}
-            <input type="file" accept="image/*" multiple className="visually-hidden" data-testid="import-files"
+            {items.length ? '继续添加照片' : '拍照或选照片 / PDF（可以一次选多张）'}
+            <input type="file" accept="image/*,application/pdf,.pdf" multiple className="visually-hidden" data-testid="import-files"
               disabled={Boolean(busy) || items.length >= MAX_PAGES}
               onChange={(e) => { const fs = [...(e.target.files || [])]; e.target.value = ''; addFiles(fs); }} />
           </label>

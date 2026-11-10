@@ -32,6 +32,30 @@ async function bookPage(page, tag, { w = 1200, h = 1600 } = {}) {
   }, [w, h]);
   return Buffer.concat([Buffer.from(b64, 'base64'), Buffer.from(tag)]);
 }
+// 现生成一份 n 页的 PDF（每页一行行英文），测"PDF 在浏览器里拆成每页一张图"（拍板 6）
+function makePdf(n) {
+  const objs = [];
+  const kids = [];
+  objs[1] = '<< /Type /Catalog /Pages 2 0 R >>';
+  objs[3] = '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>';
+  let id = 4;
+  for (let p = 0; p < n; p++) {
+    const lines = Array.from({ length: 24 }, (_, i) => `(Page ${p + 1} line ${i + 1}: The quick brown fox jumps over the lazy dog.) Tj T*`).join(' ');
+    const stream = `BT /F1 14 Tf 50 790 Td 30 TL ${lines} ET`;
+    objs[id] = `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents ${id + 1} 0 R >>`;
+    objs[id + 1] = `<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`;
+    kids.push(`${id} 0 R`);
+    id += 2;
+  }
+  objs[2] = `<< /Type /Pages /Kids [${kids.join(' ')}] /Count ${n} >>`;
+  let out = '%PDF-1.4\n';
+  const offsets = [];
+  for (let i = 1; i < objs.length; i++) { offsets[i] = out.length; out += `${i} 0 obj\n${objs[i]}\nendobj\n`; }
+  const xref = out.length;
+  out += `xref\n0 ${objs.length}\n0000000000 65535 f \n` + offsets.slice(1).map((o) => `${String(o).padStart(10, '0')} 00000 n \n`).join('');
+  out += `trailer\n<< /Size ${objs.length} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`;
+  return Buffer.from(out, 'latin1');
+}
 const tick = (page) => page.evaluate((u) => fetch(`${u}/cdn-cgi/local/scheduled?cron=*+*+*+*+*`).then((r) => r.status), BASE);
 
 const browser = await chromium.launch({ executablePath: chromePath() });
@@ -58,6 +82,17 @@ try {
     await entry.click();
     check(`${label}｜导入页打开了`, await shows(page.locator('[data-testid="import-setup"]')), true);
     await page.selectOption('#imp-subject', 'pubeng');
+
+    // PDF：在浏览器里拆成每页一张图，和照片一样质检（只在 PC 宽度测一遍，拆完去掉，不进后面的流程）
+    if (width === 1280) {
+      await page.setInputFiles('[data-testid="import-files"]', { name: '资料.pdf', mimeType: 'application/pdf', buffer: makePdf(2) });
+      const pdfItems = page.locator('[data-testid="import-item"]');
+      const pdfDone = async () => { for (let t = 0; t < 150; t++) { if ((await page.locator('[data-testid="import-qc"]').count()) === 2) return true; await page.waitForTimeout(100); } return false; };
+      check('PC｜两页的 PDF 拆成 2 张图、都检查完了', `${await pdfDone()}/${await pdfItems.count()}`, 'true/2');
+      check('PC｜拆出来的图按页命名、缩略图解得出来、质检清楚',
+        `${(await pdfItems.nth(1).innerText()).includes('资料-第2页.jpg')}/${await decoded(pdfItems.first().locator('img'))}/${(await page.locator('[data-testid="import-qc"]').allInnerTexts()).join(',')}`, 'true/true/清楚,清楚');
+      while (await pdfItems.count()) await pdfItems.first().locator('button:has-text("去掉")').click();
+    }
 
     // 选三张：第 121 页、第 122 页（第 2 行会出乱码）、一张太小的
     const items = page.locator('[data-testid="import-item"]');
