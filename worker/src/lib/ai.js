@@ -3,11 +3,19 @@
 // 关键约束（实测得出，见 PRD §10.0）：Qwen3-8B 是推理模型，不显式关闭思考模式时
 // 约 2/3 的结构化请求会把 token 全部消耗在内部推理上、返回空对象，延迟也从 3 秒
 // 涨到 15 秒以上。因此这里对所有教学类调用强制带 enable_thinking: false。
+//
+// 但这个参数只有"能切换思考"的模型认：Qwen2.5-VL、DeepSeek-OCR 这类读图模型带了它直接 400
+//（"current model does not support enable_thinking"，2026-11-10 识别实测在线上报的）。
+// 所以：先带着发；服务商回的错误里提到 enable_thinking，就去掉它重发一次，并记住这个模型，
+// 这个 Worker 实例里后面再调它就不带了。不按模型名列白名单——换一家、换一个模型都不用改代码。
 
 import { purposeChain } from './ai-purposes.js';
 import { decryptSecret } from './crypto.js';
 
 const DEFAULT_MAX_TOKENS = 2000;
+// 不认 enable_thinking 的模型（"服务商地址|模型名"）。只在本实例内存里，冷启动后第一次多一次被拒的请求
+const NO_THINKING_PARAM = new Set();
+const rejectsThinkingParam = (status, data) => status >= 400 && status < 500 && /enable_thinking/i.test(JSON.stringify(data ?? ''));
 
 /**
  * 取某用途的 AI 配置。
@@ -115,12 +123,13 @@ export async function chat(env, opts) {
     throw err;
   }
 
+  const modelKey = `${cfg.base_url}|${cfg.model}`;
   const body = {
     model: cfg.model,
     messages,
     max_tokens: maxTokens,
-    // 强制关闭思考模式——不加会导致约2/3的空响应，且延迟涨到15秒以上
-    enable_thinking: false,
+    // 强制关闭思考模式——不加会导致约2/3的空响应，且延迟涨到15秒以上（不认这个参数的模型除外，见文件头）
+    ...(NO_THINKING_PARAM.has(modelKey) ? {} : { enable_thinking: false }),
   };
   if (json) body.response_format = { type: 'json_object' };
 
@@ -131,8 +140,8 @@ export async function chat(env, opts) {
   const ctrl = timeoutMs ? new AbortController() : null;
   const timer = ctrl ? setTimeout(() => ctrl.abort(), timeoutMs) : null;
   let resp, data;
-  try {
-    resp = await fetch(`${cfg.base_url.replace(/\/+$/, '')}/chat/completions`, {
+  const send = async () => {
+    const r = await fetch(`${cfg.base_url.replace(/\/+$/, '')}/chat/completions`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${cfg.apiKey}`,
@@ -141,7 +150,16 @@ export async function chat(env, opts) {
       body: JSON.stringify(body),
       ...(ctrl ? { signal: ctrl.signal } : {}),
     });
-    data = await resp.json();
+    return [r, await r.json()];
+  };
+  try {
+    [resp, data] = await send();
+    // 这个模型不认 enable_thinking：去掉重发一次（被拒的那次不算用量——服务商在校验参数时就拒了）
+    if ('enable_thinking' in body && rejectsThinkingParam(resp.status, data)) {
+      NO_THINKING_PARAM.add(modelKey);
+      delete body.enable_thinking;
+      [resp, data] = await send();
+    }
   } catch (e) {
     const timedOut = ctrl?.signal.aborted;
     await logUsage(env, {

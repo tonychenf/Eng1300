@@ -116,7 +116,14 @@ check "库里存了 3 条结果" "$(one "SELECT COUNT(*) FROM ocr_bench_results 
 check "图片没进库：结果表里没有任何 base64 图片" "$(one "SELECT COUNT(*) FROM ocr_bench_results WHERE text LIKE '%data:image%' OR error LIKE '%data:image%' OR metrics_json LIKE '%data:image%';")" "0"
 check "图片也没进用量日志、审计" \
   "$(one "SELECT (SELECT COUNT(*) FROM ai_usage_logs WHERE error_message LIKE '%/9j/%') + (SELECT COUNT(*) FROM admin_audit WHERE after_json LIKE '%/9j/%');")" "0"
+check "读图模型不认 enable_thinking：去掉重发，被拒的那次不记用量（3 次识别正好 3 条记录）" "$(one "SELECT COUNT(*) FROM ai_usage_logs WHERE feature = 'ocr_bench';")" "3"
 check "识别记账在 ocr_bench 名下、带花费" "$(one "SELECT COUNT(*) || '/' || (SUM(cost_yuan) IS NOT NULL) FROM ai_usage_logs WHERE feature = 'ocr_bench' AND success = 1;")" "2/1"
+# 3 个模型各识别了一次、各被拒一次；同一个模型再识别一次，Worker 记住了、不再带这个参数
+REJ1=$(curl -s "http://127.0.0.1:$STUB_PORT/stats" | jq -r '.thinkingRejects')
+check "  头一次：3 个模型各被拒一次" "$REJ1" "3"
+rec 1 'stub-ocr:121:0' 2400 "$IMG" >/dev/null
+check "  同一个模型再识别：一次都没再被拒（记住了）、识别成功" "$(curl -s "http://127.0.0.1:$STUB_PORT/stats" | jq -r '.thinkingRejects')/$(jq -r '.error' "$WORK/last.json")" "3/null"
+exec_sql "DELETE FROM ocr_bench_results WHERE bench_id = '$BID' AND size = 2400;" >/dev/null
 
 echo
 echo "== 指标存回来、读得出 =="

@@ -293,6 +293,10 @@ node scripts/build-user-manual.js
 
 Qwen3-8B 是推理模型，所有结构化调用必须带 `enable_thinking: false`，否则约三分之
 二的请求返回空对象、延迟从 3 秒涨到 15 秒以上（实测结论，见 `docs/prd.md` §10.0）。
+**但不是每个模型都认这个参数**：Qwen2.5-VL、DeepSeek-OCR 这类读图模型带了它直接 400
+（`current model does not support enable_thinking`，2026-11-10 识别实测在线上报的——替身以前不管这个参数，测不出来）。
+`lib/ai.js` 的 `chat` 照旧先带着发；服务商回的 4xx 里提到 enable_thinking，就去掉它重发一次、在本实例内记住这个模型
+（被拒的那次不记用量）。替身的 `stub-ocr*` 模型现在照真实读图模型的样子：带了这个参数就 400。
 
 **模型会照抄提示里的 JSON 示例。** 示例里的分数用 0 占位、评语留空，原样抄回来就是一个形状
 完全合法的"0 分"，解析照单全收。所以作文批改把"维度分全 0、评语和建议全空"当成没读懂
