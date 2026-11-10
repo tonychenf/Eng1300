@@ -557,3 +557,14 @@ h1, h2, h3 { margin: 0; line-height: 1.35; }
 .bench-drop .btn { cursor: pointer; position: relative; }
 .btn.disabled { opacity: .5; pointer-events: none; }
 .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* AI 拆题导入（第三期）：选的照片一张一行（缩略图 + 质检结论）、核对页的题和可疑处 */
+.import-item { display: flex; gap: 10px; align-items: flex-start; border: 1px solid var(--line); border-left-width: 4px; border-radius: 8px; padding: 8px; min-width: 0; }
+.import-item img { width: 72px; height: 96px; object-fit: cover; border-radius: 4px; background: #f6f7f9; flex: none; }
+.import-item.qc-ok { border-left-color: var(--ok); }
+.import-item.qc-yellow { border-left-color: var(--warn); }
+.import-item.qc-red { border-left-color: var(--danger); background: var(--danger-tint); }
+.import-issue { display: flex; gap: 8px; align-items: center; padding: 6px 8px; border-radius: 6px; background: var(--warn-tint); margin-top: 6px; }
+.import-issue.red { background: var(--danger-tint); }
+.import-q { border: 1px solid var(--line); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.import-q.suspect { border-color: var(--warn); background: #fffaf0; }

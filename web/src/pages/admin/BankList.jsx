@@ -56,6 +56,7 @@ export default function BankList() {
       <p className="small" style={{ marginBottom: 12 }}>
 
         <Link className="btn ghost sm" to="/admin/bank/import">上传题库</Link>
+        <Link className="btn ghost sm" to="/admin/import/new" data-testid="bank-import-photos">导入资料（拍照）</Link>
 
       </p>
 

@@ -116,7 +116,7 @@ in use，同时提示一个已删除的构建临时路径，很容易把注意�
 | ph2-ocr-bench | 8766 | 8883 |
 | ui-ph2-ocr | 8764 | 8882 |
 | ph2-import | 8768 | 8885 |
-| （第三期预留）ui-ph2-import | 8767 | 8884 |
+| ui-ph2-import | 8767 | 8884 |
 
 端口表没有东西强制，所以 `test/run-all.sh` 开跑前会查一遍：各套 `PORT=` / `STUB_PORT=` 有没有重号、
 有没有上一轮残留的进程还占着（读 `/proc/net/tcp`——**本机没有 `ss`**，各套开头"等端口释放"那句
@@ -186,6 +186,7 @@ cd worker && bash test/ui-bio-exam.sh   # 生化学员端：练习（名词解�
 cd worker && bash test/ui-pubeng.sh     # 公共英语学员端：每种题型练习一遍、模考作答交卷、报告批改（UI_SHOTS=目录 可在手机宽度截图）
 cd worker && bash test/ui-ph2-admin.sh  # 后台开新课：建课 → 传题库文件 → 按样卷生成模板 → 一键发布 → 开通；花费与上限
 cd worker && bash test/ui-ph2-ocr.sh    # 后台识别实测：多选 / 分次加 / 拖进照片 → 选模型和尺寸 → 预估确认 → 逐张识别 → 自动对转写稿、原图并排、模型分歧标黄 → 导出、看历史（UI_SHOTS=目录 可截图）
+cd worker && bash test/ui-ph2-import.sh # 后台拍照导入：选照片（当场质检）→ 开始 → cron 识别拆题（测试触发）→ 逐页核对（可疑处、改题、这页没问题）→ 入库 → AI 出答案
 
 # 注意：各套脚本直接跑时共用 worker/.wrangler，每个都会 rm -rf 它，所以不能自己开几个
 # 并行——会把另一套正在用的本地库和打包产物删掉。要并行只用 run-all.sh。

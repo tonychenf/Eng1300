@@ -37,6 +37,8 @@ const SubjectNew = lazy(() => import('./pages/admin/SubjectSetup.jsx').then((m) 
 const SubjectSetup = lazy(() => import('./pages/admin/SubjectSetup.jsx').then((m) => ({ default: m.SubjectSetup })));
 const TemplateEdit = lazy(() => import('./pages/admin/TemplateEdit.jsx'));
 const OcrBench = lazy(() => import('./pages/admin/OcrBench.jsx'));   // 第二期：识别实测
+const ImportNew = lazy(() => import('./pages/admin/ImportPages.jsx').then((m) => ({ default: m.ImportNew })));   // 第三期：AI 拆题导入
+const ImportJob = lazy(() => import('./pages/admin/ImportPages.jsx').then((m) => ({ default: m.ImportJob })));
 
 const ADMIN_NAV = [
   { to: '/admin', label: '题库总览', end: true },
@@ -162,6 +164,9 @@ export default function App() {
               {/* 必须排在 bank/:examId 前面，否则 "import" 会被当成一个内容组 id，
                   表现是点"上传题库"进到一个空的校对页。 */}
               <Route path="bank/import" element={<BankImport />} />
+              <Route path="import/new" element={<ImportNew />} />
+              <Route path="import/:jobId" element={<ImportJob />} />
+              <Route path="import/:jobId/review" element={<ImportJob />} />
               <Route path="bank/:examId" element={<BankReview />} />
               <Route path="students" element={<Students />} />
               <Route path="export" element={<Export />} />
