@@ -568,3 +568,10 @@ h1, h2, h3 { margin: 0; line-height: 1.35; }
 .import-issue.red { background: var(--danger-tint); }
 .import-q { border: 1px solid var(--line); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .import-q.suspect { border-color: var(--warn); background: #fffaf0; }
+
+/* 核答案（第三期 D）：AI 的答案大字，对 / 改两个大按钮在屏幕下半部（手机单手能点） */
+.answer-big { font-size: 28px; font-weight: 700; color: var(--primary); overflow-wrap: anywhere; }
+.answer-opt { padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; overflow-wrap: anywhere; }
+.answer-opt.picked { border-color: var(--primary); background: var(--primary-tint); font-weight: 600; }
+.answer-actions { display: flex; gap: 10px; }
+.answer-actions .btn { flex: 1; min-height: 56px; font-size: 18px; }

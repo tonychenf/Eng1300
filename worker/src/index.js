@@ -12,6 +12,7 @@ import { adminSubjectsRouter } from './routes/admin-subjects.js';
 import { adminSetupRouter } from './routes/admin-setup.js';
 import { ocrBenchRouter } from './routes/admin-ocr-bench.js';
 import { importJobsRouter } from './routes/admin-import-jobs.js';
+import { answersRouter } from './routes/admin-answers.js';
 import { processImportTick } from './lib/import-queue.js';
 import { adminGrantsRouter } from './routes/admin-grants.js';
 import { adminPackRouter } from './routes/admin-pack.js';
@@ -385,6 +386,7 @@ admin.route('/', adminSetupRouter);   // 改进阶段 2：课程、组卷模板�
 admin.route('/subjects', adminSubjectsRouter);
 admin.route('/bank', bankRouter);
 admin.route('/bank', importRouter);   // POST /bank/import、GET /bank/import/:examId/source
+admin.route('/bank', answersRouter);  // 第三期 D：核答案队列、整组确认、答案页比对、核对单
 admin.route('/ai/ocr-bench', ocrBenchRouter);   // 改进阶段 2 第二期：识别实测
 admin.route('/import', importJobsRouter);       // 改进阶段 2 第三期：AI 拆题导入（/api/admin/import/jobs…）
 admin.route('/ai', aiRouter);

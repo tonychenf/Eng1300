@@ -389,6 +389,11 @@ importJobsRouter.post('/jobs/:id/commit', async (c) => {
       const edited = (job.draft.edited || {})[q.id];
       extra.push(db.prepare('UPDATE questions SET source_page = ?, edited_fields = ? WHERE question_id = ?')
         .bind(printedOf.get(q.pageNo) ?? null, edited?.length ? JSON.stringify(edited) : null, qidDb));
+      // 书上的手写答案：出完 AI 答案后和它比，不一致的排到核答案队列前面（PRD P3-C3 最后一条、P3-D2）
+      if (q.handwrittenAnswer) {
+        extra.push(db.prepare('INSERT OR REPLACE INTO answer_review_flags (question_id, handwritten) VALUES (?, ?)')
+          .bind(qidDb, q.handwrittenAnswer));
+      }
     }
   }
   const st = [...plan.statements, ...extra,

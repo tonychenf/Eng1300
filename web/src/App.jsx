@@ -39,6 +39,7 @@ const TemplateEdit = lazy(() => import('./pages/admin/TemplateEdit.jsx'));
 const OcrBench = lazy(() => import('./pages/admin/OcrBench.jsx'));   // 第二期：识别实测
 const ImportNew = lazy(() => import('./pages/admin/ImportPages.jsx').then((m) => ({ default: m.ImportNew })));   // 第三期：AI 拆题导入
 const ImportJob = lazy(() => import('./pages/admin/ImportPages.jsx').then((m) => ({ default: m.ImportJob })));
+const AnswerReview = lazy(() => import('./pages/admin/AnswerReview.jsx'));   // 第三期 D：核答案
 
 const ADMIN_NAV = [
   { to: '/admin', label: '题库总览', end: true },
@@ -167,6 +168,7 @@ export default function App() {
               <Route path="import/new" element={<ImportNew />} />
               <Route path="import/:jobId" element={<ImportJob />} />
               <Route path="import/:jobId/review" element={<ImportJob />} />
+              <Route path="bank/:examId/answers" element={<AnswerReview />} />
               <Route path="bank/:examId" element={<BankReview />} />
               <Route path="students" element={<Students />} />
               <Route path="export" element={<Export />} />

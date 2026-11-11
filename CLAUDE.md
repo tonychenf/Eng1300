@@ -117,6 +117,7 @@ in use，同时提示一个已删除的构建临时路径，很容易把注意�
 | ui-ph2-ocr | 8764 | 8882 |
 | ph2-import | 8768 | 8885 |
 | ui-ph2-import | 8767 | 8884 |
+| ph2-answers | 8765 | 8881 |
 
 端口表没有东西强制，所以 `test/run-all.sh` 开跑前会查一遍：各套 `PORT=` / `STUB_PORT=` 有没有重号、
 有没有上一轮残留的进程还占着（读 `/proc/net/tcp`——**本机没有 `ss`**，各套开头"等端口释放"那句
@@ -757,6 +758,18 @@ KaTeX 字体写成 data: 塞进样式表）——后一条是 `ui-rich` 盯控�
 - **识别出来的文字**：每个模型认出的全文在报告的每张照片里看得到、能「复制文字」；导出的 `.md` 里每张照片、每个模型、每种尺寸的全文都附上
   （用户 2026-11-10：识别完要把文字给我看——我这边连不到线上库，要看就靠导出或复制）。
 - 体检规则里"不成词"留到第三期（要词表）。
+
+**改进阶段 2 第三期**（2026-11-11 起，PRD 第 7 节、完成情况见 §16）。几条要记住的：
+- **拍照导入的图进 KV，不进 D1**（binding `IMPORT_IMAGES`，每个键 1 天过期，识别完立刻删）。`wrangler.toml` 里不写 id：本地 dev 自己模拟，
+  部署时 `scripts/ci/find-or-create-kv.sh` 按名字找或建、把 id 填进去。部署用的 API Token 要有「Account｜Workers KV Storage｜Edit」。
+- **识别在 cron 里跑**（每分钟一次，`app.scheduled` → `processImportTick`）。本地触发用 `wrangler dev --test-scheduled` +
+  `/cdn-cgi/local/scheduled?cron=*+*+*+*+*`；**`/__scheduled` 到不了 Worker**——被静态资源的 SPA 回落接走、回 200 的 index.html。
+  几次醒来同时到时靠条件 UPDATE 认领（谁改成功谁处理），识别中超过 10 分钟的退回排队。
+- **替身看不懂图**，测试把要回什么埋在 JPEG 尾巴后面（`STUBPAGE:<转写稿页码>:<k>[:garble][:bad][:hand<题号><答案>]`、`STUBFAIL`、
+  `STUBANS:…` 答案页）。页面对"已经是 JPEG、长边不超过 2400、不大于 3MB"的原样上传，尾巴才留得住——改上传压缩的规则会让浏览器测试分发不到。
+- **核答案的疑点存在 `answer_review_flags`**（迁移 0022，一题一行），删内容组时一起删（排在删题目之前）。
+  疑点规则只有一处（`routes/admin-answers.js` 的 `reviewRank`），队列、整组确认、核对单都用它；整组确认在服务端重算、不信页面给的名单。
+  「对」「改」走校对页的保存接口，不另写一套确认。
 
 **删除内容组只删三个条件都满足的**（`DELETE /api/admin/bank/exams/:id`，CR-M4）：后台上传的、
 没发布的、没有学员数据（作答、答题记录、错题本）引用它的题。学员做过的只能撤回发布——

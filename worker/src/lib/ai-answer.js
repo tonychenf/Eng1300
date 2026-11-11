@@ -67,11 +67,25 @@ function kpRule(kpNames) {
     `每个是一个简短的名词短语（不超过 ${KP_NAME_MAX} 个字），不要写题型。` + known;
 }
 
+// 第三期 D（批量核答案）：拿不准的、题面本身有问题的排到核答案队列最前面（PRD P3-D2、P3-C3 的"做题反查"）。
+// 示例里的 confidence 写成 "高|中|低"：原样抄回来就认不出、当没给，不会被当成"很有把握"。
+const FLAG_RULE =
+  '再给两项：confidence 写你对这个答案有多确定，只能是 高、中、低 之一；' +
+  '题面本身有问题（题干不完整、选项不成立、没有正确选项、有两个都对的选项、没法作答）就把问题用一句话写进 stemProblem，没有问题写 null。';
+
+/** 拿不准、题面有问题：读不懂的一律当没给（null），不当"高""没问题"。 */
+export function shapeFlags(data) {
+  const c = String(data?.confidence ?? '').trim();
+  const sp = data?.stemProblem;
+  const problem = typeof sp === 'string' && sp.trim().length >= 4 && !/^(null|无|没有|none|n\/a)$/i.test(sp.trim()) ? sp.trim().slice(0, 200) : null;
+  return { confidence: ['高', '中', '低'].includes(c) ? c : null, stemProblem: problem };
+}
+
 function askFor(question, shape, kpNames = []) {
   const stem = question.stem || '';
   const opts = (question.options || []).join('\n');
-  const KP = ',"knowledgePoints":["…"]';
-  const tail = EXPL_RULE + kpRule(kpNames);
+  const KP = ',"knowledgePoints":["…"],"confidence":"高|中|低","stemProblem":null';
+  const tail = EXPL_RULE + kpRule(kpNames) + FLAG_RULE;
   switch (shape.kind) {
     case 'CHOICE':
       return `下面是一道单项选择题，请给出正确选项。\n题干：${stem}\n选项：\n${opts}\n\n` +
@@ -206,7 +220,7 @@ export async function generateAnswers(env, { questions, subjectId, prompt, purpo
       const shaped = shapeAnswer(data, q, shape);
       if (!shaped.explanation) withoutExplanation.push({ questionId: q.questionId, ord: q.ord });
       if (!shaped.knowledgePoints.length) withoutKnowledgePoints.push({ questionId: q.questionId, ord: q.ord });
-      generated.push({ questionId: q.questionId, shape: shape.kind, ...shaped });
+      generated.push({ questionId: q.questionId, shape: shape.kind, ...shaped, flags: shapeFlags(data) });
     } catch (e) {
       failures.push({ questionId: q.questionId, ord: q.ord, reason: e.code || 'ai_failed',
         message: String(e.message || e).slice(0, 200) });

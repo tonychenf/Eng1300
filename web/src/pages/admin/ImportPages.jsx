@@ -263,7 +263,7 @@ export function ImportJob() {
       <PageHead title={job.title} desc={`${job.subjectName} · AI 拆题导入`} />
       <p className="small"><Link to="/admin/import/new">← 导入资料</Link></p>
       {error ? <div style={{ marginBottom: 12 }}><Alert>{error}</Alert></div> : null}
-      {msg ? <div style={{ marginBottom: 12 }}><Alert kind="ok">{msg}</Alert></div> : null}
+      {msg ? <div style={{ marginBottom: 12 }}><Alert kind="success">{msg}</Alert></div> : null}
 
       <div className="card card-pad" data-testid="import-progress" style={{ marginBottom: 12 }}>
         <div className="spread">
