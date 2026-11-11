@@ -21,7 +21,7 @@ export default function KnowledgePoints() {
 
   async function act(fn, done) {
     setError(''); setBusy(true);
-    try { const r = await fn(); setMsg(done(r)); setOpen(null); await load(); } catch (e) { setError(e.message); } finally { setBusy(false); }
+    try { const r = await fn(); await load(); setOpen(null); setMsg(done(r)); }   // 先重读再出提示：看到提示时列表已经是新的 catch (e) { setError(e.message); } finally { setBusy(false); }
   }
 
   if (error && !data) return <Alert>{error}</Alert>;

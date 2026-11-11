@@ -34,6 +34,15 @@ try {
     page.on('pageerror', (e) => errors.push(String(e.message || e)));
     page.on('console', (m) => { if (m.type() === 'error' && /Content Security Policy|Refused to/.test(m.text())) errors.push(m.text().slice(0, 160)); });
     page.on('dialog', (d) => d.accept());
+    const patches = [];
+    const gets = [];
+    page.on('response', async (r) => {
+      if (r.request().method() === 'GET' && /knowledge-points$/.test(r.url())) {
+        const t = await r.text().catch(() => '');
+        gets.push(`${r.status()}${r.fromServiceWorker() ? ' sw' : ''} cache=${r.headers()['cache-control'] || '-'} 新名字在=${t.includes(PLAN[i].to)}`);
+      }
+    });
+    page.on('response', async (r) => { if (r.request().method() === 'PATCH') patches.push(`${r.status()} ${r.request().postData()} → ${(await r.text().catch(() => '')).slice(0, 80)}`); });
 
     await page.goto(`${BASE}/admin/login`, { waitUntil: 'networkidle' });
     await page.fill('#username', 'admin');
@@ -69,7 +78,18 @@ try {
     check(`${label}｜改成已有的名字 → 报错、提示用合并`, await shows(page.locator('text=/已经有了.*合并/')), true);
     await nameInput.fill(plan.to);
     await r1.locator('[data-testid="kp-save"]').click();
-    check(`${label}｜改名成功，列表里显示新名字`, (await shows(page.locator(`text=改成了「${plan.to}」`))) && (await row(plan.rename).locator('[data-testid="kp-name"]').first().innerText()) === plan.to, true);
+    const renamedMsg = await shows(page.locator(`text=改成了「${plan.to}」`));
+    // 提示和列表是同一次渲染出来的（页面先重读再出提示）；这里仍然轮询几秒，红了时分得清是"晚了"还是"一直是旧的"
+    const nameLoc = row(plan.rename).locator('[data-testid="kp-name"]').first();
+    let renamedName = await nameLoc.innerText();
+    for (let t = 0; t < 25 && renamedName !== plan.to; t++) { await page.waitForTimeout(200); renamedName = await nameLoc.innerText(); }
+    if (!renamedMsg || renamedName !== plan.to) {
+      const l = await api(`/admin/subjects/${SID}/knowledge-points`);
+      console.log(`    （页面取列表：${gets.join(' / ')}）`);
+      console.log(`    （接口里的名字：${l?.knowledgePoints.find((k) => k.tagId === plan.rename)?.name}；PATCH：${patches.join(' / ')}）`);
+    }
+    if (!renamedMsg || renamedName !== plan.to) console.log(`    （提示出来了：${renamedMsg}；那一行的名字：${renamedName}；页面上的提示：${(await page.locator('.alert').allInnerTexts()).join(' | ')}）`);
+    check(`${label}｜改名成功，列表里显示新名字`, renamedMsg && renamedName === plan.to, true);
 
     // 调上级
     const r2 = row(plan.move);
