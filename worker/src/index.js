@@ -13,6 +13,7 @@ import { adminSetupRouter } from './routes/admin-setup.js';
 import { ocrBenchRouter } from './routes/admin-ocr-bench.js';
 import { importJobsRouter } from './routes/admin-import-jobs.js';
 import { answersRouter } from './routes/admin-answers.js';
+import { kpRouter } from './routes/admin-kp.js';
 import { processImportTick } from './lib/import-queue.js';
 import { adminGrantsRouter } from './routes/admin-grants.js';
 import { adminPackRouter } from './routes/admin-pack.js';
@@ -384,6 +385,7 @@ admin.route('/', adminGrantsRouter);
 admin.route('/', adminPackRouter);
 admin.route('/', adminSetupRouter);   // 改进阶段 2：课程、组卷模板、上线清单、一键发布开通、花费
 admin.route('/subjects', adminSubjectsRouter);
+admin.route('/subjects', kpRouter);   // 第三期 F：考点整理（/subjects/:id/knowledge-points…）
 admin.route('/bank', bankRouter);
 admin.route('/bank', importRouter);   // POST /bank/import、GET /bank/import/:examId/source
 admin.route('/bank', answersRouter);  // 第三期 D：核答案队列、整组确认、答案页比对、核对单
