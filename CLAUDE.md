@@ -118,6 +118,8 @@ in use，同时提示一个已删除的构建临时路径，很容易把注意�
 | ph2-import | 8768 | 8885 |
 | ui-ph2-import | 8767 | 8884 |
 | ph2-answers | 8765 | 8881 |
+| ph2-kp | 8763 | — |
+| ui-ph2-kp | 8762 | — |
 
 端口表没有东西强制，所以 `test/run-all.sh` 开跑前会查一遍：各套 `PORT=` / `STUB_PORT=` 有没有重号、
 有没有上一轮残留的进程还占着（读 `/proc/net/tcp`——**本机没有 `ss`**，各套开头"等端口释放"那句
@@ -188,6 +190,7 @@ cd worker && bash test/ui-pubeng.sh     # 公共英语学员端：每种题型�
 cd worker && bash test/ui-ph2-admin.sh  # 后台开新课：建课 → 传题库文件 → 按样卷生成模板 → 一键发布 → 开通；花费与上限
 cd worker && bash test/ui-ph2-ocr.sh    # 后台识别实测：多选 / 分次加 / 拖进照片 → 选模型和尺寸 → 预估确认 → 逐张识别 → 自动对转写稿、原图并排、模型分歧标黄 → 导出、看历史（UI_SHOTS=目录 可截图）
 cd worker && bash test/ui-ph2-import.sh # 后台拍照导入：选照片（当场质检）→ 开始 → cron 识别拆题（测试触发）→ 逐页核对（可疑处、改题、这页没问题）→ 入库 → AI 出答案
+cd worker && bash test/ui-ph2-kp.sh     # 后台考点整理：学科管理 → 考点整理 → 改名（撞名报错）→ 调上级 → 合并到另一个
 
 # 注意：各套脚本直接跑时共用 worker/.wrangler，每个都会 rm -rf 它，所以不能自己开几个
 # 并行——会把另一套正在用的本地库和打包产物删掉。要并行只用 run-all.sh。
@@ -770,6 +773,11 @@ KaTeX 字体写成 data: 塞进样式表）——后一条是 `ui-rich` 盯控�
 - **核答案的疑点存在 `answer_review_flags`**（迁移 0022，一题一行），删内容组时一起删（排在删题目之前）。
   疑点规则只有一处（`routes/admin-answers.js` 的 `reviewRank`），队列、整组确认、核对单都用它；整组确认在服务端重算、不信页面给的名单。
   「对」「改」走校对页的保存接口，不另写一套确认。
+- **考点合并 A → B 会删掉 A**（`routes/admin-kp.js`，一个 batch）。考点编号不只在两张表里：组卷模板项的 `filter.knowledgePoints`、
+  单考点专项练习的 `attempts.scope_knowledge_point` 都存着编号（后者没有外键），合并时一起改。删掉的 A 记进 `knowledge_point_merges`
+  （迁移 0023），**种子生成器和后台题库文件导入都按它把 A 的名字 / 编号挂到 B**，知识点种子也不再把 A 插回来——不然以后加的
+  题库文件一写 A，挂题那句外键报错、整章导不进来。连着合并（A → B → C）时以前指向 B 的记录跟着改成 C。
+  以后再加一处"存考点编号"的地方，要加进合并里。
 
 **删除内容组只删三个条件都满足的**（`DELETE /api/admin/bank/exams/:id`，CR-M4）：后台上传的、
 没发布的、没有学员数据（作答、答题记录、错题本）引用它的题。学员做过的只能撤回发布——

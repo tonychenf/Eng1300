@@ -95,6 +95,13 @@ export async function planGroupImport(db, { subject, courseCode, bytes, groupId,
   const { results: kpRows } = await db.prepare('SELECT tag_id, name FROM knowledge_points WHERE subject_id = ?')
     .bind(subject.subject_id).all();
   const kpByName = new Map(kpRows.map((r) => [r.name, r.tag_id]));
+  // 考点整理里合并掉的名字（第三期 F）：挂到并进去的那个，不再按旧名字新建一个（新建的话合并白做了）。
+  // 现有考点同名的优先——合并之后又有人建了同名的，就是那一个
+  const { results: merged } = await db.prepare(
+    `SELECT m.from_name, m.into_tag_id FROM knowledge_point_merges m
+       JOIN knowledge_points k ON k.tag_id = m.into_tag_id WHERE m.subject_id = ? ORDER BY m.merged_at DESC`
+  ).bind(subject.subject_id).all();
+  for (const m of merged) if (!kpByName.has(m.from_name)) kpByName.set(m.from_name, m.into_tag_id);
   const newKps = [];
 
   let confirmed = 0;

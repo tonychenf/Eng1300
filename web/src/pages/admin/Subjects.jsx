@@ -99,6 +99,7 @@ export default function Subjects() {
                 <Link className="btn ghost sm" to={`/admin/subjects/${s.subject_id}/template`}>组卷模板</Link>
                 <Link className="btn ghost sm" to={`/admin/subjects/${s.subject_id}/members`}>成员</Link>
                 <Link className="btn ghost sm" to={`/admin/subjects/${s.subject_id}/pack`}>能力包</Link>
+                <Link className="btn ghost sm" to={`/admin/subjects/${s.subject_id}/knowledge-points`} data-testid="subject-kp-link">考点整理</Link>
                 <button className="btn ghost sm" onClick={() => rename(s)}>改名</button>
                 <button className="btn ghost sm" onClick={() => toggle(s)}>
                   {s.status === '启用' ? '停用' : '启用'}

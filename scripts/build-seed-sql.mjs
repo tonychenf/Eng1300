@@ -110,13 +110,22 @@ const subjectSql = `(SELECT subject_id FROM subjects WHERE code = ${q(subjectCod
 // 被 INSERT OR IGNORE 丢掉，库里没有文件写的那个编号。照文件编号挂的话，挂题目、挂子考点的那句
 // 都外键报错，这一章导不进来，部署红在导题库。同一学科里同名就是同一个考点，所以先按名字查；
 // 查不到（文件里改过名字）再用文件的编号，和以前一样——编号也不在就照旧外键报错，不会悄悄挂空。
+//
+// 后台「考点整理」合并过的（A 并进了 B，A 被删掉，第三期 F）：名字和编号都查不到 A 了，按合并记录
+// （knowledge_point_merges）挂到 B——不然挂题那一句外键报错，那一章导不进来。顺序：同名的现有考点 → 合并记录里同名的
+// → 合并记录里同编号的 → 文件里的编号。
 const tagIdSql = (tagId) =>
   `COALESCE((SELECT tag_id FROM knowledge_points WHERE subject_id = ${subjectSql} ` +
-  `AND name = ${q(kpById.get(tagId).name)}), ${q(tagId)})`;
+  `AND name = ${q(kpById.get(tagId).name)}), ` +
+  `(SELECT into_tag_id FROM knowledge_point_merges WHERE subject_id = ${subjectSql} AND from_name = ${q(kpById.get(tagId).name)} ` +
+  `ORDER BY merged_at DESC LIMIT 1), ` +
+  `(SELECT into_tag_id FROM knowledge_point_merges WHERE from_tag_id = ${q(tagId)}), ${q(tagId)})`;
+// 合并掉的考点，知识点文件里那一行不再插回来（插回来就多出一个没有题的同名考点，合并白做了）
 const kpLines = kps.map(
-  (k, i) => `INSERT OR IGNORE INTO knowledge_points (tag_id, name, subject_id, parent_tag_id, sort_order) VALUES (` +
+  (k, i) => `INSERT OR IGNORE INTO knowledge_points (tag_id, name, subject_id, parent_tag_id, sort_order) SELECT ` +
     `${q(k.tagId)}, ${q(k.name)}, ${subjectSql}, ` +
-    `${k.parentTagId ? tagIdSql(k.parentTagId) : 'NULL'}, ${n(k.sortOrder ?? i)});`
+    `${k.parentTagId ? tagIdSql(k.parentTagId) : 'NULL'}, ${n(k.sortOrder ?? i)} ` +
+    `WHERE NOT EXISTS (SELECT 1 FROM knowledge_point_merges WHERE from_tag_id = ${q(k.tagId)});`
 );
 // 把内容指纹作为最后一条语句写进种子文件本身。
 //

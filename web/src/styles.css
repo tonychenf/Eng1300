@@ -575,3 +575,10 @@ h1, h2, h3 { margin: 0; line-height: 1.35; }
 .answer-opt.picked { border-color: var(--primary); background: var(--primary-tint); font-weight: 600; }
 .answer-actions { display: flex; gap: 10px; }
 .answer-actions .btn { flex: 1; min-height: 56px; font-size: 18px; }
+
+/* 考点整理（第三期 F） */
+.kp-row { padding: 6px 0; }
+.kp-row + .kp-row { border-top: 1px solid var(--line); }
+.kp-child { padding-left: 16px; }
+.kp-editor { margin-top: 8px; padding: 10px; background: var(--page); border-radius: 8px; }
+.kp-editor .input { max-width: 100%; }

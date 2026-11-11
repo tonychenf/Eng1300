@@ -40,6 +40,7 @@ const OcrBench = lazy(() => import('./pages/admin/OcrBench.jsx'));   // 第二�
 const ImportNew = lazy(() => import('./pages/admin/ImportPages.jsx').then((m) => ({ default: m.ImportNew })));   // 第三期：AI 拆题导入
 const ImportJob = lazy(() => import('./pages/admin/ImportPages.jsx').then((m) => ({ default: m.ImportJob })));
 const AnswerReview = lazy(() => import('./pages/admin/AnswerReview.jsx'));   // 第三期 D：核答案
+const KnowledgePoints = lazy(() => import('./pages/admin/KnowledgePoints.jsx'));   // 第三期 F：考点整理
 
 const ADMIN_NAV = [
   { to: '/admin', label: '题库总览', end: true },
@@ -160,6 +161,7 @@ export default function App() {
               <Route path="subjects/:id/template" element={<TemplateEdit />} />
               <Route path="subjects/:id/members" element={<SubjectMembers />} />
               <Route path="subjects/:id/pack" element={<SubjectPack />} />
+              <Route path="subjects/:id/knowledge-points" element={<KnowledgePoints />} />
               <Route path="users/:id/subjects" element={<UserSubjects />} />
               <Route path="bank" element={<BankList />} />
               {/* 必须排在 bank/:examId 前面，否则 "import" 会被当成一个内容组 id，
