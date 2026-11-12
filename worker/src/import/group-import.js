@@ -43,8 +43,8 @@ export async function planGroupImport(db, { subject, courseCode, bytes, groupId,
   const kind = wrongFileKind(bytes);
   if (kind) {
     throw bad('wrong_file_type',
-      `传上来的是${kind}，这门课现在只收题库文件（.json）。照片、PDF 直接识别成题目要等第三期；` +
-      '在那之前，把资料发给 Claude，生成题库文件后再传。');
+      `传上来的是${kind}，这里只收题库文件（.json）。照片、PDF 请到「试卷与校对」→「导入资料（拍照）」上传，` +
+      '那边会识别、拆成题目，逐页核对后入库。');
   }
   let d;
   try {

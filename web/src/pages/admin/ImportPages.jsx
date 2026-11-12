@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { api, get, patch, post, put } from '../../api.js';
 import { Alert, Loading, PageHead } from '../../components/ui.jsx';
 import { formatBeijing } from '../../lib/time.js';
@@ -52,6 +52,15 @@ export function ImportNew() {
   }, []);
 
   const commit = (next) => { itemsRef.current = next; setItems(next); };
+  // 从「上传题库」那页转过来的照片 / PDF（那页只收题库文件）：带着文件过来，不用再选一遍
+  const handed = useRef(false);
+  const location = useLocation();
+  useEffect(() => {
+    const files = location.state?.files;
+    if (handed.current || !Array.isArray(files) || !files.length) return;
+    handed.current = true;
+    addFiles(files);
+  }, []);
   async function addFiles(list) {
     const all = [...list];
     const isPdf = (f) => f.type === 'application/pdf' || /\.pdf$/i.test(f.name);
