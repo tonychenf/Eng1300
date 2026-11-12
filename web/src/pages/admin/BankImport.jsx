@@ -64,11 +64,11 @@ export default function BankImport() {
   const ok = String(form.orderKey).trim();
   if ((!direct || ok) && !/^-?\d+$/.test(ok)) problems.push('排序依据要是整数（生化按章节号）');
   if (!file) problems.push('选一个文件');
-  // 手机上 accept 拦不住相册：选了照片之类的文件，当场说，不等传上去再报错
-  else if (sel?.uploadAccepts && !file.name.toLowerCase().endsWith(sel.uploadAccepts)) {
-    problems.push(direct
-      ? `这门课只收题库文件（${sel.uploadAccepts}），你选的是「${file.name}」。照片、PDF 识别要等第三期，先把资料发给 Claude 生成题库文件`
-      : `这门课只收 ${sel.uploadAccepts} 文件，你选的是「${file.name}」`);
+  // 手机上 accept 拦不住相册：选了照片、PDF，当场说，并给一个按钮带着这个文件去「导入资料（拍照）」
+  const isPhotoOrPdf = Boolean(file) && (/^image\//.test(file.type) || file.type === 'application/pdf' || /\.(jpe?g|png|webp|heic|pdf)$/i.test(file.name));
+  if (file && isPhotoOrPdf) problems.push(`「${file.name}」是照片或 PDF，这一页只收题库文件；照片、PDF 走「导入资料（拍照）」`);
+  else if (file && sel?.uploadAccepts && !file.name.toLowerCase().endsWith(sel.uploadAccepts)) {
+    problems.push(`这门课只收 ${sel.uploadAccepts} 文件，你选的是「${file.name}」`);
   }
 
   async function run(kind) {
@@ -127,6 +127,7 @@ export default function BankImport() {
             {direct
               ? '这门课传题库文件（.json，格式同仓库里的题库文件）：题面、答案、采分点都在文件里，编号和排序自动生成。'
               : '生物化学传 Word（.docx）格式的章节习题集；新开的课传题库文件（.json）。英语题来自扫描的历年试卷，已经整理好随系统导入，不在这里上传。'}
+            {' '}书页照片、PDF 不在这里传：用<Link to={`/admin/import/new${form.subjectCode ? `?subject=${form.subjectCode}` : ''}`}>「导入资料（拍照）」</Link>。
           </p>
         </div>
 
@@ -168,6 +169,12 @@ export default function BankImport() {
 
         {problems.length && !result ? (
           <p className="small" style={{ color: 'var(--warn)' }}>还差：{problems.join('；')}</p>
+        ) : null}
+        {isPhotoOrPdf && !result ? (
+          <button className="btn" data-testid="imp-to-photos"
+            onClick={() => navigate(`/admin/import/new${form.subjectCode ? `?subject=${form.subjectCode}` : ''}`, { state: { files: [file] } })}>
+            用这张去「导入资料（拍照）」
+          </button>
         ) : null}
 
         {!result ? (

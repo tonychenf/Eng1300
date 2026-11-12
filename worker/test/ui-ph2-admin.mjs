@@ -70,6 +70,24 @@ try {
     await page.waitForSelector('#imp-file');
     check(`${label}｜从引导点过来，学科已经选好`, await page.locator('#imp-subject').inputValue(), code);
     check(`${label}｜文件框只收 .json`, await page.locator('#imp-file').getAttribute('accept'), '.json');
+    // 手机相册拦不住：选了一张照片 → 当场说清这里不收、给按钮带着这张照片去「导入资料（拍照）」（2026-11-12 用户在这里卡住过）
+    const jpg = Buffer.from(await page.evaluate(async () => {
+      const cv = document.createElement('canvas'); cv.width = 1200; cv.height = 1600;
+      const ctx = cv.getContext('2d'); ctx.fillStyle = '#f4f4f0'; ctx.fillRect(0, 0, 1200, 1600);
+      const blob = await new Promise((r) => cv.toBlob(r, 'image/jpeg', 0.9));
+      return [...new Uint8Array(await blob.arrayBuffer())];
+    }));
+    await page.setInputFiles('#imp-file', { name: 'MVIMG_相册.jpg', mimeType: 'image/jpeg', buffer: jpg });
+    check(`${label}｜（前提）照片真的进了 input`, await page.locator('#imp-file').evaluate((el) => el.files.length), 1);
+    check(`${label}｜选了照片：说清这页只收题库文件、照片走拍照导入，不再说"等第三期"`,
+      `${await shows(page.locator('text=/照片或 PDF.*导入资料（拍照）/'), 3000)}/${await page.locator('text=等第三期').count()}`, 'true/0');
+    await page.locator('[data-testid="imp-to-photos"]').click();
+    await page.waitForURL(/\/admin\/import\/new/, { timeout: 10000 });
+    let handed = 0;
+    for (let t = 0; t < 50 && handed < 1; t++) { handed = await page.locator('[data-testid="import-item"]').count(); if (!handed) await page.waitForTimeout(200); }
+    check(`${label}｜点按钮到了拍照导入，照片带过来了、学科也选好了`, `${handed}/${await page.locator('#imp-subject').inputValue()}`, `1/${code}`);
+    await page.goBack();
+    await page.waitForSelector('#imp-file');
     await page.setInputFiles('#imp-file', { name: '样卷2.json', mimeType: 'application/json', buffer: TEST2 });
     check(`${label}｜文件真的进了 input`, await page.locator('#imp-file').evaluate((el) => el.files.length), 1);
     await page.click('button:has-text("试解析")');
