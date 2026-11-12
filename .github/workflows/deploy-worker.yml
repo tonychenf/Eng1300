@@ -291,6 +291,7 @@ jobs:
         working-directory: worker
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          PROXY_SECRET: ${{ secrets.PROXY_SECRET }}
         run: bash ../scripts/ci/ensure-worker-secrets.sh
 
       # 导题库之前记下哪些章节是已发布的，线上验证拿它逐章比对：部署不该改变任何章节的

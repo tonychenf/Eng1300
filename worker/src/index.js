@@ -49,8 +49,21 @@ const USERNAME_RULE = /^[A-Za-z0-9_]{3,20}$/;
 // 取不到时退回同一个桶，和第一版一样按用户名锁，不会更松。
 // 代价：分散在很多 IP 上猜同一个账号的人，比以前宽松（每个 IP 各 5 次）。用户已确认接受。
 // 表结构不动：主键还是 username 这一列，只是里面存的是拼起来的键；清某个账号的锁要按前缀清。
+//
+// 经自己的服务器反向代理访问时（docs/自有服务器反向代理.md），Cloudflare 看到的来源全是那台服务器，
+// 所有人会落进同一个桶——一个人连错 5 次，这个账号就谁也登不进去。代理把真实来源放在 X-Real-IP，
+// 同时带上和 Worker 密钥 PROXY_SECRET 一样的 X-Proxy-Secret；对得上才信 X-Real-IP，
+// 对不上（有人直接访问 workers.dev 自己填这两个头）照旧用 CF-Connecting-IP。没配 PROXY_SECRET 时行为不变。
+function clientIp(c) {
+  const secret = c.env?.PROXY_SECRET;
+  if (secret && c.req.header('X-Proxy-Secret') === secret) {
+    const real = String(c.req.header('X-Real-IP') || '').trim();
+    if (real) return real;
+  }
+  return c.req.header('CF-Connecting-IP') || 'unknown';
+}
 function loginKey(c, username) {
-  return `${username}|${c.req.header('CF-Connecting-IP') || 'unknown'}`;
+  return `${username}|${clientIp(c)}`;
 }
 
 function randomPassword() {

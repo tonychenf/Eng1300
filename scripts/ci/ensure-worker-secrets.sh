@@ -29,6 +29,13 @@ if ! echo " $EXISTING " | grep -q " ENCRYPTION_KEY "; then
   echo "已生成并写入 ENCRYPTION_KEY。"
 fi
 
+# 自己服务器上的反向代理和 Worker 之间的暗号（docs/自有服务器反向代理.md）：GitHub Secret 里配了才写，
+# 没配不动（不删——删了的话代理带来的真实来源 IP 就不认了，登录锁定又会全落进一个桶）。
+if [ -n "${PROXY_SECRET:-}" ]; then
+  printf '%s' "$PROXY_SECRET" | npx wrangler secret put PROXY_SECRET
+  echo "已写入 PROXY_SECRET（反向代理的暗号）。"
+fi
+
 # SETUP_TOKEN 每次运行都轮换成新值：它只在用户表为空时才有用，
 # 这样即使某次初始化失败，下一次运行也仍然知道令牌、可以重试。
 TOKEN_VALUE=$(openssl rand -hex 24)
