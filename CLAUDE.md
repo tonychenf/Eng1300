@@ -790,7 +790,7 @@ KaTeX 字体写成 data: 塞进样式表）——后一条是 `ui-rich` 盯控�
 读网址、接口读请求体，两处各写一门课就绕过了授权（CR-H1，踩坑记录第十五节）。
 缺课程码由中间件统一 400（CR-M5）；唯一允许不带的错题本列表用 `optionalCourseAccess`。
 
-**登录失败计数的键是「用户名|来源 IP」**（CR-M3，IP 取 `CF-Connecting-IP`）。清某个账号的锁
+**登录失败计数的键是「用户名|来源 IP」**（CR-M3，IP 取 `CF-Connecting-IP`；经自己服务器的反向代理来的、`X-Proxy-Secret` 和 Worker 密钥 `PROXY_SECRET` 对得上的，取 `X-Real-IP`——见 `docs/自有服务器反向代理.md`）。清某个账号的锁
 要按前缀清，用 `substr` 比前缀，**不用 `LIKE`**——用户名里的下划线是 LIKE 的通配符。
 重置 admin 密码（`admin-reset.yml`）清锁定跑的是 `sql/clear-admin-lockout.sql`，测试跑同一份；
 部署不再替 admin 清锁定（流水线用自己的账号，见四"流水线有自己的管理员账号"）。

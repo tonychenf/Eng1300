@@ -55,6 +55,7 @@ cat > .dev.vars <<'VARS'
 JWT_SECRET=test-secret-cr-auth
 SETUP_TOKEN=test-setup-cr-auth
 ENCRYPTION_KEY=test-encryption-key-cr-auth
+PROXY_SECRET=test-proxy-secret-cr-auth
 VARS
 for m in migrations/*.sql; do
   npx wrangler d1 execute "$D1_NAME" --local --persist-to "$PERSIST" --file="$m" >/dev/null 2>&1 || { echo "执行 $m 失败"; exit 1; }
@@ -198,6 +199,23 @@ for i in 1 2 3 4 5; do login_code admin wrongpass9 "$IP_A" >/dev/null; done
 check "admin 在 IP-A 被锁" "$(login_code admin admin12345 "$IP_A")" "429"
 npx wrangler d1 execute "$D1_NAME" --local --persist-to "$PERSIST" --file=sql/clear-admin-lockout.sql >/dev/null 2>&1
 check "跑完流水线清锁那一步，admin 在 IP-A 能登录" "$(login_code admin admin12345 "$IP_A")" "200"
+
+echo
+echo "== 经自己的服务器反向代理：暗号对得上才认 X-Real-IP（2026-11-12） =="
+# 代理那台服务器的 IP 是同一个（CF-Connecting-IP 都是它），真实来源在 X-Real-IP
+proxy_login() {   # 用户名 密码 真实 IP 暗号 → HTTP 码
+  curl -s -o /dev/null -w '%{http_code}' -X POST "$BASE/auth/login" -H 'Content-Type: application/json' \
+    -H "CF-Connecting-IP: 198.51.100.7" -H "X-Real-IP: $3" -H "X-Proxy-Secret: $4" -d "{\"username\":\"$1\",\"password\":\"$2\"}"
+}
+curl -s -o /dev/null -X POST "$BASE/admin/users" -H "Authorization: Bearer $ADMIN" \
+  -H 'Content-Type: application/json' -d '{"username":"S105","password":"student12345","subjects":["english"]}'
+for i in 1 2 3 4 5; do proxy_login S105 wrongpass9 203.0.113.70 test-proxy-secret-cr-auth >/dev/null; done
+check "经代理、暗号对：锁住的是「S105|真实 IP」" \
+  "$(one "SELECT username FROM login_attempts WHERE locked_until IS NOT NULL AND substr(username, 1, 5) = 'S105|';")" "S105|203.0.113.70"
+check "  同一台代理后面的另一个人（另一个真实 IP）照常能登" "$(proxy_login S105 student12345 203.0.113.71 test-proxy-secret-cr-auth)" "200"
+for i in 1 2 3 4 5; do proxy_login S105 wrongpass9 203.0.113.80 wrong-secret >/dev/null; done
+check "暗号不对（有人直接访问、自己填头）：X-Real-IP 不认，记在 CF-Connecting-IP 上" \
+  "$(one "SELECT COUNT(*) FROM login_attempts WHERE username = 'S105|198.51.100.7';")/$(one "SELECT COUNT(*) FROM login_attempts WHERE username = 'S105|203.0.113.80';")" "1/0"
 
 echo
 echo "== L3：登录不暴露账号在不在、停没停用（2026-10-07） =="
