@@ -7,6 +7,7 @@
 #   PROXY_SECRET   代理和 Worker 之间的暗号；不给就现生成一个，最后打印出来，要把它加进 GitHub Secret「PROXY_SECRET」
 #   UPSTREAM       Cloudflare 上的地址，默认 xlearn.eng1300-79fe2787.workers.dev
 #   CONF_OUT       只把 nginx 配置写到这个文件就停（不装软件、不申请证书）——给测试和想先看一眼配置的人用
+#   CHECK_TAKEN_IN 只查这个 nginx 目录里有没有别的网站在用这个域名、打印出来就停（测试用）
 # 说明见 docs/自有服务器反向代理.md。
 set -euo pipefail
 
@@ -16,7 +17,7 @@ UPSTREAM="${UPSTREAM:-xlearn.eng1300-79fe2787.workers.dev}"
 if ! [[ "$DOMAIN" =~ ^[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?(\.[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?)+$ ]]; then
   echo "第一个参数要是域名，比如 xue.example.com（收到：${DOMAIN:-空}）"; exit 1
 fi
-if [ -z "${CONF_OUT:-}" ] && ! [[ "$EMAIL" =~ ^[^@[:space:]]+@[^@[:space:]]+\.[^@[:space:]]+$ ]]; then
+if [ -z "${CONF_OUT:-}${CHECK_TAKEN_IN:-}" ] && ! [[ "$EMAIL" =~ ^[^@[:space:]]+@[^@[:space:]]+\.[^@[:space:]]+$ ]]; then
   echo "第二个参数要是邮箱（申请免费 HTTPS 证书用，证书快过期时会发提醒；收到：${EMAIL:-空}）"; exit 1
 fi
 NEW_SECRET=0
@@ -24,6 +25,18 @@ if [ -z "${PROXY_SECRET:-}" ]; then PROXY_SECRET=$(openssl rand -hex 24); NEW_SE
 if ! [[ "$PROXY_SECRET" =~ ^[A-Za-z0-9_-]{16,128}$ ]]; then
   echo "PROXY_SECRET 只能是 16–128 位字母、数字、下划线、连字符"; exit 1
 fi
+
+# 别的已启用配置里有没有 server_name 包含这个域名的（我们自己那份 xlearn 不算）。打印占用的文件，没有就不打印
+domain_taken_by_others() {
+  local domain="$1" dir="$2" f
+  for f in "$dir"/sites-enabled/* "$dir"/conf.d/*.conf; do
+    [ -f "$f" ] || continue
+    [ "$(basename "$f")" = xlearn ] && continue
+    # 注释掉的行不算；server_name 可能和 server { 写在同一行
+    if grep -v '^[[:space:]]*#' "$f" | grep -Eq "(^|[[:space:];{])server_name([[:space:]][^;]*)?[[:space:]]${domain//./\\.}([[:space:]]|;)"; then printf '%s ' "$f"; fi
+  done
+}
+if [ -n "${CHECK_TAKEN_IN:-}" ]; then domain_taken_by_others "$DOMAIN" "$CHECK_TAKEN_IN"; echo; exit 0; fi
 
 render() {
   cat <<CONF
@@ -80,6 +93,16 @@ code=$(curl -s -o /dev/null -w '%{http_code}' -m 20 "https://$UPSTREAM/api/healt
 [ "$code" = 200 ] || { echo "服务器访问 https://$UPSTREAM/api/health 拿到的是 ${code:-连不上}，不是 200；先查服务器的出网"; exit 1; }
 
 echo "== 3/5 写 nginx 配置 =="
+# 这台服务器上别的网站已经在用这个域名：nginx 只认先读到的那份、把我们的忽略掉（只打一行 warn），
+# certbot 还会把证书写进别人那份配置——2026-11-15 用户第一次跑就是这样，最后健康检查 502。先查，有就停
+taken=$(domain_taken_by_others "$DOMAIN" "${NGINX_DIR:-/etc/nginx}")
+if [ -n "$taken" ]; then
+  echo "这台服务器上已经有别的网站在用 $DOMAIN：$taken"
+  echo "两份配置用同一个域名，nginx 只认一份。二选一："
+  echo "  - 原来那个网站还要：给 XLearn 换个子域名（比如 xue.$DOMAIN，先在 DNS 加 A 记录），再跑：sudo bash $0 xue.$DOMAIN $EMAIL"
+  echo "  - 原来那个不要了：sudo mkdir -p /root/nginx-backup && sudo mv $taken /root/nginx-backup/，再重跑这个脚本"
+  exit 1
+fi
 CONF=/etc/nginx/sites-available/xlearn
 render > "$CONF"
 chmod 640 "$CONF"            # 里面有暗号，别人读不到
