@@ -41,7 +41,10 @@ export default function Login({ admin = false }) {
     <div className="auth-wrap">
       <div className="auth-brand">
         <div>
-          <h1 style={{ fontSize: 30 }}>XLearn</h1>
+          <div className="row" style={{ gap: 12 }}>
+            <span className="brand-mark" aria-hidden="true" style={{ background: 'rgba(255,255,255,.16)', boxShadow: 'none' }}>X</span>
+            <h1 style={{ fontSize: 30 }}>XLearn</h1>
+          </div>
           <p style={{ opacity: .8, maxWidth: 420, marginTop: 12 }}>
             跨学科自适应学习平台。按考纲结构组卷、限时作答、错题解析与能力评估，
             帮你把每一分都拿稳。
@@ -55,6 +58,8 @@ export default function Login({ admin = false }) {
 
       <div className="auth-panel">
         <form className="auth-form" onSubmit={onSubmit}>
+          {/* 手机、平板上左边的品牌栏不显示，表单顶上补一个标记（PC 上藏起来，样式见 .auth-logo） */}
+          <div className="auth-logo"><span className="brand-mark" aria-hidden="true">X</span>XLearn</div>
           <h2 style={{ fontSize: 22, marginBottom: 4 }}>{admin ? '后台登录' : '学员登录'}</h2>
           <p className="small muted" style={{ marginTop: 0, marginBottom: 24 }}>
             {admin ? '仅超级管理员可进入' : '请使用管理员分配的账号登录'}
