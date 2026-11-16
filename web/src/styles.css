@@ -550,7 +550,7 @@ h1, h2, h3 { margin: 0; line-height: 1.35; }
 }
 .timer.warn { color: var(--danger); }
 
-.exam-body { flex: 1; padding: 16px 12px 96px; }
+.exam-body { flex: 1; padding: 16px 16px 96px; }
 @media (min-width: 640px) { .exam-body { padding: 20px 24px 96px; } }
 @media (min-width: 1024px) {
   .exam-bar { padding-left: 40px; padding-right: 40px; }
