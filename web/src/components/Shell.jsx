@@ -3,8 +3,12 @@ import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth.jsx';
 import { get } from '../api.js';
 import { rememberSubject } from '../pages/SubjectPicker.jsx';
+import { Icon } from './icons.jsx';
 
-// 应用外壳：手机/平板抽屉导航，PC 侧边栏常驻（样式见 styles.css 的 1024px 断点）
+// 应用外壳（样式见 styles.css 的「应用外壳」一节）：
+//   PC（≥1024px）：侧边栏常驻，带图标；
+//   手机 / 平板，学员端：顶部只留标题，常用的几项放底部标签栏（导航项带 tab: true 的），其余收进「更多」（底部弹层）；
+//   手机 / 平板，后台：顶栏左边汉堡按钮打开侧边抽屉（后台项目多、主要在电脑上用）。
 export default function Shell({ nav, title, admin = false, subject = null, children }) {
   const [open, setOpen] = useState(false);
   const [subjects, setSubjects] = useState(null);
@@ -39,39 +43,44 @@ export default function Shell({ nav, title, admin = false, subject = null, child
     navigate(admin ? '/admin/login' : '/login', { replace: true });
   }
 
+  const tabs = admin ? [] : nav.filter((n) => n.tab);
+  const initial = String(user?.username || '?').slice(0, 1).toUpperCase();
+
   const menu = (
     <>
       <div className="nav-brand">
-        <strong style={{ fontSize: 15 }}>{title}</strong>
-        {/* 可访问学科 > 1 时才显示切换器。判断写"数量 > 1"而不是硬编码学科码，
-            将来加学科不用回头改这里。 */}
-        {subject && subjects && subjects.length > 1 ? (
-          <select
-            className="subject-switch"
-            aria-label="切换学科"
-            value={subject.code}
-            onChange={(e) => {
-              const code = e.target.value;
-              if (code === subject.code) return;
-              setOpen(false);
-              if (code === '__pick__') { navigate('/app?pick=1'); return; }
-              rememberSubject(code);
-              navigate(`/app/${code}`);
-            }}
-          >
-            {subjects.map((s) => (
-              <option key={s.code} value={s.code} disabled={!s.ready && s.code !== subject.code}>
-                {s.name}{s.ready ? '' : '（未开放）'}
-              </option>
-            ))}
-            <option value="__pick__">全部学科…</option>
-          </select>
-        ) : null}
-        {subject && subjects && subjects.length === 1 ? (
-          <div className="tiny faint" style={{ marginTop: 4 }}>{subject.name}</div>
-        ) : null}
+        <span className="brand-mark" aria-hidden="true">X</span>
+        <div className="nav-brand-text">
+          <strong>{title}</strong>
+          {/* 可访问学科 > 1 时才显示切换器。判断写"数量 > 1"而不是硬编码学科码，
+              将来加学科不用回头改这里。 */}
+          {subject && subjects && subjects.length > 1 ? (
+            <select
+              className="subject-switch"
+              aria-label="切换学科"
+              value={subject.code}
+              onChange={(e) => {
+                const code = e.target.value;
+                if (code === subject.code) return;
+                setOpen(false);
+                if (code === '__pick__') { navigate('/app?pick=1'); return; }
+                rememberSubject(code);
+                navigate(`/app/${code}`);
+              }}
+            >
+              {subjects.map((s) => (
+                <option key={s.code} value={s.code} disabled={!s.ready && s.code !== subject.code}>
+                  {s.name}{s.ready ? '' : '（未开放）'}
+                </option>
+              ))}
+              <option value="__pick__">全部学科…</option>
+            </select>
+          ) : (
+            <span className="tiny faint">{admin ? 'XLearn 管理后台' : 'XLearn'}</span>
+          )}
+        </div>
       </div>
-      <nav style={{ flex: 1 }}>
+      <nav className="nav-list">
         {nav.map((item) => (
           <NavLink
             key={item.to}
@@ -80,45 +89,77 @@ export default function Shell({ nav, title, admin = false, subject = null, child
             onClick={() => setOpen(false)}
             className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
           >
-            {item.label}
+            {item.icon ? <Icon name={item.icon} size={18} /> : null}
+            <span>{item.label}</span>
           </NavLink>
         ))}
       </nav>
       <div className="nav-foot">
-        <div className="small" style={{ marginBottom: 10 }}>
-          {user?.username}
-          <span className="tiny faint" style={{ marginLeft: 6 }}>
-            {user?.role === 'SUPER_ADMIN' ? '超级管理员' : '学员'}
-          </span>
+        <div className="user-chip">
+          <span className="avatar" aria-hidden="true">{initial}</span>
+          <div style={{ minWidth: 0 }}>
+            <div className="small user-name">{user?.username}</div>
+            <div className="tiny faint">{user?.role === 'SUPER_ADMIN' ? '超级管理员' : '学员'}</div>
+          </div>
         </div>
-        <button className="btn ghost sm block" onClick={onLogout}>退出登录</button>
+        <button className="btn ghost sm block" onClick={onLogout}>
+          <Icon name="logout" size={16} /> 退出登录
+        </button>
       </div>
     </>
   );
 
   return (
-    <div className={`shell${admin ? ' admin' : ''}`}>
+    <div className={`shell${admin ? ' admin' : ''}${tabs.length ? ' has-tabbar' : ''}`}>
       <aside className="sidebar">{menu}</aside>
 
       <div className="main">
         <header className="topbar">
-          <button className="icon-btn" aria-label="打开菜单" onClick={() => setOpen(true)}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M3 6h18M3 12h18M3 18h18" strokeLinecap="round" />
-            </svg>
-          </button>
-          <strong style={{ fontSize: 15 }}>{title}</strong>
+          {admin ? (
+            <button className="icon-btn" aria-label="打开菜单" onClick={() => setOpen(true)}>
+              <Icon name="menu" size={22} />
+            </button>
+          ) : <span className="brand-mark sm" aria-hidden="true">X</span>}
+          <strong className="topbar-title">{title}</strong>
+          {!admin ? (
+            <button className="avatar-btn" aria-label="打开菜单" onClick={() => setOpen(true)}>
+              <span className="avatar" aria-hidden="true">{initial}</span>
+            </button>
+          ) : null}
         </header>
 
         {open ? (
           <>
             <div className="drawer-mask" onClick={() => setOpen(false)} />
-            <aside className="drawer" style={{ display: 'flex', flexDirection: 'column' }}>{menu}</aside>
+            <aside className={`drawer${admin ? '' : ' sheet'}`} role="dialog" aria-label="菜单">
+              {!admin ? <div className="sheet-grip" aria-hidden="true" /> : null}
+              {menu}
+            </aside>
           </>
         ) : null}
 
         <div className="content">{children}</div>
       </div>
+
+      {tabs.length ? (
+        <nav className="tabbar" aria-label="主要功能">
+          {tabs.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.end}
+              className={({ isActive }) => `tab${isActive ? ' active' : ''}`}
+            >
+              <Icon name={item.icon} size={22} />
+              <span>{item.tabLabel || item.label}</span>
+            </NavLink>
+          ))}
+          <button type="button" className={`tab${open ? ' active' : ''}`} onClick={() => setOpen(true)}>
+            <Icon name="more" size={22} />
+            <span>更多</span>
+          </button>
+        </nav>
+      ) : null}
     </div>
   );
 }

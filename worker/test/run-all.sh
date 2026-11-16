@@ -43,7 +43,7 @@ UI_SUITES=(ui-bio-exam ui-pubeng ui-ph2-admin ui-ph2-ocr ui-ph2-import ui-ph2-kp
 NODE_TESTS=(grade-items.test.mjs rich-text.test.mjs docx-import.test.mjs normalizers.test.mjs
   ai-purposes.test.mjs auth-guard.test.mjs quota-degrade.mjs essay-parse.mjs beijing-time.test.mjs
   answer-key.test.mjs answer-check.test.mjs upload-size.test.mjs submit-race.test.mjs paper-sections.test.mjs
-  pubeng-pack.test.mjs phase2-race.test.mjs ocr-metrics.test.mjs import-pipeline.test.mjs photo-qc.test.mjs answer-review.test.mjs)
+  pubeng-pack.test.mjs phase2-race.test.mjs ocr-metrics.test.mjs import-pipeline.test.mjs photo-qc.test.mjs answer-review.test.mjs home-activity.test.mjs)
 
 JOBS=4; UI=0; ONLY=()
 SUITE_TIMEOUT=${SUITE_TIMEOUT:-1200}

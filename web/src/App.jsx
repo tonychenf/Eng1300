@@ -43,15 +43,15 @@ const AnswerReview = lazy(() => import('./pages/admin/AnswerReview.jsx'));   // 
 const KnowledgePoints = lazy(() => import('./pages/admin/KnowledgePoints.jsx'));   // 第三期 F：考点整理
 
 const ADMIN_NAV = [
-  { to: '/admin', label: '题库总览', end: true },
-  { to: '/admin/subjects', label: '学科管理' },
-  { to: '/admin/bank', label: '试卷与校对' },
-  { to: '/admin/students', label: '学员学情' },
-  { to: '/admin/users', label: '账号管理' },
-  { to: '/admin/export', label: '数据导出' },
-  { to: '/admin/ai', label: 'AI 配置' },
-  { to: '/admin/settings', label: '系统参数' },
-  { to: '/admin/password', label: '修改密码' },
+  { to: '/admin', label: '题库总览', end: true, icon: 'grid' },
+  { to: '/admin/subjects', label: '学科管理', icon: 'layers' },
+  { to: '/admin/bank', label: '试卷与校对', icon: 'file' },
+  { to: '/admin/students', label: '学员学情', icon: 'chart' },
+  { to: '/admin/users', label: '账号管理', icon: 'users' },
+  { to: '/admin/export', label: '数据导出', icon: 'download' },
+  { to: '/admin/ai', label: 'AI 配置', icon: 'spark' },
+  { to: '/admin/settings', label: '系统参数', icon: 'sliders' },
+  { to: '/admin/password', label: '修改密码', icon: 'key' },
 ];
 
 // 学员导航按学科生成：不同学科的功能顺序不一样（生化的主路径是章节练习，
@@ -59,15 +59,16 @@ const ADMIN_NAV = [
 function userNav(subject) {
   const p = (rest) => `/app/${subject.code}${rest}`;
   const practiceFirst = subject.contentGroupKind === 'TEXTBOOK_CHAPTER';
-  const exam = { to: p('/exam/new'), label: '模拟考试' };
-  const practice = { to: p('/practice/new'), label: '专项练习' };
+  // tab：手机底部标签栏里放的（短名字 tabLabel），其余收进「更多」
+  const exam = { to: p('/exam/new'), label: '模拟考试', icon: 'exam', tab: true, tabLabel: '模考' };
+  const practice = { to: p('/practice/new'), label: '专项练习', icon: 'target', tab: true, tabLabel: '练习' };
   return [
-    { to: p(''), label: '学科首页', end: true },
+    { to: p(''), label: '学科首页', end: true, icon: 'home', tab: true, tabLabel: '首页' },
     ...(practiceFirst ? [practice, exam] : [exam, practice]),
-    { to: p('/wrongbook'), label: '错题本' },
-    { to: p('/assessment'), label: '能力评估' },
-    { to: p('/history'), label: '历史记录' },
-    { to: '/app/password', label: '修改密码' },
+    { to: p('/wrongbook'), label: '错题本', icon: 'book', tab: true, tabLabel: '错题本' },
+    { to: p('/assessment'), label: '能力评估', icon: 'chart' },
+    { to: p('/history'), label: '历史记录', icon: 'clock' },
+    { to: '/app/password', label: '修改密码', icon: 'key' },
   ];
 }
 
@@ -117,7 +118,7 @@ export default function App() {
       {/* 静态段排在动态段之前，react-router 会优先匹配静态的，
           所以 /app/password 不会被当成一个叫 password 的学科 */}
       <Route path="/app/password" element={
-        <Guard><Shell nav={[{ to: '/app?pick=1', label: '返回学科选择' }]} title="账号"><ChangePassword /></Shell></Guard>
+        <Guard><Shell nav={[{ to: '/app?pick=1', label: '返回学科选择', icon: 'swap' }]} title="账号"><ChangePassword /></Shell></Guard>
       } />
 
       {/* 作答页不套外壳：全屏、无侧边栏，减少作答中误触退出 */}
