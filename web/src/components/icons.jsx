@@ -22,6 +22,9 @@ const PATHS = {
   arrow: <path d="M5 12h14M13 6l6 6-6 6" />,
   play: <path d="M7 4.5v15l12-7.5-12-7.5Z" />,
   swap: <><path d="M4 8h13l-3-3M20 16H7l3 3" /></>,
+  flame: <path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2 1-3.5 2-4.5.3 1.6 1.2 2.6 2.2 2.8C10.5 9 11 6 12 3Z" />,
+  trophy: <><path d="M8 4h8v5a4 4 0 0 1-8 0V4Z" /><path d="M8 6H5a2 2 0 0 0 0 4h3M16 6h3a2 2 0 0 1 0 4h-3M12 13v4M8 21h8M10 17h4" /></>,
+  calendar: <><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 10h18M8 3v4M16 3v4" /></>,
 };
 
 export function Icon({ name, size = 20, className = '', title }) {
