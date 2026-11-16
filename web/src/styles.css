@@ -135,15 +135,40 @@ h1, h2, h3 { margin: 0; line-height: 1.35; }
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ---------- 登录页 ---------- */
+/* ---------- 登录页（2026-11-16 改版：深色极光背景、上浮的学习符号、毛玻璃卡片、产品预览） ---------- */
 
 .auth-wrap {
+  position: relative; isolation: isolate; overflow: hidden;
   min-height: 100%; display: flex;
   background:
-    radial-gradient(1200px 600px at 10% -10%, #e0e7ff 0%, transparent 60%),
-    radial-gradient(900px 500px at 110% 110%, #ede9fe 0%, transparent 55%),
-    var(--page);
+    radial-gradient(900px 600px at 80% 0%, rgba(124, 58, 237, .35) 0%, transparent 60%),
+    linear-gradient(160deg, #070b1f 0%, #141a46 50%, #26206b 100%);
 }
+.aurora { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+.aurora-blob { position: absolute; border-radius: 50%; filter: blur(70px); opacity: .55; mix-blend-mode: screen; }
+.aurora-blob.b1 { width: 460px; height: 460px; left: -140px; top: -140px; background: #6366f1; animation: drift-1 18s ease-in-out infinite; }
+.aurora-blob.b2 { width: 380px; height: 380px; right: -120px; top: 18%; background: #d946ef; animation: drift-2 22s ease-in-out infinite; }
+.aurora-blob.b3 { width: 420px; height: 420px; left: 18%; bottom: -200px; background: #06b6d4; animation: drift-3 20s ease-in-out infinite; }
+@keyframes drift-1 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(120px, 80px) scale(1.15); } }
+@keyframes drift-2 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-110px, 60px) scale(.9); } }
+@keyframes drift-3 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(90px, -90px) scale(1.1); } }
+.aurora-grid {
+  position: absolute; inset: 0; opacity: .5;
+  background-image: radial-gradient(rgba(255, 255, 255, .22) 1px, transparent 1.2px);
+  background-size: 22px 22px;
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%); mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+}
+.glyph {
+  position: absolute; bottom: -48px; font-weight: 800; color: rgba(255, 255, 255, .2);
+  font-family: ui-serif, Georgia, 'Times New Roman', serif;
+  animation-name: float-up; animation-timing-function: linear; animation-iteration-count: infinite;
+}
+@keyframes float-up {
+  0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+  10%, 85% { opacity: 1; }
+  100% { transform: translateY(-115vh) rotate(28deg); opacity: 0; }
+}
+
 .auth-brand { display: none; }
 .auth-panel {
   flex: 1; display: flex; align-items: center; justify-content: center;
@@ -151,24 +176,81 @@ h1, h2, h3 { margin: 0; line-height: 1.35; }
 }
 .auth-form {
   width: 100%; max-width: 400px; padding: 28px 22px;
-  background: #fff; border: 1px solid var(--line-soft); border-radius: 20px; box-shadow: var(--shadow-lg);
+  background: rgba(255, 255, 255, .95);
+  backdrop-filter: blur(18px) saturate(160%); -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, .6); border-radius: 24px;
+  box-shadow: 0 40px 80px -30px rgba(2, 6, 23, .8), 0 0 0 1px rgba(255, 255, 255, .06);
+  animation: card-in .7s cubic-bezier(.2, .8, .2, 1) both;
 }
-.auth-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; font-weight: 700; font-size: 17px; }
+@keyframes card-in { from { opacity: 0; transform: translateY(26px) scale(.97); } to { opacity: 1; transform: none; } }
+.auth-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; font-weight: 800; font-size: 18px; letter-spacing: -.01em; }
+
+.input-icon { position: relative; }
+.input-icon > .icon {
+  position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+  color: var(--faint); pointer-events: none; transition: color .15s var(--ease);
+}
+.input-icon > .input { padding-left: 42px; }
+.input-icon:focus-within > .icon { color: var(--primary); }
+
+.btn.shimmer {
+  position: relative; overflow: hidden; min-height: 50px; font-size: 16px; border-radius: 14px;
+  background: linear-gradient(90deg, #4f46e5, #7c3aed);
+  box-shadow: 0 12px 26px -12px rgba(99, 102, 241, .9);
+}
+.btn.shimmer:hover:not(:disabled) { background: linear-gradient(90deg, #4338ca, #6d28d9); transform: translateY(-1px); }
+.btn.shimmer::after {
+  content: ''; position: absolute; top: 0; bottom: 0; left: -40%; width: 30%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .45), transparent);
+  transform: skewX(-20deg); animation: btn-shine 3.4s ease-in-out infinite;
+}
+@keyframes btn-shine { 0%, 55% { left: -40%; } 100% { left: 130%; } }
+.spinner.light { width: 16px; height: 16px; border-color: rgba(255, 255, 255, .35); border-top-color: #fff; }
+.shake { animation: shake .42s ease-in-out; }
+@keyframes shake { 0%, 100% { transform: none; } 20% { transform: translateX(-7px); } 40% { transform: translateX(7px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(4px); } }
+
+/* PC：左边品牌栏（标语 + 浮动的产品预览卡片）、右边登录卡片，背景是同一片极光 */
+.brand-mark.lg { width: 44px; height: 44px; border-radius: 13px; font-size: 20px; }
+.auth-tagline { font-size: 46px; font-weight: 800; letter-spacing: -.03em; line-height: 1.15; margin-top: 44px; }
+.auth-tagline span {
+  background: linear-gradient(90deg, #a5f3fc, #c4b5fd, #f0abfc, #a5f3fc); background-size: 200% auto;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  animation: text-flow 6s linear infinite;
+}
+@keyframes text-flow { to { background-position: 200% center; } }
+.preview-stack { position: relative; height: 230px; margin: 28px 0 12px; }
+.pv-card {
+  position: absolute; display: flex; align-items: center; gap: 12px;
+  padding: 14px 18px; border-radius: 18px; color: #fff;
+  background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .2);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 24px 48px -24px rgba(2, 6, 23, .8);
+}
+.pv-score { left: 0; top: 14px; animation: bob 6s ease-in-out infinite; }
+.pv-big { font-size: 30px; font-weight: 800; line-height: 1; }
+.pv-small { font-size: 12px; opacity: .75; margin-top: 4px; }
+.pv-arc { animation: arc-draw 2.4s cubic-bezier(.2, .8, .2, 1) .3s both; filter: drop-shadow(0 0 6px rgba(165, 243, 252, .8)); }
+@keyframes arc-draw { from { stroke-dashoffset: 163.4; } to { stroke-dashoffset: 26; } }
+.pv-streak {
+  left: 230px; top: 0; font-size: 14px; font-weight: 700;
+  background: linear-gradient(90deg, rgba(251, 146, 60, .9), rgba(244, 63, 94, .85)); border-color: rgba(255, 255, 255, .3);
+  animation: bob 7s ease-in-out -2s infinite;
+}
+.pv-ai { left: 120px; top: 128px; animation: bob 8s ease-in-out -4s infinite; }
+.pv-ai .icon { color: #a5f3fc; flex: none; }
+.pv-ai strong { display: block; font-size: 14px; }
+.pv-ai span { font-size: 12px; opacity: .75; }
+@keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
 
 @media (min-width: 640px) {
-  .auth-form { padding: 36px 32px; }
+  .auth-form { padding: 38px 34px; }
 }
 @media (min-width: 1024px) {
   .auth-brand {
     display: flex; flex-direction: column; justify-content: space-between;
-    width: 52%; padding: 64px; color: #fff;
-    background:
-      radial-gradient(700px 400px at 0% 0%, rgba(129, 140, 248, .55) 0%, transparent 60%),
-      radial-gradient(600px 400px at 100% 100%, rgba(167, 139, 250, .45) 0%, transparent 60%),
-      linear-gradient(160deg, #1e1b4b 0%, #312e81 55%, #3730a3 100%);
+    width: 54%; padding: 64px 64px 48px; color: #fff;
   }
-  .auth-brand h1 { letter-spacing: -.02em; }
-  .auth-panel { width: 48%; flex: none; }
+  .auth-panel { width: 46%; flex: none; padding-right: 48px; }
   .auth-logo { display: none; }
 }
 
@@ -635,7 +717,8 @@ h1, h2, h3 { margin: 0; line-height: 1.35; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
   /* 循环播放的（首页背景流动、光斑、火焰）直接停掉：只把时长压短的话，无限循环会变成一闪一闪 */
-  .hero2, .hero-orb, .glass-chip.flame .icon { animation: none !important; }
+  .hero2, .hero-orb, .glass-chip.flame .icon, .aurora-blob, .glyph, .btn.shimmer::after, .pv-card, .auth-tagline span { animation: none !important; }
+  .glyph { display: none; }
 }
 
 /* ---------- 模考答题页 ---------- */
